@@ -1,13 +1,20 @@
 {
   "projects": {
-    "default": "wiof-staging",
-    "production": "wiof-production"
+    "production": "wiof-production",
+    "staging": "wiof-staging"
   },
   "targets": {
     "wiof-production": {
       "hosting": {
         "app": [
           "wiof-production"
+        ]
+      }
+    },
+    "wiof-staging": {
+      "hosting": {
+        "app": [
+          "wiof-staging"
         ]
       }
     }
