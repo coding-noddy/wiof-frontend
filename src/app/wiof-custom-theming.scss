@@ -7,16 +7,13 @@ $energy-color: rgb(
 ); //energy and fire are to be considered same element
 $air-color: rgb(224, 202, 245);
 $spirit-color: rgb(241, 222, 198);
-// $home-color: rgb(128, 64, 0);
-$home-color: #fbb0ac;//#70c0d7;//#fbb0ac;
+$home-color: #a5dbdb; //#fbb0ac;//#70c0d7;//#fbb0ac;
 $home-color-light: lighten($home-color, 30%);
-//$home-color-light2: #e0e0ba;
 $home-text-color: #2d2d2d;
 $home-color-dark: darken($home-color, 6%);
 $header-color: #fffaf0; // floral white
 
 //add tint to various slider backgrounds
-
 $tint-fraction: 0.5;
 
 // font color
