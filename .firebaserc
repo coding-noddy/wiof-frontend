@@ -1,22 +1,6 @@
 {
   "projects": {
-    "production": "wiof-production",
-    "staging": "wiof-staging"
-  },
-  "targets": {
-    "wiof-production": {
-      "hosting": {
-        "app": [
-          "wiof-production"
-        ]
-      }
-    },
-    "wiof-staging": {
-      "hosting": {
-        "app": [
-          "wiof-staging"
-        ]
-      }
-    }
+    "default": "wiof-staging",
+    "prod": "wiof-production"
   }
 }
