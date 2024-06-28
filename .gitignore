@@ -90,7 +90,12 @@ out
 # Nuxt.js build / generate output
 .nuxt
 dist
+
+# Angular and firebase
 public
+.angular
+hosting.*
+.firebase
 
 # Gatsby files
 .cache/
