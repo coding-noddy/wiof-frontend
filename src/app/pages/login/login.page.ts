@@ -13,7 +13,7 @@ export class LoginPage implements OnInit, OnDestroy {
   email: string;
   password: string;
   error: string;
-  wiofLogo: string = '../../assets/logo.jpg';
+  wiofLogo: string = '../../assets/logo.png';
   destroy$: Subject<boolean> = new Subject();
 
   constructor(private afService: AuthService, private router: Router) {}

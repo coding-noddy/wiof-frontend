@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
-  wiofLogo: string = '../../assets/logo_small.png';
+  wiofLogo: string = '../../assets/logo.png';
   sub: Subscription;
   colorName: string;
   constructor(public platform: Platform, private route: ActivatedRoute) {

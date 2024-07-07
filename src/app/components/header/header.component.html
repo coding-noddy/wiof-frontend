@@ -1,28 +1,22 @@
 <ion-header>
   <ion-row>
     <ion-col class="ion-align-self-start ion-no-padding">
-      <ion-toolbar class="header-padding toolbar-background-wrapper">
+      <ion-toolbar class="toolbar-background-wrapper" style="padding-left: 5px;">
         <ion-buttons class="menu-button-toggle" slot="start">
           <!-- uncomment when have to add menu and links in header-->
           <!-- <ion-menu-button>
             <ion-icon name="menu-outline" menuId="wiof-menu"></ion-icon>
           </ion-menu-button> -->
         </ion-buttons>
-        <ion-title routerLink="/home">
-          <img
-            class="wiof-logo"
-            alt="World is one family logo"
-            [src]="wiofLogo"
-            tabindex="-1"
-          />
-          <!-- </ion-img> -->
+        <ion-title routerLink="/home" style="padding: 0;">
+          <ion-img style="height: 56px; float: left;" alt="World is one family logo" [src]="wiofLogo"></ion-img>
         </ion-title>
       </ion-toolbar>
     </ion-col>
     <!-- uncomment when have to add menu and links in header-->
 
     <ion-col class="ion-align-self-end ion-no-padding">
-      <ion-toolbar class="header-padding toolbar-background-wrapper">
+      <ion-toolbar class="toolbar-background-wrapper">
         <ion-buttons slot="end">
           <!-- <ion-button>
             Lifestyle
