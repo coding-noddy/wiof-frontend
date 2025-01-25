@@ -11,64 +11,36 @@ import { News } from 'src/app/models/News';
 
 @Component({
   selector: 'app-home',
-  templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss']
+  templateUrl: './home.page.html',
+  styleUrls: ['./home.page.scss']
 })
 export class HomePage implements OnInit {
   viewConsentPopup = true;
-  ribbonCut = false;
-  counter = 5;
-  buttonClicked = false;
   coffeeConversations$: Observable<CoffeeConversation[]>;
   ngosInFocus$: Observable<NgoInFocus[]>;
   coursesInFocus$: Observable<CourseInFocus[]>;
   newsList$: Observable<News[]>;
 
   constructor(
-    private coffeeConvService: CoffeeConversationService,
-    private ngoInFocusService: NgoInFocusService,
-    private courseInFocusService: CourseInFocusService,
-    private newsService: NewsService
+    private newsService: NewsService,
+    private coffeeConversationService: CoffeeConversationService,
+    private ngoService: NgoInFocusService,
+    private courseService: CourseInFocusService
   ) {}
 
-  ngOnInit() {
-    // inauguration code
-    // const ribbonCut = localStorage.getItem('ribbonCut');
-    // this.ribbonCut = ribbonCut === 'true' ? true : false;
-    // const curtainEl = document.getElementById('curtain-id');
-    // if (this.ribbonCut && curtainEl) {
-    //   curtainEl.style.display = 'none';
-    // }
-
+  ngOnInit(): void {
     const privacyConsentAccepted = localStorage.getItem(
       'privacyConsentAccepted'
     );
-    this.viewConsentPopup = privacyConsentAccepted === 'true' ? false : true;
+    this.viewConsentPopup = privacyConsentAccepted !== 'true';
     this.newsList$ = this.newsService.getAllNews();
-    this.coffeeConversations$ = this.coffeeConvService.getCoffeeConversations();
-    this.ngosInFocus$ = this.ngoInFocusService.getActiveNgosInFocus();
-    this.coursesInFocus$ = this.courseInFocusService.getActiveCoursesInFocus();
+    this.coffeeConversations$ = this.coffeeConversationService.getCoffeeConversations();
+    this.ngosInFocus$ = this.ngoService.getActiveNgosInFocus();
+    this.coursesInFocus$ = this.courseService.getCoursesInFocus();
   }
 
-  onAccept() {
+  onAccept(): void {
     this.viewConsentPopup = false;
     localStorage.setItem('privacyConsentAccepted', 'true');
   }
-
-  // inauguration code
-  // onOpening() {
-  //   this.buttonClicked = true;
-  //   setInterval(() => {
-  //     this.counter--;
-  //   }, 1000);
-
-  //   setTimeout(() => {
-  //     this.ribbonCut = true;
-  //     localStorage.setItem('ribbonCut', 'true');
-  //     setTimeout(() => {
-  //       const curtainEl = document.getElementById('curtain-id');
-  //       curtainEl.style.display = 'none';
-  //     }, 3000);
-  //   }, 5000);
-  // }
 }

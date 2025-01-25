@@ -1,42 +1,7 @@
-<!--INAUGURATION PAGE CODE-->
-<!-- <div class="ia-container" *ngIf="!ribbonCut">
-  <div class="ia-logo-image-container">
-    <img class="ia-logo-image" src="../../../assets/logo.png" />
-    <div class="ia-welcome-text">
-      <p>Welcome to the</p>
-      <p><strong>Inauguration Ceremony</strong></p>
-      <p><strong class="site-name">worldisonefamily.com</strong></p>
-    </div>
-  </div>
-  <div class="badge-space">
-    <div class="badge" (click)="onOpening()"></div>
-  </div>
-  <div class="ribbon color"></div>
-  <div class="diwali-text">"Happy Diwali"</div>
-  <div *ngIf="buttonClicked" class="counter">{{counter}}</div>
-</div>
-<div class="ia-curtain-container" id="curtain-id">
-  <div class="curtain">
-    <div class="rnUnit"></div>
-    <div class="rnUnit"></div>
-    <div class="rnUnit"></div>
-    <div class="rnUnit"></div>
-    <div class="rnUnit"></div>
-    <div class="rnUnit"></div>
-    <div class="rnUnit"></div>
-    <div class="rnUnit"></div>
-    <div class="rnUnit"></div>
-    <div class="rnUnit"></div>
-  </div>
-</div> -->
-
 <app-header></app-header>
 <app-subscribe [page]="'home'"></app-subscribe>
 <app-social-share-home style="z-index: 2"></app-social-share-home>
-<app-concent-popup
-  *ngIf="viewConsentPopup"
-  (accepted)="onAccept()"
-></app-concent-popup>
+<app-concent-popup *ngIf="viewConsentPopup" (accepted)="onAccept()"></app-concent-popup>
 
 <ion-content>
   <ion-grid class="ion-no-padding">
