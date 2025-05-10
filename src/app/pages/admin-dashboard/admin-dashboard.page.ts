@@ -44,6 +44,10 @@ export class AdminDashboardPage implements OnInit {
         actionUrl: 'manage-course-in-focus'
       },
       {
+        name: 'About Us Profiles',
+        actionUrl: 'manage-about-us-profiles'
+      },
+      {
         name: 'Subscriptions',
         actionUrl: 'subscribers'
       }

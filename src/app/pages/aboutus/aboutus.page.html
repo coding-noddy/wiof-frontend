@@ -7,44 +7,46 @@
   </ion-toolbar>
   <ion-grid>
     <ion-row>
+      <!-- Loop through profiles using the observable -->
       <ion-col
         class="ion-padding profile-card-container"
         size="12"
         size-md="6"
         size-lg="4"
         size-xl="3"
-        *ngFor="let profile of aboutUsProfiles"
+        *ngFor="let profile of aboutUsProfiles$ | async"
       >
         <ion-card class="ion-margin profile-card">
           <ion-card-content class="ion-no-padding">
+            <!-- Default Profile View -->
             <ion-row *ngIf="!profile.showKnowMore">
               <ion-col size="12" class="profile-header">
                 <img
                   class="profile-image"
                   [src]="profile.imageLink"
-                  [alt]="'Profile image of' + profile.name"
+                  [alt]="'Profile image of ' + profile.name"
                 />
-                <ion-card-title class="ion-padding-bottom" class="profile-name">
-                  {{profile.name}}
+                <ion-card-title class="profile-name">
+                  {{ profile.name }}
                 </ion-card-title>
                 <p class="linked-in-container">
                   <ion-icon
                     *ngIf="profile.socialLink"
                     name="logo-linkedin"
                     class="logo"
-                  ></ion-icon
-                  ><a
+                  ></ion-icon>
+                  <a
                     *ngIf="profile.socialLink"
                     [href]="profile.socialLink"
                     target="_blank"
                     class="link"
-                    >Visit linked in profile</a
                   >
+                    Visit LinkedIn Profile
+                  </a>
                 </p>
               </ion-col>
               <ion-col size="12" class="ion-padding">
-                <p class="profile-bio-text">{{profile.bio}}</p>
-                <br />
+                <p class="profile-bio-text">{{ profile.bio }}</p>
                 <p style="text-align: center">
                   <button
                     class="wiof-primary-link"
@@ -55,20 +57,22 @@
                 </p>
               </ion-col>
             </ion-row>
+
+            <!-- Expanded Profile View -->
             <ion-row *ngIf="profile.showKnowMore">
               <ion-col size="12" class="ion-no-padding">
                 <ion-card-title class="ion-padding">
-                  <span class="profile-detail-bio-header"
-                    >About {{profile.name}}</span
-                  >
+                  <span class="profile-detail-bio-header">
+                    About {{ profile.name }}
+                  </span>
                   <span
                     class="close-icon"
                     (click)="profile.showKnowMore = false"
-                    ><ion-icon name="close-outline"></ion-icon
-                  ></span>
+                  >
+                    <ion-icon name="close-outline"></ion-icon>
+                  </span>
                 </ion-card-title>
-                <p class="profile-detail-bio">{{profile.bio}}</p>
-                <br />
+                <p class="profile-detail-bio">{{ profile.bio }}</p>
               </ion-col>
             </ion-row>
           </ion-card-content>

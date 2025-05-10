@@ -1,60 +1,103 @@
 @import "../../wiof-custom-theming.scss";
 
-
-// // Using SCSS variables to store breakpoints
+// Custom breakpoints
+$page-padding-desktop: 16px 6vw;
+$page-padding-mobile: 16px;
 $breakpoint-tablet: 767px;
 
-.landing-welcome-label {
-  font-size: 35px;
-  color: white;
-  padding: 20px;
-  margin: 0;
-  text-shadow: -2px 2px 0 black;
-}
+.page-container {
+  padding: $page-padding-mobile;
 
-@media (max-width: $breakpoint-tablet) {
-  .landing-welcome-label {
-    font-size: 22px;
+  @media (min-width: 768px) {
+    padding: $page-padding-desktop;
   }
 }
 
-.landing-welcome-img {
-  background: url("../../../assets/banners/home_banner.jpg");
-  background-repeat: no-repeat;
-  // background-attachment: fixed;
+.hero {
+  background: url("../../../assets/banners/home_banner.jpg") no-repeat center center;
   background-size: cover;
-  height: 310px;
-  text-align: center;
-  padding-top: 50px;
-  @media only screen and (min-width: 200px) {
-    background-position: 53%;
-  }
-  @media only screen and (min-width: 768px) {
-    background-position: 56%;
-  }
-  @media only screen and (min-width: 1024px) {
-    background-position: 68%;
-  }
-}
-
-.discover-more-btn {
-  width: 150px;
-  border-radius: 25px;
-  padding: 10px;
-  background: #fff;
-  color: #000;
-  font-size: small;
-}
-
-.wiof-footer {
-  background-color: darkslategray;
   color: white;
+  text-align: center;
+  padding: 60px 20px;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  position: relative;
+
+  /* Adjust font size for small screens */
+  h1 {
+    font-size: 1.6rem;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px black;
+
+    @media (min-width: 768px) {
+      font-size: 2.4rem; /* Larger font for tablets and above */
+    }
+    @media (min-width: 1024px) {
+      font-size: 3rem; /* Even larger for desktops */
+    }
+  }
+
+  .cta {
+    margin-top: 20px;
+    padding: 12px 28px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 25px;
+    background-color: #fff;
+    color: #003973;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+
+    &:hover {
+      background-color: #003973;
+      color: #fff;
+    }
+  }
+
+  /* Hero Image Resize for mobile */
+  &::before {
+    content: "";
+    background-image: url("../../../assets/banners/home_banner.jpg");
+    background-size: cover;
+    background-position: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.2;
+    z-index: -1;
+
+    /* Adjust image for smaller screens */
+    @media (max-width: $breakpoint-tablet) {
+      background-position: 50%;
+    }
+
+    @media (min-width: 768px) {
+      background-position: 56%;
+    }
+
+    @media (min-width: 1024px) {
+      background-position: 68%;
+    }
+  }
 }
 
-.social-media-block {
-  background: white;
-  width: fit-content;
-  border-radius: 5px;
-  padding: 0px 10px;
-  margin-top: 10px;
+ion-content {
+  --background: #f7f9fc;
+}
+
+app-wiof-footer {
+  margin-top: 2rem;
+}
+
+ion-grid {
+  --ion-grid-padding: 0;
+}
+
+/* Optional: Add spacing between rows */
+ion-row + ion-row {
+  margin-top: 1.5rem;
 }

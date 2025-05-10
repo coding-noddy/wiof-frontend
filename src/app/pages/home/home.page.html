@@ -1,64 +1,59 @@
+<!-- home.page.html -->
 <app-header></app-header>
 <app-subscribe [page]="'home'"></app-subscribe>
 <app-social-share-home style="z-index: 2"></app-social-share-home>
 <app-concent-popup *ngIf="viewConsentPopup" (accepted)="onAccept()"></app-concent-popup>
 
 <ion-content>
-  <ion-grid class="ion-no-padding">
-    <ion-row>
-      <ion-col>
-        <div class="landing-welcome-img">
-          <h1 class="landing-welcome-label">
-            <span id="inspire" style="margin-right: 20%"
-              >Inspire through Creativity</span
-            ><br />
-            <span id="enlighten" style="margin-right: 5%"
-              >Enlighten through Knowledge</span
-            ><br />
-            <span id="protect" style="margin-right: -10%"
-              >Protect through Action</span
-            >
-          </h1>
-          <button
-            class="discover-more-btn ion-margin-top"
-            [routerLink]="['/discover-more']"
-            routerLinkActive="router-link-active"
-          >
-            Discover More...
-          </button>
-        </div>
-      </ion-col>
-    </ion-row>
+  <div class="page-container">
+    <!-- Hero Section -->
+    <section class="hero">
+      <h1>
+        Inspire through Creativity<br />
+        Enlighten through Knowledge<br />
+        Protect through Action
+      </h1>
+      <button class="cta" [routerLink]="['/discover-more']">Discover More...</button>
+    </section>
+
+    <!-- Life Elements -->
     <app-life-elements></app-life-elements>
-    <ion-row>
-      <ion-col size-xs="12" size-md="6" size-lg="8">
-        <app-breaking-news [newsList]="newsList$ | async"></app-breaking-news>
-      </ion-col>
-      <ion-col size-xs="12" size-md="6" size-lg="4">
-        <app-coffee-conversation
-          [coffeeConvList]="coffeeConversations$ | async"
-          [fromHomePage]="true"
-        ></app-coffee-conversation>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col size-xs="12" size-md="6" size-lg="8">
-        <app-ngo-in-focus
-          [ngosInFocus]="ngosInFocus$ | async"
-        ></app-ngo-in-focus>
-      </ion-col>
-      <ion-col size-xs="12" size-md="6" size-lg="4">
-        <app-course-in-focus
-          [coursesInFocus]="coursesInFocus$ | async"
-        ></app-course-in-focus>
-      </ion-col>
-      <ion-col size-lg="8" size-xs="12">
-        <app-env-calender></app-env-calender>
-      </ion-col>
-      <ion-col size-lg="4" size-xs="12">
-        <app-polls-widget></app-polls-widget>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+
+    <!-- News and Conversations -->
+    <ion-grid class="ion-padding-top">
+      <ion-row>
+        <ion-col size-xs="12" size-md="6" size-lg="8">
+          <app-breaking-news [newsList]="newsList$ | async"></app-breaking-news>
+        </ion-col>
+        <ion-col size-xs="12" size-md="6" size-lg="4">
+          <app-coffee-conversation
+            [coffeeConvList]="coffeeConversations$ | async"
+            [fromHomePage]="true">
+          </app-coffee-conversation>
+        </ion-col>
+      </ion-row>
+
+      <!-- NGOs and Courses -->
+      <ion-row>
+        <ion-col size-xs="12" size-md="6" size-lg="8">
+          <app-ngo-in-focus [ngosInFocus]="ngosInFocus$ | async"></app-ngo-in-focus>
+        </ion-col>
+        <ion-col size-xs="12" size-md="6" size-lg="4">
+          <app-course-in-focus [coursesInFocus]="coursesInFocus$ | async"></app-course-in-focus>
+        </ion-col>
+      </ion-row>
+
+      <!-- Calendar and Polls -->
+      <ion-row>
+        <ion-col size-xs="12" size-md="6" size-lg="8">
+          <app-env-calender></app-env-calender>
+        </ion-col>
+        <ion-col size-xs="12" size-md="6" size-lg="4">
+          <app-polls-widget></app-polls-widget>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
   <app-wiof-footer></app-wiof-footer>
 </ion-content>
