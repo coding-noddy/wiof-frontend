@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { AuthGuard } from './guards/auth.guard';
+import { ElementPage } from './pages/element/element.page';
 
 const routes: Routes = [
   {
@@ -15,54 +16,24 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
-    path: 'element/:element/blogs/blog',
-    redirectTo: 'element/:element/blog',
+    path: ':element/blogs/blog',
+    redirectTo: ':element/blog',
     pathMatch: 'prefix'
   },
   {
-    path: 'element/:element/blogs/take-action',
-    redirectTo: 'element/:element/take-action',
+    path: ':element/blogs/take-action',
+    redirectTo: ':element/take-action',
     pathMatch: 'full'
   },
   {
-    path: 'element/:element/videos/video',
-    redirectTo: 'element/:element/video',
+    path: ':element/videos/video',
+    redirectTo: ':element/video',
     pathMatch: 'prefix'
   },
   {
-    path: 'element/:element/videos/take-action',
-    redirectTo: 'element/:element/take-action',
+    path: ':element/videos/take-action',
+    redirectTo: ':element/take-action',
     pathMatch: 'full'
-  },
-  {
-    path: 'element/earth',
-    loadChildren: () =>
-      import('./pages/earth/earth.module').then((m) => m.EarthPageModule)
-  },
-  {
-    path: 'element/water',
-    loadChildren: () =>
-      import('./pages/water/water.module').then((m) => m.WaterPageModule)
-  },
-  {
-    path: 'element/energy',
-    loadChildren: () =>
-      import('./pages/fire/fire.module').then((m) => m.FirePageModule)
-  },
-  {
-    path: 'element/spirit',
-    loadChildren: () =>
-      import('./pages/spirit/spirit.module').then((m) => m.SpiritPageModule)
-  },
-  {
-    path: 'element/water',
-    loadChildren: () =>
-      import('./pages/water/water.module').then((m) => m.WaterPageModule)
-  },
-  {
-    path: 'element/air',
-    loadChildren: () =>
-      import('./pages/air/air.module').then((m) => m.AirPageModule)
   },
   {
     path: 'admin-dashboard',
@@ -78,15 +49,35 @@ const routes: Routes = [
       import('./pages/login/login.module').then((m) => m.LoginPageModule)
   },
   {
-    path: 'element/:element/blogs',
+    path: ':element/blogs',
     loadChildren: () =>
       import('./pages/blogs/blogs.module').then((m) => m.BlogsPageModule)
   },
-
   {
-    path: 'element/:element/videos',
+    path: ':element/videos',
     loadChildren: () =>
       import('./pages/videos/videos.module').then((m) => m.VideosPageModule)
+  },
+  {
+    path: ':element/blog',
+    loadChildren: () =>
+      import('./pages/blog-post/blog-post.module').then(
+        (m) => m.BlogPostPageModule
+      )
+  },
+  {
+    path: ':element/video',
+    loadChildren: () =>
+      import('./pages/video-post/video-post.module').then(
+        (m) => m.VideoPostPageModule
+      )
+  },
+  {
+    path: ':element/take-action',
+    loadChildren: () =>
+      import('./pages/take-action/take-action.module').then(
+        (m) => m.TakeActionPageModule
+      )
   },
   {
     path: 'discover-more',
@@ -118,6 +109,10 @@ const routes: Routes = [
     path: 'aboutus',
     loadChildren: () =>
       import('./pages/aboutus/aboutus.module').then((m) => m.AboutusPageModule)
+  },
+  {
+    path: ':element',
+    component: ElementPage
   },
   {
     path: '**',

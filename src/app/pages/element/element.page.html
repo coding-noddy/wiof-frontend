@@ -1,30 +1,34 @@
 <app-header></app-header>
-<app-subscribe [page]="'earth'"></app-subscribe>
+<app-subscribe [page]="subscribePage"></app-subscribe>
 <app-social-share-home style="z-index: 2"></app-social-share-home>
 <ion-content>
-  <app-element-welcome-image
-    welcomeImageClass="earth-welcome-img"
-  ></app-element-welcome-image>
+  <app-element-welcome-image [welcomeImageClass]="welcomeImageClass"></app-element-welcome-image>
   <app-life-elements [element]="elementName"></app-life-elements>
   <ion-row>
     <ion-col size-lg="7" size-xs="12">
       <app-video-widget [element]="elementName"></app-video-widget>
     </ion-col>
     <ion-col size-lg="5" size-xs="12">
-      <app-food-ph-indicator></app-food-ph-indicator>
+      <ng-container [ngSwitch]="elementId">
+        <app-aqi-widget *ngSwitchCase="'air'"></app-aqi-widget>
+        <app-water-widget *ngSwitchCase="'water'"></app-water-widget>
+        <app-energy-widget *ngSwitchCase="'fire'"></app-energy-widget>
+        <app-food-ph-indicator *ngSwitchCase="'earth'"></app-food-ph-indicator>
+        <app-eq-widget *ngSwitchCase="'spirit'"></app-eq-widget>
+      </ng-container>
     </ion-col>
   </ion-row>
   <ion-row>
     <ion-col size-lg="7" size-xs="12">
       <app-in-focus-widget
-        [inFocuses]="this.inFocuses$ | async"
+        [inFocuses]="inFocuses$ | async"
         [element]="elementName"
       ></app-in-focus-widget>
     </ion-col>
     <ion-col
       size-lg="5"
       size-xs="12"
-      *ngIf="this.coffeeConversations$ | async as coffeeConversations"
+      *ngIf="coffeeConversations$ | async as coffeeConversations"
     >
       <app-coffee-conversation
         [element]="elementName"
@@ -32,17 +36,17 @@
       ></app-coffee-conversation>
     </ion-col>
   </ion-row>
-  <ion-row
-    ><ion-col
-      ><app-blog-slider
+  <ion-row>
+    <ion-col>
+      <app-blog-slider
         [blogList]="blogs$ | async"
         [element]="elementName"
-      ></app-blog-slider
-    ></ion-col>
+      ></app-blog-slider>
+    </ion-col>
   </ion-row>
-  <ion-row
-    ><ion-col
-      ><app-video-slider
+  <ion-row>
+    <ion-col>
+      <app-video-slider
         [videoList]="videos$ | async"
         [element]="elementName"
       ></app-video-slider>
