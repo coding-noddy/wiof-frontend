@@ -12,8 +12,8 @@
   </mat-card-header>
   <mat-card-content class="background" [ngClass]="coffeeConvClass">
     <div *ngIf="coffeeConvList; else loading">
-      <ion-slides #wiofCoffeeConvSlider [options]="slideOpts">
-        <ion-slide *ngFor="let coffeeConv of coffeeConvList">
+      <div class="slider-container" #wiofCoffeeConvSlider>
+        <div class="slide" *ngFor="let coffeeConv of coffeeConvList; let i = index" [style.display]="i === 0 ? 'block' : 'none'">
           <mat-card class="coffee-conv-card">
             <mat-card-content class="text-left card-content">
               <div class="flex flex-wrap">
@@ -61,7 +61,7 @@
                     <div class="header">
                       <h3>About Interviewee</h3>
                       <button (click)="showIntervieweeDetails($event, false)">
-                        <ion-icon name="close" slot="icon-only"></ion-icon>
+                        <mat-icon>close</mat-icon>
                       </button>
                     </div>
                     <p>{{ coffeeConv.intervieweeDesc }}</p>
@@ -70,8 +70,8 @@
               </div>
             </mat-card-content>
           </mat-card>
-        </ion-slide>
-      </ion-slides>
+        </div>
+      </div>
       <div
         *ngIf="coffeeConvList.length > 1"
         class="swiper-button-prev navigation-arrow-custom-styling"

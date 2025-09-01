@@ -6,8 +6,8 @@
   </mat-card-header>
   <mat-card-content class="background">
     <div *ngIf="newsList; else loading">
-      <ion-slides #wiofNewsSlider [options]="slideOpts">
-        <ion-slide *ngFor="let news of newsList">
+      <div class="slider-container" #wiofNewsSlider>
+        <div class="slide" *ngFor="let news of newsList; let i = index" [style.display]="i === 0 ? 'block' : 'none'">
           <mat-card class="news-card">
             <mat-card-content class="text-left card-content">
               <div class="flex flex-wrap">
@@ -45,8 +45,8 @@
               </div>
             </mat-card-content>
           </mat-card>
-        </ion-slide>
-      </ion-slides>
+        </div>
+      </div>
       <div class="newsHeadlineScroll">
         <div [ngStyle]="{ 'animation-duration': newsList.length * 10 + 's' }">
           <span *ngFor="let news of newsList">

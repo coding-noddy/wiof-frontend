@@ -3,8 +3,8 @@
     <mat-card-title class="title-text"> {{ inFocusTitle }} </mat-card-title>
   </mat-card-header>
   <mat-card-content class="background" [ngClass]="inFocusClass">
-    <ion-slides #slider [options]="slideOpts">
-      <ion-slide *ngFor="let inFocus of inFocuses">
+    <div class="slider-container" #slider>
+      <div class="slide" *ngFor="let inFocus of inFocuses; let i = index" [style.display]="i === 0 ? 'block' : 'none'">
         <div class="container mx-auto">
           <div class="flex flex-wrap">
             <div class="w-full wiof-video-player-content">
@@ -21,8 +21,8 @@
             </div>
           </div>
         </div>
-      </ion-slide>
-    </ion-slides>
+      </div>
+    </div>
     <div
       *ngIf="inFocuses.length > 1"
       class="swiper-button-prev navigation-arrow-custom-styling"
