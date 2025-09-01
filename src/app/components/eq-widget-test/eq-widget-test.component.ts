@@ -3,7 +3,8 @@ import { Component, OnInit, Input } from '@angular/core';
 @Component({
   selector: 'app-eq-widget-test',
   templateUrl: './eq-widget-test.component.html',
-  styleUrls: ['./eq-widget-test.component.scss']
+  styleUrls: ['./eq-widget-test.component.scss'],
+  standalone: false
 })
 export class EqWidgetTestComponent implements OnInit {
   @Input() gpr: string[]; //gender, parameter, result

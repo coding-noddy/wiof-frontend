@@ -10,7 +10,8 @@ import { AppUtilService } from 'src/app/util/AppUtilService';
 @Component({
   selector: 'app-video-widget',
   templateUrl: './video-widget.component.html',
-  styleUrls: ['./video-widget.component.scss']
+  styleUrls: ['./video-widget.component.scss'],
+  standalone: false
 })
 export class VideoWidgetComponent implements OnInit {
   @Input() element: string;

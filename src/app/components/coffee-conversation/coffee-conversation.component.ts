@@ -6,7 +6,8 @@ import { AppUtilService } from 'src/app/util/AppUtilService';
 @Component({
   selector: 'app-coffee-conversation',
   templateUrl: './coffee-conversation.component.html',
-  styleUrls: ['./coffee-conversation.component.scss']
+  styleUrls: ['./coffee-conversation.component.scss'],
+  standalone: false
 })
 export class CoffeeConversationComponent
   implements OnInit, OnDestroy, OnChanges {

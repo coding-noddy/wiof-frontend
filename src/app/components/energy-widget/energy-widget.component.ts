@@ -4,7 +4,8 @@ import { image } from 'd3';
 @Component({
   selector: 'app-energy-widget',
   templateUrl: './energy-widget.component.html',
-  styleUrls: ['./energy-widget.component.scss']
+  styleUrls: ['./energy-widget.component.scss'],
+  standalone: false
 })
 export class EnergyWidgetComponent implements OnInit {
   EnergyConsumption: number;

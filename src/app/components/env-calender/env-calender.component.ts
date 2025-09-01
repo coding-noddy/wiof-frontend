@@ -7,7 +7,8 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 @Component({
   selector: 'app-env-calender',
   templateUrl: './env-calender.component.html',
-  styleUrls: ['./env-calender.component.scss']
+  styleUrls: ['./env-calender.component.scss'],
+  standalone: false
 })
 export class EnvCalenderComponent implements OnInit {
   todayDate = new Date();

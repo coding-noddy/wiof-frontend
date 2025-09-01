@@ -3,7 +3,8 @@ import { Component, OnInit, Input } from '@angular/core';
 @Component({
   selector: 'app-eq-widget-result',
   templateUrl: './eq-widget-result.component.html',
-  styleUrls: ['./eq-widget-result.component.scss']
+  styleUrls: ['./eq-widget-result.component.scss'],
+  standalone: false
 })
 export class EqWidgetResultComponent implements OnInit {
   @Input() percent: any;

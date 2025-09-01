@@ -5,7 +5,8 @@ import { Blog } from 'src/app/models/Blog';
 @Component({
   selector: 'app-blog-slider',
   templateUrl: './blog-slider.component.html',
-  styleUrls: ['./blog-slider.component.scss']
+  styleUrls: ['./blog-slider.component.scss'],
+  standalone: false
 })
 export class BlogSliderComponent implements OnInit {
   @Input() blogList: Array<Blog>;

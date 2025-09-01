@@ -11,7 +11,8 @@ interface Food {
 @Component({
   selector: 'app-food-ph-indicator',
   templateUrl: './food-ph-indicator.component.html',
-  styleUrls: ['./food-ph-indicator.component.scss']
+  styleUrls: ['./food-ph-indicator.component.scss'],
+  standalone: false
 })
 export class FoodPhIndicatorComponent implements OnInit {
   foodOptions: Food[];

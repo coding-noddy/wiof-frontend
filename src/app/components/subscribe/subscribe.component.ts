@@ -10,7 +10,8 @@ import { UI_MESSAGES } from 'src/app/app.constants';
 @Component({
   selector: 'app-subscribe',
   templateUrl: './subscribe.component.html',
-  styleUrls: ['./subscribe.component.scss']
+  styleUrls: ['./subscribe.component.scss'],
+  standalone: false
 })
 export class SubscribeComponent implements OnInit, OnDestroy {
   @Input() page: string;

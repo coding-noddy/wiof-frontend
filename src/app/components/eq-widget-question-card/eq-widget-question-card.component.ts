@@ -5,7 +5,8 @@ import { EventEmitter } from '@angular/core';
 @Component({
   selector: 'app-eq-widget-question-card',
   templateUrl: './eq-widget-question-card.component.html',
-  styleUrls: ['./eq-widget-question-card.component.scss']
+  styleUrls: ['./eq-widget-question-card.component.scss'],
+  standalone: false
 })
 export class EqWidgetQuestionCardComponent implements OnInit {
   userResponse: FormGroup;

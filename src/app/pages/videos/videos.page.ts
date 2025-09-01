@@ -11,7 +11,8 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-videos',
   templateUrl: './videos.page.html',
-  styleUrls: ['./videos.page.scss']
+  styleUrls: ['./videos.page.scss'],
+  standalone: false
 })
 export class VideosPage implements OnInit {
   videos: Observable<Video[]>;

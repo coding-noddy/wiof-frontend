@@ -3,7 +3,8 @@ import { Component, OnInit, Input } from '@angular/core';
 @Component({
   selector: 'app-social-share',
   templateUrl: './social-share.component.html',
-  styleUrls: ['./social-share.component.scss']
+  styleUrls: ['./social-share.component.scss'],
+  standalone: false
 })
 export class SocialShareComponent implements OnInit {
   // @Input() title:string="Get to know more at WorldIsOneFamily.com";

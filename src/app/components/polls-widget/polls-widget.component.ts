@@ -13,7 +13,8 @@ import { UI_MESSAGES } from 'src/app/app.constants';
 @Component({
   selector: 'app-polls-widget',
   templateUrl: './polls-widget.component.html',
-  styleUrls: ['./polls-widget.component.scss']
+  styleUrls: ['./polls-widget.component.scss'],
+  standalone: false
 })
 export class PollsWidgetComponent implements OnInit, OnDestroy {
   pollQuestion: PollQuestion;

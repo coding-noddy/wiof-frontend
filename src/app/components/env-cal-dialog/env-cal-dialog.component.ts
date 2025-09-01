@@ -13,7 +13,8 @@ import { BREAKING_NEWS_SLIDER_OPTIONS } from 'src/app/app.constants';
 @Component({
   selector: 'app-env-cal-dialog',
   templateUrl: './env-cal-dialog.component.html',
-  styleUrls: ['./env-cal-dialog.component.scss']
+  styleUrls: ['./env-cal-dialog.component.scss'],
+  standalone: false
 })
 export class EnvCalDialogComponent implements OnInit {
   @Input() occasionDetails: any;

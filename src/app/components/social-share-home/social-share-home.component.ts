@@ -3,7 +3,8 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'app-social-share-home',
   templateUrl: './social-share-home.component.html',
-  styleUrls: ['./social-share-home.component.scss']
+  styleUrls: ['./social-share-home.component.scss'],
+  standalone: false
 })
 export class SocialShareHomeComponent implements OnInit {
   title: string = 'Checkout this amazing website Worldisonefamily.com..!!';

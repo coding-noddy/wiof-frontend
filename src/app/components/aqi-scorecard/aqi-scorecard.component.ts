@@ -7,7 +7,8 @@ import { map } from 'rxjs/operators';
 @Component({
   selector: 'app-aqi-scorecard',
   templateUrl: './aqi-scorecard.component.html',
-  styleUrls: ['./aqi-scorecard.component.scss']
+  styleUrls: ['./aqi-scorecard.component.scss'],
+  standalone: false
 })
 export class AqiScorecardComponent implements OnInit {
   @Input() locationUrl: string;

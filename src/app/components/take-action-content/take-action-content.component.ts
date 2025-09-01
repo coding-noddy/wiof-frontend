@@ -5,7 +5,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 @Component({
   selector: 'app-take-action-content',
   templateUrl: './take-action-content.component.html',
-  styleUrls: ['./take-action-content.component.scss']
+  styleUrls: ['./take-action-content.component.scss'],
+  standalone: false
 })
 export class TakeActionContentComponent implements OnInit {
   @Input() actionData: TakeAction;

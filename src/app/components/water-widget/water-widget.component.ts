@@ -3,7 +3,8 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'app-water-widget',
   templateUrl: './water-widget.component.html',
-  styleUrls: ['./water-widget.component.scss']
+  styleUrls: ['./water-widget.component.scss'],
+  standalone: false
 })
 export class WaterWidgetComponent implements OnInit {
   waterWidgetItems: { name: string; icon: string; url: string }[];

@@ -9,7 +9,8 @@ import {
 @Component({
   selector: 'app-in-focus-widget',
   templateUrl: './in-focus-widget.component.html',
-  styleUrls: ['./in-focus-widget.component.scss']
+  styleUrls: ['./in-focus-widget.component.scss'],
+  standalone: false
 })
 export class InFocusWidgetComponent implements OnInit {
   @Input() element: string;
