@@ -11,7 +11,7 @@
     class="poll-options"
     *ngFor="let option of pollQuestion.options; let i = index"
   >
-    <ion-label>{{ option | titlecase }}</ion-label>
+    <label class="block text-sm font-medium text-gray-700">{{ option | titlecase }}</label>
     <div class="poll-bar">
       <div
         class="poll-bar-fill"

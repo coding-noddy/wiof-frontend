@@ -1,8 +1,8 @@
 <div class="eq-indicator-meter">
-  <ion-row>
-    <ion-col size="12">
-      <ion-row>
-        <ion-col class="eqScalePercent" size="12">
+  <div class="flex flex-wrap">
+    <div class="w-full">
+      <div class="flex flex-wrap">
+        <div class="eqScalePercent w-full">
           <div
             class="eqScaleBlock range0"
             [style.width]="firstBlockWidth"
@@ -15,8 +15,8 @@
             class="eqScaleBlock range2"
             [style.width]="thirdBlockWidth"
           ></div>
-        </ion-col>
-        <ion-col class="eqScaleContainer" size="12">
+        </div>
+        <div class="eqScaleContainer w-full">
           <div class="eqScale" style="width: 15%"><p>0%</p></div>
           <div class="eqScale"><p></p></div>
           <div class="eqScale"><p></p></div>
@@ -28,12 +28,12 @@
           <div class="eqScale"><p></p></div>
           <div class="eqScale"><p></p></div>
           <div class="eqScale" style="width: 20%"><p>100%</p></div>
-        </ion-col>
+        </div>
         <div class="bracket" [style.left]="arrowPositionBracket"></div>
-      </ion-row>
-    </ion-col>
-    <!-- <ion-col size="12" class="text">
+      </div>
+    </div>
+    <!-- <div class="w-full text">
         {{ message }}
-      </ion-col> -->
-  </ion-row>
+      </div> -->
+  </div>
 </div>

@@ -2,8 +2,8 @@
   <div *ngIf="occasionDetails; else loading">
     <ion-slides #wiofOccasionSlider [options]="slideOpts">
       <ion-slide *ngFor="let occasn of occasionDetails.occasion">
-        <ion-card class="occasion-card">
-          <ion-card-header class="occasion-card-header">
+        <mat-card class="occasion-card">
+          <mat-card-header class="occasion-card-header">
             <p class="occasion-month">
               <span>{{ getMonth(occasn.month) }} {{ occasn.day }}</span>
             </p>
@@ -11,10 +11,10 @@
               <strong>{{ occasn.name }}</strong>
             </p>
             <button class="occasion-card-close-btn" (click)="closeDialog()">
-              <ion-icon name="close" slot="icon-only"></ion-icon>
+              <mat-icon>close</mat-icon>
             </button>
-          </ion-card-header>
-          <ion-card-content class="ion-text-start card-content">
+          </mat-card-header>
+          <mat-card-content class="text-left card-content">
             <img [src]="occasn.image | async" alt="" />
             <div>
               <p [innerHTML]="occasn.desc"></p>
@@ -28,8 +28,8 @@
                 >
               </p>
             </div>
-          </ion-card-content>
-        </ion-card>
+          </mat-card-content>
+        </mat-card>
       </ion-slide>
     </ion-slides>
     <div
@@ -44,6 +44,6 @@
     ></div>
   </div>
   <ng-template #loading>
-    <ion-spinner name="crescent" class="wiof-spinner"></ion-spinner><br />
+    <mat-spinner class="wiof-spinner"></mat-spinner><br />
   </ng-template>
 </div>

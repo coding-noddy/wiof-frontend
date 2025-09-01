@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { EqWidgetQuestionCardComponent } from './eq-widget-question-card.component';
 
@@ -10,7 +10,7 @@ describe('EqWidgetQuestionCardComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [EqWidgetQuestionCardComponent],
-      imports: [IonicModule.forRoot()]
+      imports: [NoopAnimationsModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(EqWidgetQuestionCardComponent);

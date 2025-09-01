@@ -1,11 +1,11 @@
-<ion-card class="wiof-water-widget-card-background widget-height">
-  <ion-card-header class="wiof-water-widget-card-header">
-    <ion-card-title class="title-text">Water Widget</ion-card-title>
-  </ion-card-header>
-  <ion-card-content class="water-widget-padding">
+<mat-card class="wiof-water-widget-card-background widget-height">
+  <mat-card-header class="wiof-water-widget-card-header">
+    <mat-card-title class="title-text">Water Widget</mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="water-widget-padding">
     <div scrollY="true" class="wiof-water-widget-items">
-      <ion-row>
-        <ion-col size="12" class="text">
+      <div class="flex flex-wrap">
+        <div class="w-full text">
           <a style="cursor: pointer" (click)="about = !about">
             About Water Widget
             <ion-icon *ngIf="!about" name="chevron-down-outline"></ion-icon
@@ -16,40 +16,36 @@
             to telemetry based real time statistics on surface and ground water
             availability and Quality.
           </p>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col
-          size-xs="6"
-          size-sm="4"
-          size-md="6"
-          size-lg="4"
+        </div>
+      </div>
+      <div class="flex flex-wrap">
+        <div
+          class="w-1/2 sm:w-1/3 md:w-1/2 lg:w-1/3"
           *ngFor="let widgetItem of waterWidgetItems"
         >
-          <ion-card
-            class="wiof-water-widget-icons"
-            href="{{ widgetItem.url }}"
-            target="_blank"
+          <mat-card
+            class="wiof-water-widget-icons cursor-pointer"
+            (click)="openUrl(widgetItem.url)"
           >
-            <ion-card-header style="padding: 0px">
+            <mat-card-header style="padding: 0px">
               <p class="wiof-water-widget-icons-text">
                 {{ widgetItem.name }}
               </p>
-            </ion-card-header>
-            <ion-card-content class="wiof-water-widget-icons-text">
+            </mat-card-header>
+            <mat-card-content class="wiof-water-widget-icons-text">
               <img src="{{ widgetItem.icon }}" alt="" />
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-      </ion-row>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
     </div>
-    <ion-row>
-      <ion-col class="wiof-water-widget-disclaimer">
+    <div class="flex flex-wrap">
+      <div class="w-full wiof-water-widget-disclaimer">
         <p>
           Above icons will take you to third party website which gives
           interactive map showing data which you select here.
         </p>
-      </ion-col>
-    </ion-row>
-  </ion-card-content>
-</ion-card>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

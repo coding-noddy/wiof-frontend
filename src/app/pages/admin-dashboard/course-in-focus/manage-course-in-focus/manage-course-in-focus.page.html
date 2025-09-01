@@ -1,120 +1,116 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Manage Course In Focuses</ion-title>
-    <ion-buttons slot="end">
-      <ion-button color="dark" fill="clear" size="large" (click)="refreshData()"
-        ><ion-icon name="refresh-outline" slot="start"></ion-icon
-        >Refresh</ion-button
-      ><ion-button
-        color="success"
-        fill="solid"
-        size="large"
-        (click)="addCourseInFocus()"
-        ><ion-icon name="add-outline" slot="start"></ion-icon>Add New In
-        Focus</ion-button
-      >
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<mat-toolbar color="primary">
+  <button mat-icon-button routerLink="/admin-dashboard">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <span>Manage Course In Focuses</span>
+  <span class="flex-1"></span>
+  <div class="flex gap-2">
+    <button mat-stroked-button color="accent" (click)="refreshData()">
+      <mat-icon>refresh</mat-icon>
+      Refresh
+    </button>
+    <button mat-raised-button color="accent" (click)="addCourseInFocus()">
+      <mat-icon>add</mat-icon>
+      Add New In Focus
+    </button>
+  </div>
+</mat-toolbar>
 
-<ion-content>
-  <ion-grid *ngIf="courseInFocusList$ | async as courseInFocuses">
-    <ion-row class="item-divider-line">
-      <ion-col
-        ><strong>Total Items: {{courseInFocuses.length}}</strong></ion-col
+<div class="p-4">
+  <div class="container mx-auto" *ngIf="courseInFocusList$ | async as courseInFocuses">
+    <div class="flex flex-wrap item-divider-line">
+      <div class="w-full"
+        ><strong>Total Items: {{courseInFocuses.length}}</strong></div
       >
-    </ion-row>
-    <ion-row class="item-divider-line">
-      <ion-col size-md="2" class="ion-align-self-center"
-        ><strong>Course Name</strong></ion-col
+    </div>
+    <div class="flex flex-wrap item-divider-line">
+      <div class="w-full md:w-2/12 self-center"
+        ><strong>Course Name</strong></div
       >
-      <ion-col size-md="3" class="ion-align-self-center"
-        ><strong>Key Topics</strong></ion-col
+      <div class="w-full md:w-3/12 self-center"
+        ><strong>Key Topics</strong></div
       >
-      <ion-col size-md="1" class="ion-align-self-center"
-        ><strong>Category</strong></ion-col
+      <div class="w-full md:w-1/12 self-center"
+        ><strong>Category</strong></div
       >
-      <ion-col size-md="1" class="ion-align-self-center"
-        ><strong>Status</strong></ion-col
+      <div class="w-full md:w-1/12 self-center"
+        ><strong>Status</strong></div
       >
-      <ion-col size-md="1"><strong>Submit Date</strong></ion-col>
-      <ion-col size-md="1"><strong>Publish Date</strong></ion-col>
-      <ion-col size-md="1"><strong>Unpublish Date</strong></ion-col>
-      <ion-col size-md="2"
-        ><strong class="action-heading">Actions</strong></ion-col
+      <div class="w-full md:w-1/12"><strong>Submit Date</strong></div>
+      <div class="w-full md:w-1/12"><strong>Publish Date</strong></div>
+      <div class="w-full md:w-1/12"><strong>Unpublish Date</strong></div>
+      <div class="w-full md:w-2/12"
+        ><strong class="action-heading">Actions</strong></div
       >
-    </ion-row>
-    <ion-row
+    </div>
+    <div
       *ngFor="let courseInFocus of courseInFocuses; let i = index"
-      class="item-divider-line"
+      class="flex flex-wrap item-divider-line"
     >
-      <ion-col size-md="2" class="ion-align-self-center"
+      <div class="w-full md:w-2/12 self-center"
         >{{ i + 1 }}.
         <a [href]="courseInFocus.link" target="_blank"
           >{{ courseInFocus.name }}</a
-        ></ion-col
+        ></div
       >
-      <ion-col size-md="3" class="ion-align-self-center"
-        >{{ courseInFocus.keyTopics }}</ion-col
+      <div class="w-full md:w-3/12 self-center"
+        >{{ courseInFocus.keyTopics }}</div
       >
-      <ion-col size-md="1" class="ion-align-self-center"
-        >{{ courseInFocus.category | uppercase}}</ion-col
+      <div class="w-full md:w-1/12 self-center"
+        >{{ courseInFocus.category | uppercase}}</div
       >
-      <ion-col size-md="1" class="ion-align-self-center"
-        >{{courseInFocus.status | uppercase}}</ion-col
+      <div class="w-full md:w-1/12 self-center"
+        >{{courseInFocus.status | uppercase}}</div
       >
-      <ion-col size-md="1" class="ion-align-self-center"
-        >{{courseInFocus.submitDate | date}}</ion-col
+      <div class="w-full md:w-1/12 self-center"
+        >{{courseInFocus.submitDate | date}}</div
       >
-      <ion-col size-md="1" class="ion-align-self-center"
-        >{{courseInFocus.publishDate | date}}</ion-col
+      <div class="w-full md:w-1/12 self-center"
+        >{{courseInFocus.publishDate | date}}</div
       >
-      <ion-col size-md="1" class="ion-align-self-center"
-        >{{courseInFocus.unpublishDate | date}}</ion-col
+      <div class="w-full md:w-1/12 self-center"
+        >{{courseInFocus.unpublishDate | date}}</div
       >
-      <ion-col size-md="2">
-        <ion-toolbar>
-          <ion-buttons slot="start">
-            <ion-button
-              *ngIf="courseInFocus.status == 'submitted'"
-              title="Click to Publish Course In Focus"
-              (click)="publishCourseInFocus(courseInFocus.id)"
-              ><ion-icon slot="icon-only" name="rocket-outline"></ion-icon
-            ></ion-button>
-            <ion-button
-              (click)="publishCourseInFocus(courseInFocus.id)"
-              *ngIf="courseInFocus.status == 'inactive'"
-              disabled
-              ><ion-icon
-                slot="icon-only"
-                name="rocket"
-                class="status-inactive"
-              ></ion-icon
-            ></ion-button>
-            <ion-button
-              *ngIf="courseInFocus.status == 'published'"
-              title="Published Course In Focus"
-              ><ion-icon
-                slot="icon-only"
-                name="rocket"
-                class="status-published"
-              ></ion-icon
-            ></ion-button>
-            <ion-button
-              title="Click to view in focus details"
-              (click)="viewCourseInFocusDetails(courseInFocus)"
-              ><ion-icon slot="icon-only" name="eye-outline"></ion-icon
-            ></ion-button>
-            <ion-button
-              (click)="deleteCourseInFocus(courseInFocuses, i, courseInFocus)"
-              ><ion-icon slot="icon-only" name="trash-outline"></ion-icon
-            ></ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-content>
+      <div class="w-full md:w-2/12">
+        <div class="flex gap-1">
+          <button
+            mat-icon-button
+            *ngIf="courseInFocus.status == 'submitted'"
+            title="Click to Publish Course In Focus"
+            (click)="publishCourseInFocus(courseInFocus.id)"
+          >
+            <mat-icon>rocket_launch</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            (click)="publishCourseInFocus(courseInFocus.id)"
+            *ngIf="courseInFocus.status == 'inactive'"
+            disabled
+          >
+            <mat-icon class="status-inactive">rocket_launch</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            *ngIf="courseInFocus.status == 'published'"
+            title="Published Course In Focus"
+          >
+            <mat-icon class="status-published">rocket_launch</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            title="Click to view in focus details"
+            (click)="viewCourseInFocusDetails(courseInFocus)"
+          >
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            (click)="deleteCourseInFocus(courseInFocuses, i, courseInFocus)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

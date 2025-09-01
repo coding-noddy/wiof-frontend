@@ -1,153 +1,133 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
-    </ion-buttons>
-    <ion-title *ngIf="!isEditMode"
-      >{{ pageContent.addCourseInFocusTitle }}</ion-title
-    >
-    <ion-title *ngIf="isEditMode"
-      >{{ pageContent.editCourseInFocusTitle }}</ion-title
-    >
-    <ion-buttons slot="end">
-      <ion-button color="success" fill="solid" size="large" (click)="onSubmit()"
-        >{{ pageContent.saveLabel }}</ion-button
-      >
-      <ion-button
-        color="medium"
-        fill="clear"
-        size="large"
-        routerLink="/admin-dashboard/manage-course-in-focus"
-        >{{ pageContent.cancelLabel }}</ion-button
-      >
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<mat-toolbar color="primary">
+  <button mat-icon-button routerLink="/admin-dashboard">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <span *ngIf="!isEditMode">{{ pageContent.addCourseInFocusTitle }}</span>
+  <span *ngIf="isEditMode">{{ pageContent.editCourseInFocusTitle }}</span>
+  <span class="flex-1"></span>
+  <div class="flex gap-2">
+    <button mat-raised-button color="accent" (click)="onSubmit()">
+      {{ pageContent.saveLabel }}
+    </button>
+    <button
+      mat-flat-button
+      color="warn"
+      routerLink="/admin-dashboard/manage-course-in-focus">
+      {{ pageContent.cancelLabel }}
+    </button>
+  </div>
+</mat-toolbar>
 
-<ion-content>
+<div class="p-4">
   <form [formGroup]="addCourseInFocusForm">
-    <ion-grid>
-      <ion-row>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating">{{pageContent.nameLabel}}</ion-label>
-            <ion-input formControlName="name"></ion-input>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating">{{pageContent.linkLabel}}</ion-label>
-            <ion-input formControlName="link"></ion-input>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="2"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.platformLabel}}</ion-label
-            >
-            <ion-input formControlName="platform"></ion-input>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="2"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.categoryLabel}}</ion-label
-            >
-            <ion-select formControlName="category">
-              <ion-select-option
+    <div class="container mx-auto">
+      <div class="flex flex-wrap"></div>
+        <div class="w-full md:w-1/3 p-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>{{pageContent.nameLabel}}</mat-label>
+            <input matInput formControlName="name">
+          </mat-form-field>
+        </div>
+        <div class="w-full md:w-1/3 p-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>{{pageContent.linkLabel}}</mat-label>
+            <input matInput formControlName="link">
+          </mat-form-field>
+        </div>
+        <div class="w-full md:w-1/6 p-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>{{pageContent.platformLabel}}</mat-label>
+            <input matInput formControlName="platform">
+          </mat-form-field>
+        </div>
+        <div class="w-full md:w-1/6 p-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>{{pageContent.categoryLabel}}</mat-label>
+            <mat-select formControlName="category">
+              <mat-option
                 [value]="category"
                 *ngFor="let category of categories"
-                >{{ category }}</ion-select-option
+                >{{ category }}</mat-option
               >
-            </ion-select>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.offeredByLabel}}</ion-label
-            >
-            <ion-input formControlName="offeredBy"></ion-input>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.durationLabel}}</ion-label
-            >
-            <ion-input formControlName="duration"></ion-input>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.approxCostLabel}}</ion-label
-            >
-            <ion-input formControlName="approxCost"></ion-input>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.keyTopicsLabel}}</ion-label
-            >
-            <ion-input formControlName="keyTopics"></ion-input>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.descriptionLabel}}</ion-label
-            >
-            <ion-textarea formControlName="description" rows="3"></ion-textarea>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12"
-          ><ion-item>
-            <ion-label position="stacked">{{pageContent.imageLabel}}</ion-label>
-            <ion-input
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="w-full md:w-1/3 p-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>{{pageContent.offeredByLabel}}</mat-label>
+            <input matInput formControlName="offeredBy">
+          </mat-form-field>
+        </div>
+        <div class="w-full md:w-1/3 p-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>{{pageContent.durationLabel}}</mat-label>
+            <input matInput formControlName="duration">
+          </mat-form-field>
+        </div>
+        <div class="w-full md:w-1/3 p-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>{{pageContent.approxCostLabel}}</mat-label>
+            <input matInput formControlName="approxCost">
+          </mat-form-field>
+        </div>
+        <div class="w-full p-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>{{pageContent.keyTopicsLabel}}</mat-label>
+            <input matInput formControlName="keyTopics">
+          </mat-form-field>
+        </div>
+        <div class="w-full p-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>{{pageContent.descriptionLabel}}</mat-label>
+            <textarea matInput formControlName="description" rows="3"></textarea>
+          </mat-form-field>
+        </div>
+        <div class="w-full p-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>{{pageContent.imageLabel}}</mat-label>
+            <input
+              matInput
               type="file"
               accept="image/*"
               (change)="onFileSelected($event)"
               formControlName="image"
-            ></ion-input>
-            <div><ion-img [src]="imageToDisplay"></ion-img></div>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.submitDateLabel}}</ion-label
             >
-            <ion-input
+          </mat-form-field>
+          <div class="mt-2" *ngIf="imageToDisplay">
+            <img [src]="imageToDisplay" class="max-w-xs h-auto">
+          </div>
+        </div>
+        <div class="w-full md:w-1/3 p-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>{{pageContent.submitDateLabel}}</mat-label>
+            <input
+              matInput
               disabled
               [value]="courseInFocus.submitDate | date"
-            ></ion-input>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.publishDateLabel}}</ion-label
             >
-            <ion-input
+          </mat-form-field>
+        </div>
+        <div class="w-full md:w-1/3 p-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>{{pageContent.publishDateLabel}}</mat-label>
+            <input
+              matInput
               disabled
               [value]="courseInFocus.publishDate | date"
-            ></ion-input>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.unpublishDateLabel}}</ion-label
             >
-            <ion-input
+          </mat-form-field>
+        </div>
+        <div class="w-full md:w-1/3 p-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>{{pageContent.unpublishDateLabel}}</mat-label>
+            <input
+              matInput
               disabled
               [value]="courseInFocus.unpublishDate | date"
-            ></ion-input>
-          </ion-item>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+            >
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
   </form>
-</ion-content>
+</div>

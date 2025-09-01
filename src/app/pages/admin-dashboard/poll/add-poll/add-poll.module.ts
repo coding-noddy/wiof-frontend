@@ -8,7 +8,6 @@ import {
 } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { IonicModule } from '@ionic/angular';
 import { AddPollPageRoutingModule } from './add-poll-routing.module';
 import { AddPollPage } from './add-poll.page';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -16,7 +15,6 @@ import { MatNativeDateModule } from '@angular/material/core';
 @NgModule({
   imports: [
     CommonModule,
-    IonicModule,
     FormsModule,
     ReactiveFormsModule,
     AddPollPageRoutingModule,

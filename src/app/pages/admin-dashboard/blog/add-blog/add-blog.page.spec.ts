@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { AddBlogPage } from './add-blog.page';
 
 describe('AddBlogPage', () => {
@@ -9,7 +9,7 @@ describe('AddBlogPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [AddBlogPage],
-      imports: [IonicModule.forRoot()]
+      imports: [NoopAnimationsModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(AddBlogPage);

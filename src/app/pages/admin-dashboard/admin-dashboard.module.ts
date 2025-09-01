@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { MatButtonModule } from '@angular/material/button';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { AdminDashboardPageRoutingModule } from './admin-dashboard-routing.module';
 import { AdminDashboardPage } from './admin-dashboard.page';
 
@@ -9,7 +10,8 @@ import { AdminDashboardPage } from './admin-dashboard.page';
   imports: [
     CommonModule,
     FormsModule,
-    IonicModule,
+    MatButtonModule,
+    MatToolbarModule,
     AdminDashboardPageRoutingModule
   ],
   declarations: [AdminDashboardPage]

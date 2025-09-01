@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
 
 import { ManageNgoInFocusPage } from './manage-ngo-in-focus.page';
 
@@ -11,7 +10,7 @@ describe('ManageNgoInFocusPage', () => {
     waitForAsync(() => {
       TestBed.configureTestingModule({
         declarations: [ManageNgoInFocusPage],
-        imports: [IonicModule.forRoot()]
+        imports: []
       }).compileComponents();
 
       fixture = TestBed.createComponent(ManageNgoInFocusPage);

@@ -1,9 +1,9 @@
-<ion-card class="blog-card" [routerLink]="['blog', blog.id]">
-  <ion-card-content class="ion-text-start card-content">
+<mat-card class="blog-card cursor-pointer" [routerLink]="['blog', blog.id]">
+  <mat-card-content class="text-left card-content">
     <div class="img-container">
       <img [src]="blog.image$ | async" alt="" />
     </div>
-    <div class="ion-padding">
+    <div class="p-4">
       <h3 class="blog-card-title">
         <a class="link-title">{{ blog.title }}</a>
       </h3>
@@ -12,14 +12,13 @@
           >by {{ blog.author }}</small
         >
         <small class="time-to-read"
-          ><ion-icon slot="icon-only" name="stopwatch-outline"></ion-icon
-          >{{ blog.timeToRead }} min read</small
+          ><mat-icon>schedule</mat-icon>{{ blog.timeToRead }} min read</small
         >
       </div>
       <div></div>
     </div>
-    <p class="blog-card-content ion-padding-horizontal">
+    <p class="blog-card-content px-4">
       {{ blog.shortDescription }}
     </p>
-  </ion-card-content>
-</ion-card>
+  </mat-card-content>
+</mat-card>

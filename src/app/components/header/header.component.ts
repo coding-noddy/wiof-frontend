@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Platform } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -12,7 +11,7 @@ export class HeaderComponent implements OnInit {
   wiofLogo: string = '../../assets/logo.png';
   sub: Subscription;
   colorName: string;
-  constructor(public platform: Platform, private route: ActivatedRoute) {
+  constructor(private route: ActivatedRoute) {
     this.getColor();
   }
 

@@ -1,88 +1,82 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Manage Calendar</ion-title>
-    <ion-buttons slot="end">
-      <ion-button color="dark" fill="clear" size="large" (click)="refreshData()"
-        ><ion-icon name="refresh-outline" slot="start"></ion-icon
-        >Refresh</ion-button
-      ><ion-button
-        color="success"
-        fill="solid"
-        size="large"
-        (click)="addNewOccasion()"
-        ><ion-icon name="add-outline" slot="start"></ion-icon>Add New
-        Occasion</ion-button
-      >
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<mat-toolbar color="primary">
+  <button mat-icon-button routerLink="/admin-dashboard">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <span>Manage Calendar</span>
+  <span class="flex-1"></span>
+  <div class="flex gap-2">
+    <button mat-stroked-button (click)="refreshData()">
+      <mat-icon>refresh</mat-icon>
+      Refresh
+    </button>
+    <button mat-raised-button color="accent" (click)="addNewOccasion()">
+      <mat-icon>add</mat-icon>
+      Add New Occasion
+    </button>
+  </div>
+</mat-toolbar>
 
-<ion-content>
+<div class="p-4">
   <div></div>
-  <ion-grid *ngIf="occasionsList$ | async as occasionsList">
-    <ion-row class="item-divider-line">
-      <ion-col size="12" size-md="4">
-        <ion-item lines="none">
-          <ion-label position="floating">Month</ion-label>
-          <ion-select
+  <div class="container mx-auto" *ngIf="occasionsList$ | async as occasionsList">
+    <div class="flex flex-wrap item-divider-line">
+      <div class="w-full md:w-1/3 p-4">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Month</mat-label>
+          <mat-select
             [(ngModel)]="selectedMonth"
             (ngModelChange)="onSelectMonth()"
           >
-            <ion-select-option
+            <mat-option
               [value]="i"
               *ngFor="let month of months; let i = index;"
-              >{{ month }}</ion-select-option
+              >{{ month }}</mat-option
             >
-            <ion-select-option
-              [value]="i"
-              *ngFor="let month of months; let i = index;"
-              >{{ month }}</ion-select-option
-            >
-          </ion-select>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-    <ion-row class="item-divider-line">
-      <ion-col size-md="1" class="ion-align-self-center"
-        ><strong>Sr</strong></ion-col
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="flex flex-wrap item-divider-line">
+      <div class="w-full md:w-1/12 self-center p-2"
+        ><strong>Sr</strong></div
       >
-      <ion-col size-md="7" class="ion-align-self-center"
-        ><strong>Occasion</strong></ion-col
+      <div class="w-full md:w-7/12 self-center p-2"
+        ><strong>Occasion</strong></div
       >
-      <ion-col size-md="2"><strong>Date</strong></ion-col>
-      <ion-col size-md="2" class="action-heading"
-        ><strong>Actions</strong></ion-col
+      <div class="w-full md:w-2/12 p-2"><strong>Date</strong></div>
+      <div class="w-full md:w-2/12 action-heading p-2"
+        ><strong>Actions</strong></div
       >
-    </ion-row>
-    <ion-row
+    </div>
+    <div
       *ngFor="let occasion of occasionsList; let i = index"
-      class="item-divider-line"
+      class="flex flex-wrap item-divider-line"
     >
-      <ion-col size-md="1" class="ion-align-self-center">{{ i + 1 }}</ion-col>
-      <ion-col size-md="7" class="ion-align-self-center"
-        >{{ occasion.occasion }}</ion-col
+      <div class="w-full md:w-1/12 self-center p-2">{{ i + 1 }}</div>
+      <div class="w-full md:w-7/12 self-center p-2"
+        >{{ occasion.occasion }}</div
       >
-      <ion-col size-md="2" class="ion-align-self-center"
+      <div class="w-full md:w-2/12 self-center p-2"
         >{{months[occasion.month]}} {{occasion.day}}
-      </ion-col>
-      <ion-col size-md="2">
-        <ion-toolbar>
-          <ion-buttons slot="start">
-            <ion-button
-              title="Click to view occasion details"
-              (click)="viewOccasionDetails(occasion)"
-              ><ion-icon slot="icon-only" name="eye-outline"></ion-icon
-            ></ion-button>
-            <ion-button
-              (click)="deleteOccasion(occasionsList, i, occasion.id, occasion.imageName)"
-              ><ion-icon slot="icon-only" name="trash-outline"></ion-icon
-            ></ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-content>
+      </div>
+      <div class="w-full md:w-2/12 p-2">
+        <div class="flex gap-2">
+          <button 
+            mat-icon-button
+            title="Click to view occasion details"
+            (click)="viewOccasionDetails(occasion)"
+          >
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button 
+            mat-icon-button
+            color="warn"
+            (click)="deleteOccasion(occasionsList, i, occasion.id, occasion.imageName)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

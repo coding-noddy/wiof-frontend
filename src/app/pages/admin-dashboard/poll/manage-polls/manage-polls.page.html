@@ -1,100 +1,94 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Manage Polls</ion-title>
-    <ion-buttons slot="end">
-      <ion-button color="dark" fill="clear" size="large" (click)="refreshData()"
-        ><ion-icon name="refresh-outline" slot="start"></ion-icon
-        >Refresh</ion-button
-      ><ion-button
-        color="success"
-        fill="solid"
-        size="large"
-        (click)="addNewPoll()"
-        ><ion-icon name="add-outline" slot="start"></ion-icon>Add New
-        Poll</ion-button
-      >
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<mat-toolbar color="primary">
+  <button mat-icon-button routerLink="/admin-dashboard">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <span>Manage Polls</span>
+  <span class="flex-1"></span>
+  <button mat-flat-button color="accent" (click)="refreshData()" class="mr-2">
+    <mat-icon>refresh</mat-icon>
+    Refresh
+  </button>
+  <button mat-raised-button color="accent" (click)="addNewPoll()">
+    <mat-icon>add</mat-icon>
+    Add New Poll
+  </button>
+</mat-toolbar>
 
-<ion-content>
-  <ion-grid *ngIf="pollQuestionList$ | async as pollQuestions">
-    <ion-row class="item-divider-line">
-      <ion-col size-md="1" size-lg="1" class="ion-align-self-center"
-        >Sr</ion-col
+<div class="p-4">
+  <div class="container mx-auto" *ngIf="pollQuestionList$ | async as pollQuestions">
+    <div class="flex flex-wrap item-divider-line">
+      <div class="w-full md:w-1/12 lg:w-1/12 self-center"
+        >Sr</div
       >
-      <ion-col size-md="3" size-lg="3" class="ion-align-self-center"
-        ><strong>Poll Question</strong></ion-col
+      <div class="w-full md:w-3/12 lg:w-3/12 self-center"
+        ><strong>Poll Question</strong></div
       >
-      <ion-col size-md="2" size-lg="2"><strong>Submit Date</strong></ion-col>
-      <ion-col size-md="2" size-lg="2"><strong>Publish Start</strong></ion-col>
-      <ion-col size-md="2" size-lg="2"><strong>Publish End</strong></ion-col>
-      <ion-col size-md="2" size-lg="2"
-        ><strong class="action-heading">Actions</strong></ion-col
+      <div class="w-full md:w-2/12 lg:w-2/12"><strong>Submit Date</strong></div>
+      <div class="w-full md:w-2/12 lg:w-2/12"><strong>Publish Start</strong></div>
+      <div class="w-full md:w-2/12 lg:w-2/12"><strong>Publish End</strong></div>
+      <div class="w-full md:w-2/12 lg:w-2/12"
+        ><strong class="action-heading">Actions</strong></div
       >
-    </ion-row>
-    <ion-row
+    </div>
+    <div
       *ngFor="let pollQuestion of pollQuestions; let i = index"
-      class="item-divider-line"
+      class="flex flex-wrap item-divider-line"
     >
-      <ion-col size-md="1" size-lg="1" class="ion-align-self-center"
-        >{{ i + 1 }}</ion-col
+      <div class="w-full md:w-1/12 lg:w-1/12 self-center"
+        >{{ i + 1 }}</div
       >
-      <ion-col size-md="3" size-lg="3" class="ion-align-self-center"
-        >{{ pollQuestion.question }}</ion-col
+      <div class="w-full md:w-3/12 lg:w-3/12 self-center"
+        >{{ pollQuestion.question }}</div
       >
-      <ion-col size-md="2" size-lg="2" class="ion-align-self-center">
+      <div class="w-full md:w-2/12 lg:w-2/12 self-center">
         {{pollQuestion.submitDate | date}}
-      </ion-col>
-      <ion-col size-md="2" size-lg="2" class="ion-align-self-center"
-        >{{pollQuestion.publishStartDate | date}}</ion-col
+      </div>
+      <div class="w-full md:w-2/12 lg:w-2/12 self-center"
+        >{{pollQuestion.publishStartDate | date}}</div
       >
-      <ion-col size-md="2" size-lg="2" class="ion-align-self-center"
-        >{{pollQuestion.publishEndDate | date}}</ion-col
+      <div class="w-full md:w-2/12 lg:w-2/12 self-center"
+        >{{pollQuestion.publishEndDate | date}}</div
       >
-      <ion-col size-md="2" size-lg="2">
-        <ion-toolbar>
-          <ion-buttons slot="start">
-            <ion-button
-              *ngIf="pollQuestion.status == 'submitted'"
-              title="Click to Publish Poll"
-              (click)="publishPollQuestion(pollQuestion.pollId)"
-              ><ion-icon slot="icon-only" name="rocket-outline"></ion-icon
-            ></ion-button>
-            <ion-button
-              (click)="publishPollQuestion(pollQuestion.pollId)"
-              *ngIf="pollQuestion.status == 'inactive'"
-              disabled
-              ><ion-icon
-                slot="icon-only"
-                name="rocket"
-                class="status-inactive"
-              ></ion-icon
-            ></ion-button>
-            <ion-button
-              *ngIf="pollQuestion.status == 'published'"
-              title="Published Poll"
-              ><ion-icon
-                slot="icon-only"
-                name="rocket"
-                class="status-published"
-              ></ion-icon
-            ></ion-button>
-            <ion-button
-              title="Click to view poll details"
-              (click)="viewPollDetails(pollQuestion)"
-              ><ion-icon slot="icon-only" name="eye-outline"></ion-icon
-            ></ion-button>
-            <ion-button
-              (click)="deletePollQuestion(pollQuestions, i, pollQuestion.pollId)"
-              ><ion-icon slot="icon-only" name="trash-outline"></ion-icon
-            ></ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-content>
+      <div class="w-full md:w-2/12 lg:w-2/12">
+        <div class="flex gap-2">
+          <button
+            mat-icon-button
+            *ngIf="pollQuestion.status == 'submitted'"
+            title="Click to Publish Poll"
+            (click)="publishPollQuestion(pollQuestion.pollId)"
+            color="primary">
+            <mat-icon>rocket_launch</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            (click)="publishPollQuestion(pollQuestion.pollId)"
+            *ngIf="pollQuestion.status == 'inactive'"
+            disabled
+            class="status-inactive">
+            <mat-icon>rocket_launch</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            *ngIf="pollQuestion.status == 'published'"
+            title="Published Poll"
+            class="status-published">
+            <mat-icon>rocket_launch</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            title="Click to view poll details"
+            (click)="viewPollDetails(pollQuestion)"
+            color="primary">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            (click)="deletePollQuestion(pollQuestions, i, pollQuestion.pollId)"
+            color="warn">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

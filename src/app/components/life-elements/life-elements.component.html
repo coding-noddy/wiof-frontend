@@ -1,69 +1,64 @@
-<ion-row class="ion-align-items-center">
-  <ion-col class="ion-padding" size-xs="12">
-    <p style="text-align: center">
+<div class="flex flex-wrap items-center">
+  <div class="w-full p-4">
+    <p class="text-center">
       Choose any of the elements
-      <span class="wiof-read-more"
-        >to get to know more about how our actions are impacting the environment
-        and what can we do to help</span
-      >
+      <span class="wiof-read-more">
+        to get to know more about how our actions are impacting the environment
+        and what can we do to help
+      </span>
     </p>
-  </ion-col>
-  <ion-col class="ion-padding" size-xs="4" size-sm="2" offset-sm="1">
+  </div>
+  
+  <div class="w-1/3 md:w-1/6 md:ml-auto p-4">
     <div
-      class="ion-text-center landing-circle-img earth"
+      class="text-center landing-circle-img earth cursor-pointer"
       [ngClass]="{ active: isSelectedElement('earth') }"
       [routerLink]="['/element', 'earth']"
     ></div>
-    <h4 class="landing-circle-label" [routerLink]="['/element', 'earth']">
+    <h4 class="landing-circle-label cursor-pointer" [routerLink]="['/element', 'earth']">
       Earth
     </h4>
-  </ion-col>
+  </div>
 
-  <ion-col class="ion-padding" size-xs="4" size-sm="2">
+  <div class="w-1/3 md:w-1/6 p-4">
     <div
-      class="ion-text-center landing-circle-img fire"
+      class="text-center landing-circle-img fire cursor-pointer"
       [ngClass]="{ active: isSelectedElement('fire') }"
       [routerLink]="['/element', 'energy']"
     ></div>
-    <h4 class="landing-circle-label" [routerLink]="['/element', 'energy']">
+    <h4 class="landing-circle-label cursor-pointer" [routerLink]="['/element', 'energy']">
       Energy
     </h4>
-  </ion-col>
+  </div>
 
-  <ion-col class="ion-padding" size-xs="4" size-sm="2">
+  <div class="w-1/3 md:w-1/6 p-4">
     <div
-      class="ion-text-center landing-circle-img air"
+      class="text-center landing-circle-img air cursor-pointer"
       [ngClass]="{ active: isSelectedElement('air') }"
       [routerLink]="['/element', 'air']"
     ></div>
-    <h4 class="landing-circle-label" [routerLink]="['/element', 'air']">Air</h4>
-  </ion-col>
+    <h4 class="landing-circle-label cursor-pointer" [routerLink]="['/element', 'air']">Air</h4>
+  </div>
 
-  <ion-col
-    class="ion-padding"
-    size-xs="5"
-    size-sm="2"
-    offset-xs="1"
-    offset-sm="0"
-  >
+  <div class="w-5/12 md:w-1/6 ml-auto md:ml-0 p-4">
     <div
-      class="ion-text-center landing-circle-img water"
+      class="text-center landing-circle-img water cursor-pointer"
       [ngClass]="{ active: isSelectedElement('water') }"
       [routerLink]="['/element', 'water']"
     ></div>
-    <h4 class="landing-circle-label" [routerLink]="['/element', 'water']">
+    <h4 class="landing-circle-label cursor-pointer" [routerLink]="['/element', 'water']">
       Water
     </h4>
-  </ion-col>
+  </div>
 
-  <ion-col class="ion-padding" size-xs="5" size-sm="2">
+  <div class="w-5/12 md:w-1/6 p-4">
     <div
-      class="ion-text-center landing-circle-img spirit"
+      class="text-center landing-circle-img spirit cursor-pointer"
       [ngClass]="{ active: isSelectedElement('spirit') }"
       [routerLink]="['/element', 'spirit']"
     ></div>
-    <h4 class="landing-circle-label" [routerLink]="['/element', 'spirit']">
+    <h4 class="landing-circle-label cursor-pointer" [routerLink]="['/element', 'spirit']">
       Spirit
     </h4>
-  </ion-col>
-</ion-row>
+  </div>
+</div>

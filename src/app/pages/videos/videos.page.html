@@ -1,12 +1,12 @@
 <app-header></app-header>
 
-<ion-content>
+<div class="p-4">
   <h1 class="videos-header" [ngClass]="element">
-    <ion-row>
-      <ion-col size="6">
+    <div class="flex flex-wrap">
+      <div class="w-1/2">
         <p class="header-text">{{category}} Videos</p>
-      </ion-col>
-      <ion-col size="6" style="text-align: right">
+      </div>
+      <div class="w-1/2 text-right">
         <a
           [routerLink]="['take-action']"
           class="wiof-icon-only-btn"
@@ -17,8 +17,8 @@
           <ion-icon name="trail-sign-outline"></ion-icon>
         </a>
         <app-back-button></app-back-button>
-      </ion-col>
-    </ion-row>
+      </div>
+    </div>
   </h1>
 
   <div
@@ -26,21 +26,18 @@
     class="videos-content"
     [ngClass]="element"
   >
-    <ion-grid *ngIf="videosList.length > 0">
-      <ion-row>
-        <ion-col
-          size="12"
-          size-sm="6"
-          size-md="4"
-          size-lg="3"
+    <div class="container mx-auto" *ngIf="videosList.length > 0">
+      <div class="flex flex-wrap">
+        <div
+          class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-2"
           *ngFor="let video of videosList"
         >
           <app-video-card [video]="video" [element]="element"></app-video-card>
-        </ion-col>
+        </div>
 
         <!-- Infinite scroll pending -->
-      </ion-row>
-    </ion-grid>
+      </div>
+    </div>
 
     <p
       *ngIf="videosList && videosList.length === 0"
@@ -58,4 +55,4 @@
   </ng-template>
 
   <app-wiof-footer></app-wiof-footer>
-</ion-content>
+</div>

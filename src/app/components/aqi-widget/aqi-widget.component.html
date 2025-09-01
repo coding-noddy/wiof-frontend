@@ -1,15 +1,13 @@
-<ion-card class="wiof-aqi-widget-card-background widget-height">
-  <ion-card-header class="wiof-aqi-widget-card-header">
-    <ion-card-title class="title-text">
+<mat-card class="wiof-aqi-widget-card-background widget-height">
+  <mat-card-header class="wiof-aqi-widget-card-header">
+    <mat-card-title class="title-text">
       AQI Widget
-      <!-- <ion-icon
-        name="information-circle-outline"
-      ></ion-icon> -->
-    </ion-card-title>
-  </ion-card-header>
+      <!-- <mat-icon>info</mat-icon> -->
+    </mat-card-title>
+  </mat-card-header>
   <div class="aqi-widget-contents">
-    <ion-row>
-      <ion-col>
+    <div class="flex flex-wrap">
+      <div class="w-full">
         <a style="cursor: pointer" (click)="about = !about">
           About AQI Widget
           <ion-icon *ngIf="!about" name="chevron-down-outline"></ion-icon
@@ -24,9 +22,9 @@
           other hand simplifies the data by expressing the whole data in a
           single value.
         </p>
-      </ion-col>
-    </ion-row>
-    <ion-toolbar color="air" class="wiof-aqi-widget-card-toolbar">
+      </div>
+    </div>
+    <mat-toolbar class="wiof-aqi-widget-card-toolbar bg-wiof-air">
       <button
         class="wiof-primary-btn"
         [ngClass]="{ active: !searchLocationTabSelect }"
@@ -50,52 +48,52 @@
       <ion-icon name="open-outline"></ion-icon> AQI Forecast
     </button> -->
 
-      <!-- <ion-button
-      fill="solid"
-      slot="start"
+      <!-- <button mat-raised-button
       target="_blank"
       href="https://waqi.info/forecast/#/!pol:pm25"
       >AQI Forecast <ion-icon name="open-outline"></ion-icon
-    ></ion-button> -->
+    ></button> -->
       <!-- future use new window aqi map view button -->
-      <!-- <ion-button ><ion-icon name="browsers-outline"></ion-icon></ion-button> -->
-    </ion-toolbar>
-    <ion-toolbar
-      color="air"
-      class="wiof-aqi-widget-card-toolbar"
+      <!-- <button mat-raised-button><ion-icon name="browsers-outline"></ion-icon></button> -->
+    </mat-toolbar>
+    <mat-toolbar
+      class="wiof-aqi-widget-card-toolbar bg-wiof-air"
       *ngIf="!searchLocationTabSelect"
     >
-      <ion-item>
-        <ion-label>Location</ion-label>
-        <ion-select
-          interface="popover"
-          [(ngModel)]="selectedLocation"
-          placeholder="Select Location"
-        >
-          <ion-select-option
-            *ngFor="let majorLocation of majorLocations"
-            [value]="majorLocation"
-            >{{ majorLocation | titlecase }}</ion-select-option
+      <div class="w-full">
+        <mat-form-field class="w-full">
+          <mat-label>Location</mat-label>
+          <mat-select
+            [(ngModel)]="selectedLocation"
+            placeholder="Select Location"
           >
-        </ion-select>
-      </ion-item>
-    </ion-toolbar>
+            <mat-option
+              *ngFor="let majorLocation of majorLocations"
+              [value]="majorLocation"
+              >{{ majorLocation | titlecase }}</mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </mat-toolbar>
 
     <ion-toolbar
       color="air"
       class="wiof-aqi-widget-card-toolbar"
       *ngIf="searchLocationTabSelect"
     >
-      <ion-row>
-        <ion-col size="8" class="ion-no-padding">
-          <ion-item>
-            <ion-input
+      <div class="flex flex-wrap">
+        <div class="w-2/3">
+          <mat-form-field class="w-full">
+            <mat-label>Enter Location</mat-label>
+            <input
+              matInput
               [(ngModel)]="searchLocation"
               placeholder="Enter Location"
-            ></ion-input>
-          </ion-item>
-        </ion-col>
-        <ion-col size="4" class="ion-no-padding">
+            />
+          </mat-form-field>
+        </div>
+        <div class="w-1/3">
           <button
             class="wiof-primary-btn full-width full-height no-margin"
             style="border-radius: 0; min-width: 100%"
@@ -103,8 +101,8 @@
           >
             Search
           </button>
-        </ion-col>
-      </ion-row>
+        </div>
+      </div>
       <div *ngIf="searchLocationClickedFlag">
         <div scrollY="true" class="wiof-aqi-widget-items">
           <div
@@ -121,36 +119,35 @@
               <p style="color: grey">Please search for another location.</p>
             </div>
             <div *ngIf="locationsFound.data[0]">
-              <ion-list>
-                <ion-item>
+              <mat-list>
+                <mat-list-item>
                   <strong class="wiof-aqi-search-result-expand">
-                    Station Name (Click on location for AQI details) </strong
-                  ><strong slot="end">AQI</strong>
-                </ion-item>
+                    Station Name (Click on location for AQI details) </strong>
+                  <strong class="ml-auto">AQI</strong>
+                </mat-list-item>
 
-                <ion-item *ngFor="let location of locationsFound.data">
+                <mat-list-item *ngFor="let location of locationsFound.data">
                   <span class="wiof-aqi-search-result-expand">{{
                     location.station.name
-                  }}</span
-                  ><span
-                    class="aqi"
-                    slot="end"
+                  }}</span>
+                  <span
+                    class="aqi ml-auto"
                     [ngClass]="aqiColor(location.aqi)"
                     >{{ location.aqi }}</span
                   >
-                </ion-item>
-              </ion-list>
+                </mat-list-item>
+              </mat-list>
             </div>
           </div>
           <ng-template #loading> Fetching locations... </ng-template>
         </div>
       </div>
     </ion-toolbar>
-    <ion-card-content style="padding: 5px">
+    <mat-card-content style="padding: 5px">
       <app-aqi-scorecard
         *ngIf="showAqiScorecard"
         [locationUrl]="selectedLocation"
       ></app-aqi-scorecard>
-    </ion-card-content>
+    </mat-card-content>
   </div>
-</ion-card>
+</mat-card>

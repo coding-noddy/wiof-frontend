@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { MatDialogModule } from '@angular/material/dialog';
 
 import { EnvCalDialogComponent } from './env-cal-dialog.component';
 
@@ -10,7 +10,7 @@ describe('EnvCalDialogComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [EnvCalDialogComponent],
-      imports: [IonicModule.forRoot()]
+      imports: [MatDialogModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(EnvCalDialogComponent);

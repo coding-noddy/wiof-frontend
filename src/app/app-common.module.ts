@@ -2,7 +2,19 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { AqiScorecardComponent } from './components/aqi-scorecard/aqi-scorecard.component';
 import { ConcentPopupComponent } from './components/concent-popup/concent-popup.component';
 import { AqiWidgetComponent } from './components/aqi-widget/aqi-widget.component';
@@ -36,8 +48,6 @@ import { EnvCalDialogComponent } from './components/env-cal-dialog/env-cal-dialo
 import { TakeActionContentComponent } from './components/take-action-content/take-action-content.component';
 import { CoffeeConversationComponent } from './components/coffee-conversation/coffee-conversation.component';
 import { InFocusWidgetComponent } from './components/in-focus-widget/in-focus-widget.component';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatCardModule } from '@angular/material/card';
 import { PurposeSectionComponent } from './components/purpose-section/purpose-section.component';
 
 const COMPONENTS = [
@@ -80,19 +90,41 @@ const COMPONENTS = [
 
 @NgModule({
   imports: [
-    IonicModule,
     CommonModule,
     RouterModule,
     FormsModule,
     ReactiveFormsModule,
     MatAutocompleteModule,
-    MatCardModule
+    MatButtonModule,
+    MatCardModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatGridListModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    MatProgressSpinnerModule,
+    MatSelectModule,
+    MatSnackBarModule,
+    MatToolbarModule
   ],
   exports: [
     CommonModule,
-    IonicModule,
     RouterModule,
     ReactiveFormsModule,
+    MatAutocompleteModule,
+    MatButtonModule,
+    MatCardModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatGridListModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    MatProgressSpinnerModule,
+    MatSelectModule,
+    MatSnackBarModule,
+    MatToolbarModule,
     ...COMPONENTS
   ],
   declarations: [...COMPONENTS],

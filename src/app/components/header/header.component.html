@@ -1,23 +1,23 @@
-<ion-header>
-  <ion-row>
-    <ion-col class="ion-align-self-start ion-no-padding">
-      <ion-toolbar class="toolbar-background-wrapper" style="padding-left: 5px;">
-        <ion-buttons class="menu-button-toggle" slot="start">
+<mat-toolbar color="primary">
+  <div class="flex flex-wrap w-full">
+    <div class="flex-1 self-start p-0">
+      <div class="toolbar-background-wrapper pl-1">
+        <div class="menu-button-toggle flex">
           <!-- uncomment when have to add menu and links in header-->
           <!-- <ion-menu-button>
             <ion-icon name="menu-outline" menuId="wiof-menu"></ion-icon>
           </ion-menu-button> -->
-        </ion-buttons>
-        <ion-title routerLink="/home" style="padding: 0;">
-          <ion-img style="height: 56px; float: left;" alt="World is one family logo" [src]="wiofLogo"></ion-img>
-        </ion-title>
-      </ion-toolbar>
-    </ion-col>
+        </div>
+        <span routerLink="/home" class="cursor-pointer p-0">
+          <img class="h-14 float-left" alt="World is one family logo" [src]="wiofLogo">
+        </span>
+      </div>
+    </div>
     <!-- uncomment when have to add menu and links in header-->
 
-    <ion-col class="ion-align-self-end ion-no-padding">
-      <ion-toolbar class="toolbar-background-wrapper">
-        <ion-buttons slot="end">
+    <div class="flex-1 self-end p-0">
+      <div class="toolbar-background-wrapper">
+        <div class="flex justify-end">
           <!-- <ion-button>
             Lifestyle
           </ion-button>
@@ -31,12 +31,12 @@
             Contribute
           </ion-button> -->
 
-          <ion-button routerLink="/aboutus"> About Us </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-col>
-    <!-- <ion-col class="ion-align-self-end">
+          <button mat-button routerLink="/aboutus"> About Us </button>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="flex-1 self-end">
       <ion-searchbar showCancelButton="focus"></ion-searchbar>
-    </ion-col> -->
-  </ion-row>
-</ion-header>
+    </div> -->
+  </div>
+</mat-toolbar>

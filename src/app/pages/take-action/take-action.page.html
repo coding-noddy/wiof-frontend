@@ -1,11 +1,11 @@
 <app-header></app-header>
-<ion-content class="take-action-wrapper">
-  <ion-row>
-    <ion-col>
+<div class="p-4 take-action-wrapper">
+  <div class="flex flex-wrap">
+    <div class="w-full">
       <h1 class="take-action-title">Take Action</h1>
       <app-back-button class="back-button"></app-back-button>
-    </ion-col>
-  </ion-row>
+    </div>
+  </div>
   <mat-tab-group
     [selectedIndex]="elemetTabIndex"
     (selectedTabChange)="onSelectTab($event)"
@@ -33,4 +33,4 @@
     </mat-tab>
   </mat-tab-group>
   <app-wiof-footer></app-wiof-footer>
-</ion-content>
+</div>

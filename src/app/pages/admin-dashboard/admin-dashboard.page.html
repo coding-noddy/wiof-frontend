@@ -1,33 +1,25 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Admin Dashboard</ion-title>
-    <ion-buttons slot="end">
-      <ion-button expand="full" (click)="onLogout()"> Logout </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<mat-toolbar color="primary">
+  <span>Admin Dashboard</span>
+  <span class="flex-1"></span>
+  <button mat-raised-button color="accent" (click)="onLogout()">Logout</button>
+</mat-toolbar>
 
-<ion-content>
-  <ion-grid>
-    <ion-row>
-      <h1>Manage all site data...</h1>
-    </ion-row>
-    <ion-row>
-      <ion-col
-        size-xs="12"
-        size-md="6"
-        size-lg="4"
-        *ngFor="let button of adminDB.buttons"
-      >
-        <ion-button
-          color="secondary"
-          class="admin-panel-button"
-          expand="full"
+<div class="p-6">
+  <div class="container mx-auto">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold">Manage all site data...</h1>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div *ngFor="let button of adminDB.buttons">
+        <button
+          mat-raised-button
+          color="primary"
+          class="w-full h-16 admin-panel-button"
           [routerLink]="button.actionUrl"
         >
           {{ button.name }}
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-content>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

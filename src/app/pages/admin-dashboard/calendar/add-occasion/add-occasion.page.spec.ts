@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AddOccasionPage } from './add-occasion.page';
 
@@ -10,7 +10,7 @@ describe('AddOccasionPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [AddOccasionPage],
-      imports: [IonicModule.forRoot()]
+      imports: [NoopAnimationsModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(AddOccasionPage);

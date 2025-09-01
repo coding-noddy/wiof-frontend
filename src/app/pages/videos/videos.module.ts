@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { IonicModule } from '@ionic/angular';
 
 import { VideosPageRoutingModule } from './videos-routing.module';
 
@@ -13,7 +12,6 @@ import { AppCommonModule } from 'src/app/app-common.module';
   imports: [
     CommonModule,
     FormsModule,
-    IonicModule,
     VideosPageRoutingModule,
     AppCommonModule
   ],

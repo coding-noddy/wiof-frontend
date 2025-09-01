@@ -1,8 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-import { IonicModule } from '@ionic/angular';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatListModule } from '@angular/material/list';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 import { ManageNgoInFocusPageRoutingModule } from './manage-ngo-in-focus-routing.module';
 
@@ -12,7 +14,10 @@ import { ManageNgoInFocusPage } from './manage-ngo-in-focus.page';
   imports: [
     CommonModule,
     FormsModule,
-    IonicModule,
+    MatButtonModule,
+    MatCardModule,
+    MatListModule,
+    MatToolbarModule,
     ManageNgoInFocusPageRoutingModule
   ],
   declarations: [ManageNgoInFocusPage]

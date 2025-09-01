@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
 import { AqiWidgetComponent } from './aqi-widget.component';
 
 describe('AqiWidgetComponent', () => {
@@ -9,7 +8,7 @@ describe('AqiWidgetComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [AqiWidgetComponent],
-      imports: [IonicModule.forRoot()]
+      imports: []
     }).compileComponents();
 
     fixture = TestBed.createComponent(AqiWidgetComponent);

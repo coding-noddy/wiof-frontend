@@ -1,22 +1,20 @@
-<ion-card class="take-action-content">
-  <ion-card-content class="app-take-action-content-container">
+<mat-card class="take-action-content">
+  <mat-card-content class="app-take-action-content-container">
     <p class="action-sub-heading">
       Below are the actions you can take towards
       <span style="font-weight: 500">{{ actionData.tab.title }}</span>
       element.
     </p>
     <div>
-      <ion-grid class="actions-container" style="margin: 0 auto">
-        <ion-row>
-          <ion-col
+      <div class="container mx-auto actions-container">
+        <div class="flex flex-wrap">
+          <div
             *ngFor="let action of actionData.links"
-            size="12"
-            size-md="6"
-            size-lg="3"
+            class="w-full md:w-1/2 lg:w-1/4 p-2"
           >
-            <ion-card class="action-card" [ngClass]="selectedElement">
-              <ion-card-content
-                class="ion-no-padding ion-text-left"
+            <mat-card class="action-card" [ngClass]="selectedElement">
+              <mat-card-content
+                class="p-0 text-left"
                 style="height: 100%"
               >
                 <div class="action-media-container">
@@ -30,14 +28,14 @@
                 <h3 class="action-card-title">
                   {{ action.heading }}
                 </h3>
-                <p class="action-card-content ion-padding-horizontal">
+                <p class="action-card-content px-4">
                   {{ action.desc }}
                 </p>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
+              </mat-card-content>
+            </mat-card>
+          </div>
         </ion-row>
       </ion-grid>
     </div>
-  </ion-card-content>
-</ion-card>
+  </mat-card-content>
+</mat-card>

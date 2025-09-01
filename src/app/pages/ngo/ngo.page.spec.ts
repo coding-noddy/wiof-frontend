@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
 
 import { NgoPage } from './ngo.page';
 
@@ -10,7 +9,7 @@ describe('NgoPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [NgoPage],
-      imports: [IonicModule.forRoot()]
+      imports: []
     }).compileComponents();
 
     fixture = TestBed.createComponent(NgoPage);

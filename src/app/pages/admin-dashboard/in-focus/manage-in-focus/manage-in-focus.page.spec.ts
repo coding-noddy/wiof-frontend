@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { ManageInFocusPage } from './manage-in-focus.page';
 
@@ -10,7 +10,7 @@ describe('ManageInFocusPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ManageInFocusPage],
-      imports: [IonicModule.forRoot()]
+      imports: [NoopAnimationsModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ManageInFocusPage);

@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
 
 import { NgoInFocusComponent } from './ngo-in-focus.component';
 
@@ -10,7 +9,7 @@ describe('NgoInFocusComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [NgoInFocusComponent],
-      imports: [IonicModule.forRoot()]
+      imports: []
     }).compileComponents();
 
     fixture = TestBed.createComponent(NgoInFocusComponent);

@@ -1,68 +1,67 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Manage Blogs</ion-title>
-    <ion-buttons slot="end">
-      <ion-button color="dark" fill="clear" size="large" (click)="refreshData()"
-        ><ion-icon name="refresh-outline" slot="start"></ion-icon
-        >Refresh</ion-button
-      ><ion-button
-        color="success"
-        fill="solid"
-        size="large"
-        (click)="addNewBlog()"
-        ><ion-icon name="add-outline" slot="start"></ion-icon>Add New
-        Blog</ion-button
+<mat-toolbar color="primary">
+  <button mat-icon-button routerLink="/admin-dashboard">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <span>Manage Blogs</span>
+  <span class="flex-1"></span>
+  <div class="flex gap-2">
+    <button mat-flat-button color="accent" (click)="refreshData()">
+      <mat-icon>refresh</mat-icon>
+      Refresh
+    </button>
+    <button mat-raised-button color="primary" (click)="addNewBlog()">
+      <mat-icon>add</mat-icon>
+      Add New Blog
+    </button>
+  </div>
+</mat-toolbar>
+<div class="p-4">
+  <div class="container mx-auto" *ngIf="blogList$ | async as blogList">
+    <div class="flex flex-wrap item-divider-line">
+      <div class="w-full md:w-1/12 flex items-center"
+        ><strong>Sr</strong></div
       >
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-<ion-content>
-  <ion-grid *ngIf="blogList$ | async as blogList">
-    <ion-row class="item-divider-line">
-      <ion-col size-md="1" class="ion-align-self-center"
-        ><strong>Sr</strong></ion-col
+      <div class="w-full md:w-5/12 flex items-center"
+        ><strong>Title</strong></div
       >
-      <ion-col size-md="5" class="ion-align-self-center"
-        ><strong>Title</strong></ion-col
+      <div class="w-full md:w-2/12"><strong>Category</strong></div>
+      <div class="w-full md:w-2/12"><strong>Date</strong></div>
+      <div class="w-full md:w-2/12 action-heading"
+        ><strong>Actions</strong></div
       >
-      <ion-col size-md="2"><strong>Category</strong></ion-col>
-      <ion-col size-md="2"><strong>Date</strong></ion-col>
-      <ion-col size-md="2" class="action-heading"
-        ><strong>Actions</strong></ion-col
-      >
-    </ion-row>
-    <ion-row
+    </div>
+    <div
       *ngFor="let blog of blogList; let i = index"
-      class="item-divider-line"
+      class="flex flex-wrap item-divider-line"
     >
-      <ion-col size-md="1" class="ion-align-self-center">{{ i + 1 }}</ion-col>
-      <ion-col size-md="5" class="ion-align-self-center"
-        >{{ blog.title }}</ion-col
+      <div class="w-full md:w-1/12 flex items-center">{{ i + 1 }}</div>
+      <div class="w-full md:w-5/12 flex items-center"
+        >{{ blog.title }}</div
       >
-      <ion-col size-md="2" class="ion-align-self-center"
+      <div class="w-full md:w-2/12 flex items-center"
         >{{blog.category | uppercase}}
-      </ion-col>
-      <ion-col size-md="2" class="ion-align-self-center"
-        >{{blog.submitDate | date}}</ion-col
+      </div>
+      <div class="w-full md:w-2/12 flex items-center"
+        >{{blog.submitDate | date}}</div
       >
-      <ion-col size-md="2">
-        <ion-toolbar>
-          <ion-buttons slot="start">
-            <ion-button
-              title="Click to view blog details"
-              (click)="viewBlogDetails(blog)"
-              ><ion-icon slot="icon-only" name="eye-outline"></ion-icon
-            ></ion-button>
-            <ion-button
-              (click)="deleteBlog(blogList, i, blog.id, blog.imageName)"
-              ><ion-icon slot="icon-only" name="trash-outline"></ion-icon
-            ></ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-content>
+      <div class="w-full md:w-2/12">
+        <div class="flex gap-2">
+          <button
+            mat-icon-button
+            title="Click to view blog details"
+            (click)="viewBlogDetails(blog)"
+          >
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            color="warn"
+            (click)="deleteBlog(blogList, i, blog.id, blog.imageName)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
