@@ -37,6 +37,8 @@ import { TakeActionContentComponent } from './components/take-action-content/tak
 import { CoffeeConversationComponent } from './components/coffee-conversation/coffee-conversation.component';
 import { InFocusWidgetComponent } from './components/in-focus-widget/in-focus-widget.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatCardModule } from '@angular/material/card';
+import { PurposeSectionComponent } from './components/purpose-section/purpose-section.component';
 
 const COMPONENTS = [
   HeaderComponent,
@@ -72,7 +74,8 @@ const COMPONENTS = [
   EnvCalDialogComponent,
   TakeActionContentComponent,
   CoffeeConversationComponent,
-  InFocusWidgetComponent
+  InFocusWidgetComponent,
+  PurposeSectionComponent
 ];
 
 @NgModule({
@@ -82,7 +85,8 @@ const COMPONENTS = [
     RouterModule,
     FormsModule,
     ReactiveFormsModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatCardModule
   ],
   exports: [
     CommonModule,

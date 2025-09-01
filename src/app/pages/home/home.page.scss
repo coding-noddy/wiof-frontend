@@ -25,7 +25,7 @@ $breakpoint-tablet: 767px;
   position: relative;
 
   /* Adjust font size for small screens */
-  h1 {
+  .motto {
     font-size: 1.6rem;
     font-weight: bold;
     text-shadow: 1px 1px 2px black;
@@ -35,6 +35,15 @@ $breakpoint-tablet: 767px;
     }
     @media (min-width: 1024px) {
       font-size: 3rem; /* Even larger for desktops */
+    }
+  }
+
+  .tagline {
+    margin-top: 0.5rem;
+    font-size: 1rem;
+
+    @media (min-width: 768px) {
+      font-size: 1.2rem;
     }
   }
 
