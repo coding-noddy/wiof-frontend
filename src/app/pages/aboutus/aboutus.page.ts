@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AboutUsService, AboutUsProfile } from '../../services/aboutus.service';
 import { Observable, of } from 'rxjs';
+import { switchMap, defaultIfEmpty, take } from 'rxjs/operators';
 import { aboutUsData } from './aboutus-mock';
 
 @Component({
@@ -14,13 +15,13 @@ export class AboutusPage implements OnInit {
   constructor(private aboutUsService: AboutUsService) {}
 
   ngOnInit() {
-    // Fetch profiles from Firebase
-    this.aboutUsProfiles$ = this.aboutUsService.getAboutUsProfiles();
-
-    this.aboutUsProfiles$.subscribe(data => {
-      if(data.length == 0) {
-        this.aboutUsProfiles$ = of(aboutUsData);
-      }
-    });
+    // Fetch profiles from Firebase and fall back to mock data if empty
+    this.aboutUsProfiles$ = this.aboutUsService.getAboutUsProfiles().pipe(
+      take(1),
+      switchMap((profiles) =>
+        profiles.length ? of(profiles) : of(aboutUsData)
+      ),
+      defaultIfEmpty(aboutUsData)
+    );
   }
 }
