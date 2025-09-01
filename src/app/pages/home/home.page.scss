@@ -85,19 +85,10 @@ $breakpoint-tablet: 767px;
   }
 }
 
-ion-content {
-  --background: #f7f9fc;
+.content-container {
+  background: #f7f9fc;
 }
 
 app-wiof-footer {
   margin-top: 2rem;
-}
-
-ion-grid {
-  --ion-grid-padding: 0;
-}
-
-/* Optional: Add spacing between rows */
-ion-row + ion-row {
-  margin-top: 1.5rem;
 }

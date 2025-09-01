@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { LayoutModule } from '@angular/cdk/layout';
 import { AppCommonModule } from 'src/app/app-common.module';
 import { HomePageRoutingModule } from './home-routing.module';
 import { HomePage } from './home.page';
@@ -14,7 +16,9 @@ import { CourseInFocusComponent } from '../../components/course-in-focus/course-
     FormsModule,
     IonicModule,
     HomePageRoutingModule,
-    AppCommonModule
+    AppCommonModule,
+    MatGridListModule,
+    LayoutModule
   ],
   declarations: [HomePage, NgoInFocusComponent, CourseInFocusComponent]
 })
