@@ -8,8 +8,8 @@
         <div class="w-full text">
           <a style="cursor: pointer" (click)="about = !about">
             About Water Widget
-            <ion-icon *ngIf="!about" name="chevron-down-outline"></ion-icon
-            ><ion-icon *ngIf="about" name="chevron-up-outline"></ion-icon
+            <mat-icon *ngIf="!about">expand_more</mat-icon
+            ><mat-icon *ngIf="about">expand_less</mat-icon
           ></a>
           <p *ngIf="about" style="text-align: justify; color: #2d2d2d">
             Widget to understand India's water wealth and resources. Get access

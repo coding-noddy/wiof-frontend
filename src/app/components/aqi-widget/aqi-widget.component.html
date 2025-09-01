@@ -10,8 +10,8 @@
       <div class="w-full">
         <a style="cursor: pointer" (click)="about = !about">
           About AQI Widget
-          <ion-icon *ngIf="!about" name="chevron-down-outline"></ion-icon
-          ><ion-icon *ngIf="about" name="chevron-up-outline"></ion-icon
+          <mat-icon *ngIf="!about">expand_more</mat-icon
+          ><mat-icon *ngIf="about">expand_less</mat-icon
         ></a>
         <p *ngIf="about" style="text-align: justify; color: #2d2d2d">
           Air Quality Index or AQI is an Indicator of the status of air at a
@@ -30,14 +30,14 @@
         [ngClass]="{ active: !searchLocationTabSelect }"
         (click)="loadMajorCitiesDiv()"
       >
-        <ion-icon name="golf-outline"></ion-icon>Major Cities
+        <mat-icon>location_city</mat-icon>Major Cities
       </button>
       <button
         class="wiof-primary-btn"
         [ngClass]="{ active: searchLocationTabSelect }"
         (click)="loadSearchLocationDiv()"
       >
-        <ion-icon name="search-outline"></ion-icon>Search Location
+        <mat-icon>search</mat-icon>Search Location
       </button>
       <!-- <button
       class="wiof-primary-btn"

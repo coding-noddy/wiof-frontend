@@ -61,7 +61,7 @@
                 [disabled]="day.selectedOccasionIndex === 0"
                 (click)="prevOccasion(day)"
               >
-                <ion-icon slot="start" name="caret-back-outline"></ion-icon>
+                <mat-icon>chevron_left</mat-icon>
               </button>
 
               <button
@@ -71,7 +71,7 @@
                 "
                 (click)="nextOccasion(day)"
               >
-                <ion-icon slot="start" name="caret-forward-outline"></ion-icon>
+                <mat-icon>chevron_right</mat-icon>
               </button>
             </div>
           </div>
