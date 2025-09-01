@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { DiscoverMorePage } from './discover-more.page';
 
@@ -10,7 +10,7 @@ describe('DiscoverMorePage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [DiscoverMorePage],
-      imports: [IonicModule.forRoot()]
+      imports: [BrowserAnimationsModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(DiscoverMorePage);

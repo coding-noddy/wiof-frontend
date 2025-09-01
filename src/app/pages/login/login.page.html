@@ -1,37 +1,36 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title routerLink="/home"
-      ><ion-img style="height: 56px" alt="WIOF" [src]="wiofLogo"></ion-img
-    ></ion-title>
-  </ion-toolbar>
-</ion-header>
+<mat-toolbar color="primary">
+  <span routerLink="/home" class="cursor-pointer">
+    <img style="height: 56px" alt="WIOF" [src]="wiofLogo">
+  </span>
+</mat-toolbar>
 
-<ion-content>
-  <ion-grid>
-    <ion-row>
-      <ion-col size="12" size-md="6" offset-md="3" class="login-container">
+<div class="p-4">
+  <div class="container mx-auto">
+    <div class="flex flex-wrap">
+      <div class="w-full md:w-1/2 md:mx-auto login-container"></div>
         <ion-text color="dark" class="wiof-login">
           <h1>Login to Admin Dashboard</h1>
         </ion-text>
         <div *ngIf="error" style="color: red">
           <p>{{error}}</p>
         </div>
-        <ion-item>
-          <ion-label position="floating">Email</ion-label>
-          <ion-input name="email" [(ngModel)]="email"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="floating">Password</ion-label>
-          <ion-input
+        <mat-form-field class="w-full mb-4">
+          <mat-label>Email</mat-label>
+          <input matInput name="email" [(ngModel)]="email">
+        </mat-form-field>
+        <mat-form-field class="w-full mb-4">
+          <mat-label>Password</mat-label>
+          <input
+            matInput
             type="password"
             name="password"
             [(ngModel)]="password"
-          ></ion-input>
-        </ion-item>
+          >
+        </mat-form-field>
         <div class="button-container">
-          <ion-button class="wiof-login" (click)="onLogin()">Login</ion-button>
+          <button mat-raised-button color="primary" class="wiof-login w-full" (click)="onLogin()">Login</button>
         </div>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-content>
+      </div>
+    </div>
+  </div>
+</div>

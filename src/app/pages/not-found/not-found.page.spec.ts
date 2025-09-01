@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
 
 import { NotFoundPage } from './not-found.page';
 
@@ -10,7 +9,7 @@ describe('NotFoundPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [NotFoundPage],
-      imports: [IonicModule.forRoot()]
+      imports: []
     }).compileComponents();
 
     fixture = TestBed.createComponent(NotFoundPage);

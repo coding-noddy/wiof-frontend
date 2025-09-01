@@ -1,17 +1,17 @@
 <app-header></app-header>
-<ion-content>
-  <ion-grid>
-    <ion-row>
-      <ion-col class="wiof-blog-col" size="12" size-lg="8" offset-lg="2">
+<div class="p-4">
+  <div class="container mx-auto">
+    <div class="flex flex-wrap">
+      <div class="wiof-blog-col w-full lg:w-2/3 lg:mx-auto">
         <div class="blog-container">
-          <ion-row *ngIf="(blogDetails | async) as blog">
-            <ion-col size="12">
+          <div class="flex flex-wrap" *ngIf="(blogDetails | async) as blog">
+            <div class="w-full">
               <h1>{{ blog.title }}</h1>
-            </ion-col>
-            <ion-col size="12">
+            </div>
+            <div class="w-full">
               <ion-img [src]="(blog.image$ | async)"></ion-img>
-            </ion-col>
-            <ion-col size="12">
+            </div>
+            <div class="w-full">
               <div>
                 <ion-text *ngIf="blog.author">By {{blog.author}}</ion-text> |
                 <span class="time-to-read"
@@ -25,29 +25,29 @@
               <ion-text *ngIf="blog.publishDate"
                 >Published on {{blog.publishDate | date }}</ion-text
               >
-            </ion-col>
-            <ion-col size="12">
+            </div>
+            <div class="w-full">
               <app-back-button></app-back-button>
               <app-social-share></app-social-share>
-            </ion-col>
-            <ion-item-divider></ion-item-divider>
-            <ion-col size="12">
+            </div>
+            <mat-divider></mat-divider>
+            <div class="w-full">
               <ion-text
                 style="text-align: justify; text-justify: inter-word"
                 [innerHTML]="blog.content"
               ></ion-text>
-            </ion-col>
-            <ion-item-divider></ion-item-divider>
-            <ion-col size="12">
+            </div>
+            <mat-divider></mat-divider>
+            <div class="w-full">
               <h4>About {{blog.author}}</h4>
               <ion-text style="text-align: justify; text-justify: inter-word"
                 >{{blog.aboutAuthor}}</ion-text
               >
-            </ion-col>
-          </ion-row>
+            </div>
+          </div>
         </div>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+      </div>
+    </div>
+  </div>
   <app-wiof-footer></app-wiof-footer>
-</ion-content>
+</div>

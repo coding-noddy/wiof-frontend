@@ -1,68 +1,65 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
-    </ion-buttons>
-    <ion-title *ngIf="!isEditMode">{{ pageContent.addPollTitle }}</ion-title>
-    <ion-title *ngIf="isEditMode">{{ pageContent.editPollTitle }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button color="success" fill="solid" size="large" (click)="onSubmit()"
-        >{{ pageContent.savePollLabel }}</ion-button
-      >
-      <ion-button color="medium" fill="clear" size="large" routerLink=""
-        >{{ pageContent.cancelLabel }}</ion-button
-      >
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<mat-toolbar color="primary">
+  <button mat-icon-button routerLink="/admin-dashboard">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <span *ngIf="!isEditMode">{{ pageContent.addPollTitle }}</span>
+  <span *ngIf="isEditMode">{{ pageContent.editPollTitle }}</span>
+  <span class="flex-1"></span>
+  <button mat-raised-button color="accent" class="text-lg mr-2" (click)="onSubmit()">
+    {{ pageContent.savePollLabel }}
+  </button>
+  <button mat-button color="warn" class="text-lg" routerLink="">
+    {{ pageContent.cancelLabel }}
+  </button>
+</mat-toolbar>
 
-<ion-content>
+<div class="p-6">
   <form [formGroup]="addPollForm" (submit)="onSubmit()">
-    <ion-grid>
-      <ion-row>
-        <ion-col size-xs="12" size-lg="6">
-          <ion-item>
-            <ion-label position="floating"
-              >{{ pageContent.pollQuestionLabel }}</ion-label
-            >
-            <ion-textarea formControlName="question"></ion-textarea>
-          </ion-item>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-xs="12" size-lg="6">
-          <ion-row formArrayName="options">
-            <ion-col
-              size-xs="12"
-              size-md="6"
+    <div class="container mx-auto">
+      <div class="flex flex-wrap">
+        <div class="w-full lg:w-1/2">
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>{{ pageContent.pollQuestionLabel }}</mat-label>
+            <textarea matInput formControlName="question" rows="3"></textarea>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="flex flex-wrap">
+        <div class="w-full lg:w-1/2">
+          <div formArrayName="options" class="flex flex-wrap">
+            <div
+              class="w-full md:w-1/2 p-2"
               *ngFor="let option of getOptionControls().controls; let i = index"
             >
-              <ion-item>
-                <ion-label position="floating"
-                  >{{ pageContent.optionLabel }} {{ i + 1 }}</ion-label
-                >
-                <ion-input [formControlName]="i"></ion-input>
-                <span
-                  class="input-close-icon"
+              <div class="flex items-center gap-2">
+                <mat-form-field appearance="fill" class="flex-1">
+                  <mat-label>{{ pageContent.optionLabel }} {{ i + 1 }}</mat-label>
+                  <input matInput [formControlName]="i">
+                </mat-form-field>
+                <button
+                  mat-icon-button
+                  color="warn"
+                  type="button"
                   title="Remove this option"
                   (click)="removeOption(i)"
-                  ><ion-icon name="close"></ion-icon
-                ></span>
-              </ion-item>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size-xs="12" size-md="3">
-              <ion-button (click)="addOption()"
-                >{{ pageContent.addOptionBtnLabel }}
-                <ion-icon name="add"></ion-icon>
-              </ion-button>
-            </ion-col>
-          </ion-row>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size-xs="12" size-md="6" size-lg="3">
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-wrap">
+            <div class="w-full md:w-1/4 p-2">
+              <button mat-raised-button color="accent" (click)="addOption()">
+                {{ pageContent.addOptionBtnLabel }}
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-wrap">
+        <div class="w-full md:w-1/2 lg:w-1/4 p-2">
           <mat-form-field appearance="fill">
             <mat-label>{{ pageContent.publishStartDateLabel }}</mat-label>
             <input
@@ -76,11 +73,11 @@
             ></mat-datepicker-toggle>
             <mat-datepicker #publishStartDatePicker></mat-datepicker>
             <p>
-              <ion-note>{{ pageContent.publishStartDateDesc }}</ion-note>
+              <small class="text-gray-600">{{ pageContent.publishStartDateDesc }}</small>
             </p>
           </mat-form-field>
-        </ion-col>
-        <ion-col size-xs="12" size-md="6" size-lg="3">
+        </div>
+        <div class="w-full md:w-1/2 lg:w-1/4 p-2">
           <mat-form-field appearance="fill">
             <mat-label>{{ pageContent.publishEndDateLabel }}</mat-label>
             <input
@@ -94,27 +91,25 @@
             ></mat-datepicker-toggle>
             <mat-datepicker #publishEndDatePicker></mat-datepicker>
             <p>
-              <ion-note>{{ pageContent.publishEndDateDesc }}</ion-note>
+              <small class="text-gray-600">{{ pageContent.publishEndDateDesc }}</small>
             </p>
           </mat-form-field>
-        </ion-col>
-      </ion-row>
-      <ion-row *ngIf="isEditMode">
-        <ion-col size-xs="12" size-md="6">
-          <ion-card>
-            <ion-card-header class="poll-result-header"
-              >{{ pageContent.pollResultTitle }}</ion-card-header
-            >
-            <ion-card-content>
-              <ion-grid>
-                <ion-row>
-                  <ion-col
-                    size-xs="12"
-                    size-lg="6"
-                    class="poll-options"
+        </div>
+      </div>
+      <div class="flex flex-wrap" *ngIf="isEditMode">
+        <div class="w-full md:w-1/2 p-2">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title class="poll-result-header">{{ pageContent.pollResultTitle }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="container mx-auto">
+                <div class="flex flex-wrap">
+                  <div
+                    class="w-full lg:w-1/2 poll-options"
                     *ngFor="let option of pollQuestion.options; let i = index"
                   >
-                    <ion-label>{{ option | titlecase }}</ion-label>
+                    <span>{{ option | titlecase }}</span>
                     <div class="poll-bar">
                       <div
                         class="poll-bar-fill"
@@ -126,13 +121,13 @@
                         >
                       </div>
                     </div>
-                  </ion-col>
-                </ion-row>
-              </ion-grid>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </div>
   </form>
-</ion-content>
+</div>

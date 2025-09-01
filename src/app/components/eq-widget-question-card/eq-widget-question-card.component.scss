@@ -15,11 +15,11 @@
     padding: 10px 0px 0px;
   }
 
-  ion-item {
+  .mat-list-item {
     border-radius: 20px;
     margin: 5px;
 
-    ion-text {
+    .mat-list-item-content {
       font-size: 14px;
       color: $dark-color;
       font-weight: $font-weight-medium;

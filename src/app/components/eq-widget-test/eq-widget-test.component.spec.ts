@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
 
 import { EqWidgetTestComponent } from './eq-widget-test.component';
 
@@ -10,7 +9,7 @@ describe('EqWidgetTestComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [EqWidgetTestComponent],
-      imports: [IonicModule.forRoot()]
+      imports: []
     }).compileComponents();
 
     fixture = TestBed.createComponent(EqWidgetTestComponent);

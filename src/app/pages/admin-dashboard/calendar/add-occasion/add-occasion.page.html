@@ -1,89 +1,86 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Add Occasion</ion-title>
-    <ion-buttons slot="end">
-      <ion-button color="success" fill="solid" size="large" (click)="onSubmit()"
-        >Save</ion-button
-      >
-      <ion-button
-        color="medium"
-        fill="clear"
-        size="large"
-        routerLink="/admin-dashboard"
-        >Cancel</ion-button
-      >
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<mat-toolbar color="primary">
+  <button mat-icon-button routerLink="/admin-dashboard">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <span>Add Occasion</span>
+  <span class="flex-1"></span>
+  <button mat-raised-button color="accent" class="text-lg" (click)="onSubmit()">
+    Save
+  </button>
+  <button
+    mat-flat-button
+    color="warn"
+    class="text-lg ml-2"
+    routerLink="/admin-dashboard">
+    Cancel
+  </button>
+</mat-toolbar>
 
-<ion-content>
+<div class="p-6">
   <form [formGroup]="addOccasionForm">
-    <ion-grid>
-      <ion-row>
-        <ion-col size-xs="12" size-md="12"
-          ><ion-item>
-            <ion-label position="floating">Occasion</ion-label>
-            <ion-input formControlName="occasion"></ion-input>
-          </ion-item>
-        </ion-col>
+    <div class="container mx-auto">
+      <div class="flex flex-wrap">
+        <div class="w-full">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Occasion</mat-label>
+            <input matInput formControlName="occasion">
+          </mat-form-field>
+        </div>
 
-        <ion-col size-xs="12" size-md="6"
-          ><ion-item>
-            <ion-label position="floating">Day</ion-label>
-            <ion-input formControlName="day"></ion-input>
-          </ion-item>
-        </ion-col>
+        <div class="w-full md:w-1/2 pr-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Day</mat-label>
+            <input matInput formControlName="day">
+          </mat-form-field>
+        </div>
 
-        <ion-col size-xs="12" size-md="6"
-          ><ion-item>
-            <ion-label position="floating">Month</ion-label>
-            <ion-select formControlName="month">
-              <ion-select-option
+        <div class="w-full md:w-1/2 pl-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Month</mat-label>
+            <mat-select formControlName="month">
+              <mat-option
                 [value]="i"
-                *ngFor="let month of months; let i = index;"
-                >{{ month }}</ion-select-option
-              >
-            </ion-select>
-          </ion-item>
-        </ion-col>
+                *ngFor="let month of months; let i = index;">
+                {{ month }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
 
-        <ion-col size-xs="12"
-          ><ion-item>
-            <ion-label position="stacked">Occasion Image URL</ion-label>
-            <ion-input
+        <div class="w-full">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Occasion Image URL</mat-label>
+            <input
+              matInput
               type="file"
               accept="image/*"
               (change)="onFileSelected($event)"
-              formControlName="imageName"
-            ></ion-input>
-            <div><ion-img [src]="imageToDisplay"></ion-img></div>
-          </ion-item>
-        </ion-col>
+              formControlName="imageName">
+          </mat-form-field>
+          <div class="mt-2">
+            <img [src]="imageToDisplay" class="max-w-xs h-auto" *ngIf="imageToDisplay">
+          </div>
+        </div>
 
-        <ion-col size-xs="12">
-          <ion-item>
-            <ion-label position="floating"
-              >Special Event's Short Description</ion-label
-            >
-            <ion-textarea
+        <div class="w-full">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Special Event's Short Description</mat-label>
+            <textarea
+              matInput
               formControlName="description"
               rows="2"
-              auto-grow="true"
-            >
-            </ion-textarea>
-          </ion-item>
-        </ion-col>
+              cdkTextareaAutosize>
+            </textarea>
+          </mat-form-field>
+        </div>
 
-        <ion-col size-xs="12" size-md="6"
-          ><ion-item>
-            <ion-label position="floating">External Link</ion-label>
-            <ion-input formControlName="showMoreLink"></ion-input>
-          </ion-item>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+        <div class="w-full md:w-1/2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>External Link</mat-label>
+            <input matInput formControlName="showMoreLink">
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
   </form>
-</ion-content>
+</div>

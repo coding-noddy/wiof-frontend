@@ -1,5 +1,8 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { AddNgoInFocusPage } from './add-ngo-in-focus.page';
 
@@ -11,7 +14,12 @@ describe('AddNgoInFocusPage', () => {
     waitForAsync(() => {
       TestBed.configureTestingModule({
         declarations: [AddNgoInFocusPage],
-        imports: [IonicModule.forRoot()]
+        imports: [
+          NoopAnimationsModule,
+          MatFormFieldModule,
+          MatInputModule,
+          ReactiveFormsModule
+        ]
       }).compileComponents();
 
       fixture = TestBed.createComponent(AddNgoInFocusPage);

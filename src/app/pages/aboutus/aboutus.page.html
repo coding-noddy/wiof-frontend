@@ -1,40 +1,36 @@
 <app-header></app-header>
 
-<ion-content>
-  <ion-toolbar style="margin-top: 10px">
-    <ion-title>About Us</ion-title>
-    <app-back-button slot="end" class="back-button"></app-back-button>
-  </ion-toolbar>
-  <ion-grid>
-    <ion-row>
+<div class="p-4">
+  <mat-toolbar class="mt-2">
+    <span>About Us</span>
+    <span class="flex-1"></span>
+    <app-back-button class="back-button"></app-back-button>
+  </mat-toolbar>
+  <div class="container mx-auto">
+    <div class="flex flex-wrap">
       <!-- Loop through profiles using the observable and async pipe -->
-      <ion-col
-        class="ion-padding profile-card-container"
-        size="12"
-        size-md="6"
-        size-lg="4"
-        size-xl="3"
+      <div
+        class="p-4 profile-card-container w-full md:w-1/2 lg:w-1/3 xl:w-1/4"
         *ngFor="let profile of aboutUsProfiles$ | async"
       >
-        <ion-card class="ion-margin profile-card">
-          <ion-card-content class="ion-no-padding">
+        <mat-card class="m-4 profile-card">
+          <mat-card-content class="p-0">
             <!-- Default Profile View -->
-            <ion-row *ngIf="!profile.showKnowMore">
-              <ion-col size="12" class="profile-header">
+            <div class="flex flex-wrap" *ngIf="!profile.showKnowMore">
+              <div class="w-full profile-header">
                 <img
                   class="profile-image"
                   [src]="profile.imageLink"
                   [alt]="'Profile image of ' + profile.name"
                 />
-                <ion-card-title class="profile-name">
+                <mat-card-title class="profile-name">
                   {{ profile.name }}
-                </ion-card-title>
+                </mat-card-title>
                 <p class="linked-in-container">
-                  <ion-icon
+                  <mat-icon
                     *ngIf="profile.socialLink"
-                    name="logo-linkedin"
                     class="logo"
-                  ></ion-icon>
+                  >business</mat-icon>
                   <a
                     *ngIf="profile.socialLink"
                     [href]="profile.socialLink"
@@ -44,8 +40,8 @@
                     Visit LinkedIn Profile
                   </a>
                 </p>
-              </ion-col>
-              <ion-col size="12" class="ion-padding">
+              </div>
+              <div class="w-full p-4">
                 <p class="profile-bio-text">{{ profile.bio }}</p>
                 <p style="text-align: center">
                   <button
@@ -55,13 +51,13 @@
                     Read More
                   </button>
                 </p>
-              </ion-col>
-            </ion-row>
+              </div>
+            </div>
 
             <!-- Expanded Profile View -->
-            <ion-row *ngIf="profile.showKnowMore">
-              <ion-col size="12" class="ion-no-padding">
-                <ion-card-title class="ion-padding">
+            <div class="flex flex-wrap" *ngIf="profile.showKnowMore">
+              <div class="w-full">
+                <mat-card-title class="p-4">
                   <span class="profile-detail-bio-header">
                     About {{ profile.name }}
                   </span>
@@ -69,16 +65,16 @@
                     class="close-icon"
                     (click)="profile.showKnowMore = false"
                   >
-                    <ion-icon name="close-outline"></ion-icon>
+                    <mat-icon>close</mat-icon>
                   </span>
-                </ion-card-title>
+                </mat-card-title>
                 <p class="profile-detail-bio">{{ profile.bio }}</p>
-              </ion-col>
-            </ion-row>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
   <app-wiof-footer></app-wiof-footer>
-</ion-content>
+</div>

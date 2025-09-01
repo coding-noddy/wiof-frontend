@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
 
 import { ManageCourseInFocusPage } from './manage-course-in-focus.page';
 
@@ -11,7 +10,7 @@ describe('ManageCourseInFocusPage', () => {
     waitForAsync(() => {
       TestBed.configureTestingModule({
         declarations: [ManageCourseInFocusPage],
-        imports: [IonicModule.forRoot()]
+        imports: []
       }).compileComponents();
 
       fixture = TestBed.createComponent(ManageCourseInFocusPage);

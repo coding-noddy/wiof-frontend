@@ -1,46 +1,43 @@
 <app-header></app-header>
-<ion-content>
-  <ion-grid>
-    <ion-row>
-      <ion-col size-lg="8" size-sm="12" offset-lg="2">
+<div class="p-4">
+  <div class="container mx-auto">
+    <div class="flex flex-wrap">
+      <div class="w-full lg:w-2/3 lg:mx-auto">
         <div class="video-container">
-          <ion-row *ngIf="(urlSafe)">
-            <ion-col size="12">
+          <div class="flex flex-wrap" *ngIf="(urlSafe)">
+            <div class="w-full">
               <h1>{{videoTitle}}</h1>
-            </ion-col>
-            <ion-col size="12" class="video-player-col">
+            </div>
+            <div class="w-full video-player-col">
               <iframe
                 [title]="videoTitle"
                 class="videoPlayer"
                 [src]="urlSafe"
                 allowfullscreen
               ></iframe>
-            </ion-col>
-            <ion-col size="6">
+            </div>
+            <div class="w-1/2">
               <app-back-button></app-back-button>
-            </ion-col>
-            <ion-col size="6">
+            </div>
+            <div class="w-1/2">
               <app-social-share></app-social-share>
-            </ion-col>
-            <ion-item-divider></ion-item-divider>
-            <ion-col size="12">
-              <ion-text
-                >Video Credit (Youtube Channel): {{videoChannelName}}</ion-text
+            </div>
+            <hr class="w-full my-4">
+            <div class="w-full">
+              <span class="text-gray-700"
+                >Video Credit (Youtube Channel): {{videoChannelName}}</span
               >
-            </ion-col>
-            <ion-col size="12">
-              <ion-text
-                style="
-                  text-align: justify;
-                  text-justify: inter-word;
-                  color: #2d2d2d;
-                "
+            </div>
+            <div class="w-full">
+              <span
+                class="text-justify text-gray-700"
+                style="text-justify: inter-word;"
                 [ngClass]="{'video-description-content-hide':showFullVideoDescription}"
                 *ngIf="videoDescription"
-                >Description: {{videoDescription}}</ion-text
+                >Description: {{videoDescription}}</span
               >
-            </ion-col>
-            <ion-col size="12" style="text-align: right">
+            </div>
+            <div class="w-full text-right">
               <p
                 class="toggleVideoDescription"
                 *ngIf="showFullVideoDescription"
@@ -55,11 +52,11 @@
               >
                 Show Less
               </p>
-            </ion-col>
-          </ion-row>
+            </div>
+          </div>
         </div>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+      </div>
+    </div>
+  </div>
   <app-wiof-footer></app-wiof-footer>
-</ion-content>
+</div>

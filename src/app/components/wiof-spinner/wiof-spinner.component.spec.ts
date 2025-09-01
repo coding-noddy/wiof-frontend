@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { WiofSpinnerComponent } from './wiof-spinner.component';
 
@@ -10,7 +10,7 @@ describe('WiofSpinnerComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [WiofSpinnerComponent],
-      imports: [IonicModule.forRoot()]
+      imports: [MatProgressSpinnerModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(WiofSpinnerComponent);

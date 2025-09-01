@@ -1,24 +1,24 @@
-<ion-card *ngIf="inFocuses?.length > 0" class="wiof-in-focus-container">
-  <ion-card-header class="wiof-video-player-header" [ngClass]="inFocusClass">
-    <ion-card-title class="title-text"> {{ inFocusTitle }} </ion-card-title>
-  </ion-card-header>
-  <ion-card-content class="ion-no-padding background" [ngClass]="inFocusClass">
+<mat-card *ngIf="inFocuses?.length > 0" class="wiof-in-focus-container">
+  <mat-card-header class="wiof-video-player-header" [ngClass]="inFocusClass">
+    <mat-card-title class="title-text"> {{ inFocusTitle }} </mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="background" [ngClass]="inFocusClass">
     <ion-slides #slider [options]="slideOpts">
       <ion-slide *ngFor="let inFocus of inFocuses">
-        <ion-grid class="ion-no-padding">
-          <ion-row>
-            <ion-col size-xs="12" class="wiof-video-player-content">
+        <div class="container mx-auto">
+          <div class="flex flex-wrap">
+            <div class="w-full wiof-video-player-content">
               <iframe
                 [title]="inFocus.title"
                 class="videoPlayer"
                 [src]="inFocus.sanitizedLink"
                 allowfullscreen
               ></iframe>
-            </ion-col>
-            <ion-col size-xs="12" class="in-focus-content">
+            </div>
+            <div class="w-full in-focus-content">
               <strong>{{ inFocus.subTitle }}</strong>
               <p>{{ inFocus.description }}</p>
-            </ion-col>
+            </div>
           </ion-row>
         </ion-grid>
       </ion-slide>
@@ -33,5 +33,5 @@
       class="swiper-button-next navigation-arrow-custom-styling"
       (click)="slider.slideNext()"
     ></div>
-  </ion-card-content>
-</ion-card>
+  </mat-card-content>
+</mat-card>

@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { PrivacyPolicyPage } from './privacy-policy.page';
 
@@ -10,7 +10,7 @@ describe('PrivacyPolicyPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [PrivacyPolicyPage],
-      imports: [IonicModule.forRoot()]
+      imports: [NoopAnimationsModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(PrivacyPolicyPage);

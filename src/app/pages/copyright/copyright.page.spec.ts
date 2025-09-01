@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
 
 import { CopyrightPage } from './copyright.page';
 
@@ -10,7 +9,7 @@ describe('CopyrightPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [CopyrightPage],
-      imports: [IonicModule.forRoot()]
+      imports: []
     }).compileComponents();
 
     fixture = TestBed.createComponent(CopyrightPage);

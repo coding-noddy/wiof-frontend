@@ -1,5 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
 import { AdminDashboardPage } from './admin-dashboard.page';
 
 describe('AdminDashboardPage', () => {
@@ -9,7 +10,7 @@ describe('AdminDashboardPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [AdminDashboardPage],
-      imports: [IonicModule.forRoot()]
+      imports: [MatToolbarModule, MatButtonModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(AdminDashboardPage);

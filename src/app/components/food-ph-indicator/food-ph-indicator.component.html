@@ -1,19 +1,19 @@
-<ion-card class="wiof-food-ph-widget-card-background ph-widget-height">
-  <ion-card-header class="wiof-food-ph-widget-card-header">
-    <ion-card-title class="title-text"> pH Widget </ion-card-title>
-  </ion-card-header>
-  <ion-card-content
+<mat-card class="wiof-food-ph-widget-card-background ph-widget-height">
+  <mat-card-header class="wiof-food-ph-widget-card-header">
+    <mat-card-title class="title-text"> pH Widget </mat-card-title>
+  </mat-card-header>
+  <mat-card-content
     class="wiof-food-ph-widget-card-content"
     style="padding: 5px"
   >
-    <ion-grid>
-      <ion-row>
-        <ion-col size="12" class="text">
+    <div class="container mx-auto">
+      <div class="flex flex-wrap">
+        <div class="w-full text">
           <a style="cursor: pointer" (click)="about = !about">
             About Food pH Indicator
-            <ion-icon *ngIf="!about" name="chevron-down-outline"></ion-icon
-            ><ion-icon *ngIf="about" name="chevron-up-outline"></ion-icon
-          ></a>
+            <mat-icon *ngIf="!about">expand_more</mat-icon>
+            <mat-icon *ngIf="about">expand_less</mat-icon>
+          </a>
           <p *ngIf="about" style="text-align: justify">
             The human body is built to naturally maintain a healthy balance of
             acidity and alkalinity, called a pH balance. One way we can help our
@@ -22,15 +22,15 @@
             The scale below will tell you the pH balance of commonly consumed
             foods.
           </p>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size="12">
-          <ion-label class="text">
+        </div>
+      </div>
+      <div class="flex flex-wrap">
+        <div class="w-full">
+          <label class="text">
             Check the pH value of various commonly consumed food items.
-          </ion-label>
-        </ion-col>
-        <ion-col size="12" size-md="6" size-xl="7">
+          </label>
+        </div>
+        <div class="w-full md:w-1/2 xl:w-7/12">
           <form>
             <input
               class="select-food-input"
@@ -55,25 +55,25 @@
               </mat-option>
             </mat-autocomplete>
           </form>
-        </ion-col>
-        <ion-col size="12" size-md="6" size-xl="5" style="align-items: center">
+        </div>
+        <div class="w-full md:w-1/2 xl:w-5/12 flex items-center">
           <button
             class="wiof-primary-btn full-width full-height"
             (click)="updateBridgeVariable()"
           >
-            <ion-icon name="calculator-outline"></ion-icon>Calculate pH value
+            <mat-icon>calculate</mat-icon>Calculate pH value
           </button>
-        </ion-col>
-      </ion-row>
+        </div>
+      </div>
       <hr class="divider" />
-      <ion-row>
-        <ion-col>
+      <div class="flex flex-wrap">
+        <div class="w-full">
           <p class="ph-meter-text">pH Meter</p>
           <app-food-ph-indicator-meter
             [food]="bridgeVariable"
           ></app-food-ph-indicator-meter>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </ion-card-content>
-</ion-card>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

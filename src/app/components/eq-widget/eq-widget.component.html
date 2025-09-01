@@ -1,10 +1,10 @@
-<ion-card class="wiof-spirit-widget-card-background widget-height">
-  <ion-card-header class="wiof-spirit-widget-card-header">
-    <ion-card-title class="title-text">
+<mat-card class="wiof-spirit-widget-card-background widget-height">
+  <mat-card-header class="wiof-spirit-widget-card-header">
+    <mat-card-title class="title-text">
       Emotional Quotient Widget
-    </ion-card-title>
-  </ion-card-header>
-  <ion-card-content class="eq-widget-card-content">
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="eq-widget-card-content">
     <div *ngIf="!showTest">
       <br />
       <strong>What is emotional intelligence or EQ?</strong>
@@ -38,5 +38,5 @@
       *ngIf="showTest"
       (back)="showTest = false"
     ></app-eq-widget-question-card>
-  </ion-card-content>
-</ion-card>
+  </mat-card-content>
+</mat-card>

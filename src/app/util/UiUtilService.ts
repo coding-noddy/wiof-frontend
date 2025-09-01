@@ -1,28 +1,35 @@
-import { LoadingController, AlertController } from '@ionic/angular';
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ComponentType } from '@angular/cdk/portal';
 
 @Injectable({ providedIn: 'root' })
 export class UiUtilService {
   constructor(
-    private loadingCtrl: LoadingController,
-    private alertCtrl: AlertController
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {}
 
-  public async showLoader(message: string) {
-    const loader = await this.loadingCtrl.create({
-      message
+  public showLoader(message: string) {
+    return this.snackBar.open(message, '', {
+      duration: 0,
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom'
     });
-    loader.present();
-    return loader;
   }
 
-  public async presentAlert(header: string, message: string, buttons: any[]) {
-    const alert = await this.alertCtrl.create({
-      cssClass: 'wiof-alert',
-      header,
-      message,
-      buttons
+  public presentAlert(header: string, message: string, buttons: any[]) {
+    return this.snackBar.open(`${header}: ${message}`, 'Close', {
+      duration: 5000,
+      horizontalPosition: 'center',
+      verticalPosition: 'top'
     });
-    await alert.present();
+  }
+
+  public openDialog<T>(component: ComponentType<T>, data?: any) {
+    return this.dialog.open(component, {
+      data,
+      width: '400px'
+    });
   }
 }

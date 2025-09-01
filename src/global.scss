@@ -5,38 +5,35 @@
  * the entire app and not just one component. Additionally, this file can be
  * used as an entry point to import other CSS/Sass files to be included in the
  * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
  */
 
-/* Core CSS required for Ionic components to work properly */
-@import "~@ionic/angular/css/core.css";
+/* Tailwind CSS imports */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
-/* Basic CSS for apps built with Ionic */
-@import "~@ionic/angular/css/normalize.css";
-@import "~@ionic/angular/css/structure.css";
-@import "~@ionic/angular/css/typography.css";
-@import "~@ionic/angular/css/display.css";
+/* Angular Material theme */
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
 
-/* Optional CSS utils that can be commented out */
-@import "~@ionic/angular/css/padding.css";
-@import "~@ionic/angular/css/float-elements.css";
-@import "~@ionic/angular/css/text-alignment.css";
-@import "~@ionic/angular/css/text-transformation.css";
-@import "~@ionic/angular/css/flex-utils.css";
+/* Roboto font */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
 
-//importing roboto font
-
-@import url("https://fonts.googleapis.com/css2?family=Roboto");
-
-*:not(ion-icon) {
+/* Global font family */
+* {
   font-family: "Roboto", sans-serif !important;
 }
 
+/* Utility classes */
 .text-center {
   text-align: center;
 }
 
-// .wiof-alert .alert-wrapper {
-//   background: black;
-// }
+/* WIOF Element Colors */
+.wiof-home { background-color: #fbb0ac; }
+.wiof-home-light { background-color: #c1a182; }
+.wiof-earth { background-color: #bded81; }
+.wiof-energy { background-color: #ffebb8; }
+.wiof-air { background-color: #e0caf5; }
+.wiof-water { background-color: #dff3ff; }
+.wiof-spirit { background-color: #f1dec6; }

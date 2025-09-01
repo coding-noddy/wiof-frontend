@@ -1,40 +1,34 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
-    </ion-buttons>
-    <ion-title>View Subscribers</ion-title>
-    <!-- <ion-buttons slot="end">
-      <ion-button color="dark" fill="clear" size="large" (click)="refreshData()"
-        ><ion-icon name="refresh-outline" slot="start"></ion-icon
-        >Refresh</ion-button
-      ><ion-button
-        color="success"
-        fill="solid"
-        size="large"
-        (click)="addNewPoll()"
-        ><ion-icon name="add-outline" slot="start"></ion-icon>Add New
-        Poll</ion-button
-      >
-    </ion-buttons> -->
-  </ion-toolbar>
-</ion-header>
+<mat-toolbar color="primary">
+  <button mat-icon-button routerLink="/admin-dashboard">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <span>View Subscribers</span>
+  <!-- <div class="flex-1"></div>
+  <button mat-raised-button color="accent" (click)="refreshData()">
+    <mat-icon>refresh</mat-icon>
+    Refresh
+  </button>
+  <button mat-raised-button color="primary" (click)="addNewPoll()">
+    <mat-icon>add</mat-icon>
+    Add New Poll
+  </button> -->
+</mat-toolbar>
 
-<ion-content>
-  <ion-grid *ngIf="subscribersJson">
-    <ion-row class="item-divider-line">
-      <ion-col size="12" size-md="6" class="ion-align-self-center">
+<div class="p-4">
+  <div class="container mx-auto" *ngIf="subscribersJson">
+    <div class="flex flex-wrap item-divider-line">
+      <div class="w-full md:w-1/2 self-center">
         <strong>Subscribers List</strong>
-      </ion-col>
-      <ion-col size="12" size-md="6" class="ion-align-self-center">
-        <ion-button color="dark" fill="solid" (click)="generateExcel()">
-          <ion-icon name="cloud-download"></ion-icon>
+      </div>
+      <div class="w-full md:w-1/2 self-center">
+        <button mat-raised-button color="primary" (click)="generateExcel()">
+          <mat-icon>cloud_download</mat-icon>
           Export List
-        </ion-button>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col size="12">
+        </button>
+      </div>
+    </div>
+    <div class="flex flex-wrap">
+      <div class="w-full">
         <table border="1">
           <tr>
             <th class="table-heading">Sr</th>
@@ -53,7 +47,7 @@
             </td>
           </tr>
         </table>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-content>
+      </div>
+    </div>
+  </div>
+</div>

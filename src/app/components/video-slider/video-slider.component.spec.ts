@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
 import { VideoSliderComponent } from './video-slider.component';
 
 describe('VideoSliderComponent', () => {
@@ -9,7 +8,7 @@ describe('VideoSliderComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [VideoSliderComponent],
-      imports: [IonicModule.forRoot()]
+      imports: []
     }).compileComponents();
 
     fixture = TestBed.createComponent(VideoSliderComponent);

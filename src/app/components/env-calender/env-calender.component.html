@@ -1,27 +1,27 @@
-<ion-card class="wiof-calendar-wrapper" *ngIf="EnvDays">
-  <ion-card-header class="wiof-env-calender-header wiof-home">
-    <ion-card-title class="title-text">
-      <span>Environment Calender</span></ion-card-title
-    >
-  </ion-card-header>
-  <ion-card-content class="wiof-env-calender-content background">
-    <ion-grid class="wiof-calendar-container">
-      <ion-row>
-        <ion-col class="month-header">
+<mat-card class="wiof-calendar-wrapper" *ngIf="EnvDays">
+  <mat-card-header class="wiof-env-calender-header wiof-home">
+    <mat-card-title class="title-text">
+      <span>Environment Calender</span>
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="wiof-env-calender-content background">
+    <div class="container mx-auto wiof-calendar-container">
+      <div class="flex flex-wrap">
+        <div class="w-full month-header">
           <h1>{{ displayMonth }}</h1>
           <p>{{ displayDay }}</p>
-        </ion-col>
-      </ion-row>
-      <ion-row class="weekday">
-        <ion-col>Sunday</ion-col>
-        <ion-col>Monday</ion-col>
-        <ion-col>Tuesday</ion-col>
-        <ion-col>Wednesday</ion-col>
-        <ion-col>Thursday</ion-col>
-        <ion-col>Friday</ion-col>
-        <ion-col>Saturday</ion-col>
-      </ion-row>
-      <ion-row>
+        </div>
+      </div>
+      <div class="flex flex-wrap weekday">
+        <div class="flex-1">Sunday</div>
+        <div class="flex-1">Monday</div>
+        <div class="flex-1">Tuesday</div>
+        <div class="flex-1">Wednesday</div>
+        <div class="flex-1">Thursday</div>
+        <div class="flex-1">Friday</div>
+        <div class="flex-1">Saturday</div>
+      </div>
+      <div class="flex flex-wrap">
         <div
           *ngFor="let day of days"
           [class]="day.class"
@@ -76,13 +76,13 @@
             </div>
           </div>
         </div>
-      </ion-row>
-    </ion-grid>
+      </div>
+    </div>
     <div class="wiof-env-calendar-dialog-container" *ngIf="openDialog">
       <app-env-cal-dialog
         [occasionDetails]="occasionForDialog"
         (close)="closeDialog()"
       ></app-env-cal-dialog>
     </div>
-  </ion-card-content>
-</ion-card>
+  </mat-card-content>
+</mat-card>

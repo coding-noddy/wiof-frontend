@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
 import { ElementWelcomeImageComponent } from './element-welcome-image.component';
 
 describe('ElementWelcomeImageComponent', () => {
@@ -9,7 +8,7 @@ describe('ElementWelcomeImageComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ElementWelcomeImageComponent],
-      imports: [IonicModule.forRoot()]
+      imports: []
     }).compileComponents();
 
     fixture = TestBed.createComponent(ElementWelcomeImageComponent);

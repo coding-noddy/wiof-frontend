@@ -1,23 +1,23 @@
-<ion-card
+<mat-card
   *ngIf="coursesInFocus?.length > 0"
   class="wiof-course-in-focus-container"
 >
-  <ion-card-header class="ion-align-center wiof-slider-header">
-    <ion-card-title class="title-text">Course in Focus</ion-card-title>
-  </ion-card-header>
-  <ion-card-content class="background ion-no-padding">
+  <mat-card-header class="items-center wiof-slider-header">
+    <mat-card-title class="title-text">Course in Focus</mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="background p-0">
     <div *ngIf="coursesInFocus; else loading">
       <ion-slides #slider [options]="slideOpts">
         <ion-slide *ngFor="let courseInFocus of coursesInFocus">
-          <ion-card
-            class="ion-no-padding ion-no-margin"
+          <mat-card
+            class="p-0 m-0"
             style="box-shadow: none"
           >
-            <ion-card-content
-              class="ion-text-start card-content ion-no-padding"
+            <mat-card-content
+              class="text-left card-content p-0"
             >
-              <ion-row class="ion-padding course-details">
-                <ion-col size="9">
+              <div class="flex flex-wrap p-4 course-details">
+                <div class="w-3/4">
                   <h2>
                     <strong
                       ><a [href]="courseInFocus.link"></a
@@ -30,15 +30,15 @@
                   <p>
                     <span>Approx. Cost: {{ courseInFocus.approxCost }}</span>
                   </p>
-                </ion-col>
-                <ion-col size="3">
+                </div>
+                <div class="w-1/4">
                   <img
                     class="course-in-focus-image"
                     [src]="courseInFocus.image$ | async"
                     alt=""
                   />
-                </ion-col>
-                <ion-col size="12">
+                </div>
+                <div class="w-full">
                   <p>
                     <span>Key Topics</span>:
                     <span
@@ -47,7 +47,7 @@
                       >{{ topic }}</span
                     >
                   </p>
-                  <p class="ion-margin-top course-description">
+                  <p class="mt-4 course-description">
                     {{ courseInFocus.description }}
                   </p>
                   <p>
@@ -58,10 +58,10 @@
                       >Know More</a
                     >
                   </p>
-                </ion-col>
-              </ion-row>
-            </ion-card-content>
-          </ion-card>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
         </ion-slide>
       </ion-slides>
       <div
@@ -79,5 +79,5 @@
     <ng-template #loading>
       <app-wiof-spinner></app-wiof-spinner>
     </ng-template>
-  </ion-card-content>
-</ion-card>
+  </mat-card-content>
+</mat-card>

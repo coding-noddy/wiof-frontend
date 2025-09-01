@@ -1,59 +1,56 @@
-<ion-grid *ngIf="aqiData$ | async as aqiData" class="ion-no-padding">
-  <ion-row>
-    <ion-col size="12">
-      <ion-card>
-        <ion-card-content class="aqi-data-card">
-          <ion-row>
-            <ion-col>
+<div *ngIf="aqiData$ | async as aqiData" class="container mx-auto">
+  <div class="flex flex-wrap">
+    <div class="w-full">
+      <mat-card>
+        <mat-card-content class="aqi-data-card">
+          <div class="flex flex-wrap">
+            <div class="w-full">
               <p class="aqi-station-name">
                 Station: {{ aqiData.city.name | titlecase }}
               </p>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col>
+            </div>
+          </div>
+          <div class="flex flex-wrap">
+            <div class="w-1/2">
               <p class="aqi-level-card" [ngClass]="aqiColor(aqiData.aqi)">
                 AQI : {{ aqiData.aqi }}
               </p>
-            </ion-col>
-            <ion-col>
+            </div>
+            <div class="w-1/2">
               <p class="dominent-pollutant">
                 Dominent Pollutant: {{ aqiData.dominentpol | uppercase }}
               </p>
-            </ion-col>
-          </ion-row>
-        </ion-card-content>
-      </ion-card>
-    </ion-col>
-  </ion-row>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
 
   <!-- Parameters data -->
   <div scrollY="true" class="wiof-aqi-widget-items">
-    <ion-row>
-      <ion-col
-        size-xs="4"
-        size-md="6"
-        size-lg="4"
-        size-xl="3"
+    <div class="flex flex-wrap">
+      <div
+        class="w-1/3 md:w-1/2 lg:w-1/3 xl:w-1/4"
         *ngFor="let parameter of getAqiParameters(aqiData.iaqi)"
       >
-        <ion-card class="card-non-aqi">
-          <ion-card-header>
+        <mat-card class="card-non-aqi">
+          <mat-card-header>
             <p class="aqi-parameter">
               {{ parameter[0] | uppercase }}
             </p>
-          </ion-card-header>
-          <ion-card-content>
+          </mat-card-header>
+          <mat-card-content>
             <p class="aqi-parameter-value">
               {{ parameter[1].v | number: '1.0-1' }}
             </p>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>
-        <p class="ion-padding">
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+    <div class="flex flex-wrap">
+      <div class="w-full">
+        <p class="p-4">
           Data Credit:&nbsp;<a
             href="https://waqi.info/"
             target="_blank"
@@ -61,7 +58,7 @@
             >World Air Quality Index Project</a
           >
         </p>
-      </ion-col>
-    </ion-row>
+      </div>
+    </div>
   </div>
-</ion-grid>
+</div>

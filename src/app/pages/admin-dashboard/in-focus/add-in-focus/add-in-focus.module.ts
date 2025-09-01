@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { IonicModule } from '@ionic/angular';
 
 import { AddInFocusPageRoutingModule } from './add-in-focus-routing.module';
 
@@ -15,7 +14,6 @@ import { QuillModule } from 'ngx-quill';
   imports: [
     CommonModule,
     FormsModule,
-    IonicModule,
     AddInFocusPageRoutingModule,
     ReactiveFormsModule,
     QuillModule.forRoot(),

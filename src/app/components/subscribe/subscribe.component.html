@@ -39,18 +39,18 @@
     (submit)="onSubmit()"
     class="wiof-subscribe-form"
   >
-    <ion-item>
-      <ion-label position="floating">First Name</ion-label>
-      <ion-input formControlName="firstName"></ion-input> </ion-item
-    ><br />
-    <ion-item>
-      <ion-label position="floating">Last Name</ion-label>
-      <ion-input formControlName="lastName"></ion-input> </ion-item
-    ><br />
-    <ion-item>
-      <ion-label position="floating">Email</ion-label>
-      <ion-input formControlName="email"></ion-input> </ion-item
-    ><br />
+    <mat-form-field appearance="outline" class="w-full mb-4">
+      <mat-label>First Name</mat-label>
+      <input matInput formControlName="firstName">
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-full mb-4">
+      <mat-label>Last Name</mat-label>
+      <input matInput formControlName="lastName">
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-full mb-4">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email">
+    </mat-form-field>
     <button
       [disabled]="!addSubscriberForm.valid"
       class="wiof-primary-btn"

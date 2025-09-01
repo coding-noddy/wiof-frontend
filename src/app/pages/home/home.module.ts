@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { LayoutModule } from '@angular/cdk/layout';
 import { AppCommonModule } from 'src/app/app-common.module';
@@ -14,7 +13,6 @@ import { CourseInFocusComponent } from '../../components/course-in-focus/course-
   imports: [
     CommonModule,
     FormsModule,
-    IonicModule,
     HomePageRoutingModule,
     AppCommonModule,
     MatGridListModule,

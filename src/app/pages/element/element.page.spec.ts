@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed, async } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { ElementPage } from './element.page';
 
@@ -10,7 +9,7 @@ describe('ElementPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ElementPage],
-      imports: [IonicModule.forRoot()],
+      imports: [],
       providers: [
         {
           provide: ActivatedRoute,

@@ -1,7 +1,4 @@
-// Ionic Variables and Theming. For more info, please see:
-// http://ionicframework.com/docs/theming/
-
-/** Ionic CSS Variables **/
+/** WIOF Element Colors - Converted from Ionic Variables **/
 :root {
   /** primary **/
   --ion-color-primary: #3880ff;
@@ -75,76 +72,15 @@
   --ion-color-light-shade: #d7d8da;
   --ion-color-light-tint: #f5f6f9;
 
-  //home
-  //--ion-color-home: #FFDE68;
-  //testing color
-  --ion-color-home: #fbb0ac;
-  --ion-color-home-rgb: 252, 228, 213;
-  --ion-color-home-contrast: #000000;
-  --ion-color-home-contrast-rgb: 0, 0, 0;
-  --ion-color-home-shade: #fbb0ac;
-  --ion-color-home-tint: #fbb0ac;
-
-  //home-light
-  --ion-color-home-light: #c1a182;
-  --ion-color-home-light-rgb: 193, 161, 130;
-  --ion-color-home-light-contrast: #000000;
-  --ion-color-home-light-contrast-rgb: 0, 0, 0;
-  --ion-color-home-light-shade: #aa8e72;
-  --ion-color-home-light-tint: #c7aa8f;
-
-  //earth
-
-  --ion-color-earth: #bded81;
-  --ion-color-earth-rgb: 189, 237, 129;
-  --ion-color-earth-contrast: #000000;
-  --ion-color-earth-contrast-rgb: 0, 0, 0;
-  --ion-color-earth-shade: #a6d172;
-  --ion-color-earth-tint: #c4ef8e;
-
-  //energy
-  --ion-color-energy: #ffebb8;
-  --ion-color-energy-rgb: 255, 235, 184;
-  --ion-color-energy-contrast: #000000;
-  --ion-color-energy-contrast-rgb: 0, 0, 0;
-  --ion-color-energy-shade: #e0cfa2;
-  --ion-color-energy-tint: #ffedbf;
-
-  // air
-
-  --ion-color-air: #e0caf5;
-  --ion-color-air-rgb: 224, 202, 245;
-  --ion-color-air-contrast: #000000;
-  --ion-color-air-contrast-rgb: 0, 0, 0;
-  --ion-color-air-shade: #c5b2d8;
-  --ion-color-air-tint: #e3cff6;
-
-  //air ele - for take action page air variable is not working so had to create duplicate variable with different name
-
-  --ion-color-airele: #e0caf5;
-  --ion-color-airele-rgb: 224, 202, 245;
-  --ion-color-airele-contrast: #000000;
-  --ion-color-airele-contrast-rgb: 0, 0, 0;
-  --ion-color-airele-shade: #c5b2d8;
-  --ion-color-airele-tint: #e3cff6;
-
-  //water
-
-  --ion-color-water: #dff3ff;
-  --ion-color-water-rgb: 223, 243, 255;
-  --ion-color-water-contrast: #000000;
-  --ion-color-water-contrast-rgb: 0, 0, 0;
-  --ion-color-water-shade: #c4d6e0;
-  --ion-color-water-tint: #e2f4ff;
-
-  //spirit
-
-  --ion-color-spirit: #f1dec6;
-  --ion-color-spirit-rgb: 241, 222, 198;
-  --ion-color-spirit-contrast: #000000;
-  --ion-color-spirit-contrast-rgb: 0, 0, 0;
-  --ion-color-spirit-shade: #d4c3ae;
-  --ion-color-spirit-tint: #f2e1cc;
+  /* WIOF Element Colors */
+  --wiof-home: #fbb0ac;
+  --wiof-home-light: #c1a182;
+  --wiof-earth: #bded81;
+  --wiof-energy: #ffebb8;
+  --wiof-air: #e0caf5;
+  --wiof-airele: #e0caf5;
+  --wiof-water: #dff3ff;
+  --wiof-spirit: #f1dec6;
 }
 
 .ion-color-earth {

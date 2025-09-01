@@ -5,25 +5,23 @@
     [formGroup]="userResponse"
   >
     <p>{{ i + 1 }} ) {{ question }}</p>
-    <ion-item>
-      <ion-range
+    <div class="flex items-center p-4 border rounded">
+      <span class="text-wiof-home mr-2">1</span>
+      <input
+        type="range"
         min="1"
         max="5"
         step="1"
         [formControlName]="getFormControlName(i)"
-        snaps
-        color="home"
-        class="ion-no-padding"
-      >
-        <ion-text slot="start" color="home">1</ion-text>
-        <ion-text slot="end" color="home">5</ion-text>
-      </ion-range>
-    </ion-item>
+        class="flex-1 mx-2 accent-wiof-home"
+      />
+      <span class="text-wiof-home ml-2">5</span>
+    </div>
   </div>
 </div>
 
 <div
-  class="ion-text-center ion-margin-top ion-margin-bottom"
+  class="text-center mt-4 mb-4"
   *ngIf="!showResult"
 >
   <button class="wiof-primary-btn" (click)="onSubmit()">Submit</button>
@@ -32,34 +30,34 @@
 
 <div *ngIf="showResult">
   <p class="eq-meter-heading">Your emotional intelligence is:</p>
-  <ion-row class="result-box">
-    <ion-col size="12" size-md="6">
+  <div class="flex flex-wrap result-box">
+    <div class="w-full md:w-1/2 p-2">
       <p class="eq-meter-heading">
         Attention: {{ this.results[0] | number: '1.0-2' }}%
       </p>
       <app-eq-widget-test [gpr]="['m', '1', results[0]]"></app-eq-widget-test>
-    </ion-col>
-    <ion-col size="12" size-md="6">
+    </div>
+    <div class="w-full md:w-1/2 p-2">
       <p class="eq-meter-heading">
         Clarity: {{ this.results[1] | number: '1.0-2' }}%
       </p>
       <app-eq-widget-test [gpr]="['m', '2', results[1]]"></app-eq-widget-test>
-    </ion-col>
-    <ion-col size="12" size-md="6" offset-md="3">
+    </div>
+    <div class="w-full md:w-1/2 md:mx-auto p-2">
       <p class="eq-meter-heading">
         Reparation: {{ this.results[2] | number: '1.0-2' }}%
       </p>
       <app-eq-widget-test [gpr]="['m', '3', results[2]]"></app-eq-widget-test>
-    </ion-col>
-  </ion-row>
-  <ion-row>
-    <ion-col size="12" class="eq-param-desc">
+    </div>
+  </div>
+  <div class="flex flex-wrap">
+    <div class="w-full eq-param-desc">
       <p>Attention: {{ result1msg }}</p>
       <p>Clarity: {{ result2msg }}</p>
       <p>Reparation: {{ result3msg }}</p>
-    </ion-col>
-  </ion-row>
-  <div class="ion-text-center ion-padding-top ion-padding-bottom">
+    </div>
+  </div>
+  <div class="text-center pt-4 pb-4">
     <button class="wiof-primary-btn" (click)="showResult = false">
       Take Again
     </button>

@@ -1,14 +1,14 @@
 <app-header></app-header>
 <app-subscribe [page]="subscribePage"></app-subscribe>
 <app-social-share-home style="z-index: 2"></app-social-share-home>
-<ion-content>
+<div class="p-4">
   <app-element-welcome-image [welcomeImageClass]="welcomeImageClass"></app-element-welcome-image>
   <app-life-elements [element]="elementName"></app-life-elements>
-  <ion-row>
-    <ion-col size-lg="7" size-xs="12">
+  <div class="flex flex-wrap">
+    <div class="w-full lg:w-7/12">
       <app-video-widget [element]="elementName"></app-video-widget>
-    </ion-col>
-    <ion-col size-lg="5" size-xs="12">
+    </div>
+    <div class="w-full lg:w-5/12">
       <ng-container [ngSwitch]="elementId">
         <app-aqi-widget *ngSwitchCase="'air'"></app-aqi-widget>
         <app-water-widget *ngSwitchCase="'water'"></app-water-widget>
@@ -16,41 +16,40 @@
         <app-food-ph-indicator *ngSwitchCase="'earth'"></app-food-ph-indicator>
         <app-eq-widget *ngSwitchCase="'spirit'"></app-eq-widget>
       </ng-container>
-    </ion-col>
-  </ion-row>
-  <ion-row>
-    <ion-col size-lg="7" size-xs="12">
+    </div>
+  </div>
+  <div class="flex flex-wrap">
+    <div class="w-full lg:w-7/12">
       <app-in-focus-widget
         [inFocuses]="inFocuses$ | async"
         [element]="elementName"
       ></app-in-focus-widget>
-    </ion-col>
-    <ion-col
-      size-lg="5"
-      size-xs="12"
+    </div>
+    <div
+      class="w-full lg:w-5/12"
       *ngIf="coffeeConversations$ | async as coffeeConversations"
     >
       <app-coffee-conversation
         [element]="elementName"
         [coffeeConvList]="coffeeConversations"
       ></app-coffee-conversation>
-    </ion-col>
-  </ion-row>
-  <ion-row>
-    <ion-col>
+    </div>
+  </div>
+  <div class="flex flex-wrap">
+    <div class="w-full">
       <app-blog-slider
         [blogList]="blogs$ | async"
         [element]="elementName"
       ></app-blog-slider>
-    </ion-col>
-  </ion-row>
-  <ion-row>
-    <ion-col>
+    </div>
+  </div>
+  <div class="flex flex-wrap">
+    <div class="w-full">
       <app-video-slider
         [videoList]="videos$ | async"
         [element]="elementName"
       ></app-video-slider>
-    </ion-col>
-  </ion-row>
+    </div>
+  </div>
   <app-wiof-footer></app-wiof-footer>
-</ion-content>
+</div>

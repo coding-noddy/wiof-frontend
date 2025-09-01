@@ -1,31 +1,31 @@
-<ion-card
+<mat-card
   *ngIf="coffeeConvList && coffeeConvList.length > 0"
   class="coffee-conv-container"
 >
-  <ion-card-header
-    class="ion-align-center wiof-slider-header"
+  <mat-card-header
+    class="items-center wiof-slider-header"
     [ngClass]="coffeeConvClass"
   >
-    <ion-row>
-      <ion-col class="title-text" size="12">Coffee Conversations</ion-col>
-    </ion-row>
-  </ion-card-header>
-  <ion-card-content class="background" [ngClass]="coffeeConvClass">
+    <div class="flex flex-wrap">
+      <div class="w-full title-text">Coffee Conversations</div>
+    </div>
+  </mat-card-header>
+  <mat-card-content class="background" [ngClass]="coffeeConvClass">
     <div *ngIf="coffeeConvList; else loading">
       <ion-slides #wiofCoffeeConvSlider [options]="slideOpts">
         <ion-slide *ngFor="let coffeeConv of coffeeConvList">
-          <ion-card class="coffee-conv-card">
-            <ion-card-content class="ion-text-start card-content">
-              <ion-row>
-                <ion-col class="media-container" size-xs="12">
+          <mat-card class="coffee-conv-card">
+            <mat-card-content class="text-left card-content">
+              <div class="flex flex-wrap">
+                <div class="w-full media-container">
                   <iframe
                     class="media-player"
                     [title]="coffeeConv.topic"
                     [src]="coffeeConv.sanitizedLink"
                     allowfullscreen
                   ></iframe>
-                </ion-col>
-                <ion-col class="coffee-conv-content" size-xs="12">
+                </div>
+                <div class="w-full coffee-conv-content">
                   <h2>
                     <strong>{{ coffeeConv.topic }}</strong>
                   </h2>
@@ -66,10 +66,10 @@
                     </div>
                     <p>{{ coffeeConv.intervieweeDesc }}</p>
                   </div>
-                </ion-col>
-              </ion-row>
-            </ion-card-content>
-          </ion-card>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
         </ion-slide>
       </ion-slides>
       <div
@@ -84,7 +84,7 @@
       ></div>
     </div>
     <ng-template #loading>
-      <ion-spinner name="crescent" class="wiof-spinner"></ion-spinner><br />
+      <mat-spinner class="wiof-spinner"></mat-spinner><br />
     </ng-template>
-  </ion-card-content>
-</ion-card>
+  </mat-card-content>
+</mat-card>

@@ -1,101 +1,103 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Add Blog</ion-title>
-    <ion-buttons slot="end">
-      <ion-button color="success" fill="solid" size="large" (click)="onSubmit()"
-        >Save</ion-button
-      >
-      <ion-button
-        color="medium"
-        fill="clear"
-        size="large"
-        routerLink="/admin-dashboard"
-        >Cancel</ion-button
-      >
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<mat-toolbar color="primary">
+  <button mat-icon-button routerLink="/admin-dashboard">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <span>Add Blog</span>
+  <span class="flex-1"></span>
+  <div class="flex gap-2">
+    <button mat-raised-button color="accent" class="text-lg" (click)="onSubmit()">
+      Save
+    </button>
+    <button
+      mat-flat-button
+      color="warn"
+      class="text-lg"
+      routerLink="/admin-dashboard">
+      Cancel
+    </button>
+  </div>
+</mat-toolbar>
 
-<ion-content>
+<div class="p-4">
   <form [formGroup]="addBlogForm">
-    <ion-grid>
-      <ion-row>
-        <ion-col size-xs="12" size-md="6"
-          ><ion-item>
-            <ion-label position="floating">Blog Title</ion-label>
-            <ion-input formControlName="title"></ion-input>
-          </ion-item>
-        </ion-col>
+    <div class="container mx-auto">
+      <div class="flex flex-wrap">
+        <div class="w-full md:w-1/2 p-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Blog Title</mat-label>
+            <input matInput formControlName="title">
+          </mat-form-field>
+        </div>
 
-        <ion-col size-xs="12" size-md="6"
-          ><ion-item>
-            <ion-label position="floating">Author Name</ion-label>
-            <ion-input formControlName="authorName"></ion-input>
-          </ion-item>
-        </ion-col>
+        <div class="w-full md:w-1/2 p-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Author Name</mat-label>
+            <input matInput formControlName="authorName">
+          </mat-form-field>
+        </div>
 
-        <ion-col size-xs="12" size-md="6"
-          ><ion-item>
-            <ion-label position="floating">Category</ion-label>
-            <ion-select formControlName="category">
-              <ion-select-option
+        <div class="w-full md:w-1/2 p-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Category</mat-label>
+            <mat-select formControlName="category">
+              <mat-option
                 [value]="category"
                 *ngFor="let category of categories"
-                >{{ category }}</ion-select-option
+                >{{ category }}</mat-option
               >
-            </ion-select>
-          </ion-item>
-        </ion-col>
+            </mat-select>
+          </mat-form-field>
+        </div>
 
-        <ion-col size-xs="12" size-md="6"
-          ><ion-item>
-            <ion-label position="floating">Sub Category</ion-label>
-            <ion-input formControlName="subCategory"></ion-input>
-          </ion-item>
-        </ion-col>
+        <div class="w-full md:w-1/2 p-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Sub Category</mat-label>
+            <input matInput formControlName="subCategory">
+          </mat-form-field>
+        </div>
 
-        <ion-col size-xs="12"
-          ><ion-item>
-            <ion-label position="stacked">Blog Image</ion-label>
-            <ion-input
+        <div class="w-full p-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Blog Image</mat-label>
+            <input
+              matInput
               type="file"
               accept="image/*"
               (change)="onFileSelected($event)"
               formControlName="image"
-            ></ion-input>
-            <div><ion-img [src]="imageToDisplay"></ion-img></div>
-          </ion-item>
-        </ion-col>
+            >
+          </mat-form-field>
+          <div><img [src]="imageToDisplay" class="max-w-xs mt-2"></div>
+        </div>
 
-        <ion-col size-xs="12"
-          ><ion-item>
-            <ion-label position="floating">Blog Short Description</ion-label>
-            <ion-textarea
+        <div class="w-full p-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Blog Short Description</mat-label>
+            <textarea
+              matInput
               formControlName="shortDescription"
               rows="2"
-              auto-grow="true"
-            ></ion-textarea>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12"
-          ><ion-item>
-            <ion-label position="floating">About Author</ion-label>
-            <ion-textarea
+            ></textarea>
+          </mat-form-field>
+        </div>
+        <div class="w-full p-2">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>About Author</mat-label>
+            <textarea
+              matInput
               formControlName="aboutAuthor"
               rows="2"
-              auto-grow="true"
-            ></ion-textarea>
-          </ion-item>
-        </ion-col>
+            ></textarea>
+          </mat-form-field>
+        </div>
 
-        <ion-col size-xs="12">
-          <ion-item><ion-label>Blog Content</ion-label></ion-item>
+        <div class="w-full p-2">
+          <div class="mb-2">
+            <label class="text-sm font-medium text-gray-700">Blog Content</label>
+          </div>
           <quill-editor formControlName="content"></quill-editor>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+        </div>
+      </div>
+    </div>
   </form>
-</ion-content>
+</div>

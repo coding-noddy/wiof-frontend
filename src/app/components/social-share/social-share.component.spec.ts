@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
 
 import { SocialShareComponent } from './social-share.component';
 
@@ -10,7 +9,7 @@ describe('SocialShareComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [SocialShareComponent],
-      imports: [IonicModule.forRoot()]
+      imports: []
     }).compileComponents();
 
     fixture = TestBed.createComponent(SocialShareComponent);

@@ -1,5 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 
 import { SubscribersPage } from './subscribers.page';
 
@@ -10,7 +12,7 @@ describe('SubscribersPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [SubscribersPage],
-      imports: [IonicModule.forRoot()]
+      imports: [MatToolbarModule, MatButtonModule, MatCardModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(SubscribersPage);

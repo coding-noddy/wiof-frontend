@@ -1,5 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 import { AddPollPage } from './add-poll.page';
 
@@ -10,7 +13,7 @@ describe('AddPollPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [AddPollPage],
-      imports: [IonicModule.forRoot()]
+      imports: [BrowserAnimationsModule, MatButtonModule, MatFormFieldModule, MatInputModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(AddPollPage);
