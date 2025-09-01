@@ -4,7 +4,7 @@
 <app-social-share-home style="z-index: 2"></app-social-share-home>
 <app-concent-popup *ngIf="viewConsentPopup" (accepted)="onAccept()"></app-concent-popup>
 
-<ion-content>
+<div class="content-container mat-typography">
   <div class="page-container">
     <!-- Hero Section -->
     <section class="hero">
@@ -19,41 +19,33 @@
     <!-- Life Elements -->
     <app-life-elements></app-life-elements>
 
-    <!-- News and Conversations -->
-    <ion-grid class="ion-padding-top">
-      <ion-row>
-        <ion-col size-xs="12" size-md="6" size-lg="8">
-          <app-breaking-news [newsList]="newsList$ | async"></app-breaking-news>
-        </ion-col>
-        <ion-col size-xs="12" size-md="6" size-lg="4">
-          <app-coffee-conversation
-            [coffeeConvList]="coffeeConversations$ | async"
-            [fromHomePage]="true">
-          </app-coffee-conversation>
-        </ion-col>
-      </ion-row>
+    <!-- News, Conversations, NGOs, Courses, Calendar, and Polls -->
+    <mat-grid-list [cols]="gridCols" rowHeight="fit" gutterSize="16">
+      <mat-grid-tile [colspan]="newsColSpan">
+        <app-breaking-news [newsList]="newsList$ | async"></app-breaking-news>
+      </mat-grid-tile>
+      <mat-grid-tile [colspan]="sidebarColSpan">
+        <app-coffee-conversation
+          [coffeeConvList]="coffeeConversations$ | async"
+          [fromHomePage]="true">
+        </app-coffee-conversation>
+      </mat-grid-tile>
 
-      <!-- NGOs and Courses -->
-      <ion-row>
-        <ion-col size-xs="12" size-md="6" size-lg="8">
-          <app-ngo-in-focus [ngosInFocus]="ngosInFocus$ | async"></app-ngo-in-focus>
-        </ion-col>
-        <ion-col size-xs="12" size-md="6" size-lg="4">
-          <app-course-in-focus [coursesInFocus]="coursesInFocus$ | async"></app-course-in-focus>
-        </ion-col>
-      </ion-row>
+      <mat-grid-tile [colspan]="newsColSpan">
+        <app-ngo-in-focus [ngosInFocus]="ngosInFocus$ | async"></app-ngo-in-focus>
+      </mat-grid-tile>
+      <mat-grid-tile [colspan]="sidebarColSpan">
+        <app-course-in-focus [coursesInFocus]="coursesInFocus$ | async"></app-course-in-focus>
+      </mat-grid-tile>
 
-      <!-- Calendar and Polls -->
-      <ion-row>
-        <ion-col size-xs="12" size-md="6" size-lg="8">
-          <app-env-calender></app-env-calender>
-        </ion-col>
-        <ion-col size-xs="12" size-md="6" size-lg="4">
-          <app-polls-widget></app-polls-widget>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+      <mat-grid-tile [colspan]="newsColSpan">
+        <app-env-calender></app-env-calender>
+      </mat-grid-tile>
+      <mat-grid-tile [colspan]="sidebarColSpan">
+        <app-polls-widget></app-polls-widget>
+      </mat-grid-tile>
+    </mat-grid-list>
   </div>
 
   <app-wiof-footer></app-wiof-footer>
-</ion-content>
+</div>
