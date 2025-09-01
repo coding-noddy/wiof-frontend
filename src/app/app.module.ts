@@ -14,6 +14,8 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { AppCommonModule } from './app-common.module';
+import { ElementPage } from './pages/element/element.page';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
   AngularFireAnalyticsModule,
@@ -22,7 +24,7 @@ import {
 } from '@angular/fire/compat/analytics';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, ElementPage],
   entryComponents: [],
   imports: [
     BrowserModule,
@@ -30,6 +32,7 @@ import {
     FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,
+    AppCommonModule,
     HttpClientModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule,
