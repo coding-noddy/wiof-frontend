@@ -108,6 +108,7 @@ const COMPONENTS = [
     MatSnackBarModule,
     MatToolbarModule
   ],
+  declarations: [...COMPONENTS],
   exports: [
     CommonModule,
     RouterModule,
@@ -126,8 +127,6 @@ const COMPONENTS = [
     MatSnackBarModule,
     MatToolbarModule,
     ...COMPONENTS
-  ],
-  declarations: [...COMPONENTS],
-  providers: []
+  ]
 })
 export class AppCommonModule {}

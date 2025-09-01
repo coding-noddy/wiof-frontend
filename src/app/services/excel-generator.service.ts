@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as XLSX from 'xlsx';
+// import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 
 const EXCEL_TYPE =
@@ -13,17 +13,17 @@ export class ExcelGeneratorService {
   constructor() {}
 
   public exportAsExcelFile(json: any[], excelFileName: string): void {
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(json);
-    const workbook: XLSX.WorkBook = {
-      Sheets: { data: worksheet },
-      SheetNames: ['data']
-    };
-    // const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
-    const excelBuffer: any = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array'
-    });
-    this.saveAsExcelFile(excelBuffer, excelFileName);
+    // const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(json);
+    // const workbook: XLSX.WorkBook = {
+    //   Sheets: { data: worksheet },
+    //   SheetNames: ['data']
+    // };
+    // // const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
+    // const excelBuffer: any = XLSX.write(workbook, {
+    //   bookType: 'xlsx',
+    //   type: 'array'
+    // });
+    // this.saveAsExcelFile(excelBuffer, excelFileName);
   }
 
   private saveAsExcelFile(buffer: any, fileName: string): void {

@@ -14,7 +14,6 @@ import { AppCommonModule } from 'src/app/app-common.module';
     FormsModule,
     VideosPageRoutingModule,
     AppCommonModule
-  ],
-  declarations: [VideosPage]
+  ]
 })
 export class VideosPageModule {}

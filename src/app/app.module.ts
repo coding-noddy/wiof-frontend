@@ -19,7 +19,6 @@ import { ElementPage } from './pages/element/element.page';
 
 @NgModule({
   declarations: [AppComponent, ElementPage],
-  entryComponents: [],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
