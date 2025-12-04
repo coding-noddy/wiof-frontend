@@ -16,7 +16,7 @@ $breakpoint-tablet: 767px;
 .hero {
   background: url("../../../assets/banners/home_banner.jpg") no-repeat center center;
   background-size: cover;
-  color: #fffef7;
+  color: white;
   text-align: center;
   padding: 60px 20px;
   border-radius: 12px;
@@ -27,9 +27,9 @@ $breakpoint-tablet: 767px;
   /* Adjust font size for small screens */
   h1 {
     font-size: 1.6rem;
-    font-weight: 900;
-    text-shadow: 2px 2px 3px rgba(0,0,0,1);
-  
+    font-weight: bold;
+    text-shadow: 1px 1px 2px black;
+
     @media (min-width: 768px) {
       font-size: 2.4rem; /* Larger font for tablets and above */
     }
@@ -37,7 +37,7 @@ $breakpoint-tablet: 767px;
       font-size: 3rem; /* Even larger for desktops */
     }
   }
- 
+
   .cta {
     margin-top: 20px;
     padding: 12px 28px;
@@ -85,23 +85,6 @@ $breakpoint-tablet: 767px;
   }
 }
 
-// Making background image darker
-.hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.9);
-  z-index: 1;
-}
-
-/* Content on top */
-.hero>* {
-  position: relative;
-  z-index: 2;
-}
-
 ion-content {
   --background: #f7f9fc;
 }
@@ -110,8 +93,7 @@ app-wiof-footer {
   margin-top: 2rem;
 }
 
-ion-g
-  rid {
+ion-grid {
   --ion-grid-padding: 0;
 }
 
