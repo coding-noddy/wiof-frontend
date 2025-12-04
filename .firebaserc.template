@@ -1,0 +1,22 @@
+{
+  "projects": {
+    "staging": "wiof-staging",
+    "production": "wiof-prod"
+  },
+  "targets": {
+    "wiof-staging": {
+      "hosting": {
+        "staging": [
+          "wiof-staging"
+        ]
+      }
+    },
+    "wiof-prod": {
+      "hosting": {
+        "production": [
+          "wiof-prod"
+        ]
+      }
+    }
+  }
+}
