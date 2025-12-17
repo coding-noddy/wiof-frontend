@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-social-share-home',
+  selector: 'app-social-share',
   templateUrl: './social-share-home.component.html',
   styleUrls: ['./social-share-home.component.scss']
 })
