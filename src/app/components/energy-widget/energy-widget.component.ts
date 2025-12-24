@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { image } from 'd3';
 
 @Component({
@@ -17,6 +18,7 @@ export class EnergyWidgetComponent implements OnInit {
   buttonClicked = false;
   Consumptionnull = false;
   unitnull = false;
+  showUnits=false;
   petrolimages: any;
   dieselimages: any;
   numberofpetrolcans: number;
@@ -27,7 +29,41 @@ export class EnergyWidgetComponent implements OnInit {
 
   ngOnInit() {}
 
+  toggleUnitDropdown() {
+    this.showUnits = !this.showUnits;
+  }
+  selectUnit(unit: string) {
+    this.Selectedunit = unit;
+    this.unitnull = false;
+    this.showUnits = false;
+  }
+  
   CalculateCO2() {
+    if (
+      this.EnergyConsumption === undefined ||
+      this.EnergyConsumption === null ||
+      this.EnergyConsumption <= 0
+    ) {
+      this.Consumptionnull = true;
+      this.unitnull = false;
+      this.buttonClicked = false; 
+      return;
+    }
+  
+    if (!this.Selectedunit) {
+      this.unitnull = true;
+      this.Consumptionnull = false;
+      this.buttonClicked = false; 
+      return;
+    }
+  
+    if (this.EnergyConsumption === undefined || this.EnergyConsumption === null || isNaN(this.EnergyConsumption)) { 
+      this.Consumptionnull = true; 
+      this.unitnull = false; 
+      this.buttonClicked = false; 
+      return; 
+    }
+
     if (this.Selectedunit === 'KW' && this.EnergyConsumption > 0) {
       this.buttonClicked = true;
       this.unitnull = false;

@@ -14,28 +14,41 @@
         </ion-col>
       </ion-row>
       <ion-row>
-        <ion-col size="12" size-md="5" size-lg="12" size-xl="5">
+        <ion-col size="12" size-md="6" size-lg="12" size-xl="6">
           <ion-item color="energy">
             <ion-input
+              type="text"
+              inputmode="numeric"
               [(ngModel)]="EnergyConsumption"
               placeholder="Monthly Energy Consumption"
             ></ion-input>
           </ion-item>
           <p *ngIf="Consumptionnull" style="color: red">
-            Please enter a valid consumption
+            Please enter a valid energy consumption value.<br>
+            Value must be positive (e.g., 120 or 120.5).
           </p>
         </ion-col>
+        
         <ion-col size="12" size-md="4" size-lg="12" size-xl="4">
-          <ion-item color="energy">
-            <ion-label>Select Unit</ion-label>
-            <ion-select interface="popover" [(ngModel)]="Selectedunit">
-              <ion-select-option *ngFor="let unit of units" [value]="unit">{{
-                unit | titlecase
-              }}</ion-select-option>
-            </ion-select>
+          <ion-item button (click)="toggleUnitDropdown()" color="energy">
+            <ion-label>
+              {{ Selectedunit || 'Select unit' }}
+            </ion-label>
+            <ion-icon name="chevron-down-outline" slot="end"></ion-icon>
           </ion-item>
+          
+          <div class="unit-dropdown" *ngIf="showUnits">
+            <div
+              class="unit-option"
+              *ngFor="let unit of units"
+              (click)="selectUnit(unit)"
+            >
+              {{ unit }}
+            </div>
+          </div>
           <p *ngIf="unitnull" style="color: red">Please select a unit</p>
         </ion-col>
+
         <ion-col size="12" size-md="3" size-lg="12" size-xl="3">
           <button
             (click)="CalculateCO2()"
@@ -49,7 +62,7 @@
         <ion-col>
           <div class="pump-station" *ngIf="buttonClicked">
             <span class="litresText"
-              >{{ litresofPetrol | number: '1.0-0' }} litres</span
+              >{{ litresofPetrol | number: '1.0-2' }} litres</span
             >
             <img
               src="../../../assets/gas-station-icon.jpg"
@@ -62,7 +75,7 @@
         <ion-col>
           <div class="pump-station" *ngIf="buttonClicked">
             <span class="litresText"
-              >{{ litresofDiesel | number: '1.0-0' }} litres</span
+              >{{ litresofDiesel | number: '1.0-2' }} litres</span
             >
             <img
               src="../../../assets/gas-station-icon.jpg"
