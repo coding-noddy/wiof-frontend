@@ -19,11 +19,11 @@
             <ion-input
               type="text"
               inputmode="numeric"
-              [(ngModel)]="EnergyConsumption"
+              [(ngModel)]="energyConsumption"
               placeholder="Monthly Energy Consumption"
             ></ion-input>
           </ion-item>
-          <p *ngIf="Consumptionnull" style="color: red">
+          <p *ngIf="consumptionNull" style="color: red">
             Please enter a valid energy consumption value.<br>
             Value must be positive (e.g., 120 or 120.5).
           </p>
@@ -32,7 +32,7 @@
         <ion-col size="12" size-md="4" size-lg="12" size-xl="4">
           <ion-item button (click)="toggleUnitDropdown()" color="energy">
             <ion-label>
-              {{ Selectedunit || 'Select unit' }}
+              {{ selectedUnit || 'Select unit' }}
             </ion-label>
             <ion-icon name="chevron-down-outline" slot="end"></ion-icon>
           </ion-item>
@@ -46,7 +46,7 @@
               {{ unit }}
             </div>
           </div>
-          <p *ngIf="unitnull" style="color: red">Please select a unit</p>
+          <p *ngIf="unitNull" style="color: red">Please select a unit</p>
         </ion-col>
 
         <ion-col size="12" size-md="3" size-lg="12" size-xl="3">

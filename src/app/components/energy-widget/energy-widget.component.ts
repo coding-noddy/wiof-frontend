@@ -8,22 +8,22 @@ import { image } from 'd3';
   styleUrls: ['./energy-widget.component.scss']
 })
 export class EnergyWidgetComponent implements OnInit {
-  EnergyConsumption: number;
-  KgsofCO2: number;
-  Selectedunit = '';
+  energyConsumption: number;
+  kgsofCO2: number;
+  selectedUnit = '';
   litresofPetrol: number;
   litresofDiesel: number;
-  KmsbySUV;
+  kmsbySUV;
   kmsbycar;
   buttonClicked = false;
-  Consumptionnull = false;
-  unitnull = false;
+  consumptionNull = false;
+  unitNull = false;
   showUnits=false;
-  petrolimages: any;
-  dieselimages: any;
-  numberofpetrolcans: number;
-  numberofdieselcans: number;
-  roundoffnumberofpetrolcans: number;
+  petrolImages: any;
+  dieselImages: any;
+  numberofPetrolCans: number;
+  numberofDieselCans: number;
+  //roundoffnumberofpetrolcans: number;
   units = ['KW', 'KWH'];
   constructor() {}
 
@@ -32,74 +32,75 @@ export class EnergyWidgetComponent implements OnInit {
   toggleUnitDropdown() {
     this.showUnits = !this.showUnits;
   }
+
   selectUnit(unit: string) {
-    this.Selectedunit = unit;
-    this.unitnull = false;
+    this.selectedUnit = unit;
+    this.unitNull = false;
     this.showUnits = false;
   }
   
   CalculateCO2() {
     if (
-      this.EnergyConsumption === undefined ||
-      this.EnergyConsumption === null ||
-      this.EnergyConsumption <= 0
+      this.energyConsumption === undefined ||
+      this.energyConsumption === null ||
+      this.energyConsumption <= 0
     ) {
-      this.Consumptionnull = true;
-      this.unitnull = false;
+      this.consumptionNull = true;
+      this.unitNull = false;
       this.buttonClicked = false; 
       return;
     }
   
-    if (!this.Selectedunit) {
-      this.unitnull = true;
-      this.Consumptionnull = false;
+    if (!this.selectedUnit) {
+      this.unitNull = true;
+      this.consumptionNull = false;
       this.buttonClicked = false; 
       return;
     }
   
-    if (this.EnergyConsumption === undefined || this.EnergyConsumption === null || isNaN(this.EnergyConsumption)) { 
-      this.Consumptionnull = true; 
-      this.unitnull = false; 
+    if (this.energyConsumption === undefined || this.energyConsumption === null || isNaN(this.energyConsumption)) { 
+      this.consumptionNull = true; 
+      this.unitNull = false; 
       this.buttonClicked = false; 
       return; 
     }
 
-    if (this.Selectedunit === 'KW' && this.EnergyConsumption > 0) {
+    if (this.selectedUnit === 'KW' && this.energyConsumption > 0) {
       this.buttonClicked = true;
-      this.unitnull = false;
-      this.Consumptionnull = false;
-      this.KgsofCO2 = this.EnergyConsumption * 612;
-      this.litresofPetrol = this.KgsofCO2 / 2.296;
-      this.litresofDiesel = this.KgsofCO2 / 2.653;
+      this.unitNull = false;
+      this.consumptionNull = false;
+      this.kgsofCO2 = this.energyConsumption * 612;
+      this.litresofPetrol = this.kgsofCO2 / 2.296;
+      this.litresofDiesel = this.kgsofCO2 / 2.653;
       this.kmsbycar = this.litresofPetrol * 15;
-      this.KmsbySUV = this.litresofDiesel * 12;
-      this.numberofpetrolcans = this.litresofPetrol / 100;
-      this.numberofdieselcans = this.litresofDiesel / 500;
-    } else if (this.Selectedunit === 'KWH' && this.EnergyConsumption > 0) {
+      this.kmsbySUV = this.litresofDiesel * 12;
+      this.numberofPetrolCans = this.litresofPetrol / 100;
+      this.numberofDieselCans = this.litresofDiesel / 500;
+    } else if (this.selectedUnit === 'KWH' && this.energyConsumption > 0) {
       this.buttonClicked = true;
-      this.unitnull = false;
-      this.Consumptionnull = false;
-      this.KgsofCO2 = this.EnergyConsumption * 0.85;
-      this.litresofPetrol = this.KgsofCO2 / 2.296;
-      this.litresofDiesel = this.KgsofCO2 / 2.653;
+      this.unitNull = false;
+      this.consumptionNull = false;
+      this.kgsofCO2 = this.energyConsumption * 0.85;
+      this.litresofPetrol = this.kgsofCO2 / 2.296;
+      this.litresofDiesel = this.kgsofCO2 / 2.653;
       this.kmsbycar = this.litresofPetrol * 15;
-      this.KmsbySUV = this.litresofDiesel * 12;
-      this.numberofpetrolcans = this.litresofPetrol / 100;
+      this.kmsbySUV = this.litresofDiesel * 12;
+      this.numberofPetrolCans = this.litresofPetrol / 100;
     } else if (
-      this.EnergyConsumption < 0 &&
-      (this.Selectedunit === 'KWH' || this.Selectedunit === 'KW')
+      this.energyConsumption < 0 &&
+      (this.selectedUnit === 'KWH' || this.selectedUnit === 'KW')
     ) {
-      this.unitnull = false;
-      this.Consumptionnull = true;
-    } else if (this.EnergyConsumption > 0 && this.Selectedunit === '') {
-      this.unitnull = true;
-      this.Consumptionnull = false;
+      this.unitNull = false;
+      this.consumptionNull = true;
+    } else if (this.energyConsumption > 0 && this.selectedUnit === '') {
+      this.unitNull = true;
+      this.consumptionNull = false;
     } else if (
-      this.EnergyConsumption === undefined &&
-      this.Selectedunit === ''
+      this.energyConsumption === undefined &&
+      this.selectedUnit === ''
     ) {
-      this.unitnull = true;
-      this.Consumptionnull = true;
+      this.unitNull = true;
+      this.consumptionNull = true;
     }
   }
 }
