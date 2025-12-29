@@ -80,3 +80,17 @@ body {
     text-shadow: 1px 1px 5px #000;
   }
 }
+
+.unit-dropdown {
+  background: #fff;
+  border: 1px solid #ccc;
+}
+
+.unit-option {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.unit-option:hover {
+  background: #f2f2f2;
+}

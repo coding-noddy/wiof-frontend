@@ -1,17 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-social-share-home',
+  selector: 'app-social-share',
   templateUrl: './social-share-home.component.html',
   styleUrls: ['./social-share-home.component.scss']
 })
 export class SocialShareHomeComponent implements OnInit {
   title: string = 'Checkout this amazing website Worldisonefamily.com..!!';
   url: string = window.location.href;
-  facebookShareLink: string = `https://www.facebook.com/sharer.php?u=${this.url}`;
-  // https://www.linkedin.com/shareArticle?url=[post-url]&title=[post-title]
-  linkedinShareLink: string = `https://www.linkedin.com/shareArticle?url=${this.url}&title=${this.title}`;
-  twitterShareLink: string = `https://twitter.com/share?url=${this.url}&text=${this.title}`;
+  facebookLink: string = `https://www.facebook.com/100071449783619/`;
+  linkedinLink: string = `https://www.linkedin.com/company/world-is-one-family?originalSubdomain=in`;
+  instagramLink: string = `https://www.instagram.com/wiof_social`;
   whatsappShareLink: string = `https://api.whatsapp.com/send?text=${this.title} ${this.url}`;
 
   constructor() {}

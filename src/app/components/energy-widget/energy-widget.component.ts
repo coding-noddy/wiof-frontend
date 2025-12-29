@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { image } from 'd3';
 
 @Component({
@@ -7,63 +8,99 @@ import { image } from 'd3';
   styleUrls: ['./energy-widget.component.scss']
 })
 export class EnergyWidgetComponent implements OnInit {
-  EnergyConsumption: number;
-  KgsofCO2: number;
-  Selectedunit = '';
+  energyConsumption: number;
+  kgsofCO2: number;
+  selectedUnit = '';
   litresofPetrol: number;
   litresofDiesel: number;
-  KmsbySUV;
+  kmsbySUV;
   kmsbycar;
   buttonClicked = false;
-  Consumptionnull = false;
-  unitnull = false;
-  petrolimages: any;
-  dieselimages: any;
-  numberofpetrolcans: number;
-  numberofdieselcans: number;
-  roundoffnumberofpetrolcans: number;
+  consumptionNull = false;
+  unitNull = false;
+  showUnits=false;
+  petrolImages: any;
+  dieselImages: any;
+  numberofPetrolCans: number;
+  numberofDieselCans: number;
+  //roundoffnumberofpetrolcans: number;
   units = ['KW', 'KWH'];
   constructor() {}
 
   ngOnInit() {}
 
+  toggleUnitDropdown() {
+    this.showUnits = !this.showUnits;
+  }
+
+  selectUnit(unit: string) {
+    this.selectedUnit = unit;
+    this.unitNull = false;
+    this.showUnits = false;
+  }
+  
   CalculateCO2() {
-    if (this.Selectedunit === 'KW' && this.EnergyConsumption > 0) {
-      this.buttonClicked = true;
-      this.unitnull = false;
-      this.Consumptionnull = false;
-      this.KgsofCO2 = this.EnergyConsumption * 612;
-      this.litresofPetrol = this.KgsofCO2 / 2.296;
-      this.litresofDiesel = this.KgsofCO2 / 2.653;
-      this.kmsbycar = this.litresofPetrol * 15;
-      this.KmsbySUV = this.litresofDiesel * 12;
-      this.numberofpetrolcans = this.litresofPetrol / 100;
-      this.numberofdieselcans = this.litresofDiesel / 500;
-    } else if (this.Selectedunit === 'KWH' && this.EnergyConsumption > 0) {
-      this.buttonClicked = true;
-      this.unitnull = false;
-      this.Consumptionnull = false;
-      this.KgsofCO2 = this.EnergyConsumption * 0.85;
-      this.litresofPetrol = this.KgsofCO2 / 2.296;
-      this.litresofDiesel = this.KgsofCO2 / 2.653;
-      this.kmsbycar = this.litresofPetrol * 15;
-      this.KmsbySUV = this.litresofDiesel * 12;
-      this.numberofpetrolcans = this.litresofPetrol / 100;
-    } else if (
-      this.EnergyConsumption < 0 &&
-      (this.Selectedunit === 'KWH' || this.Selectedunit === 'KW')
+    if (
+      this.energyConsumption === undefined ||
+      this.energyConsumption === null ||
+      this.energyConsumption <= 0
     ) {
-      this.unitnull = false;
-      this.Consumptionnull = true;
-    } else if (this.EnergyConsumption > 0 && this.Selectedunit === '') {
-      this.unitnull = true;
-      this.Consumptionnull = false;
+      this.consumptionNull = true;
+      this.unitNull = false;
+      this.buttonClicked = false; 
+      return;
+    }
+  
+    if (!this.selectedUnit) {
+      this.unitNull = true;
+      this.consumptionNull = false;
+      this.buttonClicked = false; 
+      return;
+    }
+  
+    if (this.energyConsumption === undefined || this.energyConsumption === null || isNaN(this.energyConsumption)) { 
+      this.consumptionNull = true; 
+      this.unitNull = false; 
+      this.buttonClicked = false; 
+      return; 
+    }
+
+    if (this.selectedUnit === 'KW' && this.energyConsumption > 0) {
+      this.buttonClicked = true;
+      this.unitNull = false;
+      this.consumptionNull = false;
+      this.kgsofCO2 = this.energyConsumption * 612;
+      this.litresofPetrol = this.kgsofCO2 / 2.296;
+      this.litresofDiesel = this.kgsofCO2 / 2.653;
+      this.kmsbycar = this.litresofPetrol * 15;
+      this.kmsbySUV = this.litresofDiesel * 12;
+      this.numberofPetrolCans = this.litresofPetrol / 100;
+      this.numberofDieselCans = this.litresofDiesel / 500;
+    } else if (this.selectedUnit === 'KWH' && this.energyConsumption > 0) {
+      this.buttonClicked = true;
+      this.unitNull = false;
+      this.consumptionNull = false;
+      this.kgsofCO2 = this.energyConsumption * 0.85;
+      this.litresofPetrol = this.kgsofCO2 / 2.296;
+      this.litresofDiesel = this.kgsofCO2 / 2.653;
+      this.kmsbycar = this.litresofPetrol * 15;
+      this.kmsbySUV = this.litresofDiesel * 12;
+      this.numberofPetrolCans = this.litresofPetrol / 100;
     } else if (
-      this.EnergyConsumption === undefined &&
-      this.Selectedunit === ''
+      this.energyConsumption < 0 &&
+      (this.selectedUnit === 'KWH' || this.selectedUnit === 'KW')
     ) {
-      this.unitnull = true;
-      this.Consumptionnull = true;
+      this.unitNull = false;
+      this.consumptionNull = true;
+    } else if (this.energyConsumption > 0 && this.selectedUnit === '') {
+      this.unitNull = true;
+      this.consumptionNull = false;
+    } else if (
+      this.energyConsumption === undefined &&
+      this.selectedUnit === ''
+    ) {
+      this.unitNull = true;
+      this.consumptionNull = true;
     }
   }
 }
