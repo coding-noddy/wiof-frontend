@@ -53,6 +53,7 @@ export class AddBlogPage implements OnInit, OnDestroy {
         this.blog.image$.subscribe((imageData) => {
           this.imageToDisplay = imageData.toString();
         });
+        console.log('Edit mode blog fetched',this.blog)
         if (!this.blog) {
           this.router.navigateByUrl('/admin-dashboard/manage-blog');
           return;
