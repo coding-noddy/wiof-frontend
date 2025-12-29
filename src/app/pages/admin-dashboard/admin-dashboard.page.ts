@@ -45,7 +45,7 @@ export class AdminDashboardPage implements OnInit {
       },
       {
         name: 'About Us Profiles',
-        actionUrl: 'manage-about-us-profiles'
+        actionUrl: 'manage-about-us'
       },
       {
         name: 'Subscriptions',

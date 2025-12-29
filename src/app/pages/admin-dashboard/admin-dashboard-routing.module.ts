@@ -160,6 +160,25 @@ const routes: Routes = [
     ]
   },
   {
+    path:'manage-about-us',
+    children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import('./about-us/manage-about-us/manage-about-us.module').then(
+            (m) => m.ManageAboutUsPageModule
+          )
+      },
+      {
+        path: 'about-us/:mode',
+        loadChildren: () =>
+          import('./about-us/add-about-us/add-about-us.module').then(
+            (m) => m.AddAboutUsPageModule
+          )
+      }
+    ] 
+  },
+  {
     path: 'subscribers',
     loadChildren: () =>
       import('./subscribers/subscribers.module').then(

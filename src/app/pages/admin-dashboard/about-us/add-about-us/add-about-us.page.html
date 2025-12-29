@@ -1,0 +1,92 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Add Team Profile</ion-title>
+    <ion-buttons slot="end">
+      <ion-button 
+        color="success" 
+        fill="solid" 
+        (click)="onSubmit()" 
+        [disabled]="addProfileForm.invalid">
+        Save
+      </ion-button>
+      <ion-button 
+        color="medium" 
+        fill="clear" 
+        routerLink="/admin-dashboard">
+        Cancel
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="addProfileForm">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12" class="ion-text-center">
+          <div class="image-upload-wrapper">
+            <ion-img 
+              [src]="imageToDisplay || 'assets/placeholder.png'" 
+              style="width: 150px; height: 150px; margin: 0 auto; border-radius: 50%; overflow: hidden; object-fit: cover;">
+            </ion-img>
+            
+            <div class="ion-margin-top">
+              <input 
+                type="file" 
+                id="file-upload" 
+                (change)="onFileChange($event)" 
+                accept="image/*" 
+                style="display: none;" 
+                #fileInput>
+              
+              <ion-button fill="outline" size="small" (click)="fileInput.click()">
+                {{ isImageSelected ? 'Change Photo' : 'Upload Photo' }}
+              </ion-button>
+              
+              <ion-button fill="clear" color="danger" size="small" *ngIf="isImageSelected" (click)="removeImage()">
+                Remove
+              </ion-button>
+            </div>
+          </div>
+        </ion-col>
+
+        <ion-col size-xs="12" size-md="6">
+          <ion-item>
+            <ion-label position="floating">Serial Number</ion-label>
+            <ion-input type="number" formControlName="serialNo" placeholder="e.g. 1"></ion-input>
+          </ion-item>
+        </ion-col>
+
+        <ion-col size-xs="12" size-md="6">
+          <ion-item>
+            <ion-label position="floating">Full Name</ion-label>
+            <ion-input type="text" formControlName="name" placeholder="Enter name"></ion-input>
+          </ion-item>
+        </ion-col>
+
+        <ion-col size="12">
+          <ion-item>
+            <ion-label position="floating">Social Media Link (LinkedIn/Twitter)</ion-label>
+            <ion-input type="url" formControlName="socialLink" placeholder="https://..."></ion-input>
+          </ion-item>
+        </ion-col>
+
+        <ion-col size="12">
+          <ion-item>
+            <ion-label position="floating">Biography</ion-label>
+            <ion-textarea 
+              formControlName="bio" 
+              rows="4" 
+              auto-grow="true" 
+              placeholder="Write a short bio...">
+            </ion-textarea>
+          </ion-item>
+        </ion-col>
+
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>

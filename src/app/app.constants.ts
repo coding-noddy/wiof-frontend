@@ -236,7 +236,8 @@ export const ITEMS = {
   IN_FOCUS: 'In Focus',
   NEWS: 'News',
   COURSE_IN_FOCUS: 'Course in focus',
-  NGO_IN_FOCUS: 'NGO in focus'
+  NGO_IN_FOCUS: 'NGO in focus',
+  ABOUT_US:'About us Profile'
 };
 
 export const UI_MESSAGES = {
