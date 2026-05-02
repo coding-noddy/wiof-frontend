@@ -6,65 +6,58 @@
     <ion-card-title class="title-text">Course in Focus</ion-card-title>
   </ion-card-header>
   <ion-card-content class="background ion-no-padding">
-    <div *ngIf="coursesInFocus; else loading">
+    <div *ngIf="coursesInFocus; else loading" class="slides-wrapper">
       <ion-slides #slider [options]="slideOpts">
         <ion-slide *ngFor="let courseInFocus of coursesInFocus">
-          <ion-card
-            class="ion-no-padding ion-no-margin"
-            style="box-shadow: none"
-          >
-            <ion-card-content
-              class="ion-text-start card-content ion-no-padding"
-            >
-              <ion-row class="ion-padding course-details">
-                <ion-col size="9">
-                  <h2>
-                    <strong
-                      ><a [href]="courseInFocus.link"></a
-                      >{{ courseInFocus.name }}</strong
-                    >
-                  </h2>
-                  <p><span>Offered By</span>: {{ courseInFocus.offeredBy }}</p>
-                  <p><span>Platform</span>: {{ courseInFocus.platform }}</p>
-                  <p><span>Duration</span>: {{ courseInFocus.duration }}</p>
-                  <p>
-                    <span>Approx. Cost: {{ courseInFocus.approxCost }}</span>
-                  </p>
-                </ion-col>
-                <ion-col size="3">
-                  <img
-                    class="course-in-focus-image"
-                    [src]="courseInFocus.image$ | async"
-                    alt=""
-                  />
-                </ion-col>
-                <ion-col size="12">
-                  <p>
-                    <span>Key Topics</span>:
-                    <span
-                      class="home-key-tag"
-                      *ngFor="let topic of courseInFocus.keyTopics.split(',')"
-                      >{{ topic }}</span
-                    >
-                  </p>
-                  <p class="ion-margin-top course-description">
-                    {{ courseInFocus.description }}
-                  </p>
-                  <p>
-                    <a
-                      [href]="courseInFocus.link"
-                      target="_blank"
-                      class="wiof-primary-link"
-                      >Know More</a
-                    >
-                  </p>
-                </ion-col>
-              </ion-row>
+          <ion-card class="ion-no-padding ion-no-margin" style="box-shadow: none">
+            <ion-card-content class="ion-no-padding">
+        
+              <!-- IMAGE ON TOP -->
+              <div class="course-media-container">
+                <img
+                  class="course-media"
+                  [src]="courseInFocus.image$ | async"
+                  alt=""
+                />
+              </div>
+        
+              <!-- CONTENT BELOW -->
+              <div class="course-content">
+                <h2><strong>{{ courseInFocus.name }}</strong></h2>
+        
+                <p><span>Offered By</span>: {{ courseInFocus.offeredBy }}</p>
+                <p><span>Platform</span>: {{ courseInFocus.platform }}</p>
+                <p><span>Duration</span>: {{ courseInFocus.duration }}</p>
+                <p><span>Approx. Cost</span>: {{ courseInFocus.approxCost }}</p>
+        
+                <p>
+                  <span>Key Topics</span>:
+                  <span
+                    class="home-key-tag"
+                    *ngFor="let topic of courseInFocus.keyTopics.split(',')"
+                  >
+                    {{ topic }}
+                  </span>
+                </p>
+        
+                <p class="course-description">
+                  {{ courseInFocus.description }}
+                </p>
+        
+                <a
+                  [href]="courseInFocus.link"
+                  target="_blank"
+                  class="wiof-primary-link"
+                >
+                  Know More
+                </a>
+              </div>
+        
             </ion-card-content>
           </ion-card>
         </ion-slide>
       </ion-slides>
-      <div
+      <div 
         *ngIf="coursesInFocus.length > 1"
         class="swiper-button-prev navigation-arrow-custom-styling"
         (click)="slider.slidePrev()"
@@ -75,7 +68,6 @@
         (click)="slider.slideNext()"
       ></div>
     </div>
-
     <ng-template #loading>
       <app-wiof-spinner></app-wiof-spinner>
     </ng-template>
