@@ -1,8 +1,93 @@
+// .fire-welcome-label {
+//   text-shadow: 1px 1px 5px green;
+//   font-size: 30px;
+//   color: white;
+//   font-weight: bold;
+//   padding: 20px;
+//   margin: 0;
+// }
+
+// ─── Welcome Image Wrapper ────────────────────────────────
+app-element-welcome-image {
+  display: block;
+  padding: 5px 45px;
+
+  @media (max-width: 768px) {
+    padding: 0 16px;
+  }
+}
+
+// ─── Hero Label (Fire themed) ─────────────────────────────
 .fire-welcome-label {
-  text-shadow: 1px 1px 5px green;
-  font-size: 30px;
+  text-shadow: 1px 1px 6px rgba(255, 80, 0, 0.8); // warm glow instead of green
+  font-size: 20px;
   color: white;
   font-weight: bold;
-  padding: 20px;
+  padding: 10px 16px;
   margin: 0;
+}
+
+// ─── Elements Row ─────────────────────────────────────────
+.elements-wrapper {
+  padding: 8px 0;
+}
+
+// ─── Page Wrapper (same as Earth) ─────────────────────────
+.page-content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+
+  @media (max-width: 768px) {
+    padding: 0 16px;
+  }
+}
+
+// ─── Compact Layout System ────────────────────────────────
+.compact-row {
+  margin: 0 !important;
+  padding: 4px 2px;
+}
+
+.compact-col {
+  padding: 6px 8px !important;
+}
+
+// ─── Ion Content Reset ────────────────────────────────────
+ion-content {
+  --padding-top: 0px;
+  --padding-bottom: 0px;
+  --padding-start: 0px;
+  --padding-end: 0px;
+}
+
+// ─── Mobile Adjustments ───────────────────────────────────
+@media (max-width: 768px) {
+  .fire-welcome-label {
+    font-size: 16px;
+    padding: 8px 12px;
+  }
+
+  .compact-row {
+    padding: 2px 4px;
+  }
+
+  .compact-col {
+    padding: 4px 6px !important;
+  }
+
+  .elements-wrapper {
+    padding: 6px 0;
+  }
+}
+
+// ─── Desktop Fine-tuning ──────────────────────────────────
+@media (min-width: 769px) {
+  .compact-row {
+    padding: 6px 12px;
+  }
+
+  .compact-col {
+    padding: 8px 10px !important;
+  }
 }

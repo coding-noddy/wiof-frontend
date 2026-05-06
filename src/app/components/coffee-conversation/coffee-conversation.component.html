@@ -1,6 +1,7 @@
-<ion-card
+<!-- <ion-card
   *ngIf="coffeeConvList && coffeeConvList.length > 0"
   class="coffee-conv-container"
+  [style.height]="containerHeight"
 >
   <ion-card-header
     class="ion-align-center wiof-slider-header"
@@ -83,6 +84,107 @@
         (click)="wiofCoffeeConvSlider.slideNext()"
       ></div>
     </div>
+    <ng-template #loading>
+      <ion-spinner name="crescent" class="wiof-spinner"></ion-spinner><br />
+    </ng-template>
+  </ion-card-content>
+</ion-card> -->
+
+
+<ion-card
+  *ngIf="coffeeConvList && coffeeConvList.length > 0"
+  class="coffee-conv-container"
+  [style.height]="containerHeight"
+>
+  <ion-card-header
+    class="ion-align-center wiof-slider-header"
+    [ngClass]="coffeeConvClass"
+  >
+    <ion-row>
+      <ion-col class="title-text" size="12">Coffee Conversations</ion-col>
+    </ion-row>
+  </ion-card-header>
+
+  <ion-card-content class="background" [ngClass]="coffeeConvClass">
+    
+    <div *ngIf="coffeeConvList; else loading" class="slides-wrapper">
+      <ion-slides #wiofCoffeeConvSlider [options]="slideOpts">
+        <ion-slide *ngFor="let coffeeConv of coffeeConvList">
+
+          <ion-card class="coffee-conv-card">
+            <ion-card-content class="ion-text-start card-content">
+          
+              <div class="card-inner">
+          
+                <div class="media-container">
+                  <iframe
+                    class="media-player"
+                    [title]="coffeeConv.topic"
+                    [src]="coffeeConv.sanitizedLink"
+                    allowfullscreen
+                  ></iframe>
+                </div>
+          
+                <div class="coffee-conv-content">
+                  <h2>
+                    <strong>{{ coffeeConv.topic }}</strong>
+                  </h2>
+                  <div
+                    class="interviewee-details"
+                    *ngIf="coffeeConv.intervieweeName.toUpperCase() !== 'NA'"
+                  >
+                    <p>
+                      <span>Name of Interviewee</span>:
+                      <span
+                        style="display: inline-block"
+                        (click)="showIntervieweeDetails($event, true)"
+                      ><a href="" title="Click to know more about interviewee"
+                        >{{ coffeeConv.intervieweeName }}</a
+                      ></span>
+                    </p>
+                  </div>
+                  <p class="paragraph" style="margin-bottom: 20px">
+                    <span [innerHTML]="coffeeConv.topicShortDesc"></span>
+                  </p>
+                  <p>
+                    <a
+                      [href]="coffeeConv.knowMoreLink"
+                      target="_blank"
+                      class="wiof-primary-link"
+                      >Know More</a
+                    >
+                  </p>
+                  <div class="about-interviewee" *ngIf="showAboutInterviewee">
+                    <div class="header">
+                      <h3>About Interviewee</h3>
+                      <button (click)="showIntervieweeDetails($event, false)">
+                        <ion-icon name="close" slot="icon-only"></ion-icon>
+                      </button>
+                    </div>
+                    <p>{{ coffeeConv.intervieweeDesc }}</p>
+                  </div>
+                </div>
+          
+              </div>
+          
+            </ion-card-content>
+          </ion-card>
+
+        </ion-slide>
+      </ion-slides>
+
+      <div
+        *ngIf="coffeeConvList.length > 1"
+        class="swiper-button-prev navigation-arrow-custom-styling"
+        (click)="wiofCoffeeConvSlider.slidePrev()"
+      ></div>
+      <div
+        *ngIf="coffeeConvList.length > 1"
+        class="swiper-button-next navigation-arrow-custom-styling"
+        (click)="wiofCoffeeConvSlider.slideNext()"
+      ></div>
+    </div>
+
     <ng-template #loading>
       <ion-spinner name="crescent" class="wiof-spinner"></ion-spinner><br />
     </ng-template>

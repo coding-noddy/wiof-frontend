@@ -13,6 +13,7 @@ export class CoffeeConversationComponent
   @Input() coffeeConvList: Array<CoffeeConversation>;
   @Input() element: string;
   @Input() fromHomePage: boolean;
+  @Input() containerHeight: string = '560px';
   showAboutInterviewee = false;
 
   slideOpts = COFFEE_CONV_SLIDER_OPTIONS;

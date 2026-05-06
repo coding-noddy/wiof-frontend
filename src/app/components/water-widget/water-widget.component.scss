@@ -1,69 +1,131 @@
+// @import '../../wiof-custom-theming.scss';
+
+// .wiof-spinner {
+//   position: absolute;
+//   left: 50%;
+// }
+
+// .water-widget-padding {
+//   padding: 10px;
+//   overflow: auto;
+//   height: 500px;
+// }
+
+// .wiof-water-widget-card-header {
+//   background-color: $water-color;
+//   border-bottom: white 2px solid;
+// }
+
+// .wiof-water-widget-card-background {
+//   background-color: rgba($water-color, $tint-fraction);
+// }
+
+// .wiof-water-widget-icons {
+//   background-color: $water-color;
+//   height: 95%;
+//   margin: 4px;
+//   padding: 5px;
+
+//   &:hover {
+//     border: solid 1px #000000;
+//     padding: 4px;
+//     box-shadow: 3px 3px 10px #dddddd;
+//   }
+// }
+
+// .wiof-water-widget-icons-text {
+//   color: black;
+//   text-align: center;
+//   padding-top: 7px;
+// }
+
+// .wiof-water-widget-items {
+//   height: 425px;
+// }
+
+// .tooltip {
+//   position: relative;
+//   display: inline-block;
+//   border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+// }
+// .tooltip .tooltiptext {
+//   visibility: hidden;
+//   width: 120px;
+//   background-color: black;
+//   color: #fff;
+//   text-align: center;
+//   padding: 5px 0;
+//   border-radius: 6px;
+
+//   /* Position the tooltip text - see examples below! */
+//   position: absolute;
+//   z-index: 1;
+// }
+// .tooltip:hover .tooltiptext {
+//   visibility: visible;
+// }
+// .wiof-water-widget-items[scrolly='true'] {
+//   position: relative;
+//   overflow: hidden;
+
+//   ::-webkit-scrollbar {
+//     display: none;
+//   }
+// }
+
+// .wiof-water-widget-items[scrolly='true'] {
+//   overflow-y: auto;
+// }
+
+// .wiof-water-widget-card-toolbar {
+//   padding: 10px;
+//   background-color: rgb(229, 229, 229);
+// }
+
+// .wiof-water-widget-disclaimer {
+//   padding: 5px 10px;
+//   margin-top: 5px;
+//   padding: 5px 10px;
+//   margin-top: 5px;
+// }
+
 @import '../../wiof-custom-theming.scss';
 
-.wiof-spinner {
-  position: absolute;
-  left: 50%;
-}
-
-.water-widget-padding {
-  padding: 10px;
-  overflow: auto;
-  height: 500px;
-}
-
+// ─── Card Header ──────────────────────────────────────────
 .wiof-water-widget-card-header {
   background-color: $water-color;
-  border-bottom: white 2px solid;
+  border-bottom: $light-color 2px solid;
+  padding: 8px 16px;
 }
 
+.title-text {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+// ─── Card Background ──────────────────────────────────────
 .wiof-water-widget-card-background {
   background-color: rgba($water-color, $tint-fraction);
 }
 
-.wiof-water-widget-icons {
-  background-color: $water-color;
-  height: 95%;
-  margin: 4px;
-  padding: 5px;
-
-  &:hover {
-    border: solid 1px #000000;
-    padding: 4px;
-    box-shadow: 3px 3px 10px #dddddd;
-  }
+// ─── SAME HEIGHT AS AQI / VIDEO ───────────────────────────
+.widget-height {
+  height: 500px;
 }
 
-.wiof-water-widget-icons-text {
-  color: black;
-  text-align: center;
-  padding-top: 7px;
+// ─── MAIN CONTENT WRAPPER (NEW) ───────────────────────────
+.water-widget-contents {
+  height: auto;
+  max-height: calc(450px - 52px); // same logic as AQI
+  overflow: auto;
+  padding: 8px;
 }
 
+// ─── SCROLLABLE GRID ──────────────────────────────────────
 .wiof-water-widget-items {
-  height: 425px;
+  height: 280px; // aligned with AQI
 }
 
-.tooltip {
-  position: relative;
-  display: inline-block;
-  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
-}
-.tooltip .tooltiptext {
-  visibility: hidden;
-  width: 120px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  padding: 5px 0;
-  border-radius: 6px;
-
-  /* Position the tooltip text - see examples below! */
-  position: absolute;
-  z-index: 1;
-}
-.tooltip:hover .tooltiptext {
-  visibility: visible;
-}
 .wiof-water-widget-items[scrolly='true'] {
   position: relative;
   overflow: hidden;
@@ -77,14 +139,51 @@
   overflow-y: auto;
 }
 
-.wiof-water-widget-card-toolbar {
-  padding: 10px;
-  background-color: rgb(229, 229, 229);
+// ─── ICON CARDS ───────────────────────────────────────────
+.wiof-water-widget-icons {
+  background-color: $water-color;
+  height: 95%;
+  margin: 4px;
+  padding: 5px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border: solid 1px #000000;
+    padding: 4px;
+    box-shadow: 3px 3px 10px #dddddd;
+  }
 }
 
+.wiof-water-widget-icons-text {
+  color: black;
+  text-align: center;
+  padding-top: 6px;
+  font-size: 13px;
+}
+
+// ─── ABOUT TEXT ───────────────────────────────────────────
+p {
+  font-size: 13px;
+}
+
+// ─── DISCLAIMER ───────────────────────────────────────────
 .wiof-water-widget-disclaimer {
   padding: 5px 10px;
   margin-top: 5px;
-  padding: 5px 10px;
-  margin-top: 5px;
+  font-size: 12px;
+}
+
+// ─── MOBILE FIX ───────────────────────────────────────────
+@media (max-width: 767px) {
+  .widget-height {
+    height: auto;
+  }
+
+  .water-widget-contents {
+    max-height: none;
+  }
+
+  .wiof-water-widget-items {
+    height: 240px;
+  }
 }

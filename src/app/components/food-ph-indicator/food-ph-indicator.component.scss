@@ -1,3 +1,72 @@
+// @import '../../wiof-custom-theming.scss';
+
+// .wiof-food-ph-indicator {
+//   position: absolute;
+//   height: 300px;
+//   width: 300px;
+//   background-color: transparent;
+// }
+
+// .ph-widget-height {
+//   height: 577px;
+// }
+
+// .title-text {
+//   font-size: 20px;
+//   font-weight: $font-weight-medium;
+// }
+
+// .wiof-food-ph-widget-card-header {
+//   background-color: $earth-color;
+//   border-bottom: white 2px solid;
+// }
+
+// .wiof-food-ph-widget-card-background {
+//   background-color: rgba($earth-color, $tint-fraction);
+// }
+
+// .wiof-food-ph-widget-card-content {
+//   height: 500px;
+//   overflow: auto;
+// }
+
+// .divider {
+//   background-color: $earth-color;
+//   height: 1px;
+//   border-width: 0px;
+//   background-color: #4d4b4b;
+// }
+
+// .ph-meter-text {
+//   font-size: large;
+//   color: #000;
+//   padding-bottom: 5px;
+// }
+
+// .text {
+//   color: #000;
+//   padding-top: 5px;
+// }
+
+// .wiof-food-ph-indicator-selector {
+//   padding: 10px;
+// }
+
+// .select-food-input {
+//   width: 100%;
+//   height: 40px;
+//   border-radius: 5px;
+//   padding-left: 10px;
+//   border: 1px solid grey;
+//   color: $dark-color;
+//   background-color: $light-color;
+// }
+
+// mat-option {
+//   white-space: normal;
+//   line-height: normal;
+// }
+
 @import '../../wiof-custom-theming.scss';
 
 .wiof-food-ph-indicator {
@@ -7,18 +76,20 @@
   background-color: transparent;
 }
 
+// KEY CHANGE: reduced fixed height to match slimmer video widget
 .ph-widget-height {
-  height: 577px;
+  height: 500px;          // reduced from 577px
 }
 
 .title-text {
-  font-size: 20px;
+  font-size: 15px;        // reduced from 20px
   font-weight: $font-weight-medium;
 }
 
 .wiof-food-ph-widget-card-header {
   background-color: $earth-color;
   border-bottom: white 2px solid;
+  padding: 8px 16px;      // tighter header
 }
 
 .wiof-food-ph-widget-card-background {
@@ -26,43 +97,57 @@
 }
 
 .wiof-food-ph-widget-card-content {
-  height: 500px;
+  height: auto;           // was fixed 500px — now flexible
   overflow: auto;
+  padding: 8px !important;
 }
 
 .divider {
-  background-color: $earth-color;
   height: 1px;
   border-width: 0px;
   background-color: #4d4b4b;
+  margin: 6px 0;          // tighter margin
 }
 
 .ph-meter-text {
-  font-size: large;
+  font-size: 14px;        // reduced from 'large'
   color: #000;
-  padding-bottom: 5px;
+  padding-bottom: 4px;
 }
 
 .text {
   color: #000;
-  padding-top: 5px;
+  padding-top: 4px;
+  font-size: 13px;        // slightly tighter
 }
 
 .wiof-food-ph-indicator-selector {
-  padding: 10px;
+  padding: 6px;           // reduced from 10px
 }
 
 .select-food-input {
   width: 100%;
-  height: 40px;
+  height: 36px;           // reduced from 40px
   border-radius: 5px;
   padding-left: 10px;
   border: 1px solid grey;
   color: $dark-color;
   background-color: $light-color;
+  font-size: 13px;
 }
 
 mat-option {
   white-space: normal;
   line-height: normal;
+}
+
+// Mobile: stack input + button nicely
+@media (max-width: 767px) {
+  .ph-widget-height {
+    height: auto;         // let it breathe on mobile
+  }
+
+  .wiof-food-ph-widget-card-content {
+    padding: 6px !important;
+  }
 }
