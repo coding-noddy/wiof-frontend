@@ -1,87 +1,54 @@
 @import '../../wiof-custom-theming.scss';
 
-.video-card-footer {
-  background-color: white;
-  border-top: 1px solid lightgrey;
-  position: absolute;
-  bottom: 0;
+.video-card {
+  @include wiof-card(18px, 0 18px 42px rgba(0, 0, 0, 0.08), 1px solid rgba(0, 0, 0, 0.08));
+  min-width: 18%;
   width: 100%;
-  color: $dark-color;
+  margin: 10px 8px;
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: none;
 }
 
-.video-card {
-  min-width: 20%;
-  height: calc(100% - 20px);
+.video-card ion-card-content {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.img-container {
+  overflow: hidden;
   width: 100%;
-  margin: 5px 10px;
-  cursor: pointer;
-
-  ion-card-content {
-    padding: 0 0 1rem 0;
-
-    .img-container {
-      overflow: hidden;
-    }
-
-    img {
-      transform: scale(1);
-      transition: transform 1s;
-    }
-  }
-
-  &:hover {
-    a {
-      text-decoration: underline;
-    }
-    .img-container img {
-      transform: scale(1.2);
-      transition: transform 1s;
-    }
-  }
+  height: 220px;
+  flex-shrink: 0;
 }
 
 .thumbnailImage {
-  align-self: center;
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.video-card:hover .thumbnailImage {
+  transform: scale(1.05);
+}
+
+.video-card h3 {
+  margin: 1rem;
+  font-size: 1rem;
+  line-height: 1.4;
 }
 
 .wiof-slider-header {
-  border-bottom: white 2px solid;
+  border-bottom: none;
   color: $dark-color;
+  padding: 12px 18px;
 }
-
-// /* Using SCSS variables to store breakpoints */
-// $breakpoint-desktop: 1024px;
-// $breakpoint-tablet: 767px;
-// $breakpoint-mobile: 480px;
-
-// //xsmall view from 0 to 479
-// @media (max-width: $breakpoint-mobile){
-//   .thumbnailImage{
-//     width:320px;
-//   }
-// }
-
-// //small view from 480 to 766
-// @media (max-width: $breakpoint-tablet){
-//   .thumbnailImage{
-//     width:320px;
-//   }
-// }
-
-// //medium view from 767 to 1023
-// @media (max-width: $breakpoint-desktop){
-//   .thumbnailImage{
-//     width:249.5px;
-//   }
-// }
-
-// //large view 1024 and above
-// @media (min-width: $breakpoint-desktop){
-//   .thumbnailImage{
-//     width:249.5px;
-//   }
-// }
 
 .wiof-spinner {
   position: absolute;
@@ -96,25 +63,11 @@
   }
 }
 
-.wiof-earth {
-  @include video-card-style($earth-color);
-}
-
-.wiof-water {
-  @include video-card-style($water-color);
-}
-
-.wiof-fire {
-  @include video-card-style($energy-color);
-}
-
-.wiof-air {
-  @include video-card-style($air-color);
-}
-
-.wiof-spirit {
-  @include video-card-style($spirit-color);
-}
+.wiof-earth  { @include video-card-style($earth-color); }
+.wiof-water  { @include video-card-style($water-color); }
+.wiof-fire   { @include video-card-style($energy-color); }
+.wiof-air    { @include video-card-style($air-color); }
+.wiof-spirit { @include video-card-style($spirit-color); }
 
 .show-more-card {
   height: calc(100% - 20px);
@@ -135,13 +88,7 @@
   height: auto;
 }
 
-// .video-title {
-//   text-decoration: none;
-// }
-
-// ─── Header ──────────────────────────────────────────────────
 .wiof-slider-header {
-  border-bottom: white 2px solid;
   color: $home-text-color;
   padding: 8px 16px;
   flex-shrink: 0;

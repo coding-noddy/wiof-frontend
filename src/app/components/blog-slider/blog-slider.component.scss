@@ -1,396 +1,42 @@
-// @import '../../wiof-custom-theming.scss';
-
-// .blog-card {
-//   height: calc(100% - 20px);
-//   margin: 5px 10px;
-//   cursor: pointer;
-
-//   ion-card-content {
-//     padding: 0 0 1rem 0;
-
-//     .img-container {
-//       overflow: hidden;
-//     }
-
-//     img {
-//       transform: scale(1);
-//       transition: transform 1s;
-//       width: 100%;
-//       height: 240px;
-//       object-fit: cover;
-//     }
-
-//     .author-name {
-//       font-size: 90%;
-//       display: inline-block;
-//       width: 55%;
-//     }
-
-//     .time-to-read {
-//       font-size: 90%;
-//       float: right;
-//       padding-top: 2px;
-
-//       ion-icon {
-//         height: 16px;
-//         width: 16px;
-//         padding-right: 2px;
-//         vertical-align: text-bottom;
-//       }
-//     }
-//   }
-
-//   &:hover {
-//     a {
-//       text-decoration: underline;
-//     }
-//     .img-container img {
-//       transform: scale(1.2);
-//       transition: transform 1s;
-//     }
-//   }
-// }
-
-// .blog-card-title {
-//   display: -webkit-box;
-//   -webkit-line-clamp: 2;
-//   -webkit-box-orient: vertical;
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-// }
-
-// .blog-card-content {
-//   display: -webkit-box;
-//   -webkit-line-clamp: 3;
-//   -webkit-box-orient: vertical;
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-//   color: $dark-color;
-//   margin-bottom: 10px;
-// }
-
-// .blog-card-footer {
-//   background-color: white;
-//   border-top: 1px solid lightgrey;
-//   position: absolute;
-//   bottom: 0;
-//   width: 100%;
-//   color: $dark-color;
-// }
-
-// .wiof-img-placeholder {
-//   background-color: blue;
-//   width: 100%;
-//   height: 180px;
-//   position: absolute;
-//   top: 0px;
-//   left: 0px;
-//   padding: 10px;
-// }
-
-// .blogImage {
-//   align-self: center;
-//   width: 320px;
-//   padding: 10px;
-//   align-self: center;
-// }
-
-// .wiof-slider-header {
-//   border-bottom: white 2px solid;
-//   color: $dark-color;
-// }
-
-// .wiof-spinner {
-//   position: absolute;
-//   left: 50%;
-// }
-
-// @mixin blog-card-style($color) {
-//   background-color: $color;
-//   &.background {
-//     padding-bottom: 5px;
-//     background-color: rgba($color, $tint-fraction);
-//   }
-// }
-
-// .wiof-earth {
-//   @include blog-card-style($earth-color);
-// }
-
-// .wiof-water {
-//   @include blog-card-style($water-color);
-// }
-
-// .wiof-fire {
-//   @include blog-card-style($energy-color);
-// }
-
-// .wiof-air {
-//   @include blog-card-style($air-color);
-// }
-
-// .wiof-spirit {
-//   @include blog-card-style($spirit-color);
-// }
-
-// .show-more-card {
-//   height: calc(100% - 20px);
-//   width: 100%;
-//   padding-top: 40%;
-//   cursor: pointer;
-
-//   p {
-//     font-size: 20px;
-
-//     ion-icon {
-//       font-size: 30px;
-//     }
-//   }
-// }
-
-// .swiper-slide {
-//   height: auto;
-// }
-
-
-
-// @import '../../wiof-custom-theming.scss';
-
-// // ─── Container ───────────────────────────────────────────────
-// :host ion-card {
-//   height: 500px;
-//   display: flex;
-//   flex-direction: column;
-
-//   ion-card-content {
-//     flex: 1;
-//     overflow: hidden;
-//     padding: 0 !important;
-
-//     ion-slides {
-//       height: 100% !important;
-//     }
-
-//     .swiper-wrapper {
-//       height: 100% ;
-//     }
-
-//     ion-slide {
-//       height: 448px;
-//       align-items: flex-start !important; 
-//     }
-//   }
-// }
-
-// // ─── Header ──────────────────────────────────────────────────
-// .wiof-slider-header {
-//   border-bottom: white 2px solid;
-//   background-color: $home-color;
-//   color: $home-text-color;
-//   padding: 8px 16px;
-//   flex-shrink: 0;
-
-//   .title-text {
-//     font-size: 15px;
-//     font-weight: $font-weight-medium;
-//     color: $home-text-color;   // ← forces text color to match header
-//   }
-//   ion-row {
-//     align-items: center;
-//   }
-//   ion-col {
-//     padding: 0 !important;   // ← removes default ion-col padding
-//   }
-// }
-
-// // ─── Blog Card ───────────────────────────────────────────────
-// .blog-card {
-//   height: 450px;
-//   width: 100%;
-//   margin: 5px 10px;
-//   cursor: pointer;
-//   overflow: hidden; 
-
-//   ion-card-content {
-//     padding: 0;
-
-//     .img-container {
-//       overflow: hidden;
-//     }
-
-//     img {
-//       transform: scale(1);
-//       transition: transform 1s;
-//       width: 100%;
-//       height: 180px; 
-//       // height: 240px;
-//       object-fit: cover;
-//     }
-
-//     .author-name {
-//       font-size: 90%;
-//       display: inline-block;
-//       width: 55%;
-//     }
-
-//     .time-to-read {
-//       font-size: 90%;
-//       float: right;
-//       padding-top: 2px;
-
-//       ion-icon {
-//         height: 16px;
-//         width: 16px;
-//         padding-right: 2px;
-//         vertical-align: text-bottom;
-//       }
-//     }
-//   }
-
-//   &:hover {
-//     a {
-//       text-decoration: underline;
-//     }
-//     .img-container img {
-//       transform: scale(1.2);
-//       transition: transform 1s;
-//     }
-//   }
-// }
-
-// .blog-card-title {
-//   display: -webkit-box;
-//   -webkit-line-clamp: 2;
-//   -webkit-box-orient: vertical;
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-// }
-
-// .blog-card-content {
-//   display: -webkit-box;
-//   -webkit-line-clamp: 3;
-//   -webkit-box-orient: vertical;
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-//   color: $dark-color;
-//   margin-bottom: 10px;
-// }
-
-// .blog-card-footer {
-//   background-color: white;
-//   border-top: 1px solid lightgrey;
-//   position: absolute;
-//   bottom: 0;
-//   width: 100%;
-//   color: $dark-color;
-// }
-
-// .wiof-img-placeholder {
-//   background-color: blue;
-//   width: 100%;
-//   height: 180px;
-//   position: absolute;
-//   top: 0px;
-//   left: 0px;
-//   padding: 10px;
-// }
-
-// .blogImage {
-//   align-self: center;
-//   width: 320px;
-//   padding: 10px;
-// }
-
-// .wiof-spinner {
-//   position: absolute;
-//   left: 50%;
-// }
-
-// // ─── Theme Colors ────────────────────────────────────────────
-// @mixin blog-card-style($color) {
-//   background-color: $color;
-//   &.background {
-//     padding-bottom: 5px;
-//     background-color: rgba($color, $tint-fraction);
-//   }
-// }
-
-// .wiof-earth  { @include blog-card-style($earth-color); }
-// .wiof-water  { @include blog-card-style($water-color); }
-// .wiof-fire   { @include blog-card-style($energy-color); }
-// .wiof-air    { @include blog-card-style($air-color); }
-// .wiof-spirit { @include blog-card-style($spirit-color); }
-
-// // ─── Show More Card ──────────────────────────────────────────
-// .show-more-card {
-//   height: calc(100% - 20px);
-//   width: 100%;
-//   padding-top: 40%;
-//   cursor: pointer;
-
-//   p {
-//     font-size: 20px;
-
-//     ion-icon {
-//       font-size: 30px;
-//     }
-//   }
-// }
-
-// .swiper-slide {
-//   height: 448px;
-// }
-
-// // ─── Mobile ──────────────────────────────────────────────────
-// @media (max-width: 767px) {
-//   :host ion-card {
-//     height: auto;
-//   }
-
-//   .blog-card img {
-//     height: 180px;
-//   }
-// }
-
 @import '../../wiof-custom-theming.scss';
 
-// ─── Container ───────────────────────────────────────────────
 .blog-slider-container {
-  height: 500px;
+  @include wiof-card(18px, 0 18px 45px rgba(0, 0, 0, 0.08), 1px solid rgba(0, 0, 0, 0.08));
   display: flex;
   flex-direction: column;
+  min-height: 520px;
 
   ion-card-content {
     flex: 1;
     overflow: hidden;
-    padding: 0px !important;    // ← breathing room so cards don't touch edges
+    padding: 0 !important;
 
     ion-slides {
       height: 100% !important;
     }
 
     .swiper-wrapper {
-      height: 100% !important;
-      align-items: flex-start;  // ← stops swiper stretching cards
+      min-height: 100%;
+      align-items: flex-start;
     }
 
     ion-slide {
-      height: auto !important;  // ← let card define its own height
+      height: auto !important;
       align-items: flex-start !important;
+      padding: 0 10px;
     }
   }
 }
 
-// ─── Header ──────────────────────────────────────────────────
 .wiof-slider-header {
-  border-bottom: white 2px solid;
+  border-bottom: none;
   background-color: $home-color;
   color: $home-text-color;
-  padding: 8px 16px;
+  padding: 12px 18px;
   flex-shrink: 0;
 
   .title-text {
-    font-size: 15px;
+    font-size: 16px;
     font-weight: $font-weight-medium;
     color: $home-text-color;
   }
@@ -404,55 +50,61 @@
   }
 }
 
-// ─── Blog Card ───────────────────────────────────────────────
 .blog-card {
-  height: 440px;              // ← fixed, smaller than container
+  @include wiof-card(18px, 0 18px 45px rgba(0, 0, 0, 0.08), 1px solid rgba(0, 0, 0, 0.08));
   width: 100%;
-  margin: 6px 6px;
+  max-width: 100%;
+  margin: 14px 0;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
-  border-radius: 8px;         // ← visible on all corners now
+  background: #fff;
+  border: none;
 
   ion-card-content {
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
 
-    .img-container {
-      overflow: hidden;
-    }
+  .img-container {
+    overflow: hidden;
+    width: 100%;
+    height: 220px;
+    flex-shrink: 0;
+  }
 
-    img {
-      transform: scale(1);
-      transition: transform 1s;
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-    }
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+    display: block;
+  }
 
-    .author-name {
-      font-size: 90%;
-      display: inline-block;
-      width: 55%;
-    }
+  .ion-padding {
+    padding: 1.25rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
 
-    .time-to-read {
-      font-size: 90%;
-      float: right;
-      padding-top: 2px;
+  .author-name,
+  .time-to-read {
+    font-size: 0.85rem;
+    color: $dark-color;
+  }
 
-      ion-icon {
-        height: 16px;
-        width: 16px;
-        padding-right: 2px;
-        vertical-align: text-bottom;
-      }
-    }
+  .time-to-read {
+    float: right;
   }
 
   &:hover {
-    a { text-decoration: underline; }
-    .img-container img {
-      transform: scale(1.2);
-      transition: transform 1s;
+    img {
+      transform: scale(1.06);
     }
   }
 }
@@ -463,41 +115,29 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin: 0 0 0.8rem;
+  font-size: 1.05rem;
+  line-height: 1.4;
 }
 
 .blog-card-content {
   display: -webkit-box;
-  -webkit-line-clamp: 6;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
   color: $dark-color;
-  margin-bottom: 10px;
+  margin-bottom: 1rem;
+  line-height: 1.65;
 }
 
-.blog-card-footer {
-  background-color: white;
-  border-top: 1px solid lightgrey;
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  color: $dark-color;
+.link-title {
+  color: inherit;
+  text-decoration: none;
 }
 
-.wiof-img-placeholder {
-  background-color: blue;
-  width: 100%;
-  height: 180px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 10px;
-}
-
-.blogImage {
-  align-self: center;
-  width: 320px;
-  padding: 10px;
+.link-title:hover {
+  text-decoration: underline;
 }
 
 .wiof-spinner {
@@ -505,11 +145,9 @@
   left: 50%;
 }
 
-// ─── Theme Colors ────────────────────────────────────────────
 @mixin blog-card-style($color) {
   background-color: $color;
   &.background {
-    // padding-bottom: 5px;
     background-color: rgba($color, $tint-fraction);
   }
 }
@@ -520,7 +158,6 @@
 .wiof-air    { @include blog-card-style($air-color); }
 .wiof-spirit { @include blog-card-style($spirit-color); }
 
-// ─── Show More Card ──────────────────────────────────────────
 .show-more-card {
   height: 400px;
   width: 100%;
@@ -529,7 +166,10 @@
 
   p {
     font-size: 20px;
-    ion-icon { font-size: 30px; }
+
+    ion-icon {
+      font-size: 30px;
+    }
   }
 }
 
@@ -537,14 +177,16 @@
   height: auto !important;
 }
 
-// ─── Mobile ──────────────────────────────────────────────────
 @media (max-width: 767px) {
   .blog-slider-container {
-    height: auto;
+    min-height: auto;
   }
 
   .blog-card {
-    height: auto;
-    img { height: 180px; }
+    margin: 10px 0;
+  }
+
+  .img-container {
+    height: 180px;
   }
 }

@@ -1,57 +1,56 @@
-
 @import '../../wiof-custom-theming.scss';
 
-.wiof-video-player-content {
-  padding: 0px !important;   // override Ionic's default card-content padding
-  text-align: center;
-  background-color: black;  // fills empty space nicely
-  display: flex;              // ✅ center alignment
-  justify-content: center;    // horizontal center
-  align-items: center;  
+:host ion-card {
+  @include wiof-card(18px, 0 18px 40px rgba(0, 0, 0, 0.08), 1px solid rgba(0, 0, 0, 0.08));
+  border: none;
+  overflow: hidden;
 }
+
+.wiof-video-player-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 18px;
+}
+
+.wiof-video-player-content {
+  padding: 0 !important;
+  text-align: center;
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .video-container {
   width: 100%;
   max-width: 100%;
-  
-  aspect-ratio: 16 / 9;          // ✅ keeps proper video ratio
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 0 0 18px 18px;
+  background: black;
 }
-// Mobile small
+
+.videoPlayer {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: none;
+}
+
 @media (max-width: 479px) {
   .wiof-video-player-content {
     height: 180px;
   }
 }
 
-// Mobile large
 @media (min-width: 480px) and (max-width: 767px) {
   .wiof-video-player-content {
     height: 240px;
   }
 }
 
-// Desktop
 @media (min-width: 768px) {
   .wiof-video-player-content {
-    height: 465px;  
-  }
-}
-
-.videoPlayer {
-  width: 100%;
-  height: 100%;
-  display: block;      
-  border: 5px;
-  object-fit: contain;   
-}
-
-app-video-widget {
-  ion-card {
-    margin-bottom: 0 !important;
-  }
-
-  ion-card-content {
-    padding-bottom: 0 !important;
-    padding-top: 0;
+    height: 465px;
   }
 }
 
@@ -84,8 +83,3 @@ app-video-widget {
     background-color: rgba($dark-color, $tint-fraction);
   }
 }
-.wiof-video-player-header {
-  border-bottom: white 2px solid;
-  padding: 8px 16px;
-}
-
