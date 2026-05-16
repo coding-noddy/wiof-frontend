@@ -1,4 +1,4 @@
-<app-header></app-header>
+<!-- <app-header></app-header>
 <app-subscribe [page]="'water'"></app-subscribe>
 <app-social-share style="z-index: 2"></app-social-share>
 <ion-content>
@@ -49,5 +49,75 @@
       ></app-video-slider>
     </ion-col>
   </ion-row>
+  <app-wiof-footer></app-wiof-footer>
+</ion-content> -->
+
+<app-header></app-header>
+<app-subscribe [page]="'water'"></app-subscribe>
+<app-social-share style="z-index: 2"></app-social-share>
+
+<ion-content>
+  <app-element-welcome-image
+    welcomeImageClass="water-welcome-img"
+  ></app-element-welcome-image>
+
+  <!-- Wrapper for centered layout -->
+  <div class="page-content-wrapper">
+
+    <div class="elements-wrapper">
+      <app-life-elements [element]="elementName"></app-life-elements>
+    </div>
+
+    <ion-row class="compact-row">
+      <ion-col size-lg="7" size-xs="12" class="compact-col">
+        <app-video-widget [element]="elementName"></app-video-widget>
+      </ion-col>
+      <ion-col size-lg="5" size-xs="12" class="compact-col">
+        <app-water-widget></app-water-widget>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="compact-row">
+      <ion-col size-lg="7" size-xs="12" class="compact-col">
+        <app-in-focus-widget
+          [inFocuses]="this.inFocuses$ | async"
+          [element]="elementName"
+        ></app-in-focus-widget>
+      </ion-col>
+
+      <ion-col
+        size-lg="5"
+        size-xs="12"
+        class="compact-col"
+        *ngIf="this.coffeeConversations$ | async as coffeeConversations"
+      >
+        <app-coffee-conversation
+          [element]="elementName"
+          [coffeeConvList]="coffeeConversations"
+          containerHeight="500px"
+        ></app-coffee-conversation>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="compact-row">
+      <ion-col class="compact-col">
+        <app-blog-slider
+          [blogList]="blogs$ | async"
+          [element]="elementName"
+        ></app-blog-slider>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="compact-row">
+      <ion-col class="compact-col">
+        <app-video-slider
+          [videoList]="videos$ | async"
+          [element]="elementName"
+        ></app-video-slider>
+      </ion-col>
+    </ion-row>
+
+  </div><!-- end page-content-wrapper -->
+
   <app-wiof-footer></app-wiof-footer>
 </ion-content>

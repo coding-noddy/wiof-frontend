@@ -2,79 +2,64 @@
 
 .landing-circle-img {
   border-radius: 50%;
-
   background-repeat: no-repeat;
   background-size: contain;
-  height: 110px;
-  width: 110px;
+  height: 90px;       
+  width: 90px;         
   margin: auto;
   transition: 0.8s;
   outline: none;
-  // transition-delay: 0.2s;
   cursor: pointer;
 
   &.earth {
     background-image: url('/assets/icons/icon_earth.svg');
-    box-shadow: 1px 1px 5px 1px $earth-color;
+    box-shadow: 1px 1px 4px 1px $earth-color;
     &.active {
-      box-shadow: 1px 1px 12px 10px $earth-color;
+      box-shadow: 1px 1px 8px 6px $earth-color;
       background-image: url('/assets/icons/icon_earth_selected.svg');
     }
-    &:hover {
-      box-shadow: 1px 1px 12px 10px $earth-color;
-    }
+    &:hover { box-shadow: 1px 1px 8px 6px $earth-color; }
   }
 
   &.water {
     background-image: url('/assets/icons/icon_water.svg');
-
-    box-shadow: 1px 1px 5px 1px $water-color;
+    box-shadow: 1px 1px 4px 1px $water-color;
     &.active {
-      box-shadow: 1px 1px 12px 10px $water-color;
+      box-shadow: 1px 1px 8px 6px $water-color;
       background-image: url('/assets/icons/icon_water_selected.svg');
     }
-    &:hover {
-      box-shadow: 1px 1px 12px 10px $water-color;
-    }
-    &.clicked {
-      background-image: url('/assets/icons/icon_water_selected.svg');
-    }
+    &:hover { box-shadow: 1px 1px 8px 6px $water-color; }
+    &.clicked { background-image: url('/assets/icons/icon_water_selected.svg'); }
   }
 
   &.fire {
     background-image: url('/assets/icons/icon_energy.svg');
-    box-shadow: 1px 1px 5px 1px $energy-color; //energy and fire represent same element
+    box-shadow: 1px 1px 4px 1px $energy-color;
     &.active {
-      box-shadow: 1px 1px 12px 10px $energy-color; //energy and fire represent same element
+      box-shadow: 1px 1px 8px 6px $energy-color;
       background-image: url('/assets/icons/icon_energy_selected.svg');
     }
-    &:hover {
-      box-shadow: 1px 1px 12px 10px $energy-color;
-    }
+    &:hover { box-shadow: 1px 1px 8px 6px $energy-color; }
   }
 
   &.air {
     background-image: url('/assets/icons/icon_air.svg');
-    box-shadow: 1px 1px 5px 1px $air-color;
+    box-shadow: 1px 1px 4px 1px $air-color;
     &.active {
-      box-shadow: 1px 1px 12px 10px $air-color;
+      box-shadow: 1px 1px 8px 6px $air-color;
       background-image: url('/assets/icons/icon_air_selected.svg');
     }
-    &:hover {
-      box-shadow: 1px 1px 12px 10px $air-color;
-    }
+    &:hover { box-shadow: 1px 1px 8px 6px $air-color; }
   }
 
   &.spirit {
     background-image: url('/assets/icons/icon_spirit.svg');
-    box-shadow: 1px 1px 5px 1px $spirit-color;
+    box-shadow: 1px 1px 4px 1px $spirit-color;
     &.active {
-      box-shadow: 1px 1px 12px 10px $spirit-color;
+      box-shadow: 1px 1px 8px 6px $spirit-color;
       background-image: url('/assets/icons/icon_spirit_selected.svg');
     }
-    &:hover {
-      box-shadow: 1px 1px 12px 10px $spirit-color;
-    }
+    &:hover { box-shadow: 1px 1px 8px 6px $spirit-color; }
   }
 
   &:hover {
@@ -84,35 +69,48 @@
 }
 
 .landing-circle-label {
-  margin-top: 10px;
+  margin-top: 6px;       
+  font-size: 12px;       
   color: #505050;
   text-align: center;
   cursor: pointer;
-  //transition: 0.8s;
-  &:hover {
-    color: #000000;
-  }
+  &:hover { color: #000000; }
 }
 
-/* Using SCSS variables to store breakpoints */
+ion-col.ion-padding {
+  --ion-grid-column-padding: 6px;
+  padding: 6px !important;   
+}
+
+// intro text
+p {
+  font-size: 13px;
+  margin: 4px 0;
+  text-align: center;
+}
+
 $breakpoint-desktop: 1024px;
 $breakpoint-tablet: 767px;
 
 @media (max-width: $breakpoint-desktop) {
   .landing-circle-img {
-    height: 100px;
-    width: 100px;
+    height: 65px;
+    width: 65px;
   }
 }
+
 @media (max-width: $breakpoint-tablet) {
   .landing-circle-img {
-    height: 80px;
-    width: 80px;
+    height: 52px;
+    width: 52px;
   }
   .landing-circle-label {
-    font-size: 100%;
+    font-size: 11px;
   }
   .wiof-read-more {
     display: none;
+  }
+  ion-col.ion-padding {
+    padding: 4px !important;
   }
 }

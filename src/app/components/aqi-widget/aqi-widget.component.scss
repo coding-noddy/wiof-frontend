@@ -8,15 +8,28 @@
 .wiof-aqi-widget-card-header {
   background-color: $air-color;
   border-bottom: $light-color 2px solid;
+  padding: 8px 16px;        
+}
+
+.title-text {
+  font-size: 15px;         
+  font-weight: bold;
 }
 
 .wiof-aqi-widget-card-background {
   background-color: rgba($air-color, $tint-fraction);
 }
 
+// KEY CHANGE — match video widget height
+.widget-height {
+  height: 500px;            
+}
+
 .aqi-widget-contents {
-  height: 500px;
+  height: auto;             // was fixed 500px
+  max-height: calc(450px - 52px);  // minus header height
   overflow: auto;
+  padding: 8px;
 }
 
 .button-icon {
@@ -25,14 +38,18 @@
 }
 
 .wiof-aqi-widget-card-toolbar {
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 8px;        // reduced from 10px
+  padding-right: 8px;
 }
 
-//adding scroll to search results
+// About text
+p {
+  font-size: 13px;
+}
 
+// Search results scroll
 .wiof-aqi-widget-items {
-  height: 380px;
+  height: 280px;            // reduced from 380px
 }
 
 .wiof-aqi-widget-items [scrolly='true'] {
@@ -50,19 +67,21 @@
 
 .wiof-aqi-search-result-expand {
   cursor: pointer;
+  font-size: 13px;          // added
 }
+
 .wiof-aqi-search-result-expand:hover {
   color: blue;
 }
 
 .aqi {
-  padding: 3px 20px;
+  padding: 2px 14px;        // reduced from 3px 20px
   border-radius: 1rem;
   border: 1px solid $dark-color;
+  font-size: 13px;          // added
 }
 
-//aqi colors
-
+// AQI colors — unchanged
 .aqi-good {
   background-color: $aqi-good-color;
   color: $dark-color;
@@ -96,4 +115,19 @@
 .aqi-na {
   background-color: $light-color;
   color: $dark-color;
+}
+
+// Mobile
+@media (max-width: 767px) {
+  .widget-height {
+    height: auto;
+  }
+
+  .aqi-widget-contents {
+    max-height: none;
+  }
+
+  .wiof-aqi-widget-items {
+    height: 240px;
+  }
 }

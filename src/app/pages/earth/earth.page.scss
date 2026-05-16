@@ -1,8 +1,90 @@
+// .earth-welcome-label {
+//   text-shadow: 1px 1px 5px green;
+//   font-size: 30px;
+//   color: white;
+//   font-weight: bold;
+//   padding: 20px;
+//   margin: 0;
+// }
+
+app-element-welcome-image {
+  display: block;
+  padding: 5px 45px;        // matches your page-content-wrapper gap
+
+  @media (max-width: 768px) {
+    padding: 0 16px;      // matches mobile gap
+  }
+}
+
+// ─── Hero Image Label ───────────────────────────────────────
 .earth-welcome-label {
   text-shadow: 1px 1px 5px green;
-  font-size: 30px;
+  font-size: 20px;        // reduced from 30px
   color: white;
   font-weight: bold;
-  padding: 20px;
+  padding: 10px 16px;     // reduced from 20px
   margin: 0;
+}
+
+// ─── Elements Icon Row ──────────────────────────────────────
+.elements-wrapper {
+  padding: 8px 0;         // tight top/bottom breathing room
+}
+.page-content-wrapper {
+  max-width: 1200px;        // content won't stretch beyond this
+  margin: 0 auto;           // centers the wrapper
+  padding: 0 40px;          // 40px gap on left & right edges
+
+  @media (max-width: 768px) {
+    padding: 0 16px;        // smaller gap on mobile
+  }
+}
+
+// ─── Compact Row & Col ──────────────────────────────────────
+.compact-row {
+  margin: 0 !important;
+  padding: 4px 2px;       // reduced section spacing
+}
+
+.compact-col {
+  padding: 6px 8px !important;  // tighter column padding
+}
+
+// ─── Global Section Card Feel ───────────────────────────────
+ion-content {
+  --padding-top: 0px;
+  --padding-bottom: 0px;
+  --padding-start: 0px;
+  --padding-end: 0px;
+}
+
+// ─── Mobile Adjustments ─────────────────────────────────────
+@media (max-width: 768px) {
+  .earth-welcome-label {
+    font-size: 16px;
+    padding: 8px 12px;
+  }
+
+  .compact-row {
+    padding: 2px 4px;
+  }
+
+  .compact-col {
+    padding: 4px 6px !important;
+  }
+
+  .elements-wrapper {
+    padding: 6px 0;
+  }
+}
+
+// ─── Desktop Fine-tuning ─────────────────────────────────────
+@media (min-width: 769px) {
+  .compact-row {
+    padding: 6px 12px;
+  }
+
+  .compact-col {
+    padding: 8px 10px !important;
+  }
 }
