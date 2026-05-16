@@ -1,8 +1,10 @@
 @import '../../wiof-custom-theming.scss';
 
 .take-action-content {
-  height: 650px;
+  @include wiof-card();
+  min-height: 650px;
   margin: 0 auto;
+  padding: 0;
 
   ion-card-title {
     text-align: center;
@@ -43,9 +45,11 @@
   }
 
   .action-card {
+    @include wiof-card(14px, 0 6px 20px rgba(0, 0, 0, 0.06), 1px solid rgba(0, 0, 0, 0.06));
     height: 100%;
-    margin: 5px;
-    box-shadow: 1px 2px 4px lightgrey;
+    margin: 10px 8px;
+    display: flex;
+    flex-direction: column;
 
     &.air {
       .action-card-title,

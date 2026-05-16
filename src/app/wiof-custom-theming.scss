@@ -175,6 +175,29 @@ p {
   }
 }
 
+@mixin wiof-card(
+  $radius: 18px,
+  $shadow: 0 12px 30px rgba(0, 0, 0, 0.08),
+  $border: 1px solid rgba(0, 0, 0, 0.08),
+  $bg: $light-color
+) {
+  background: $bg;
+  border-radius: $radius;
+  border: $border;
+  box-shadow: $shadow;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.wiof-card {
+  @include wiof-card();
+}
+
 .wiof-primary-btn {
   @include wiof-button();
   background: $dark-color;

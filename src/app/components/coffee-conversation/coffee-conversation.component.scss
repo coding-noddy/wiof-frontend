@@ -1,6 +1,7 @@
 @import '../../wiof-custom-theming.scss';
 
 .coffee-conv-container {
+  @include wiof-card();
   // height: 560px;             
 
   // Stretch slide and inner card
