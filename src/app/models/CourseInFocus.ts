@@ -10,7 +10,7 @@ export class CourseInFocus {
   keyTopics: string;
   description: string;
   image: string;
-  image$: Observable<string>;
+  image$: Observable<string> | null = null;
   link: string;
   creationDate?: Date;
   creationId?: string;

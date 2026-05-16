@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { CoffeeConversation } from 'src/app/models/CoffeeConversation';
 import { NgoInFocus } from 'src/app/models/NgoInFocus';
 import { CourseInFocusService } from 'src/app/services/course-in-focus.service';
-import { CourseInFocus } from 'src/app/models/courseInFocus';
+import { CourseInFocus } from 'src/app/models/CourseInFocus';
 import { NewsService } from 'src/app/services/news.service';
 import { News } from 'src/app/models/News';
 
@@ -16,10 +16,10 @@ import { News } from 'src/app/models/News';
 })
 export class HomePage implements OnInit {
   viewConsentPopup = true;
-  coffeeConversations$: Observable<CoffeeConversation[]>;
-  ngosInFocus$: Observable<NgoInFocus[]>;
-  coursesInFocus$: Observable<CourseInFocus[]>;
-  newsList$: Observable<News[]>;
+  coffeeConversations$: Observable<CoffeeConversation[]> | null = null;
+  ngosInFocus$: Observable<NgoInFocus[]> | null = null;
+  coursesInFocus$: Observable<CourseInFocus[]> | null = null;
+  newsList$: Observable<News[]> | null = null;
 
   constructor(
     private newsService: NewsService,
