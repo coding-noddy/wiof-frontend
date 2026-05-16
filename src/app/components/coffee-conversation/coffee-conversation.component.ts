@@ -22,7 +22,7 @@ export class CoffeeConversationComponent
 
   ngOnChanges() {
     if (this.coffeeConvList) {
-      this.coffeeConvList.sort((a, b) => b.interviewDate - a.interviewDate);
+      this.coffeeConvList.sort((a, b) => a.interviewDate - b.interviewDate);
       if(this.fromHomePage){
         this.coffeeConvList = this.coffeeConvList.slice(this.coffeeConvList.length - 1);
       }
