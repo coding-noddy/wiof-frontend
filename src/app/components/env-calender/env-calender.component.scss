@@ -72,7 +72,7 @@
   ion-col {
     color: $home-text-color;
     text-align: center;
-    font-size: 10px;         // same as coffee convo
+    font-size: clamp(8px, 2vw, 10px);         // same as coffee convo
     padding-bottom: 6px;
   }
 }

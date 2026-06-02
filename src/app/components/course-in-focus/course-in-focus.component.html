@@ -24,12 +24,12 @@
               <!-- CONTENT BELOW -->
               <div class="course-content">
                 <h2><strong>{{ courseInFocus.name }}</strong></h2>
-        
+
                 <p><span>Offered By</span>: {{ courseInFocus.offeredBy }}</p>
                 <p><span>Platform</span>: {{ courseInFocus.platform }}</p>
                 <p><span>Duration</span>: {{ courseInFocus.duration }}</p>
                 <p><span>Approx. Cost</span>: {{ courseInFocus.approxCost }}</p>
-        
+
                 <p>
                   <span>Key Topics</span>:
                   <span
@@ -39,11 +39,14 @@
                     {{ topic }}
                   </span>
                 </p>
-        
+
                 <p class="course-description">
                   {{ courseInFocus.description }}
                 </p>
-        
+              </div>                
+
+              <!-- FIXED BUTTON -->
+              <div class="know-more-bar">
                 <a
                   [href]="courseInFocus.link"
                   target="_blank"
