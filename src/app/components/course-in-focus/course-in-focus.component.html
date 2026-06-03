@@ -1,83 +1,81 @@
-<ion-card
-  *ngIf="coursesInFocus?.length > 0"
-  class="wiof-course-in-focus-container"
->
-  <ion-card-header class="ion-align-center wiof-slider-header">
-    <ion-card-title class="title-text">Course in Focus</ion-card-title>
+<ion-card *ngIf="coursesInFocus?.length > 0" class="wiof-course-in-focus-container custom-bordered-card">
+  
+  <ion-card-header class="ion-align-center wiof-slider-header custom-blue-header">
+    <ion-card-title class="title-text" style="color: white; font-size: 1.1rem; font-weight: 500;">
+      Course in Focus
+    </ion-card-title>
   </ion-card-header>
+
   <ion-card-content class="background ion-no-padding">
     <div *ngIf="coursesInFocus; else loading">
       <ion-slides #slider [options]="slideOpts">
         <ion-slide *ngFor="let courseInFocus of coursesInFocus">
-          <ion-card
-            class="ion-no-padding ion-no-margin"
-            style="box-shadow: none"
-          >
-            <ion-card-content
-              class="ion-text-start card-content ion-no-padding"
-            >
+          
+          <ion-card class="ion-no-padding ion-no-margin" style="box-shadow: none; background: transparent;">
+            <ion-card-content class="ion-text-start card-content ion-no-padding">
               <ion-row class="ion-padding course-details">
-                <ion-col size="9">
-                  <h2>
-                    <strong
-                      ><a [href]="courseInFocus.link"></a
-                      >{{ courseInFocus.name }}</strong
-                    >
-                  </h2>
-                  <p><span>Offered By</span>: {{ courseInFocus.offeredBy }}</p>
-                  <p><span>Platform</span>: {{ courseInFocus.platform }}</p>
-                  <p><span>Duration</span>: {{ courseInFocus.duration }}</p>
-                  <p>
-                    <span>Approx. Cost: {{ courseInFocus.approxCost }}</span>
-                  </p>
-                </ion-col>
-                <ion-col size="3">
-                  <img
-                    class="course-in-focus-image"
-                    [src]="courseInFocus.image$ | async"
-                    alt=""
-                  />
-                </ion-col>
+                
                 <ion-col size="12">
+                  <h2 style="color: black; margin-top: 0;">
+                    <strong>Climate Change / Sustainability Awareness</strong>
+                  </h2>
+
+                  <div class="course-logo-container">
+                    <img
+                      class="course-in-focus-image"
+                      src="assets/River.png" 
+                      alt="Course Image"
+                    />
+                  </div>
+
                   <p>
-                    <span>Key Topics</span>:
-                    <span
-                      class="home-key-tag"
-                      *ngFor="let topic of courseInFocus.keyTopics.split(',')"
-                      >{{ topic }}</span
-                    >
+                    <span style="font-weight: bold;">Offered By</span>: 
+                    <a href="https://www.linkedin.com/in/devraj-soni-sustainability/" target="_blank" rel="noopener noreferrer" class="home-key-tag">
+                      Devraj Soni
+                    </a>
+                    <a href="https://www.linkedin.com/in/shivkumarkrishnamoorthy/" target="_blank" rel="noopener noreferrer" class="home-key-tag">
+                      Shivkumar Krishnamoorthy
+                    </a>
                   </p>
-                  <p class="ion-margin-top course-description">
-                    {{ courseInFocus.description }}
-                  </p>
-                  <p>
-                    <a
-                      [href]="courseInFocus.link"
-                      target="_blank"
-                      class="wiof-primary-link"
-                      >Know More</a
-                    >
+                  <p><span>Platform</span>: ClimatEnglighten</p>
+                  <p><span>Duration</span>: 90 minutes (Per Chapter)</p>
+                </ion-col>
+
+                <ion-col size="12">
+                  <p class="topics-wrapper">
+                    <span class="key-topics-label">Key Topics:</span>
+                    <span class="home-key-tag">Sustainability</span>
+                    <span class="home-key-tag">ClimatEnlightenment</span>
                   </p>
                 </ion-col>
+
+                <ion-col size="12">
+                  <div class="animated-text-container ion-margin-top">
+                    <p class="anim-sentence seq-first">Beyond the buzzwords lies a clearer way to live. Find the course that speaks to you.</p>
+                    <p class="anim-sentence seq-second">You don't need a degree to help save the world. Discover how easy it is to see the big picture.</p>
+                    <p class="anim-sentence seq-final">You don't need to be a expert to understand the future. Discover the simple paths to becoming climate-enlightened.</p>
+                  </div>
+                  
+                  <p class="ion-margin-top">
+                    <a href="/climatenlighten" target="_blank" class="wiof-primary-link" style="background-color: #333; color: white; padding: 4px 16px; border-radius: 4px; text-decoration: none; display: inline-block;">
+                      Know More
+                    </a>
+                  </p>
+                </ion-col>
+
               </ion-row>
             </ion-card-content>
           </ion-card>
+
         </ion-slide>
       </ion-slides>
-      <div
-        *ngIf="coursesInFocus.length > 1"
-        class="swiper-button-prev navigation-arrow-custom-styling"
-        (click)="slider.slidePrev()"
-      ></div>
-      <div
-        *ngIf="coursesInFocus.length > 1"
-        class="swiper-button-next navigation-arrow-custom-styling"
-        (click)="slider.slideNext()"
-      ></div>
+
+      <div *ngIf="coursesInFocus.length > 1" class="swiper-button-prev navigation-arrow-custom-styling" (click)="slider.slidePrev()"></div>
+      <div *ngIf="coursesInFocus.length > 1" class="swiper-button-next navigation-arrow-custom-styling" (click)="slider.slideNext()"></div>
     </div>
 
     <ng-template #loading>
-      <app-wiof-spinner></app-wiof-spinner>
+      <div style="text-align: center; padding: 20px;">Loading...</div>
     </ng-template>
   </ion-card-content>
 </ion-card>

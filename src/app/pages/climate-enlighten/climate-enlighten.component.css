@@ -1,0 +1,186 @@
+.page-wrapper {
+  background-color: #ffffff;
+  min-height: 100vh;
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  display: block;
+}
+
+
+.logo-banner {
+  text-align: center;
+  padding: 30px 20px;
+  border-bottom: 1px solid #f0ece1;
+  height: 410px;
+}
+
+.header-logo {
+  width: 100%;
+  max-width: 1000px; 
+  height: auto;
+  display: inline-block; 
+  margin-bottom: 0;
+}
+
+
+.climate-container {
+  max-width: 95%; /* Keeps the cards spread out nicely */
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.tagline-container {
+  text-align: center;
+  margin-bottom: 50px; 
+}
+
+.subheading {
+  font-size: 1.2rem; 
+  line-height: 1.6; 
+  color: #5a6b7c; 
+  max-width: 750px;
+  margin: 0 auto;
+  font-weight: 500; /* Slightly bolder to stand out on its own */
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Forces exactly 3 equal columns */
+  gap: 40px; 
+  align-items: stretch;
+}
+
+@media (max-width: 992px) {
+  .cards-grid {
+    grid-template-columns: 1fr; /* Stacks them vertically on smaller screens */
+  }
+}
+
+/* =========================================
+   Base Card Styling
+   ========================================= */
+.card {
+  border-radius: 12px;
+  box-shadow: none; /* Clean, flat design */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); /* Soft shadow only on hover */
+}
+
+.card-header {
+  padding: 24px;
+  background-color: transparent;
+  font-size: 29px;
+}
+
+.card-header h2 {
+  font-size: 1.25rem;
+  color: #2c3e50;
+  margin: 0 0 15px 0;
+  line-height: 1.4;
+}
+
+.launch-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.card-body {
+  padding: 24px;
+  flex-grow: 1;
+}
+
+.topic-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.topic-list li {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.5;
+}
+
+.topic-list li::before {
+  content: "•";
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.card-footer {
+  padding: 24px;
+  margin-top: auto;
+}
+
+.enquire-btn {
+  display: block;
+  text-align: center;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.enquire-btn:active {
+  transform: scale(0.98);
+}
+.enquire-btn.disabled-btn {
+  background-color: #e0e0e0 ;
+  color: #dad5d5 ;
+  cursor: not-allowed; /* Shows the 'no' symbol when hovered */
+  pointer-events: none; /* Completely disables clicks */
+  transform: none
+}
+
+
+/* CARD 1: GREEN THEME (Dashed Border) */
+.card:nth-child(1) {
+  background-color: #f1f8e9; 
+  border: 1px solid #4caf50; 
+}
+.card:nth-child(1) .card-header { border-bottom: 1px solid #4caf50; } 
+.card:nth-child(1) .launch-badge { background-color: #c8e6c9; color: #2e7d32; }
+.card:nth-child(1) .topic-list li::before { color: #4caf50; }
+.card:nth-child(1) .enquire-btn { background-color: #4caf50; }
+.card:nth-child(1) .enquire-btn:hover { background-color: #388e3c; }
+
+/* CARD 2: BLUE THEME (Solid Border) */
+.card:nth-child(2) {
+  background-color: #e3f2fd; 
+  border: 1px solid #2196f3; 
+}
+.card:nth-child(2) .card-header { border-bottom: 1px solid #2196f3; } 
+.card:nth-child(2) .launch-badge { background-color: #bbdefb; color: #1565c0; }
+.card:nth-child(2) .topic-list li::before { color: #2196f3; }
+.card:nth-child(2) .enquire-btn { background-color: #2196f3; }
+.card:nth-child(2) .enquire-btn:hover { background-color: #1976d2; }
+
+/* CARD 3: PURPLE THEME (Solid Border) */
+.card:nth-child(3) {
+  background-color: #f3e5f5; 
+  border: 1px solid #9c27b0; 
+}
+.card:nth-child(3) .card-header { border-bottom: 1px solid #9c27b0; } 
+.card:nth-child(3) .launch-badge { background-color: #e1bee7; color: #6a1b9a; }
+.card:nth-child(3) .topic-list li::before { color: #9c27b0; }
+.card:nth-child(3) .enquire-btn { background-color: #9c27b0; }
+.card:nth-child(3) .enquire-btn:hover { background-color: #7b1fa2; }
