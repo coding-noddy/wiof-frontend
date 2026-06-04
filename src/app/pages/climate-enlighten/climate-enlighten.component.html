@@ -1,0 +1,37 @@
+<div class="page-wrapper">
+  
+  <header class="logo-banner">
+    <img src="assets/ClimateEnlighten.png" alt="Climate Enlighten Logo" class="header-logo">
+  </header>
+
+  <section class="climate-container">
+
+    <div class="cards-grid">
+      <div class="card" *ngFor="let card of cards">
+          
+        <div class="card-header">
+          <h2>{{ card.title }}</h2>
+          <span class="launch-badge">{{ card.launchDate }}</span>
+        </div>
+
+        <div class="card-body">
+          <ul class="topic-list">
+            <li *ngFor="let topic of card.topics">{{ topic }}</li>
+          </ul>
+        </div>
+
+        <div class="card-footer">
+          <a *ngIf="!card.isDisabled" [href]="card.formLink" target="_blank" class="enquire-btn">
+            Enquire Now
+          </a>
+          
+          <a *ngIf="card.isDisabled" class="enquire-btn disabled-btn " style="background-color: grey;">
+            Enquire Now
+          </a>
+        </div>
+          
+      </div>
+    </div>
+
+  </section>
+</div>

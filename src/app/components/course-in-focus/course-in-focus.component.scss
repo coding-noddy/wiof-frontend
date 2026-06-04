@@ -18,19 +18,18 @@
   display: flex;
   flex-direction: column;
 
-  ion-card-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    overflow: hidden;
-  }
-
-  ion-slides {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
+.course-in-focus-image {
+  background-color: transparent !important; 
+  box-shadow: none !important;              
+  border: none;
+  width: 100;
+  height: auto;
+  max-height: 190px; 
+  max-width: 380px;
+  object-fit: contain;   
+  mix-blend-mode: multiply;
+  border-radius: 5px;
+}
 
   .swiper-wrapper {
     height: 100%;
@@ -125,10 +124,97 @@
   flex-direction: column;
   height: 100%;
 }
+.topics-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
 
-// Mobile 
-@media (max-width: 767px) {
-  .wiof-course-in-focus-container .course-media-container {
-    height: 180px;
-  }
+.key-topics-label {
+  font-weight: 600;
+  color: #444;
+  font-size: 14px;
+}
+
+.home-key-tag {
+  background-color: #5dade2;
+  color: #ffffff;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  display: inline-block;
+  text-transform: capitalize;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1); 
+  text-decoration: none;
+}
+.animated-text-container {
+  position: relative;
+  min-height: 85px;
+  overflow: hidden;
+  padding: 12px 16px;
+  border-left: 4px solid #5dade2;
+  background: linear-gradient(90deg, rgba(93, 173, 226, 0.08) 0%, transparent 100%);
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 25px;
+}
+
+.anim-sentence {
+  position: absolute;
+  top: 12px; 
+  left: 16px; 
+  width: calc(100% - 32px);
+  margin: 0;
+  opacity: 0; 
+
+  color: #2c3e50;
+  font-size: 15px;
+  line-height: 1.6;
+  font-weight: 500;
+  font-style: italic;
+}
+
+
+.seq-first {
+  animation: playFirst 12s ease-in-out forwards;
+}
+
+.seq-second {
+  animation: playSecond 12s ease-in-out forwards;
+}
+
+.seq-final {
+  animation: playFinal 12s ease-in-out forwards;
+}
+
+
+/* --- The Keyframe Timelines --- */
+
+/* Appears immediately, fades out at 4 seconds */
+@keyframes playFirst {
+  0%   { opacity: 0; }
+  5%   { opacity: 1; }  /* Fades in */
+  28%  { opacity: 1; }  /* Stays visible */
+  33%  { opacity: 0; }  /* Fades out */
+  100% { opacity: 0; }
+}
+
+/* Waits until 4 seconds, fades in, fades out at 8 seconds */
+@keyframes playSecond {
+  0%   { opacity: 0; }
+  33%  { opacity: 0; }
+  38%  { opacity: 1; }  /* Fades in */
+  61%  { opacity: 1; }  /* Stays visible */
+  66%  { opacity: 0; }  /* Fades out */
+  100% { opacity: 0; }
+}
+
+/* Waits until 8 seconds, fades in, stays forever */
+@keyframes playFinal {
+  0%   { opacity: 0; }
+  66%  { opacity: 0; }
+  71%  { opacity: 1; }  /* Fades in */
+  100% { opacity: 1; }  /* Stays permanently! */
 }
