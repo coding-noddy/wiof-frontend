@@ -7,7 +7,8 @@ $breakpoint-tablet: 767px;
 
 .page-container {
   padding: $page-padding-mobile;
-
+  max-width: 1100px;
+  margin: 0 auto;
   @media (min-width: 768px) {
     padding: $page-padding-desktop;
   }
@@ -31,10 +32,10 @@ $breakpoint-tablet: 767px;
     text-shadow: 2px 2px 3px rgba(0,0,0,1);
   
     @media (min-width: 768px) {
-      font-size: 2.4rem; /* Larger font for tablets and above */
+      font-size: 2.4rem; 
     }
     @media (min-width: 1024px) {
-      font-size: 3rem; /* Even larger for desktops */
+      font-size: 3rem; 
     }
   }
  
@@ -107,14 +108,25 @@ ion-content {
 }
 
 app-wiof-footer {
-  margin-top: 2rem;
+  margin-top: 4rem;
 }
 
 ion-grid {
   --ion-grid-padding: 0;
+  padding: 10px;
 }
 
-/* Optional: Add spacing between rows */
+
+/*Add spacing between rows */
 ion-row + ion-row {
-  margin-top: 1.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.section-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  height: 100%;
 }

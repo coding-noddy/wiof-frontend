@@ -1,4 +1,4 @@
-<ion-card *ngIf="inFocuses?.length > 0" class="wiof-in-focus-container">
+<!-- <ion-card *ngIf="inFocuses?.length > 0" class="wiof-in-focus-container">
   <ion-card-header class="wiof-video-player-header" [ngClass]="inFocusClass">
     <ion-card-title class="title-text"> {{ inFocusTitle }} </ion-card-title>
   </ion-card-header>
@@ -34,4 +34,201 @@
       (click)="slider.slideNext()"
     ></div>
   </ion-card-content>
+</ion-card> -->
+
+<!-- (1) Video at the top left, Title at the Right and paragraph at the bottom
+<ion-card *ngIf="inFocuses?.length > 0" class="wiof-in-focus-container">
+  <ion-card-header class="wiof-video-player-header" [ngClass]="inFocusClass">
+    <ion-card-title class="title-text"> {{ inFocusTitle }} </ion-card-title>
+  </ion-card-header>
+  <ion-card-content class="ion-no-padding background" [ngClass]="inFocusClass">
+    <ion-slides #slider [options]="slideOpts">
+      <ion-slide *ngFor="let inFocus of inFocuses">
+        <ion-grid class="ion-no-padding full-width">
+
+          <ion-row class="top-row">
+            <ion-col size-xs="12" size-sm="7" class="wiof-video-player-content">
+              <iframe
+                [title]="inFocus.title"
+                class="videoPlayer"
+                [src]="inFocus.sanitizedLink"
+                allowfullscreen
+              ></iframe>
+            </ion-col>
+            <ion-col size-xs="12" size-sm="5" class="title-col">
+              <strong class="in-focus-subtitle">{{ inFocus.subTitle }}</strong>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col size-xs="12" class="in-focus-content">
+              <p>{{ inFocus.description }}</p>
+            </ion-col>
+          </ion-row>
+
+        </ion-grid>
+      </ion-slide>
+    </ion-slides>
+    <div
+      *ngIf="inFocuses.length > 1"
+      class="swiper-button-prev navigation-arrow-custom-styling"
+      (click)="slider.slidePrev()"
+    ></div>
+    <div
+      *ngIf="inFocuses.length > 1"
+      class="swiper-button-next navigation-arrow-custom-styling"
+      (click)="slider.slideNext()"
+    ></div>
+  </ion-card-content>
 </ion-card>
+ -->
+
+<!-- (2) Video at the left and full content at the right -->
+<!-- <ion-card *ngIf="inFocuses?.length > 0" class="wiof-in-focus-container">
+  <ion-card-header class="wiof-video-player-header" [ngClass]="inFocusClass">
+    <ion-card-title class="title-text"> {{ inFocusTitle }} </ion-card-title>
+  </ion-card-header>
+  <ion-card-content class="ion-no-padding background wiof-in-focus-content" [ngClass]="inFocusClass">
+    <ion-slides #slider [options]="slideOpts">
+      <ion-slide *ngFor="let inFocus of inFocuses">
+
+        <div class="slide-layout">
+          
+          <div class="video-side">
+            <iframe
+              [title]="inFocus.title"
+              class="videoPlayer"
+              [src]="inFocus.sanitizedLink"
+              allowfullscreen
+            ></iframe>
+          </div>
+
+          
+          <div class="content-side">
+            <strong class="in-focus-subtitle">{{ inFocus.subTitle }}</strong>
+            <p class="in-focus-desc">{{ inFocus.description }}</p>
+          </div>
+        </div>
+
+      </ion-slide>
+    </ion-slides>
+    <div
+      *ngIf="inFocuses.length > 1"
+      class="swiper-button-prev navigation-arrow-custom-styling"
+      (click)="slider.slidePrev()"
+    ></div>
+    <div
+      *ngIf="inFocuses.length > 1"
+      class="swiper-button-next navigation-arrow-custom-styling"
+      (click)="slider.slideNext()"
+    ></div>
+  </ion-card-content>
+</ion-card> -->
+ 
+
+<!-- (3) Title → full width (top) , Video → centered (middle), Content → bottom (full width) -->
+<ion-card *ngIf="inFocuses?.length > 0" class="wiof-in-focus-container">
+  <ion-card-header class="wiof-video-player-header" [ngClass]="inFocusClass">
+    <ion-card-title class="title-text"> {{ inFocusTitle }} </ion-card-title>
+  </ion-card-header>
+
+  <ion-card-content class="ion-no-padding background wiof-in-focus-content" [ngClass]="inFocusClass">
+    <ion-slides #slider [options]="slideOpts">
+      <ion-slide *ngFor="let inFocus of inFocuses">
+
+        <div class="vertical-layout">
+
+          <!-- TITLE -->
+          <div class="title-section">
+            <strong class="in-focus-subtitle">{{ inFocus.subTitle }}</strong>
+          </div>
+
+          <!-- VIDEO -->
+          <div class="video-section">
+            <iframe
+              [title]="inFocus.title"
+              class="videoPlayer"
+              [src]="inFocus.sanitizedLink"
+              allowfullscreen
+            ></iframe>
+          </div>
+
+          <!-- DESCRIPTION -->
+          <div class="desc-section">
+            <p>{{ inFocus.description }}</p>
+          </div>
+
+        </div>
+
+      </ion-slide>
+    </ion-slides>
+
+    <div
+      *ngIf="inFocuses.length > 1"
+      class="swiper-button-prev navigation-arrow-custom-styling"
+      (click)="slider.slidePrev()"
+    ></div>
+    <div
+      *ngIf="inFocuses.length > 1"
+      class="swiper-button-next navigation-arrow-custom-styling"
+      (click)="slider.slideNext()"
+    ></div>
+  </ion-card-content>
+</ion-card>
+
+
+<!-- Video at the top left, Title at the Right and paragraph at the bottom -->
+
+<!-- <ion-card *ngIf="inFocuses?.length > 0" class="wiof-in-focus-container">
+  <ion-card-header class="wiof-video-player-header" [ngClass]="inFocusClass">
+    <ion-card-title class="title-text"> {{ inFocusTitle }} </ion-card-title>
+  </ion-card-header>
+
+  <ion-card-content class="ion-no-padding background wiof-in-focus-content" [ngClass]="inFocusClass">
+    <ion-slides #slider [options]="slideOpts">
+      <ion-slide *ngFor="let inFocus of inFocuses">
+
+        <div class="slide-layout"> -->
+
+          <!-- TOP ROW: Video + Title side by side -->
+          <!-- <div class="top-row"> -->
+
+            <!-- LEFT: Video 65% -->
+             <!-- <div class="video-side">
+              <iframe
+                [title]="inFocus.title"
+                class="videoPlayer"
+                [src]="inFocus.sanitizedLink"
+                allowfullscreen
+              ></iframe>
+            </div> -->
+
+            <!-- RIGHT: Title 35% -->
+            <!-- <div class="title-side">
+              <strong class="in-focus-subtitle">{{ inFocus.subTitle }}</strong>
+            </div>
+
+          </div> -->
+
+          <!-- BOTTOM ROW: Description full width -->
+          <!-- <div class="desc-row">
+            <p class="in-focus-desc">{{ inFocus.description }}</p>
+          </div>
+
+        </div>
+
+      </ion-slide>
+    </ion-slides>
+
+    <div
+      *ngIf="inFocuses.length > 1"
+      class="swiper-button-prev navigation-arrow-custom-styling"
+      (click)="slider.slidePrev()"
+    ></div>
+    <div
+      *ngIf="inFocuses.length > 1"
+      class="swiper-button-next navigation-arrow-custom-styling"
+      (click)="slider.slideNext()"
+    ></div>
+  </ion-card-content>
+</ion-card> --> 

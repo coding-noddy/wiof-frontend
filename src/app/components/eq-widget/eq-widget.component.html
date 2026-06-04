@@ -1,4 +1,4 @@
-<ion-card class="wiof-spirit-widget-card-background widget-height">
+<!-- <ion-card class="wiof-spirit-widget-card-background widget-height">
   <ion-card-header class="wiof-spirit-widget-card-header">
     <ion-card-title class="title-text">
       Emotional Quotient Widget
@@ -39,4 +39,54 @@
       (back)="showTest = false"
     ></app-eq-widget-question-card>
   </ion-card-content>
+</ion-card> -->
+
+<ion-card class="wiof-spirit-widget-card-background widget-height">
+
+  <ion-card-header class="wiof-spirit-widget-card-header">
+    <ion-card-title class="title-text">
+      Emotional Quotient Widget
+    </ion-card-title>
+  </ion-card-header>
+
+  <!-- NEW: content wrapper -->
+  <div class="eq-widget-contents">
+
+    <!-- INTRO CONTENT -->
+    <div *ngIf="!showTest">
+      <strong>What is emotional intelligence or EQ?</strong>
+
+      <p>
+        Emotional intelligence (otherwise known as emotional quotient or EQ) is
+        the ability to understand, use, and manage your own emotions in positive
+        ways to relieve stress, communicate effectively, empathize with others,
+        overcome challenges and defuse conflict. Emotional intelligence helps
+        you build stronger relationships, succeed at school and work, and
+        achieve your career and personal goals.
+      </p>
+
+      <p (click)="startTest()" class="answer-text">
+        Answer these 24 questions to find your Emotional Quotient
+      </p>
+
+      <p class="eq-param-heading">
+        On the basis of the following three dimensions:
+      </p>
+
+      <div class="eq-param-desc">
+        <p>Attention: I am able to feel and express feelings properly.</p>
+        <p>Clarity: I understand my states well.</p>
+        <p>Reparation: I am able to regulate emotional states correctly.</p>
+      </div>
+    </div>
+
+    <!-- TEST SECTION -->
+    <div *ngIf="showTest" class="eq-test-container">
+      <app-eq-widget-question-card
+        (back)="showTest = false"
+      ></app-eq-widget-question-card>
+    </div>
+
+  </div>
+
 </ion-card>

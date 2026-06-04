@@ -7,7 +7,7 @@
   </ion-card-header>
 
   <ion-card-content class="background ion-no-padding">
-    <div *ngIf="coursesInFocus; else loading">
+    <div *ngIf="coursesInFocus; else loading" class="slides-wrapper">
       <ion-slides #slider [options]="slideOpts">
         <ion-slide *ngFor="let courseInFocus of coursesInFocus">
           
@@ -73,7 +73,6 @@
       <div *ngIf="coursesInFocus.length > 1" class="swiper-button-prev navigation-arrow-custom-styling" (click)="slider.slidePrev()"></div>
       <div *ngIf="coursesInFocus.length > 1" class="swiper-button-next navigation-arrow-custom-styling" (click)="slider.slideNext()"></div>
     </div>
-
     <ng-template #loading>
       <div style="text-align: center; padding: 20px;">Loading...</div>
     </ng-template>

@@ -1,4 +1,4 @@
-<ion-card *ngIf="blogList && blogList.length > 0">
+<ion-card *ngIf="blogList && blogList.length > 0" class="blog-slider-container">
   <ion-card-header
     class="ion-align-center wiof-slider-header"
     [ngClass]="blogSliderClass"
@@ -62,6 +62,7 @@
               </p>
             </ion-card-content>
           </ion-card>
+          
         </ion-slide>
       </ion-slides>
       <div

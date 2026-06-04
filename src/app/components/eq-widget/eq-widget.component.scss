@@ -1,42 +1,112 @@
+// @import '../../wiof-custom-theming.scss';
+
+// .wiof-spirit-widget-card-header {
+//   background-color: $spirit-color;
+//   border-bottom: white 2px solid;
+// }
+
+// .wiof-spirit-widget-card-background {
+//   background-color: rgba($spirit-color, $tint-fraction);
+// }
+
+// .eq-widget-card-content {
+//   text-align: justify;
+//   text-justify: inter-word;
+//   color: $dark-color;
+//   height: 500px;
+//   overflow: auto;
+
+//   strong {
+//     font-size: 16px;
+//   }
+// }
+
+// .show-test-button {
+//   cursor: pointer;
+// }
+
+// .eq-user-response {
+//   overflow: scroll;
+//   height: 500px;
+//   display: inline-block;
+//   width: 100%;
+// }
+
+// .answer-text {
+//   font-weight: bold;
+//   text-decoration: underline;
+//   cursor: pointer;
+//   font-size: 15px;
+//   color: $dark-color;
+
+//   &:hover {
+//     opacity: 0.8;
+//   }
+// }
+
+// .eq-param-desc p {
+//   padding: 5px 10px;
+//   border: 1px solid lightgrey;
+//   background: white;
+//   border-radius: 1rem;
+//   font-weight: $font-weight-medium;
+//   margin-top: 5px;
+// }
+
+// .eq-param-heading {
+//   padding-left: 10px;
+//   padding-bottom: 10px;
+// }
+
 @import '../../wiof-custom-theming.scss';
 
+// ─── Header ───────────────────────────────────────────────
 .wiof-spirit-widget-card-header {
   background-color: $spirit-color;
-  border-bottom: white 2px solid;
+  border-bottom: $light-color 2px solid;
+  padding: 8px 16px;
 }
 
+.title-text {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+// ─── Card Background ──────────────────────────────────────
 .wiof-spirit-widget-card-background {
   background-color: rgba($spirit-color, $tint-fraction);
 }
 
-.eq-widget-card-content {
-  text-align: justify;
-  text-justify: inter-word;
-  color: $dark-color;
+// ─── SAME HEIGHT SYSTEM ───────────────────────────────────
+.widget-height {
   height: 500px;
+}
+
+// ─── MAIN CONTENT WRAPPER (NEW) ───────────────────────────
+.eq-widget-contents {
+  height: auto;
+  max-height: calc(450px - 52px);
   overflow: auto;
-
-  strong {
-    font-size: 16px;
-  }
+  padding: 8px;
+  text-align: justify;
+  color: $dark-color;
 }
 
-.show-test-button {
-  cursor: pointer;
+// ─── TEXT STYLING ─────────────────────────────────────────
+.eq-widget-contents strong {
+  font-size: 15px;
 }
 
-.eq-user-response {
-  overflow: scroll;
-  height: 500px;
-  display: inline-block;
-  width: 100%;
+p {
+  font-size: 13px;
 }
 
+// ─── ANSWER CTA ───────────────────────────────────────────
 .answer-text {
   font-weight: bold;
   text-decoration: underline;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 14px;
   color: $dark-color;
 
   &:hover {
@@ -44,6 +114,7 @@
   }
 }
 
+// ─── PARAMETER BOXES ──────────────────────────────────────
 .eq-param-desc p {
   padding: 5px 10px;
   border: 1px solid lightgrey;
@@ -54,6 +125,24 @@
 }
 
 .eq-param-heading {
-  padding-left: 10px;
-  padding-bottom: 10px;
+  padding-left: 5px;
+  padding-bottom: 8px;
+  font-size: 13px;
+}
+
+// ─── TEST CONTAINER (SCROLL FIX) ──────────────────────────
+.eq-test-container {
+  height: 100%;
+  overflow: auto;
+}
+
+// ─── MOBILE FIX ───────────────────────────────────────────
+@media (max-width: 767px) {
+  .widget-height {
+    height: auto;
+  }
+
+  .eq-widget-contents {
+    max-height: none;
+  }
 }
