@@ -273,6 +273,8 @@ If you have multiple hosting targets configured:
 firebase deploy --only hosting:staging
 
 firebase deploy --only hosting:production
+
+firebase deploy --only hosting --project=prod
 ```
 
 ### Rollback a Deployment

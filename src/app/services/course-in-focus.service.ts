@@ -40,15 +40,17 @@ export class CourseInFocusService {
   }
 
   getCoursesInFocus(category?: string): Observable<CourseInFocus[]> {
-    let courseInFocusCollectn = this.database.collection(
-      FIREBASE_COLLECTION.COURSE_IN_FOCUS
+    const courseInFocusCollectn = this.database.collection(
+      FIREBASE_COLLECTION.COURSE_IN_FOCUS,
+      (ref) => {
+        let q: firebase.default.firestore.CollectionReference | any = ref;
+        if (category !== undefined) {
+          q = q.where('category', '==', category);
+        }
+        return q.orderBy('publishDate', 'desc');
+      }
     );
-    if (category !== undefined) {
-      courseInFocusCollectn = this.database.collection(
-        FIREBASE_COLLECTION.COURSE_IN_FOCUS,
-        (ref) => ref.where('category', '==', category)
-      );
-    }
+
     return courseInFocusCollectn.get().pipe(
       map((querySnapshot) =>
         querySnapshot.docs.map((doc) => {

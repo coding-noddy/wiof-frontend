@@ -120,6 +120,13 @@ const routes: Routes = [
       import('./pages/aboutus/aboutus.module').then((m) => m.AboutusPageModule)
   },
   {
+    path: 'climatenlighten',
+    loadChildren: () => 
+      import('./pages/climate-enlighten/climate-enlighten.module').then(
+        (m) => m.ClimateEnlightenPageModule
+      )
+  },
+  {
     path: '**',
     loadChildren: () =>
       import('./pages/not-found/not-found.module').then(
