@@ -6,53 +6,76 @@
 
 <ion-content>
   <div class="page-container">
-    <!-- Hero Section -->
+    <!-- Banner / Hero Section -->
     <section class="hero">
-      <h1>
-        Inspire through Creativity <br />
-        Enlighten through Knowledge<br />
-        Protect through Action
-      </h1>
-      <button class="cta" [routerLink]="['/discover-more']">Discover More...</button>
+      <div class="hero-copy">
+        <p class="eyebrow">World is One Family</p>
+        <h1>
+          Inspire through Creativity<br />
+          Enlighten through Knowledge<br />
+          Protect through Action
+        </h1>
+        <p class="hero-text">
+          Discover stories, courses, and conversations that empower you to act for people and the planet.
+        </p>
+        <button class="cta" [routerLink]="['/discover-more']">Discover More</button>
+      </div>
     </section>
 
-    <!-- Life Elements -->
     <app-life-elements></app-life-elements>
 
-    <!-- News and Conversations -->
-    <ion-grid class="ion-padding-top">
-      <ion-row>
-        <ion-col size-xs="12" size-md="6" size-lg="8">
-          <app-breaking-news [newsList]="newsList$ | async"></app-breaking-news>
-        </ion-col>
-        <ion-col size-xs="12" size-md="6" size-lg="4">
-          <app-coffee-conversation
-            [coffeeConvList]="coffeeConversations$ | async"
-            [fromHomePage]="true">
-          </app-coffee-conversation>
-        </ion-col>
-      </ion-row>
+    <!-- Breaking News -->
+    <section class="section-block">
+      <div class="section-header">
+        <h2>Breaking News</h2>
+        <p>Latest updates and important stories from the WIOF community.</p>
+      </div>
+      <app-breaking-news [newsList]="newsList$ | async"></app-breaking-news>
+    </section>
 
-      <!-- NGOs and Courses -->
-      <ion-row>
-        <ion-col size-xs="12" size-md="6" size-lg="8">
-          <app-ngo-in-focus [ngosInFocus]="ngosInFocus$ | async"></app-ngo-in-focus>
-        </ion-col>
-        <ion-col size-xs="12" size-md="6" size-lg="4">
-          <app-course-in-focus [coursesInFocus]="coursesInFocus$ | async"></app-course-in-focus>
-        </ion-col>
-      </ion-row>
+    <!-- Coffee Conversation -->
+    <section class="section-block conversation-section">
+      <div class="section-header">
+        <h2>Coffee Conversation</h2>
+        <p>Watch the latest conversation and engage with insights from the WIOF community.</p>
+      </div>
+      <app-coffee-conversation
+        [coffeeConvList]="coffeeConversations$ | async"
+        [fromHomePage]="true">
+      </app-coffee-conversation>
+    </section>
 
-      <!-- Calendar and Polls -->
-      <ion-row>
-        <ion-col size-xs="12" size-md="6" size-lg="8">
-          <app-env-calender></app-env-calender>
-        </ion-col>
-        <ion-col size-xs="12" size-md="6" size-lg="4">
-          <app-polls-widget></app-polls-widget>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+    <!-- Impact & Learn -->
+    <section class="section-block impact-row">
+      <div class="section-header">
+        <h2>Impact & Learn</h2>
+        <p>Discover stories of action alongside key courses for meaningful learning.</p>
+      </div>
+      <ion-grid>
+        <ion-row>
+          <ion-col size-xs="12" size-md="6">
+            <app-ngo-in-focus [ngosInFocus]="ngosInFocus$ | async"></app-ngo-in-focus>
+          </ion-col>
+          <ion-col size-xs="12" size-md="6">
+            <app-course-in-focus [coursesInFocus]="coursesInFocus$ | async"></app-course-in-focus>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </section>
+
+    <!-- Calendar and Polls -->
+    <section class="section-block bottom-row">
+      <ion-grid>
+        <ion-row>
+          <ion-col size-xs="12" size-md="6">
+            <app-env-calender></app-env-calender>
+          </ion-col>
+          <ion-col size-xs="12" size-md="6">
+            <app-polls-widget></app-polls-widget>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </section>
   </div>
 
   <app-wiof-footer></app-wiof-footer>

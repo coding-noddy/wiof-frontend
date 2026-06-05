@@ -4,6 +4,7 @@ import { combineLatest, Subject, throwError } from 'rxjs';
 import { catchError, map, takeUntil } from 'rxjs/operators';
 import { PollQuestion } from 'src/app/models/PollQuestion';
 import { UiUtilService } from 'src/app/util/UiUtilService';
+import { AppUtilService } from 'src/app/util/AppUtilService';
 import { IpService } from '../../services/ip.service';
 import { PollQuestionService } from '../../services/poll-question.service';
 import { PollsService } from '../../services/polls.service';
@@ -24,13 +25,16 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
   errorShow: boolean = false;
   loader;
   destroy$: Subject<boolean> = new Subject();
-
   wiofPollsForm: FormGroup;
+  // result data
+  totalVotes: number = 0;
+  optionData: any = {};
   constructor(
     private pollsService: PollsService,
     private pollQuestionService: PollQuestionService,
     private ip: IpService,
     private uiUtil: UiUtilService
+    ,private appUtil: AppUtilService
   ) {}
 
   ngOnInit() {
@@ -52,6 +56,8 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
           // this.IP4 = ip4Data;
           // this.IP6 = ip6Data;
           this.pollQuestion = pollData[0];
+          // load current results (useful after vote)
+          this.loadResults();
         },
         (err) => {
           console.log(err);
@@ -98,6 +104,8 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
             this.wiofPollsForm.reset();
             this.showPollResult = true;
             this.showForm = false;
+            // refresh results after successful vote
+            this.loadResults();
           },
           (error) => {
             this.loader.dismiss();
@@ -115,6 +123,19 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
     } else {
       this.showError();
     }
+  }
+
+  loadResults() {
+    if (!this.pollQuestion || !this.pollQuestion.pollId) {
+      return;
+    }
+    this.pollsService
+      .getPolls(this.pollQuestion.pollId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        this.totalVotes = data.length;
+        this.appUtil.calculatePollResult(this.pollQuestion, data, this.optionData);
+      });
   }
 
   showError() {

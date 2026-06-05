@@ -1,72 +1,42 @@
 <ion-card *ngIf="newsList?.length > 0" class="breaking-news-container">
   <ion-card-header class="ion-align-center wiof-slider-header">
-    <ion-row>
-      <ion-col class="title-text" size="12">Breaking NEWS</ion-col>
-    </ion-row>
+    <ion-card-title>Breaking NEWS</ion-card-title>
   </ion-card-header>
-  <ion-card-content class="background">
+
+  <ion-card-content class="breaking-news-content">
     <div *ngIf="newsList; else loading">
-      <ion-slides #wiofNewsSlider [options]="slideOpts">
+      <ion-slides #wiofNewsSlider [options]="slideOpts" class="breaking-news-slides">
         <ion-slide *ngFor="let news of newsList">
-          <ion-card class="news-card">
-            <ion-card-content class="ion-text-start card-content">
-              <ion-row>
-                <ion-col class="media-container" size="12" size-xl="7">
-                  <img
-                    class="mediaPlayer"
-                    [src]="news.image$ | async"
-                    alt=""
-                    *ngIf="news.mediaType == 'image'"
-                  />
-                  <iframe
-                    class="mediaPlayer"
-                    [title]="'Video for news ' + news.headline"
-                    [src]="news.sanitizedLink"
-                    *ngIf="news.mediaType == 'video'"
-                  ></iframe>
-                </ion-col>
-                <ion-col class="news-content" size="12" size-xl="5">
-                  <article>
-                    <h2>
-                      <strong>{{ news.headline }}</strong>
-                    </h2>
-                    <p>{{ news.date | date: 'EEE, MMM dd YYYY' }}</p>
-                    <p class="content" [innerHTML]="news.content"></p>
-                    <p *ngIf="news.newsSource">
-                      <a
-                        [href]="news.newsSource"
-                        target="_blank"
-                        class="wiof-primary-link"
-                        >Know More</a
-                      >
-                    </p>
-                  </article>
-                </ion-col>
-              </ion-row>
-            </ion-card-content>
-          </ion-card>
+          <div class="news-card">
+            <div class="media-panel">
+              <img *ngIf="news.mediaType === 'image'" class="news-media" [src]="news.image$ | async" [alt]="news.headline" />
+              <div *ngIf="news.mediaType === 'video'" class="video-wrap">
+                <iframe class="news-media" [title]="'Video for news ' + news.headline" [src]="news.sanitizedLink" allowfullscreen></iframe>
+              </div>
+            </div>
+
+            <div class="detail-panel">
+              <p class="news-date">{{ news.date | date: 'EEE, MMM dd YYYY' }}</p>
+              <h3 class="news-headline">{{ news.headline }}</h3>
+              <div class="news-content" [innerHTML]="news.content"></div>
+              <a *ngIf="news.newsSource" [href]="news.newsSource" target="_blank" rel="noopener" class="wiof-primary-link">Read Full Story →</a>
+            </div>
+          </div>
         </ion-slide>
       </ion-slides>
-      <div class="newsHeadlineScroll">
+
+      <div class="news-marquee">
         <div [ngStyle]="{ 'animation-duration': newsList.length * 10 + 's' }">
-          <span *ngFor="let news of newsList">
-            &#x25cf; {{ news.headline }}</span
-          >
+          <span *ngFor="let news of newsList">&#x25cf; {{ news.headline }}</span>
         </div>
       </div>
-      <div
-        *ngIf="newsList.length > 1"
-        class="swiper-button-prev navigation-arrow-custom-styling"
-        (click)="wiofNewsSlider.slidePrev()"
-      ></div>
-      <div
-        *ngIf="newsList.length > 1"
-        class="swiper-button-next navigation-arrow-custom-styling"
-        (click)="wiofNewsSlider.slideNext()"
-      ></div>
+
+      <div *ngIf="newsList.length > 1" class="swiper-button-prev navigation-arrow-custom-styling" (click)="wiofNewsSlider.slidePrev()"></div>
+      <div *ngIf="newsList.length > 1" class="swiper-button-next navigation-arrow-custom-styling" (click)="wiofNewsSlider.slideNext()"></div>
     </div>
+
     <ng-template #loading>
-      <ion-spinner name="crescent" class="wiof-spinner"></ion-spinner><br />
+      <div class="loading-wrap"><ion-spinner name="crescent" class="wiof-spinner"></ion-spinner></div>
     </ng-template>
   </ion-card-content>
 </ion-card>

@@ -2,51 +2,67 @@
   <ion-card-header class="wiof-polls-widget-card-header">
     <ion-card-title class="wiof-polls-widget-card-header-text">
       Weekly Polls
+      <div class="poll-subtitle">Have your say — one vote per person</div>
     </ion-card-title>
   </ion-card-header>
+
   <ion-card-content class="wiof-polls-widget-card-background">
     <div *ngIf="showForm" class="polls-container">
-      <form [formGroup]="wiofPollsForm" (submit)="submit()">
-        <p>
-          <label class="font-size-medium" for="name"
-            >Please enter your name :</label
-          ><br />
+      <form [formGroup]="wiofPollsForm" (submit)="submit()" class="poll-form">
+        <div class="poll-question">
+          <div class="question-label">Poll Question</div>
+          <div class="question-text">{{ pollQuestion.question }}</div>
+        </div>
+
+        <div class="poll-options-list">
+          <label
+            class="poll-option"
+            *ngFor="let option of pollQuestion.options; let i = index"
+            [attr.for]="'option' + i"
+            >
+            <input
+              type="radio"
+              id="option{{i}}"
+              name="option"
+              value="option{{ i + 1 }}"
+              formControlName="option"
+            />
+              <div class="option-body">
+                <div class="option-text">{{ option }}</div>
+                <div class="option-meta" *ngIf="showPollResult">
+                  <div class="option-percent">
+                    {{ optionData['option' + (i + 1)]?.percent | number: '1.0-0' }}%
+                  </div>
+                  <div class="option-progress">
+                    <div
+                      class="option-progress-fill"
+                      [style.width]="optionData['option' + (i + 1)]?.percent + '%'"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+          </label>
+        </div>
+
+        <div class="poll-footer">
           <input
             formControlName="name"
             id="name"
             name="name"
-            placeholder="Name"
+            placeholder="Your name (optional)"
             class="poll-widget-name-input"
           />
-        </p>
-        <br />
-        <div class="font-size-medium">
-          <p>Poll Question</p>
-          <p style="font-size: large">{{ pollQuestion.question }}</p>
-        </div>
-        <br />
 
-        <div
-          class="poll-options"
-          *ngFor="let option of pollQuestion.options; let i = index"
-        >
-          <input
-            type="radio"
-            id="option{{ i + 1 }}"
-            name="option"
-            value="option{{ i + 1 }}"
-            formControlName="option"
-          />
-          <label for="option{{ i + 1 }}"> {{ option }}</label>
+          <div class="cta-and-error">
+            <p *ngIf="errorShow" class="error">Please select an option</p>
+            <button class="wiof-primary-btn" type="submit">
+              Submit Vote
+            </button>
+          </div>
         </div>
-
-        <br />
-        <p *ngIf="errorShow" class="error">Please fill all fields correctly</p>
-        <button class="wiof-primary-btn no-margin" type="submit">
-          Submit Poll
-        </button>
       </form>
     </div>
+
     <app-poll-result
       *ngIf="showPollResult"
       [pollQuestion]="pollQuestion"

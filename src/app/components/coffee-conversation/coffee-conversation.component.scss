@@ -1,95 +1,239 @@
 @import '../../wiof-custom-theming.scss';
 
-.coffee-conv-container {
-  height: calc(100% - 20px);
+// ─── Element theme map ────────────────────────────────────────────────────────
+$element-themes: (
+  'wiof-water':  ($water-color,  darken($water-color, 18%)),
+  'wiof-earth':  ($earth-color,  darken($earth-color, 18%)),
+  'wiof-fire':   ($energy-color, darken($energy-color, 18%)),
+  'wiof-air':    ($air-color,    darken($air-color, 18%)),
+  'wiof-spirit': ($spirit-color, darken($spirit-color, 18%))
+);
 
-  .background {
-    background-color: $home-color-light;
+// ─── Single container block — all rules live here ────────────────────────────
+.coffee-conv-container {
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+  background-color: #fff;
+
+  // ── Layout: home (side-by-side) ──────────────────────────────────────────
+  &.layout-home {
+    height: calc(100% - 20px);
+
+    ::ng-deep .background {
+      height: calc(100% - 58px);
+    }
+
+    ion-slides,
+    .background > div {
+      height: 100%;
+    }
+
+    .coffee-conv-card {
+      height: 100%;
+
+      ion-card-content ion-row {
+        height: 100%;
+        align-items: stretch;
+      }
+
+      .media-container {
+        min-height: 280px;
+        max-height: 420px;
+      }
+    }
+  }
+
+  // ── Layout: element pages (always stacked) ───────────────────────────────
+  &.layout-element {
+    height: auto;
+
+    ::ng-deep .background {
+      height: auto;
+    }
+
+    .coffee-conv-card {
+      height: auto;
+
+      ion-card-content ion-row {
+        align-items: flex-start;
+      }
+
+      .media-container {
+        min-height: 0;
+        max-height: none;
+        aspect-ratio: 16 / 9;
+      }
+    }
+  }
+
+  // ── Header — default (home / blue) ───────────────────────────────────────
+  .wiof-slider-header {
+    border-bottom: 2px solid white;
+    background-color: $home-color;
+    color: $dark-color;
+  }
+
+  // ── Background panel — default (home / blue) ─────────────────────────────
+  ::ng-deep .background {
     padding: 0;
     width: 100%;
-    height: calc(100% - 58px);
+    background-color: $home-color-light;
 
     ion-slides {
       height: 100%;
-
-      .coffee-conv-card {
-        min-width: 20%;
-        margin: 0;
-        height: 100%;
-        width: 100%;
-        border-radius: 0;
-
-        ion-card-content {
-          padding: 0px;
-          height: 100%;
-
-          ion-row {
-            height: 100%;
-          }
-
-          .media-container {
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-            min-height: 300px;
-            padding: 0;
-          }
-
-          .about-interviewee {
-            z-index: 1000;
-            display: block;
-            position: absolute;
-            overflow: hidden;
-            background: white;
-            border: 1px solid lightgrey;
-            box-shadow: 0px 5px 25px lightgrey;
-            width: 90%;
-            border-radius: 5px;
-            height: 90%;
-            top: 5%;
-            left: 5%;
-
-            .header {
-              background: $dark-color;
-              text-align: center;
-
-              h3 {
-                font-weight: $font-weight-medium;
-                padding: 12px 0px;
-                color: $light-color;
-                margin: 0 auto;
-                font-weight: 500;
-                display: inline-block;
-              }
-
-              button {
-                float: right;
-                padding: 5px 5px 3px 5px;
-                border-radius: 50%;
-                margin-top: 8px;
-                margin-right: 8px;
-                color: $dark-color;
-                background: $light-color;
-              }
-            }
-
-            p {
-              overflow: auto;
-              padding: 10px 1rem;
-              height: 75%;
-            }
-          }
-        }
-      }
     }
   }
 
   .background > div {
     height: 100%;
   }
+
+  // ── Element theme overrides (defined AFTER defaults — source order wins) ──
+  @each $element, $colors in $element-themes {
+    $bg:   nth($colors, 1);
+    $text: nth($colors, 2);
+
+    &.#{$element} .wiof-slider-header {
+      background-color: $bg;
+      color: $dark-color;
+      border-bottom: 2px solid white;
+    }
+
+    &.#{$element} ::ng-deep .background {
+      background-color: lighten($bg, 10%);
+    }
+
+    // Content column background tinted to element colour
+    &.#{$element} .coffee-conv-content {
+      background-color: lighten($bg, 10%);
+    }
+
+    // Interviewee box tinted to element colour
+    &.#{$element} .interviewee-details {
+      background: lighten($bg, 14%);
+
+      a {
+        color: $text;
+      }
+    }
+  }
+
+  // ── Card internals ───────────────────────────────────────────────────────
+  .coffee-conv-card {
+    min-width: 20%;
+    margin: 0;
+    width: 100%;
+    border-radius: 0;
+    box-shadow: none;
+    background-color: #fff;
+
+    ion-card-content {
+      padding: 0;
+
+      .media-container {
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        background: #f1f7ff;
+      }
+
+      .coffee-conv-content {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        h2 {
+          margin-top: 0;
+          font-size: 1.6rem;
+          margin-bottom: 0.75rem;
+        }
+
+        p {
+          color: #475569;
+          line-height: 1.75;
+        }
+
+        .coffee-description {
+          margin-bottom: 1.2rem;
+        }
+
+        a.wiof-primary-link {
+          font-weight: 700;
+        }
+
+        // Default interviewee box (home / blue) — element overrides are above
+        .interviewee-details {
+          background: lighten($home-color-light, 4%);
+          border-radius: 12px;
+          padding: 14px;
+          margin: 1rem 0;
+
+          span {
+            font-weight: $font-weight-medium;
+          }
+
+          a {
+            font-weight: 700;
+            color: $home-color-dark;
+          }
+        }
+      }
+
+      .about-interviewee {
+        z-index: 1000;
+        display: block;
+        position: absolute;
+        overflow: hidden;
+        background: white;
+        border: 1px solid lightgrey;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.12);
+        width: 92%;
+        border-radius: 12px;
+        height: 90%;
+        top: 4%;
+        left: 4%;
+
+        .header {
+          background: $dark-color;
+          text-align: center;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.75rem 1rem;
+
+          h3 {
+            font-weight: 600;
+            color: $light-color;
+            margin: 0;
+            font-size: 1rem;
+          }
+
+          button {
+            border: none;
+            padding: 0.55rem;
+            border-radius: 50%;
+            color: $dark-color;
+            background: $light-color;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+          }
+        }
+
+        p {
+          overflow: auto;
+          padding: 14px 1.2rem;
+          height: calc(100% - 64px);
+          margin: 0;
+          color: #333;
+        }
+      }
+    }
+  }
 }
 
+// ─── Misc (outside container, not scoped) ────────────────────────────────────
 .video-card-footer {
   background-color: white;
   border-top: 1px solid lightgrey;
@@ -101,37 +245,13 @@
 
 .coffee-conv-content {
   padding: 16px;
-
-  .interviewee-details {
-    border-radius: 5px;
-    margin: 10px 0px;
-
-    span {
-      font-weight: $font-weight-medium;
-    }
-
-    a {
-      font-weight: 600;
-      cursor: pointer;
-      // color: $light-color;
-      // background: $home-color-dark;
-      // padding: 4px 7px;
-      // border-radius: 5px;
-      // text-decoration: none;
-    }
-  }
 }
 
 .media-player {
   width: 100%;
   height: 100%;
   border: none;
-}
-
-.wiof-slider-header {
-  border-bottom: white 2px solid;
-  background-color: $home-color;
-  color: $home-text-color;
+  object-fit: cover;
 }
 
 .wiof-spinner {
@@ -160,38 +280,4 @@
 
 .video-title {
   text-decoration: none;
-}
-
-@mixin card-style($color) {
-  background-color: $color;
-  &.background {
-    padding: 0px;
-    background-color: rgba($color, $tint-fraction);
-
-    .coffee-conv-card .card-content {
-      padding: 5px;
-      color: $dark-color;
-      background-color: rgba($color, $tint-fraction);
-    }
-  }
-}
-
-.wiof-earth {
-  @include card-style($earth-color);
-}
-
-.wiof-water {
-  @include card-style($water-color);
-}
-
-.wiof-fire {
-  @include card-style($energy-color);
-}
-
-.wiof-air {
-  @include card-style($air-color);
-}
-
-.wiof-spirit {
-  @include card-style($spirit-color);
 }

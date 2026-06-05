@@ -1,198 +1,200 @@
 @import '../../wiof-custom-theming.scss';
 
 .breaking-news-container {
-  height: calc(100% - 20px);
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
 
-  .background,
-  .background > div {
+  .wiof-slider-header {
+    border-bottom: white 2px solid;
+    background-color: $home-color;
+    color: $dark-color;
+  }
+
+  .breaking-news-content {
+    padding: 0 !important;
+    background: $home-color-light;
+    --padding-top: 0;
+    --padding-bottom: 0;
+    --padding-start: 0;
+    --padding-end: 0;
+  }
+
+  :host ::ng-deep .breaking-news-slides ion-slide,
+  :host ::ng-deep .breaking-news-slides .swiper-wrapper,
+  :host ::ng-deep .breaking-news-slides .swiper-slide {
+    height: auto !important;
+    align-items: stretch;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .breaking-news-slides {
+    min-height: 0 !important;
+    padding: 0;
+  }
+
+  .breaking-news-container {
+    margin: 0;
+  }
+
+  .news-card {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: stretch;
+    border-radius: 0;
+    overflow: hidden;
+    background: transparent;
+    box-shadow: none;
+    transition: transform 0.2s ease;
+    height: 260px;
+    width: 100%;
+    min-width: 100%;
+    margin: 0;
+  }
+
+  .news-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
+  }
+
+  .media-panel {
+    flex: 0 0 33.3333%;
+    max-width: 33.3333%;
+    min-width: 33.3333%;
+    position: relative;
+    overflow: hidden;
+    background: #eef4fb;
     height: 100%;
   }
 
-  ion-slides {
-    height: calc(100% - 110px);
-
-    .news-card {
-      min-width: 20%;
-      height: 100%;
-      margin: 0;
-      width: 100%;
-      border-radius: 0;
-
-      ion-card-content {
-        height: 100%;
-
-        ion-row {
-          height: 100%;
-
-          .media-container {
-            min-height: 300px;
-            max-height: auto;
-          }
-
-          .news-content {
-            padding: 1rem;
-
-            .content {
-              padding: 10px 0;
-            }
-          }
-        }
-      }
-    }
+  .news-media {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
-  .newsHeadlineScroll {
-    position: relative;
-    height: 55px;
-    background-color: $home-color;
-    color: $dark-color;
-    padding: 1rem;
-    font-weight: $font-weight-medium;
-    font-size: 15px;
+  .video-wrap {
+    position: absolute;
+    inset: 0;
+  }
+
+  .detail-panel {
+    flex: 1 1 66.6667%;
+    min-width: 66.6667%;
+    min-height: 0;
+    height: 100%;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .news-date {
+    margin: 0 0 0.75rem 0;
+    color: #5a7188;
+    font-size: 0.92rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .news-headline {
+    margin: 0 0 1rem 0;
+    font-size: 1.45rem;
+    line-height: 1.15;
+    color: #10263c;
+  }
+
+  .news-content {
+    color: #324058;
+    line-height: 1.7;
+    overflow-y: auto;
+    flex: 1 1 auto;
+    margin-bottom: 1.25rem;
+    min-height: 0;
+    padding-right: 0.25rem;
+  }
+
+
+  .news-marquee {
+    min-height: 52px;
+    background: #eef6ff;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    color: #134b7a;
+    font-size: 0.95rem;
     white-space: nowrap;
+  }
 
-    div {
-      display: inline-block;
-      width: max-content;
-      padding-left: 100%;
-      /* show the marquee just outside the paragraph */
-      will-change: transform;
-      animation: marquee 15s linear infinite;
+  .news-marquee div {
+    display: inline-block;
+    width: max-content;
+    padding-left: 100%;
+    animation: marquee 18s linear infinite;
+  }
+
+  .news-marquee div:hover {
+    animation-play-state: paused;
+  }
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+
+  .swiper-button-prev,
+  .swiper-button-next {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.16);
+    position: absolute;
+    top: calc(50% - 22px);
+    z-index: 10;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .swiper-button-prev:hover,
+  .swiper-button-next:hover {
+    background: rgba(0, 0, 0, 0.24);
+  }
+
+  .swiper-button-prev { left: 12px; }
+  .swiper-button-next { right: 12px; }
+
+  .loading-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+  }
+
+  @media (max-width: 991px) {
+    .news-card {
+      flex-direction: column;
+      height: auto;
+      max-height: none;
     }
 
-    div:hover {
-      animation-play-state: paused;
+    .media-panel,
+    .detail-panel {
+      max-width: 100%;
+      flex: 1 1 100%;
+      height: auto;
     }
 
-    @keyframes marquee {
-      0% {
-        transform: translate(0, 0);
-      }
-      100% {
-        transform: translate(-100%, 0);
-      }
+    .detail-panel {
+      padding: 1rem;
     }
 
-    /* Respect user preferences about animations */
-    @media (prefers-reduced-motion: reduce) {
-      div {
-        animation-iteration-count: 1;
-        animation-duration: 0.01;
-        /* instead of animation: none, so an animationend event is 
-         * still available, if previously attached.
-         */
-        width: auto;
-        padding-left: 0;
-      }
+    .breaking-news-slides {
+      padding: 0.75rem;
     }
   }
 }
 
-.video-card-footer {
-  background-color: white;
-  border-top: 1px solid lightgrey;
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  color: $dark-color;
-}
-
-.thumbnailImage {
-  align-self: center;
-  width: 100%;
-  padding-top: 56.25%;
-}
-
-.media-container {
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-}
-
-.navigation-arrow-custom-styling {
-  top: 40%;
-}
-
-.mediaPlayer {
-  width: 100%;
-  height: 100%;
-  border: none;
-  object-fit: cover;
-}
-
-.wiof-slider-header {
-  border-bottom: white 2px solid;
-  background-color: $home-color;
-  color: $home-text-color;
-}
-
-.background {
-  background-color: $home-color-light;
-  padding: 0;
-
-  .news-card .card-content {
-    padding: 0px;
-  }
-}
-
-// /* Using SCSS variables to store breakpoints */
-// $breakpoint-desktop: 1024px;
-// $breakpoint-tablet: 767px;
-// $breakpoint-mobile: 480px;
-
-// //xsmall view from 0 to 479
-// @media (max-width: $breakpoint-mobile){
-//   .thumbnailImage{
-//     width:320px;
-//   }
-// }
-
-// //small view from 480 to 766
-// @media (max-width: $breakpoint-tablet){
-//   .thumbnailImage{
-//     width:320px;
-//   }
-// }
-
-// //medium view from 767 to 1023
-// @media (max-width: $breakpoint-desktop){
-//   .thumbnailImage{
-//     width:249.5px;
-//   }
-// }
-
-// //large view 1024 and above
-// @media (min-width: $breakpoint-desktop){
-//   .thumbnailImage{
-//     width:249.5px;
-//   }
-// }
-
-.wiof-spinner {
-  position: absolute;
-  left: 50%;
-}
-
-.show-more-card {
-  height: calc(100% - 20px);
-  width: 100%;
-  padding-top: 30%;
-  cursor: pointer;
-
-  p {
-    font-size: 20px;
-
-    ion-icon {
-      font-size: 30px;
-    }
-  }
-}
-
-.swiper-slide {
-  height: auto;
-}
-
-.video-title {
-  text-decoration: none;
-}

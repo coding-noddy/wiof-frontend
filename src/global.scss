@@ -33,6 +33,11 @@
   font-family: "Roboto", sans-serif !important;
 }
 
+html, body {
+  /* Slightly smaller base font for denser layout */
+  font-size: 15px;
+}
+
 .text-center {
   text-align: center;
 }

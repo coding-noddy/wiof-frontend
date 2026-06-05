@@ -1,6 +1,7 @@
 <ion-card
   *ngIf="coffeeConvList && coffeeConvList.length > 0"
   class="coffee-conv-container"
+  [ngClass]="[fromHomePage ? 'layout-home' : 'layout-element', coffeeConvClass]"
 >
   <ion-card-header
     class="ion-align-center wiof-slider-header"
@@ -17,7 +18,12 @@
           <ion-card class="coffee-conv-card">
             <ion-card-content class="ion-text-start card-content">
               <ion-row>
-                <ion-col class="media-container" size-xs="12">
+                <!-- Home page: side-by-side on md+. Element pages: always stacked -->
+                <ion-col
+                  class="media-container"
+                  size-xs="12"
+                  [attr.size-lg]="fromHomePage ? '6' : '12'"
+                >
                   <iframe
                     class="media-player"
                     [title]="coffeeConv.topic"
@@ -25,7 +31,11 @@
                     allowfullscreen
                   ></iframe>
                 </ion-col>
-                <ion-col class="coffee-conv-content" size-xs="12">
+                <ion-col
+                  class="coffee-conv-content"
+                  size-xs="12"
+                  [attr.size-lg]="fromHomePage ? '6' : '12'"
+                >
                   <h2>
                     <strong>{{ coffeeConv.topic }}</strong>
                   </h2>

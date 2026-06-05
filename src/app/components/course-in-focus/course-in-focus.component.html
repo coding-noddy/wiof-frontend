@@ -19,10 +19,9 @@
               <ion-row class="ion-padding course-details">
                 <ion-col size="9">
                   <h2>
-                    <strong
-                      ><a [href]="courseInFocus.link"></a
-                      >{{ courseInFocus.name }}</strong
-                    >
+                    <strong>
+                      <a [href]="courseInFocus.link" target="_blank" class="course-name-link">{{ courseInFocus.name }}</a>
+                    </strong>
                   </h2>
                   <p><span>Offered By</span>: {{ courseInFocus.offeredBy }}</p>
                   <p><span>Platform</span>: {{ courseInFocus.platform }}</p>

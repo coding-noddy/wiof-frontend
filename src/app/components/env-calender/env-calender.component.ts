@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { EnvDay } from '../../models/env-cal-data';
 import { EnvcalService } from '../../services/envcal-service';
-import { Observable } from 'rxjs';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-env-calender',
@@ -11,12 +9,9 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 })
 export class EnvCalenderComponent implements OnInit {
   todayDate = new Date();
-  imageUrl: Observable<any>;
   openDialog: boolean = false;
-  safeUrl: string;
   displayMonth: string;
   displayDay: string;
-  link: SafeResourceUrl;
   occasionForDialog: any;
   selectedOccasionIndex: number = 0;
   days: {
@@ -27,10 +22,7 @@ export class EnvCalenderComponent implements OnInit {
   }[] = [];
   EnvDays: EnvDay[];
 
-  constructor(
-    private envDayService: EnvcalService,
-    private santz: DomSanitizer
-  ) {}
+  constructor(private envDayService: EnvcalService) {}
 
   ngOnInit() {
     this.envDayService
@@ -39,10 +31,6 @@ export class EnvCalenderComponent implements OnInit {
         this.EnvDays = data;
         this.renderCalendar();
       });
-    this.link = this.santz.bypassSecurityTrustResourceUrl(this.safeUrl);
-
-    this.safeUrl =
-      'https://firebasestorage.googleapis.com/v0/b/wiof-staging.appspot.com/o/environment-calendar%2F1603616920627_IMG-20180901-WA0021.jpg?alt=media&token=d81cae0f-9581-4f37-8d9a-425a001ea94b';
   }
 
   getOccasion(day, month) {

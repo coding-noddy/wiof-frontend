@@ -105,6 +105,7 @@ export class NgoInFocusService {
             data.sanitizedLink = this.sanitizer.bypassSecurityTrustResourceUrl(
               YOUTUBE_EMBED_VIDEO_LINK.replace('VIDEO_ID', data.mediaLink)
             );
+            data.image$ = of('');
           }
           data.logoImage$ = this.getImage(data.ngoLogo);
           return data;

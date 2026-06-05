@@ -9,54 +9,57 @@
       <ion-slide *ngFor="let ngoInFocus of ngosInFocus">
         <ion-grid class="ion-no-padding">
           <ion-row>
-            <ion-col size="12" size-lg="8" class="text-center media-container">
-              <img
-                class="media-player"
-                [src]="ngoInFocus.image$ | async"
-                alt=""
-                *ngIf="ngoInFocus.mediaType == 'image'"
-              />
-              <iframe
-                class="media-player"
-                [title]="'Video for Ngo ' + ngoInFocus.ngoName"
-                [src]="ngoInFocus.sanitizedLink"
-                *ngIf="ngoInFocus.mediaType == 'video'"
-              ></iframe>
+            <ion-col size="12" class="media-container">
+              <div class="media-inner">
+                <img
+                  class="media-player"
+                  [src]="ngoInFocus.image$ | async"
+                  alt="Image for {{ ngoInFocus.ngoName }}"
+                  *ngIf="ngoInFocus.mediaType == 'image'"
+                />
+                <div class="video-wrap" *ngIf="ngoInFocus.mediaType == 'video'">
+                  <iframe
+                    class="media-player"
+                    [title]="'Video for Ngo ' + ngoInFocus.ngoName"
+                    [src]="ngoInFocus.sanitizedLink"
+                    allowfullscreen
+                  ></iframe>
+                </div>
+              </div>
             </ion-col>
-            <ion-col
-              size="12"
-              size-lg="4"
-              class="ion-padding"
-              style="text-align: left"
-            >
-              <img
-                [src]="ngoInFocus.logoImage$ | async"
-                class="logo"
-                alt=""
-              /><br />
-              <h2>
-                <strong>
-                  {{ ngoInFocus.ngoName }}
-                </strong>
-              </h2>
+
+            <ion-col size="12" class="ion-padding ngo-text-col">
+              <div class="ngo-header">
+                <img
+                  [src]="ngoInFocus.logoImage$ | async"
+                  class="logo"
+                  [alt]="ngoInFocus.ngoName + ' logo'"
+                />
+                <div class="ngo-title">
+                  <h2><strong>{{ ngoInFocus.ngoName }}</strong></h2>
+                </div>
+              </div>
+
               <p>
-                <span class="font-weight-medium">Key Activities/Work Areas</span
-                >:
+                <span class="font-weight-medium">Key Activities/Work Areas</span>:
                 <span
                   class="home-key-tag"
                   *ngFor="let activity of ngoInFocus.keyActivities.split(',')"
                   >{{ activity }}</span
                 >
               </p>
+
               <p class="ngo-description ion-margin-vertical">
                 {{ ngoInFocus.description }}
               </p>
-              <p>
+
+              <p class="cta-row">
                 <a
                   [href]="ngoInFocus.knowMoreLink"
                   target="_blank"
+                  rel="noopener"
                   class="wiof-primary-link"
-                  >Know More</a
+                  >Visit Website</a
                 >
               </p>
             </ion-col>

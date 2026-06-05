@@ -36,7 +36,7 @@ export class CoffeeConversationComponent
   }
 
   ngOnInit() {
-    this.coffeeConvClass = `wiof-${this.element}`;
+    this.coffeeConvClass = this.element ? `wiof-${this.element}` : '';
   }
 
   ngOnDestroy(): void {
