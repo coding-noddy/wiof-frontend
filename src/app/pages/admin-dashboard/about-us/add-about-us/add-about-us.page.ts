@@ -20,6 +20,7 @@ export class AddAboutUsPage implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject();
   isEditMode = false;
   profile: AboutUsProfile = {} as AboutUsProfile;
+  isImageSelected = false;
 
   constructor(
     private aboutUsService: AboutUsService,
@@ -85,8 +86,15 @@ export class AddAboutUsPage implements OnInit, OnDestroy {
       reader.readAsDataURL(this.imageToSave);
       reader.onload = () => {
         this.imageToDisplay = reader.result;
+        this.isImageSelected = true;
       };
     }
+  }
+
+  removeImage() {
+    this.imageToDisplay = null;
+    this.imageToSave = null;
+    this.isImageSelected = false;
   }
 
 async onSubmit() {

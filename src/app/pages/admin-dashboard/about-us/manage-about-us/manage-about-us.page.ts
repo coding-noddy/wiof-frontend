@@ -12,7 +12,7 @@ import { UiUtilService } from "src/app/util/UiUtilService";
 })
 export class ManageAboutUsPage implements OnInit , OnDestroy{
     private destroy$:Subject<boolean> = new Subject();
-    private aboutUsList$:Observable<AboutUsProfile[]>;
+    public aboutUsList$:Observable<AboutUsProfile[]>;
 
     constructor(
         private aboutUsService:AboutUsService,
