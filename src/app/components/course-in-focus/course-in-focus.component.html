@@ -1,10 +1,11 @@
-<ion-card
-  *ngIf="coursesInFocus?.length > 0"
-  class="wiof-course-in-focus-container"
->
-  <ion-card-header class="ion-align-center wiof-slider-header">
-    <ion-card-title class="title-text">Course in Focus</ion-card-title>
+<ion-card *ngIf="coursesInFocus?.length > 0" class="wiof-course-in-focus-container custom-bordered-card">
+  
+  <ion-card-header class="ion-align-center wiof-slider-header custom-blue-header">
+    <ion-card-title class="title-text" style="color: white; font-size: 1.1rem; font-weight: 500;">
+      Course in Focus
+    </ion-card-title>
   </ion-card-header>
+
   <ion-card-content class="background ion-no-padding">
     <div *ngIf="coursesInFocus; else loading" class="slides-wrapper">
       <ion-slides #slider [options]="slideOpts">
@@ -58,6 +59,7 @@
         
             </ion-card-content>
           </ion-card>
+
         </ion-slide>
       </ion-slides>
       <div 
@@ -72,7 +74,7 @@
       ></div>
     </div>
     <ng-template #loading>
-      <app-wiof-spinner></app-wiof-spinner>
+      <div style="text-align: center; padding: 20px;">Loading...</div>
     </ng-template>
   </ion-card-content>
 </ion-card>

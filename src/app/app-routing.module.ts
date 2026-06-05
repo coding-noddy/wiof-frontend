@@ -96,6 +96,13 @@ const routes: Routes = [
       )
   },
   {
+    path: 'climatenlighten',
+    loadChildren: () => 
+      import('./pages/climate-enlighten/climate-enlighten.module').then(
+        (m) => m.ClimateEnlightenPageModule
+      )
+  },
+  {
     path: 'privacy-policy',
     loadChildren: () =>
       import('./pages/privacy-policy/privacy-policy.module').then(
