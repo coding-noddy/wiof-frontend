@@ -19,39 +19,32 @@
             *ngIf="ngoInFocus.mediaType == 'video'"
           ></iframe>
         </div>
-        
+      
         <div class="ngo-content">
-          <img
-            [src]="ngoInFocus.logoImage$ | async"
-            class="logo"
-            alt=""
-          />
-        
+          <img [src]="ngoInFocus.logoImage$ | async" class="logo" alt="" />
+      
           <h2><strong>{{ ngoInFocus.ngoName }}</strong></h2>
-        
+      
           <p>
             <span class="font-weight-medium">Key Activities/Work Areas:</span>
             <span
               class="home-key-tag"
               *ngFor="let activity of ngoInFocus.keyActivities.split(',')"
-            >
-              {{ activity }}
-            </span>
+            >{{ activity }}</span>
           </p>
-        
-          <p class="ngo-description">
-            {{ ngoInFocus.description }}
-          </p>
-        
+      
+          <p class="ngo-description">{{ ngoInFocus.description }}</p>
+        </div>
+      
+        <!-- FIXED BUTTON — outside scrollable div -->
+        <div class="know-more-bar">
           <a
             [href]="ngoInFocus.knowMoreLink"
             target="_blank"
             class="wiof-primary-link"
-          >
-            Know More
-          </a>
+          >Know More</a>
         </div>
-        
+      
       </ion-slide>
     </ion-slides>
     <div
