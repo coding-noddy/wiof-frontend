@@ -50,15 +50,12 @@
             >
               {{ day.day }}
             </div>
-            <img
-              class="occasion-day-image"
+            <!-- Occasion image as cell background via inline style -->
+            <div
               *ngIf="day.occasion?.length && day.occasion[day.selectedOccasionIndex]"
-              [src]="day.occasion[day.selectedOccasionIndex].image | async"
-              [alt]="
-                'Image for occasion ' +
-                day.occasion[day.selectedOccasionIndex]?.name
-              "
-            />
+              class="occasion-bg-image"
+              [style.backgroundImage]="'url(' + (day.occasion[day.selectedOccasionIndex].image | async) + ')'"
+            ></div>
             <div *ngIf="day.occasion && day.occasion.length > 1" class="occasion-nav-buttons">
               <button
                 class="nav-button"

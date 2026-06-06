@@ -3,35 +3,43 @@
     <ion-slides #wiofOccasionSlider [options]="slideOpts">
       <ion-slide *ngFor="let occasn of occasionDetails.occasion">
         <ion-card class="occasion-card">
+
+          <!-- ── Header ─────────────────────────────────────────────── -->
           <ion-card-header class="occasion-card-header">
-            <p class="occasion-month">
-              <span>{{ getMonth(occasn.month) }} {{ occasn.day }}</span>
-            </p>
-            <p class="occasion-name">
-              <strong>{{ occasn.name }}</strong>
-            </p>
-            <button class="occasion-card-close-btn" (click)="closeDialog()">
-              <ion-icon name="close" slot="icon-only"></ion-icon>
-            </button>
+            <div class="header-row">
+              <span class="occasion-date-badge">
+                {{ getMonth(occasn.month) }} {{ occasn.day }}
+              </span>
+              <p class="occasion-name">{{ occasn.name }}</p>
+              <button class="occasion-close-btn" (click)="closeDialog()" aria-label="Close">
+                <ion-icon name="close"></ion-icon>
+              </button>
+            </div>
           </ion-card-header>
-          <ion-card-content class="ion-text-start card-content">
-            <img [src]="occasn.image | async" alt="" />
-            <div>
-              <p [innerHTML]="occasn.desc"></p>
-              <p style="margin: 15px 0 5px; text-align: center">
-                <a
-                  *ngIf="occasn.link"
-                  class="wiof-primary-link"
-                  target="_blank"
-                  [href]="occasn.link"
-                  >Know More</a
-                >
-              </p>
+
+          <!-- ── Image — fixed height so modal doesn't jump ────────── -->
+          <div class="occasion-image-wrap">
+            <img
+              class="occasion-image"
+              [src]="occasn.image | async"
+              [alt]="occasn.name"
+            />
+          </div>
+
+          <!-- ── Body ──────────────────────────────────────────────── -->
+          <ion-card-content class="occasion-body">
+            <p [innerHTML]="occasn.desc"></p>
+            <div class="occasion-cta" *ngIf="occasn.link">
+              <a class="wiof-primary-link" target="_blank" [href]="occasn.link">
+                Know More
+              </a>
             </div>
           </ion-card-content>
+
         </ion-card>
       </ion-slide>
     </ion-slides>
+
     <div
       class="swiper-button-prev navigation-arrow-custom-styling"
       (click)="wiofOccasionSlider.slidePrev()"
@@ -43,7 +51,10 @@
       *ngIf="showNavigation"
     ></div>
   </div>
+
   <ng-template #loading>
-    <ion-spinner name="crescent" class="wiof-spinner"></ion-spinner><br />
+    <div class="dialog-loading">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
   </ng-template>
 </div>

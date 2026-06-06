@@ -5,14 +5,28 @@
   font-weight: bold;
   padding: 10px;
 }
+
 .result-box {
   border-radius: 5px;
   background-color: white;
 }
 
+// Each result column — constrain width and center content
+.result-box ion-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.result-box app-eq-widget-test {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+}
+
 .eq-user-response {
   p {
-    padding: 10px 0px 0px;
+    padding: 10px 0 0;
   }
 
   ion-item {
@@ -38,4 +52,11 @@
 
 .submit-eq ::ng-deep .button {
   background-color: $energy-color;
+}
+
+@media (max-width: 576px) {
+  .eq-meter-heading {
+    font-size: 0.95rem;
+    padding: 6px;
+  }
 }

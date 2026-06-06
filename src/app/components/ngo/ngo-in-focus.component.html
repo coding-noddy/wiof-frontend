@@ -4,69 +4,78 @@
       <ion-col class="title-text" size="12">Firm in Focus</ion-col>
     </ion-row>
   </ion-card-header>
+
   <ion-card-content class="ion-no-padding background">
     <ion-slides #slider [options]="slideOpts">
       <ion-slide *ngFor="let ngoInFocus of ngosInFocus">
-        <ion-grid class="ion-no-padding">
-          <ion-row>
-            <ion-col size="12" class="media-container">
-              <div class="media-inner">
-                <img
+        <div class="ngo-slide">
+
+          <!-- ── Media — click opens modal ──────────────────────────── -->
+          <div
+            class="media-container"
+            (click)="ngoInFocus.mediaType == 'image' ? openModal(ngoInFocus) : null"
+            [class.clickable]="ngoInFocus.mediaType == 'image'"
+            [attr.title]="ngoInFocus.mediaType == 'image' ? 'Click to view details' : null"
+          >
+            <div class="media-inner">
+              <img
+                class="media-player"
+                [src]="ngoInFocus.image$ | async"
+                [alt]="ngoInFocus.ngoName"
+                *ngIf="ngoInFocus.mediaType == 'image'"
+              />
+              <div class="video-wrap" *ngIf="ngoInFocus.mediaType == 'video'">
+                <iframe
                   class="media-player"
-                  [src]="ngoInFocus.image$ | async"
-                  alt="Image for {{ ngoInFocus.ngoName }}"
-                  *ngIf="ngoInFocus.mediaType == 'image'"
-                />
-                <div class="video-wrap" *ngIf="ngoInFocus.mediaType == 'video'">
-                  <iframe
-                    class="media-player"
-                    [title]="'Video for Ngo ' + ngoInFocus.ngoName"
-                    [src]="ngoInFocus.sanitizedLink"
-                    allowfullscreen
-                  ></iframe>
-                </div>
+                  [title]="ngoInFocus.ngoName"
+                  [src]="ngoInFocus.sanitizedLink"
+                  allowfullscreen
+                ></iframe>
               </div>
-            </ion-col>
+            </div>
+            <!-- Expand hint overlay on image -->
+            <div class="media-expand-hint" *ngIf="ngoInFocus.mediaType == 'image'">
+              <ion-icon name="expand-outline"></ion-icon>
+            </div>
+          </div>
 
-            <ion-col size="12" class="ion-padding ngo-text-col">
-              <div class="ngo-header">
-                <img
-                  [src]="ngoInFocus.logoImage$ | async"
-                  class="logo"
-                  [alt]="ngoInFocus.ngoName + ' logo'"
-                />
-                <div class="ngo-title">
-                  <h2><strong>{{ ngoInFocus.ngoName }}</strong></h2>
-                </div>
-              </div>
+          <!-- ── Content ────────────────────────────────────────────── -->
+          <div class="ngo-content">
+            <div class="ngo-header">
+              <img
+                [src]="ngoInFocus.logoImage$ | async"
+                class="logo"
+                [alt]="ngoInFocus.ngoName + ' logo'"
+              />
+              <h2 class="ngo-name">{{ ngoInFocus.ngoName }}</h2>
+            </div>
 
-              <p>
-                <span class="font-weight-medium">Key Activities/Work Areas</span>:
+            <div class="ngo-section">
+              <span class="section-label">Focus Areas</span>
+              <div class="tags-list">
                 <span
                   class="home-key-tag"
                   *ngFor="let activity of ngoInFocus.keyActivities.split(',')"
-                  >{{ activity }}</span
-                >
-              </p>
+                >{{ activity.trim() }}</span>
+              </div>
+            </div>
 
-              <p class="ngo-description ion-margin-vertical">
-                {{ ngoInFocus.description }}
-              </p>
+            <p class="ngo-description">{{ ngoInFocus.description }}</p>
 
-              <p class="cta-row">
-                <a
-                  [href]="ngoInFocus.knowMoreLink"
-                  target="_blank"
-                  rel="noopener"
-                  class="wiof-primary-link"
-                  >Visit Website</a
-                >
-              </p>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
+            <div class="ngo-cta">
+              <a
+                [href]="ngoInFocus.knowMoreLink"
+                target="_blank"
+                rel="noopener"
+                class="wiof-primary-link"
+              >Visit Website</a>
+            </div>
+          </div>
+
+        </div>
       </ion-slide>
     </ion-slides>
+
     <div
       *ngIf="ngosInFocus.length > 1"
       class="swiper-button-prev navigation-arrow-custom-styling"
@@ -79,3 +88,62 @@
     ></div>
   </ion-card-content>
 </ion-card>
+
+<!-- ── Detail Modal ──────────────────────────────────────────────────────── -->
+<div class="ngo-modal-overlay" *ngIf="selectedNgo" (click)="closeModal()">
+  <div class="ngo-modal" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="ngo-modal-header">
+      <div class="ngo-modal-title-row">
+        <img
+          [src]="selectedNgo.logoImage$ | async"
+          class="modal-logo"
+          [alt]="selectedNgo.ngoName + ' logo'"
+        />
+        <h2 class="modal-name">{{ selectedNgo.ngoName }}</h2>
+      </div>
+      <button class="modal-close-btn" (click)="closeModal()" aria-label="Close">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </div>
+
+    <!-- Scrollable body -->
+    <div class="ngo-modal-body">
+
+      <!-- Full image -->
+      <div class="modal-image-wrap">
+        <img
+          class="modal-image"
+          [src]="selectedNgo.image$ | async"
+          [alt]="selectedNgo.ngoName"
+        />
+      </div>
+
+      <!-- Focus areas -->
+      <!-- <div class="ngo-section">
+        <span class="section-label">Focus Areas</span>
+        <div class="tags-list">
+          <span
+            class="home-key-tag"
+            *ngFor="let activity of selectedNgo.keyActivities.split(',')"
+          >{{ activity.trim() }}</span>
+        </div>
+      </div> -->
+
+      <!-- Full description -->
+      <!-- <p class="modal-description">{{ selectedNgo.description }}</p> -->
+
+      <!-- CTA -->
+      <!-- <div class="modal-cta">
+        <a
+          [href]="selectedNgo.knowMoreLink"
+          target="_blank"
+          rel="noopener"
+          class="wiof-primary-link"
+        >Visit Website</a>
+      </div> -->
+    </div>
+
+  </div>
+</div>

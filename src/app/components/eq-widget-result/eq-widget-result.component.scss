@@ -1,58 +1,71 @@
-// body { background-color:#555888; font-family:sans-serif; color:#fff; text-align:center }
-
 .wiof-eq-meter {
-  width: 200px;
-  height: 150px;
-  margin: 0px auto;
+  width: 100%;
+  max-width: 200px;
+  margin: 0 auto;
+  // height scales with width via aspect-ratio on children
 }
+
 .meter-background {
   position: relative;
-  height: 100px;
-  margin-bottom: 10px;
+  width: 100%;
+  padding-top: 50%; // half-circle: height = 50% of width
   background-color: rgb(241, 222, 198);
-  border-radius: 150px 150px 0 0;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
   overflow: hidden;
   text-align: center;
+  margin-bottom: 10px;
 }
+
 .meter-mask {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  left: 20px;
-  height: 80px;
+  top: 20%;
+  right: 10%;
+  left: 10%;
+  bottom: 0;
   background-color: rgb(90, 164, 233);
-  border-radius: 150px 150px 0 0;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
 }
+
 .meter-percentage {
   position: absolute;
-  top: 100px;
-  left: -200%;
-  width: 400%;
-  height: 400%;
-  margin-left: 100px;
+  bottom: 0;
+  left: -100%;
+  width: 300%;
+  height: 300%;
+  margin-left: 50%;
   background-color: #00ef93;
+  transform-origin: bottom center;
 }
-.meter-percentage {
-  transform-origin: top center;
-}
+
 .meter-min {
   float: left;
+  font-size: 0.8rem;
 }
+
 .meter-max {
   float: right;
+  font-size: 0.8rem;
 }
+
 .meter-value {
   position: absolute;
-  top: 40%;
+  top: 35%;
   left: 0;
   width: 100%;
-  font-size: 48px;
+  font-size: clamp(1.4rem, 5vw, 2.5rem);
   font-weight: 700;
 }
 
 .msg-style {
   text-align: center;
   font-weight: bold;
-  // position: relative;
-  // top: -270px;
+  clear: both;
+  padding-top: 0.5rem;
+  font-size: clamp(0.8rem, 2.5vw, 1rem);
+}
+
+@media (max-width: 480px) {
+  .wiof-eq-meter {
+    max-width: 160px;
+  }
 }

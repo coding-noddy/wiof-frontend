@@ -5,64 +5,74 @@
   <ion-card-header class="ion-align-center wiof-slider-header">
     <ion-card-title class="title-text">Course in Focus</ion-card-title>
   </ion-card-header>
+
   <ion-card-content class="background ion-no-padding">
     <div *ngIf="coursesInFocus; else loading">
       <ion-slides #slider [options]="slideOpts">
         <ion-slide *ngFor="let courseInFocus of coursesInFocus">
-          <ion-card
-            class="ion-no-padding ion-no-margin"
-            style="box-shadow: none"
-          >
-            <ion-card-content
-              class="ion-text-start card-content ion-no-padding"
-            >
-              <ion-row class="ion-padding course-details">
-                <ion-col size="9">
-                  <h2>
-                    <strong>
-                      <a [href]="courseInFocus.link" target="_blank" class="course-name-link">{{ courseInFocus.name }}</a>
-                    </strong>
-                  </h2>
-                  <p><span>Offered By</span>: {{ courseInFocus.offeredBy }}</p>
-                  <p><span>Platform</span>: {{ courseInFocus.platform }}</p>
-                  <p><span>Duration</span>: {{ courseInFocus.duration }}</p>
-                  <p>
-                    <span>Approx. Cost: {{ courseInFocus.approxCost }}</span>
-                  </p>
-                </ion-col>
-                <ion-col size="3">
-                  <img
-                    class="course-in-focus-image"
-                    [src]="courseInFocus.image$ | async"
-                    alt=""
-                  />
-                </ion-col>
-                <ion-col size="12">
-                  <p>
-                    <span>Key Topics</span>:
-                    <span
-                      class="home-key-tag"
-                      *ngFor="let topic of courseInFocus.keyTopics.split(',')"
-                      >{{ topic }}</span
-                    >
-                  </p>
-                  <p class="ion-margin-top course-description">
-                    {{ courseInFocus.description }}
-                  </p>
-                  <p>
-                    <a
-                      [href]="courseInFocus.link"
-                      target="_blank"
-                      class="wiof-primary-link"
-                      >Know More</a
-                    >
-                  </p>
-                </ion-col>
-              </ion-row>
-            </ion-card-content>
-          </ion-card>
+          <div class="course-card">
+
+            <!-- ── Top row: title + thumbnail ─────────────────────── -->
+            <div class="course-top">
+              <div class="course-title-block">
+                <a [href]="courseInFocus.link" target="_blank" class="course-name-link">
+                  {{ courseInFocus.name }}
+                </a>
+              </div>
+              <div class="course-thumb-wrap">
+                <img
+                  class="course-thumb"
+                  [src]="courseInFocus.image$ | async"
+                  [alt]="courseInFocus.name"
+                />
+              </div>
+            </div>
+
+            <!-- ── Metadata pills ─────────────────────────────────── -->
+            <div class="course-meta">
+              <div class="meta-item">
+                <span class="meta-label">Offered By</span>
+                <span class="meta-value">{{ courseInFocus.offeredBy }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Platform</span>
+                <span class="meta-value">{{ courseInFocus.platform }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Duration</span>
+                <span class="meta-value">{{ courseInFocus.duration }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Cost</span>
+                <span class="meta-value">{{ courseInFocus.approxCost }}</span>
+              </div>
+            </div>
+
+            <!-- ── Key topics ─────────────────────────────────────── -->
+            <div class="course-topics">
+              <span class="meta-label">Key Topics</span>
+              <div class="topics-list">
+                <span
+                  class="home-key-tag"
+                  *ngFor="let topic of courseInFocus.keyTopics.split(',')"
+                >{{ topic.trim() }}</span>
+              </div>
+            </div>
+
+            <!-- ── Description ────────────────────────────────────── -->
+            <p class="course-description">{{ courseInFocus.description }}</p>
+
+            <!-- ── CTA ───────────────────────────────────────────── -->
+            <div class="course-cta">
+              <a [href]="courseInFocus.link" target="_blank" class="wiof-primary-link">
+                Know More
+              </a>
+            </div>
+
+          </div>
         </ion-slide>
       </ion-slides>
+
       <div
         *ngIf="coursesInFocus.length > 1"
         class="swiper-button-prev navigation-arrow-custom-styling"

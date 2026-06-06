@@ -1,63 +1,139 @@
 @import '../../wiof-custom-theming.scss';
 
+// ── Dialog wrapper ────────────────────────────────────────────────────────────
 .wiof-env-calendar-dialog {
-  color: $dark-color;
+  width: 100%;
+  position: relative;
 }
-.image-container {
+
+// ── Card ─────────────────────────────────────────────────────────────────────
+.occasion-card {
+  margin: 0;
+  padding: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
+  background: #fff;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+.occasion-card-header {
+  background-color: $home-color;
+  padding: 0.85rem 1rem 0.75rem;
+  position: relative;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.occasion-date-badge {
+  flex-shrink: 0;
+  display: inline-block;
+  padding: 0.2rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.18);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.occasion-name {
+  flex: 1;                  // takes all remaining space between badge and button
+  min-width: 0;             // allows text to wrap instead of overflowing
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: $dark-color;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.occasion-close-btn {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.15);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.18s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+}
+
+// ── Image — fixed height container prevents layout shift on load ──────────────
+.occasion-image-wrap {
+  width: 100%;
+  height: 200px;          // stable fixed height — never jumps
+  overflow: hidden;
+  background: #eef4fb;    // placeholder color while image loads
+  flex-shrink: 0;
+}
+
+.occasion-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+// ── Body ─────────────────────────────────────────────────────────────────────
+.occasion-body {
+  padding: 1rem !important;
+  overflow-y: auto;
+  max-height: 180px;      // scroll if description is long, keeps modal compact
+  flex: 1;
+
+  p {
+    margin: 0 0 0.75rem;
+    color: #475569;
+    line-height: 1.7;
+    font-size: 0.92rem;
+    text-align: left;
+  }
+}
+
+.occasion-cta {
+  margin-top: 0.75rem;
   text-align: center;
 }
-.closeButton {
-  text-align: right;
-  cursor: pointer;
-  font-size: medium;
-  font-weight: bold;
-  padding-right: 5px;
+
+// ── Loading state ────────────────────────────────────────────────────────────
+.dialog-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  background: #fff;
+  border-radius: 18px;
 }
 
-.occasion-card {
-  margin: 0 auto;
-  padding: 1rem;
-
-  .occasion-card-header {
-    padding: 0;
-    text-align: left;
-    font-size: 18px;
-
-    .occasion-month {
-      span {
-        padding: 5px 10px;
-        border-radius: 5px;
-        background-color: $home-color-dark;
-        color: $light-color;
-        font-weight: $font-weight-medium;
-      }
-    }
-
-    .occasion-name {
-      text-align: left;
-      padding-right: 30px;
-      margin-top: 10px;
-    }
+// ── Responsive ───────────────────────────────────────────────────────────────
+@media (max-width: 480px) {
+  .occasion-image-wrap {
+    height: 160px;
   }
 
-  .card-content {
-    padding: 0;
-    max-height: 400px;
-    overflow: auto;
-
-    img {
-      width: 100%;
-      padding: 10px 0px;
-    }
+  .occasion-body {
+    max-height: 140px;
   }
 
-  .occasion-card-close-btn {
-    float: right;
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    height: 30px;
-    width: 30px;
-    border-radius: 50%;
+  .occasion-name {
+    font-size: 0.92rem;
   }
 }
