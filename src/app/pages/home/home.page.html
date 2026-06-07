@@ -24,15 +24,6 @@
 
     <app-life-elements></app-life-elements>
 
-    <!-- Breaking News -->
-    <section class="section-block">
-      <div class="section-header">
-        <h2>Breaking News</h2>
-        <p>Latest updates and important stories from the WIOF community.</p>
-      </div>
-      <app-breaking-news [newsList]="newsList$ | async"></app-breaking-news>
-    </section>
-
     <!-- Coffee Conversation -->
     <section class="section-block conversation-section">
       <div class="section-header">
@@ -43,6 +34,15 @@
         [coffeeConvList]="coffeeConversations$ | async"
         [fromHomePage]="true">
       </app-coffee-conversation>
+    </section>
+
+    <!-- Breaking News -->
+    <section class="section-block">
+      <div class="section-header">
+        <h2>Breaking News</h2>
+        <p>Latest updates and important stories from the WIOF community.</p>
+      </div>
+      <app-breaking-news [newsList]="newsList$ | async"></app-breaking-news>
     </section>
 
     <!-- Impact & Learn -->

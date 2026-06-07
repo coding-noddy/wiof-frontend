@@ -10,8 +10,17 @@ import { COFFEE_CONV_SLIDER_OPTIONS } from 'src/app/app.constants';
 export class NgoInFocusComponent implements OnInit {
   @Input() ngosInFocus: Array<NgoInFocus>;
   slideOpts = COFFEE_CONV_SLIDER_OPTIONS;
+  selectedNgo: NgoInFocus | null = null;
 
   constructor() {}
 
   ngOnInit() {}
+
+  openModal(ngo: NgoInFocus) {
+    this.selectedNgo = ngo;
+  }
+
+  closeModal() {
+    this.selectedNgo = null;
+  }
 }

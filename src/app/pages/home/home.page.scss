@@ -1,9 +1,16 @@
 @import "../../wiof-custom-theming.scss";
 
-// Custom breakpoints
+// ─── Design tokens ────────────────────────────────────────────────────────────
+// Centralise values so every card on the home page is identical
+$card-shadow:       0 14px 36px rgba(0, 0, 0, 0.12);
+$card-radius:       18px;
+$card-title-size:   1.25rem;   // card header "Coffee Conversations", "Breaking News" etc.
+$body-color:        #475569;   // single body-text color used everywhere
+$heading-color:     #10263c;   // h2 inside cards
+
+// Page layout
 $page-padding-desktop: 16px 6vw;
-$page-padding-mobile: 16px;
-$breakpoint-tablet: 767px;
+$page-padding-mobile:  16px;
 
 .page-container {
   padding: $page-padding-mobile;
@@ -137,18 +144,22 @@ $breakpoint-tablet: 767px;
 .impact-row ion-row {
   margin: 0 -0.6rem;
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;   // both cols stretch to the same height
 }
 
 .impact-row ion-col {
   padding: 0 0.6rem;
   margin-bottom: 1rem;
+  display: flex;          // propagate height down to the host element
+  flex-direction: column;
 }
 
-// Force component host elements to have no extra margin/padding
+// Host elements fill the full col height
 .impact-row app-ngo-in-focus,
 .impact-row app-course-in-focus {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   margin: 0;
   padding: 0;
 }

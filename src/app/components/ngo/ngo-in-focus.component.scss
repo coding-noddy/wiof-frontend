@@ -1,7 +1,8 @@
 @import '../../wiof-custom-theming.scss';
 
+// ── Card shell ────────────────────────────────────────────────────────────────
 .wiof-slider-header {
-  border-bottom: white 2px solid;
+  border-bottom: 2px solid white;
   background-color: $home-color;
   color: $dark-color;
 }
@@ -13,127 +14,309 @@
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
   background: #fff;
   margin: 0 !important;
+  display: flex;
+  flex-direction: column;
+}
 
-  .logo {
-    max-height: 60px;
-    object-fit: contain;
+// ── Slide ─────────────────────────────────────────────────────────────────────
+.ngo-slide {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+// ── Media (card thumbnail) ────────────────────────────────────────────────────
+.media-container {
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  background: #f1f7ff;
+  flex-shrink: 0;
+  position: relative;
+
+  &.clickable {
+    cursor: pointer;
+
+    &:hover .media-expand-hint {
+      opacity: 1;
+    }
+
+    &:hover .media-player {
+      transform: scale(1.03);
+    }
   }
+}
 
+.media-inner {
+  width: 100%;
+  height: 100%;
+}
+
+.media-player {
+  width: 100%;
+  height: 100%;
+  border: none;
+  object-fit: cover;
+  object-position: top;     // always show top of image
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+// Expand icon hint on hover
+.media-expand-hint {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.video-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.video-wrap .media-player {
+  position: absolute;
+  inset: 0;
+}
+
+// ── Card content area ─────────────────────────────────────────────────────────
+.ngo-content {
+  padding: 1rem 1.1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ngo-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid rgba($dark-color, 0.08);
+  background: #fff;
+  padding: 4px;
+}
+
+.ngo-name {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #10263c;
+  line-height: 1.3;
+}
+
+.ngo-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.section-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $home-color-dark;
+}
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.home-key-tag {
+  display: inline-flex;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  background: rgba($home-color, 0.12);
+  color: $home-color-dark;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.ngo-description {
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #475569;
+  line-height: 1.75;
+  font-size: 0.92rem;
+}
+
+.ngo-cta {
+  margin-top: 0.25rem;
+}
+
+// ── Modal overlay ─────────────────────────────────────────────────────────────
+.ngo-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+// ── Modal box ─────────────────────────────────────────────────────────────────
+.ngo-modal {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  @media (max-width: 600px) {
+    max-width: 100%;
+    max-height: 92vh;
+    border-radius: 14px;
+  }
+}
+
+// ── Modal header ──────────────────────────────────────────────────────────────
+.ngo-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem 0.75rem;
+  background-color: $home-color;
+  border-bottom: 2px solid white;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.ngo-modal-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.modal-logo {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.9);
+  padding: 3px;
+  border: 1px solid rgba($dark-color, 0.08);
+}
+
+.modal-name {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: $dark-color;
+  line-height: 1.3;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.modal-close-btn {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.15);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.18s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+}
+
+// ── Modal scrollable body ─────────────────────────────────────────────────────
+.ngo-modal-body {
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.1rem;
+}
+
+// ── Modal full image ──────────────────────────────────────────────────────────
+.modal-image-wrap {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #eef4fb;
+  flex-shrink: 0;
+}
+
+.modal-image {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  max-height: 600px;
+
+  @media (max-width: 600px) {
+    max-height: 220px;
+  }
+}
+
+// ── Modal description (full, no clamp) ───────────────────────────────────────
+.modal-description {
+  margin: 0;
+  color: #475569;
+  line-height: 1.75;
+  font-size: 0.95rem;
+}
+
+.modal-cta {
+  padding-bottom: 0.5rem;
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 767px) {
   .media-container {
-    min-height: 335px;
-    max-height: 550px;
-    overflow: hidden;
-    border-bottom: 1px solid rgba($dark-color, 0.08);
-    background: #f9fbff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    height: 180px;
   }
 
-  .media-player {
-    width: 100%;
-    height: 100%;
-    border: none;
-    object-fit: contain;
+  .ngo-content {
+    padding: 0.85rem 0.85rem 1rem;
   }
 
-  .ngo-description {
-    display: -webkit-box;
-    -webkit-line-clamp: 5;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin: 10px 0 20px;
-    text-align: left;
-    color: #4b5563;
-    line-height: 1.75;
-  }
-  
-  ion-col.ion-padding {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .home-key-tag {
-    display: inline-flex;
-    margin: 0.25rem 0.35rem 0.25rem 0;
-    padding: 0.25rem 0.6rem;
-    border-radius: 999px;
-    background: rgba($home-color, 0.14);
-    color: $home-color-dark;
-    font-size: 0.88rem;
-  }
-
-  .wiof-primary-link {
-    font-weight: 700;
-  }
-
-  @media (max-width: 767px) {
-    .media-container {
-      max-height: 260px;
-    }
-    .ngo-description {
-      margin-bottom: 1rem;
-    }
-  }
-  
-  .media-inner {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    background: linear-gradient(180deg, #fbfdff 0%, #f1f7ff 100%);
-  }
-
-  .video-wrap {
-    position: relative;
-    width: 100%;
-    padding-top: 56.25%;
-  }
-
-  .video-wrap .media-player {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .ngo-header {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-
-  .ngo-title h2 {
-    margin: 0;
-    font-size: 1.2rem;
-  }
-
-
-  .ngo-text-col {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: stretch;
-  }
-
-  ion-row {
-    align-items: center;
-  }
-
-  @media (max-width: 767px) {
-    .ngo-header {
-      align-items: flex-start;
-      gap: 8px;
-    }
-
-    .video-wrap {
-      padding-top: 66.66%;
-    }
+  .ngo-name {
+    font-size: 1.05rem;
   }
 }
