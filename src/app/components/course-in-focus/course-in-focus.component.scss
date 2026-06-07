@@ -57,7 +57,7 @@
 // ── Thumbnail — fixed square, never shifts layout ─────────────────────────────
 .course-thumb-wrap {
   flex-shrink: 0;
-  width: 90px;
+  // width: 90px;
   height: 90px;
   border-radius: 12px;
   overflow: hidden;
