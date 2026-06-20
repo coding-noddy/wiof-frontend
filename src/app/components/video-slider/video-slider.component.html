@@ -1,69 +1,59 @@
-<ion-card *ngIf="videoList && videoList.length > 0">
-  <ion-card-header
-    class="ion-align-center wiof-slider-header"
-    [ngClass]="videoSliderClass"
-  >
-    <ion-row>
-      <ion-col class="title-text" size="4">Videos</ion-col>
-      <ion-col style="text-align: right" size="8"
-        ><a
-          [routerLink]="['videos']"
-          class="wiof-icon-only-btn"
-          title="Go to list view"
-          aria-label="Go to list view"
-        >
-          <!-- Switch to list -->
-          <ion-icon name="list"></ion-icon>
-        </a>
-        <a
-          [routerLink]="['take-action']"
-          class="wiof-icon-only-btn"
-          title="Go to Take Action"
-          aria-label="Go to Take Action"
-        >
-          <ion-icon name="trail-sign-outline"></ion-icon>
-        </a>
-      </ion-col>
-    </ion-row>
-  </ion-card-header>
-  <ion-card-content class="background" [ngClass]="videoSliderClass">
-    <div *ngIf="videoList; else loading">
-      <ion-slides #wiofVideoSlider [options]="slideOpts">
-        <ion-slide *ngFor="let video of videoList">
-          <ion-card class="video-card">
-            <ion-card-content class="ion-text-start card-content">
-              <div class="img-container">
-                <img
-                  [src]="video.thumbnail"
-                  class="thumbnailImage"
-                  [routerLink]="['video', video.url]"
-                  alt=""
-                />
-              </div>
-              <h3 class="ion-padding">
-                <strong
-                  ><a class="link-title" [routerLink]="['video', video.url]">{{
-                    video.title
-                  }}</a></strong
-                >
-              </h3>
-            </ion-card-content>
-          </ion-card>
-        </ion-slide>
-      </ion-slides>
-      <div
-        class="swiper-button-prev navigation-arrow-custom-styling"
-        (click)="wiofVideoSlider.slidePrev()"
-        *ngIf="showNavigator()"
-      ></div>
-      <div
-        class="swiper-button-next navigation-arrow-custom-styling"
-        (click)="wiofVideoSlider.slideNext()"
-        *ngIf="showNavigator()"
-      ></div>
+<div class="video-slider-section" *ngIf="videoList && videoList.length > 0">
+
+  <!-- Actions -->
+  <div class="video-slider-actions">
+    <a
+      [routerLink]="['videos']"
+      class="action-link"
+      title="View all videos"
+      aria-label="View all videos"
+    >
+      View All <ion-icon name="arrow-forward-outline"></ion-icon>
+    </a>
+  </div>
+
+  <!-- Slider -->
+  <div *ngIf="videoList; else loading" class="slider-wrap">
+    <ion-slides #wiofVideoSlider [options]="slideOpts">
+      <ion-slide *ngFor="let video of videoList">
+        <div class="video-card" [routerLink]="['video', video.url]">
+
+          <!-- Thumbnail with play icon overlay -->
+          <div class="video-image-wrap">
+            <img [src]="video.thumbnail" [alt]="video.title" class="video-image" />
+            <div class="play-overlay">
+              <ion-icon name="play-circle"></ion-icon>
+            </div>
+          </div>
+
+          <!-- Title -->
+          <div class="video-body">
+            <h3 class="video-title">{{ video.title }}</h3>
+          </div>
+
+        </div>
+      </ion-slide>
+    </ion-slides>
+
+    <div
+      class="nav-btn nav-prev"
+      (click)="wiofVideoSlider.slidePrev()"
+      *ngIf="showNavigator()"
+    >
+      <ion-icon name="chevron-back"></ion-icon>
     </div>
-    <ng-template #loading>
-      <ion-spinner name="crescent" class="wiof-spinner"></ion-spinner><br />
-    </ng-template>
-  </ion-card-content>
-</ion-card>
+    <div
+      class="nav-btn nav-next"
+      (click)="wiofVideoSlider.slideNext()"
+      *ngIf="showNavigator()"
+    >
+      <ion-icon name="chevron-forward"></ion-icon>
+    </div>
+  </div>
+
+  <ng-template #loading>
+    <div class="loading-wrap">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  </ng-template>
+</div>

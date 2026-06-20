@@ -7,16 +7,22 @@
 
 .wiof-aqi-widget-card-header {
   background-color: $air-color;
-  border-bottom: $light-color 2px solid;
+  border-bottom: 2px solid white;
+  color: $dark-color;
 }
 
 .wiof-aqi-widget-card-background {
-  background-color: rgba($air-color, $tint-fraction);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
+  margin: 0 !important;
+  background-color: lighten($air-color, 10%);
 }
 
 .aqi-widget-contents {
-  height: 500px;
+  max-height: 520px;
   overflow: auto;
+  padding: 0.75rem;
 }
 
 .button-icon {

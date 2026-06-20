@@ -14,6 +14,8 @@ import { Video } from '../../models/Video';
 import { InFocus } from 'src/app/models/InFocus';
 import { InFocusService } from 'src/app/services/in-focus.service';
 
+import { SectionNavItem } from 'src/app/components/section-nav/section-nav.component';
+
 @Component({
   selector: 'app-fire',
   templateUrl: './fire.page.html',
@@ -25,6 +27,14 @@ export class FirePage implements OnInit {
   inFocuses$: Observable<InFocus[]>;
   coffeeConversations$: Observable<CoffeeConversation[]>;
   elementName: string = ELEMENT_SELECT.FIRE;
+
+  pageSections: SectionNavItem[] = [
+    { label: 'Featured', sectionId: 'fire-featured-video' },
+    { label: 'In Focus', sectionId: 'fire-in-focus' },
+    { label: 'Conversations', sectionId: 'fire-conversations' },
+    { label: 'Blogs', sectionId: 'fire-blogs' },
+    { label: 'Videos', sectionId: 'fire-videos' }
+  ];
 
   constructor(
     private blogService: BlogService,

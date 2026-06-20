@@ -14,6 +14,8 @@ import { Video } from '../../models/Video';
 import { InFocus } from 'src/app/models/InFocus';
 import { InFocusService } from 'src/app/services/in-focus.service';
 
+import { SectionNavItem } from 'src/app/components/section-nav/section-nav.component';
+
 @Component({
   selector: 'app-earth',
   templateUrl: './earth.page.html',
@@ -25,6 +27,14 @@ export class EarthPage implements OnInit {
   inFocuses$: Observable<InFocus[]>;
   coffeeConversations$: Observable<CoffeeConversation[]>;
   elementName: string = ELEMENT_SELECT.EARTH;
+
+  pageSections: SectionNavItem[] = [
+    { label: 'Featured', sectionId: 'earth-featured-video' },
+    { label: 'In Focus', sectionId: 'earth-in-focus' },
+    { label: 'Conversations', sectionId: 'earth-conversations' },
+    { label: 'Blogs', sectionId: 'earth-blogs' },
+    { label: 'Videos', sectionId: 'earth-videos' }
+  ];
 
   constructor(
     private blogService: BlogService,

@@ -52,7 +52,8 @@ $font-weight-medium: 500;
 }
 
 .widget-height {
-  height: 577px;
+  height: auto;
+  min-height: 400px;
 }
 
 .title-text {

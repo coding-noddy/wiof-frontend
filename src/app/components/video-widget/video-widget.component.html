@@ -1,21 +1,15 @@
-<ion-card>
-  <ion-card-header
-    class="wiof-video-player-header"
-    [ngClass]="videoPlayerClass"
-  >
-    <ion-card-title class="title-text"> {{ videoPlayerTitle }} </ion-card-title>
-  </ion-card-header>
-  <ion-card-content
-    class="wiof-video-player-content background"
-    [ngClass]="videoPlayerClass"
-  >
-    <iframe
-      [title]="videoPlayerTitle"
-      class="videoPlayer"
-      [src]="urlSafe"
-      allowfullscreen
-    ></iframe>
-
-    <br />
-  </ion-card-content>
-</ion-card>
+<div class="video-widget-section">
+  <div class="video-widget-card">
+    <div class="video-widget-header" [ngClass]="videoPlayerClass">
+      <span class="video-widget-title">{{ videoPlayerTitle }}</span>
+    </div>
+    <div class="video-widget-player">
+      <iframe
+        [title]="videoPlayerTitle"
+        class="video-player"
+        [src]="urlSafe"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </div>
+</div>

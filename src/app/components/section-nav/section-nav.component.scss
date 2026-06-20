@@ -1,0 +1,104 @@
+@import '../../wiof-custom-theming.scss';
+
+.section-nav {
+  display: flex;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 999px;
+  padding: 0.35rem 0.5rem;
+  margin: 0.75rem auto 0.5rem;
+  max-width: fit-content;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.nav-scroll {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.nav-item {
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  padding: 0.38rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #475569;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba($home-color, 0.1);
+    color: $home-color-dark;
+  }
+
+  &.active {
+    background: $home-color;
+    color: #fff;
+    box-shadow: 0 3px 10px rgba($home-color, 0.3);
+  }
+}
+
+// ── Element theme colors for active pill ──────────────────────────────────────
+.theme-earth .nav-item.active {
+  background: $earth-color;
+  color: darken($earth-color, 40%);
+  box-shadow: 0 3px 10px rgba($earth-color, 0.4);
+}
+.theme-earth .nav-item:hover { background: rgba($earth-color, 0.15); color: darken($earth-color, 30%); }
+
+.theme-water .nav-item.active {
+  background: darken($water-color, 10%);
+  color: darken($water-color, 50%);
+  box-shadow: 0 3px 10px rgba($water-color, 0.4);
+}
+.theme-water .nav-item:hover { background: rgba($water-color, 0.2); color: darken($water-color, 40%); }
+
+.theme-fire .nav-item.active {
+  background: $energy-color;
+  color: darken($energy-color, 40%);
+  box-shadow: 0 3px 10px rgba($energy-color, 0.4);
+}
+.theme-fire .nav-item:hover { background: rgba($energy-color, 0.15); color: darken($energy-color, 30%); }
+
+.theme-air .nav-item.active {
+  background: $air-color;
+  color: darken($air-color, 40%);
+  box-shadow: 0 3px 10px rgba($air-color, 0.4);
+}
+.theme-air .nav-item:hover { background: rgba($air-color, 0.15); color: darken($air-color, 30%); }
+
+.theme-spirit .nav-item.active {
+  background: $spirit-color;
+  color: darken($spirit-color, 40%);
+  box-shadow: 0 3px 10px rgba($spirit-color, 0.4);
+}
+.theme-spirit .nav-item:hover { background: rgba($spirit-color, 0.15); color: darken($spirit-color, 30%); }
+
+@media (max-width: 767px) {
+  .section-nav {
+    margin: 0.5rem 0.5rem;
+    max-width: 100%;
+    border-radius: 14px;
+    padding: 0.3rem 0.4rem;
+  }
+
+  .nav-item {
+    font-size: 0.72rem;
+    padding: 0.3rem 0.65rem;
+  }
+}

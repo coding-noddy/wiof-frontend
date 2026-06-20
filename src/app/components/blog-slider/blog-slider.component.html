@@ -1,83 +1,68 @@
-<ion-card *ngIf="blogList && blogList.length > 0">
-  <ion-card-header
-    class="ion-align-center wiof-slider-header"
-    [ngClass]="blogSliderClass"
-  >
-    <ion-row>
-      <ion-col class="title-text"> Blogs </ion-col>
-      <ion-col style="text-align: right">
-        <a
-          [routerLink]="['blogs']"
-          class="wiof-icon-only-btn"
-          title="Go to list view"
-          aria-label="Go to list view"
-        >
-          <ion-icon name="list"></ion-icon>
-        </a>
-        <a
-          [routerLink]="['take-action']"
-          class="wiof-icon-only-btn"
-          title="Go to Take Action"
-          aria-label="Go to Take Action"
-        >
-          <ion-icon name="trail-sign-outline"></ion-icon>
-        </a>
-      </ion-col>
-    </ion-row>
-  </ion-card-header>
-  <ion-card-content class="background" [ngClass]="blogSliderClass">
-    <div *ngIf="blogList; else loading">
-      <ion-slides #wiofBlogSlider [options]="slideOpts">
-        <ion-slide *ngFor="let blog of blogList">
-          <ion-card class="blog-card" [routerLink]="['blog', blog.id]">
-            <ion-card-content class="ion-text-start card-content">
-              <div class="img-container">
-                <img [src]="blog.image$ | async" alt="" />
-              </div>
-              <div class="ion-padding">
-                <h3 class="blog-card-title">
-                  <a class="link-title">{{ blog.title }}</a>
-                </h3>
-                <div>
-                  <small
-                    class="author-name"
-                    [attr.aria-label]="'author ' + blog.author"
-                    >by {{ blog.author }}</small
-                  >
-                  <small class="time-to-read"
-                    ><ion-icon
-                      slot="icon-only"
-                      name="stopwatch-outline"
-                    ></ion-icon
-                    >{{ blog.timeToRead }} min read</small
-                  >
-                </div>
-                <div></div>
-              </div>
-              <p
-                class="blog-card-content ion-padding-horizontal"
-                [routerLink]="['blog', blog.id]"
-              >
-                {{ blog.shortDescription }}
-              </p>
-            </ion-card-content>
-          </ion-card>
-        </ion-slide>
-      </ion-slides>
-      <div
-        class="swiper-button-prev navigation-arrow-custom-styling"
-        (click)="wiofBlogSlider.slidePrev()"
-        *ngIf="showNavigator()"
-      ></div>
-      <div
-        class="swiper-button-next navigation-arrow-custom-styling"
-        (click)="wiofBlogSlider.slideNext()"
-        *ngIf="showNavigator()"
-      ></div>
-    </div>
+<div class="blog-slider-section" *ngIf="blogList && blogList.length > 0">
 
-    <ng-template #loading>
-      <ion-spinner name="crescent" class="wiof-spinner"></ion-spinner><br />
-    </ng-template>
-  </ion-card-content>
-</ion-card>
+  <!-- Inline actions (list view / take action) -->
+  <div class="blog-slider-actions">
+    <a
+      [routerLink]="['blogs']"
+      class="action-link"
+      title="View all blogs"
+      aria-label="View all blogs"
+    >
+      View All <ion-icon name="arrow-forward-outline"></ion-icon>
+    </a>
+  </div>
+
+  <!-- Slider -->
+  <div *ngIf="blogList; else loading" class="slider-wrap">
+    <ion-slides #wiofBlogSlider [options]="slideOpts">
+      <ion-slide *ngFor="let blog of blogList">
+        <div class="blog-card" [routerLink]="['blog', blog.id]">
+
+          <!-- Image with gradient overlay -->
+          <div class="blog-image-wrap">
+            <img [src]="blog.image$ | async" [alt]="blog.title" class="blog-image" />
+            <div class="blog-image-overlay"></div>
+          </div>
+
+          <!-- Card body -->
+          <div class="blog-body">
+            <h3 class="blog-title">{{ blog.title }}</h3>
+            <p class="blog-excerpt">{{ blog.shortDescription }}</p>
+            <div class="blog-meta">
+              <span class="blog-author">
+                <ion-icon name="person-outline"></ion-icon>
+                {{ blog.author }}
+              </span>
+              <span class="blog-read-time">
+                <ion-icon name="time-outline"></ion-icon>
+                {{ blog.timeToRead }} min
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </ion-slide>
+    </ion-slides>
+
+    <div
+      class="nav-btn nav-prev"
+      (click)="wiofBlogSlider.slidePrev()"
+      *ngIf="showNavigator()"
+    >
+      <ion-icon name="chevron-back"></ion-icon>
+    </div>
+    <div
+      class="nav-btn nav-next"
+      (click)="wiofBlogSlider.slideNext()"
+      *ngIf="showNavigator()"
+    >
+      <ion-icon name="chevron-forward"></ion-icon>
+    </div>
+  </div>
+
+  <ng-template #loading>
+    <div class="loading-wrap">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  </ng-template>
+</div>

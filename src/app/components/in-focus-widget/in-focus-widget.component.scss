@@ -1,99 +1,157 @@
 @import '../../wiof-custom-theming.scss';
 
-.wiof-in-focus-container {
-  height: calc(100% - 20px);
+// ── Section wrapper ───────────────────────────────────────────────────────────
+.in-focus-section {
+  width: 100%;
 }
 
-.wiof-video-player-content {
-  padding: 0px;
-  text-align: center;
+// ── Strip card — full width, compact ──────────────────────────────────────────
+.in-focus-strip {
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
+  background: #000;
+  position: relative;
 }
 
-@media (max-width: 479px) {
-  .wiof-video-player-content {
-    height: 220px;
-  }
+// ── Header bar ────────────────────────────────────────────────────────────────
+.in-focus-header {
+  padding: 0.6rem 1rem;
+  border-bottom: 2px solid white;
+  background-color: $home-color;
+
+  &.wiof-earth  { background-color: $earth-color; }
+  &.wiof-water  { background-color: $water-color; }
+  &.wiof-fire   { background-color: $energy-color; }
+  &.wiof-air    { background-color: $air-color; }
+  &.wiof-spirit { background-color: $spirit-color; }
 }
 
-@media (min-width: 480px) and (max-width: 767px) {
-  .wiof-video-player-content {
-    height: 320px;
-  }
+.in-focus-header-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: $dark-color;
 }
 
-@media (min-width: 768px) {
-  .wiof-video-player-content {
-    height: 520px;
-  }
+// ── Slider wrap ───────────────────────────────────────────────────────────────
+.in-focus-slider-wrap {
+  position: relative;
 }
 
-.videoPlayer {
+// ── Each slide ────────────────────────────────────────────────────────────────
+.in-focus-slide {
+  position: relative;
+  width: 100%;
+}
+
+// ── Video — full width, 16:9 ─────────────────────────────────────────────────
+.in-focus-video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+
+.in-focus-player {
   width: 100%;
   height: 100%;
-  margin-top: auto;
-  margin-bottom: auto;
-  border: 0;
+  border: none;
+  display: block;
 }
 
-.title-text {
-  font-size: 20px;
-  font-weight: $font-weight-medium;
+// ── Caption bar — floats at the bottom over the video ─────────────────────────
+.in-focus-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.75rem 1.1rem;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.82) 0%,
+    rgba(0, 0, 0, 0.55) 60%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  color: #fff;
+  pointer-events: none;
 }
 
-@mixin video-widget-style($color) {
-  background-color: $color;
-  &.background {
-    background-color: rgba($color, $tint-fraction);
+.caption-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.3;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.caption-desc {
+  margin: 0.3rem 0 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// ── Navigation arrows ─────────────────────────────────────────────────────────
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  color: #10263c;
+  font-size: 1.1rem;
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.25);
+    transform: translateY(-50%) scale(1.08);
   }
 }
 
-.wiof-earth {
-  @include video-widget-style($earth-color);
+.nav-prev { left: 10px; }
+.nav-next { right: 10px; }
+
+// ── Swiper — zero gaps ────────────────────────────────────────────────────────
+ion-slides {
+  --background: transparent;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
-.wiof-water {
-  @include video-widget-style($water-color);
+:host ::ng-deep ion-slides,
+:host ::ng-deep ion-slides .swiper-container,
+:host ::ng-deep ion-slides .swiper-wrapper {
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
-.wiof-fire {
-  @include video-widget-style($energy-color);
+:host ::ng-deep ion-slides .swiper-slide {
+  height: auto;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
-.wiof-air {
-  @include video-widget-style($air-color);
-}
-
-.wiof-spirit {
-  @include video-widget-style($spirit-color);
-}
-
-.wiof-config {
-  background-color: $dark-color;
-  .title-text {
-    font-size: 20px;
-    font-weight: $font-weight-medium;
-    color: $light-color;
-  }
-  &.background {
-    background-color: rgba($dark-color, $tint-fraction);
-  }
-}
-
-.wiof-video-player-header {
-  border-bottom: white 2px solid;
-}
-
-.in-focus-content {
-  padding: 1rem;
-  color: $dark-color;
-  text-align: left;
-
-  strong {
-    font-size: medium;
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 767px) {
+  .caption-title {
+    font-size: 0.92rem;
   }
 
-  p {
-    font-size: medium;
-    margin-top: 10px;
+  .caption-desc {
+    font-size: 0.8rem;
+    -webkit-line-clamp: 1;
   }
 }

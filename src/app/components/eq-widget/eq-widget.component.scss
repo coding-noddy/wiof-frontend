@@ -2,22 +2,31 @@
 
 .wiof-spirit-widget-card-header {
   background-color: $spirit-color;
-  border-bottom: white 2px solid;
+  border-bottom: 2px solid white;
+  color: $dark-color;
 }
 
 .wiof-spirit-widget-card-background {
-  background-color: rgba($spirit-color, $tint-fraction);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
+  margin: 0 !important;
+  background-color: lighten($spirit-color, 10%);
+  height: auto;
+  min-height: 400px;
 }
 
 .eq-widget-card-content {
   text-align: justify;
   text-justify: inter-word;
   color: $dark-color;
-  height: 500px;
+  max-height: 520px;
   overflow: auto;
+  padding: 1rem;
 
   strong {
-    font-size: 16px;
+    font-size: 1rem;
+    color: #10263c;
   }
 }
 
@@ -26,9 +35,9 @@
 }
 
 .eq-user-response {
-  overflow: scroll;
-  height: 500px;
-  display: inline-block;
+  overflow: auto;
+  max-height: 480px;
+  display: block;
   width: 100%;
 }
 
@@ -36,7 +45,7 @@
   font-weight: bold;
   text-decoration: underline;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 0.95rem;
   color: $dark-color;
 
   &:hover {
@@ -51,6 +60,7 @@
   border-radius: 1rem;
   font-weight: $font-weight-medium;
   margin-top: 5px;
+  font-size: 0.9rem;
 }
 
 .eq-param-heading {

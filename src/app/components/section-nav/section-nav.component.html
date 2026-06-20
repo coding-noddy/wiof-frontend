@@ -1,0 +1,12 @@
+<nav class="section-nav" *ngIf="sections?.length > 0" [ngClass]="'theme-' + element">
+  <div class="nav-scroll">
+    <button
+      *ngFor="let item of sections"
+      class="nav-item"
+      [class.active]="activeSection === item.sectionId"
+      (click)="scrollTo(item.sectionId)"
+    >
+      {{ item.label }}
+    </button>
+  </div>
+</nav>

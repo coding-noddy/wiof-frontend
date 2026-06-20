@@ -14,6 +14,8 @@ import { Video } from '../../models/Video';
 import { InFocus } from 'src/app/models/InFocus';
 import { InFocusService } from 'src/app/services/in-focus.service';
 
+import { SectionNavItem } from 'src/app/components/section-nav/section-nav.component';
+
 @Component({
   selector: 'app-spirit',
   templateUrl: './spirit.page.html',
@@ -25,6 +27,14 @@ export class SpiritPage implements OnInit {
   inFocuses$: Observable<InFocus[]>;
   coffeeConversations$: Observable<CoffeeConversation[]>;
   elementName: string = ELEMENT_SELECT.SPIRIT;
+
+  pageSections: SectionNavItem[] = [
+    { label: 'Featured', sectionId: 'spirit-featured-video' },
+    { label: 'In Focus', sectionId: 'spirit-in-focus' },
+    { label: 'Conversations', sectionId: 'spirit-conversations' },
+    { label: 'Blogs', sectionId: 'spirit-blogs' },
+    { label: 'Videos', sectionId: 'spirit-videos' }
+  ];
 
   constructor(
     private blogService: BlogService,

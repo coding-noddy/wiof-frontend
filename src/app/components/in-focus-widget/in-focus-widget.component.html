@@ -1,37 +1,53 @@
-<ion-card *ngIf="inFocuses?.length > 0" class="wiof-in-focus-container">
-  <ion-card-header class="wiof-video-player-header" [ngClass]="inFocusClass">
-    <ion-card-title class="title-text"> {{ inFocusTitle }} </ion-card-title>
-  </ion-card-header>
-  <ion-card-content class="ion-no-padding background" [ngClass]="inFocusClass">
-    <ion-slides #slider [options]="slideOpts">
-      <ion-slide *ngFor="let inFocus of inFocuses">
-        <ion-grid class="ion-no-padding">
-          <ion-row>
-            <ion-col size-xs="12" class="wiof-video-player-content">
+<div class="in-focus-section" *ngIf="inFocuses?.length > 0">
+  <div class="in-focus-strip" [ngClass]="inFocusClass">
+
+    <!-- Header bar -->
+    <div class="in-focus-header" [ngClass]="inFocusClass">
+      <span class="in-focus-header-title">{{ inFocusTitle }}</span>
+    </div>
+
+    <!-- Slider -->
+    <div class="in-focus-slider-wrap">
+      <ion-slides #slider [options]="slideOpts">
+        <ion-slide *ngFor="let inFocus of inFocuses">
+          <div class="in-focus-slide">
+
+            <!-- Full-width video -->
+            <div class="in-focus-video">
               <iframe
                 [title]="inFocus.title"
-                class="videoPlayer"
+                class="in-focus-player"
                 [src]="inFocus.sanitizedLink"
                 allowfullscreen
               ></iframe>
-            </ion-col>
-            <ion-col size-xs="12" class="in-focus-content">
-              <strong>{{ inFocus.subTitle }}</strong>
-              <p>{{ inFocus.description }}</p>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-slide>
-    </ion-slides>
-    <div
-      *ngIf="inFocuses.length > 1"
-      class="swiper-button-prev navigation-arrow-custom-styling"
-      (click)="slider.slidePrev()"
-    ></div>
-    <div
-      *ngIf="inFocuses.length > 1"
-      class="swiper-button-next navigation-arrow-custom-styling"
-      (click)="slider.slideNext()"
-    ></div>
-  </ion-card-content>
-</ion-card>
+            </div>
+
+            <!-- Caption bar overlaid at the bottom -->
+            <div class="in-focus-caption">
+              <h3 class="caption-title">{{ inFocus.subTitle }}</h3>
+              <p class="caption-desc" *ngIf="inFocus.description">{{ inFocus.description }}</p>
+            </div>
+
+          </div>
+        </ion-slide>
+      </ion-slides>
+
+      <!-- Nav arrows -->
+      <div
+        *ngIf="inFocuses.length > 1"
+        class="nav-btn nav-prev"
+        (click)="slider.slidePrev()"
+      >
+        <ion-icon name="chevron-back"></ion-icon>
+      </div>
+      <div
+        *ngIf="inFocuses.length > 1"
+        class="nav-btn nav-next"
+        (click)="slider.slideNext()"
+      >
+        <ion-icon name="chevron-forward"></ion-icon>
+      </div>
+    </div>
+
+  </div>
+</div>

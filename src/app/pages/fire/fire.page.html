@@ -1,52 +1,77 @@
 <app-header></app-header>
 <app-subscribe [page]="'energy'"></app-subscribe>
 <app-social-share style="z-index: 2"></app-social-share>
+
 <ion-content>
-  <app-element-welcome-image
-    welcomeImageClass="fire-welcome-img">
-  </app-element-welcome-image>
-  <app-life-elements [element]="elementName"></app-life-elements>
-  <ion-row>
-    <ion-col size-lg="7" size-xs="12">
-      <app-video-widget [element]="elementName"></app-video-widget>
-    </ion-col>
-    <ion-col size-lg="5" size-xs="12">
-      <app-energy-widget></app-energy-widget>
-    </ion-col>
-  </ion-row>
-  <ion-row>
-    <ion-col size-lg="7" size-xs="12">
+  <div class="page-container">
+
+    <!-- ── Banner ──────────────────────────────────────────────── -->
+    <div class="element-hero fire">
+      <div class="hero-text">
+        <h1>Energy</h1>
+        <p>Fuel the future — explore solar, wind, and the rise of clean energy.</p>
+      </div>
+    </div>
+
+    <app-life-elements [element]="elementName"></app-life-elements>
+
+    <!-- ── Section Nav ─────────────────────────────────────────── -->
+    <app-section-nav [sections]="pageSections" [element]="elementName"></app-section-nav>
+
+    <!-- ── Video + Widget ──────────────────────────────────────── -->
+        <section class="section-block" id="fire-featured-video">
+      <div class="video-widget-row">
+        <div class="video-col">
+          <app-video-widget [element]="elementName"></app-video-widget>
+        </div>
+        <div class="widget-col">
+          <app-energy-widget></app-energy-widget>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── In Focus ─────────────────────────────────────────── -->
+    <section class="section-block" id="fire-in-focus">
       <app-in-focus-widget
         [inFocuses]="this.inFocuses$ | async"
         [element]="elementName"
       ></app-in-focus-widget>
-    </ion-col>
-    <ion-col
-      size-lg="5"
-      size-xs="12"
+    </section>
+
+    <!-- ── Coffee Conversation ─────────────────────────────────── -->
+    <section
+      class="section-block"
+      id="fire-conversations"
       *ngIf="this.coffeeConversations$ | async as coffeeConversations"
     >
       <app-coffee-conversation
         [element]="elementName"
         [coffeeConvList]="coffeeConversations"
       ></app-coffee-conversation>
-    </ion-col>
-  </ion-row>
-  <ion-row
-    ><ion-col
-      ><app-blog-slider
+    </section>
+
+    <!-- ── Blogs ───────────────────────────────────────────────── -->
+    <section class="section-block" id="fire-blogs">
+      <div class="section-header">
+        <h2>Blogs</h2>
+      </div>
+      <app-blog-slider
         [blogList]="blogs$ | async"
         [element]="elementName"
-      ></app-blog-slider
-    ></ion-col>
-  </ion-row>
-  <ion-row
-    ><ion-col
-      ><app-video-slider
-        [videoList]="videos$ | async"
+      ></app-blog-slider>
+    </section>
+
+    <!-- ── Videos ──────────────────────────────────────────────── -->
+    <section class="section-block" id="fire-videos" *ngIf="videos$ | async as videos">
+      <div class="section-header" *ngIf="videos.length > 0">
+        <h2>Videos</h2>
+      </div>
+      <app-video-slider
+        [videoList]="videos"
         [element]="elementName"
       ></app-video-slider>
-    </ion-col>
-  </ion-row>
+    </section>
+
+  </div>
   <app-wiof-footer></app-wiof-footer>
 </ion-content>

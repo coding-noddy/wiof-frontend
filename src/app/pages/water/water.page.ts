@@ -14,6 +14,8 @@ import { Video } from '../../models/Video';
 import { InFocus } from 'src/app/models/InFocus';
 import { InFocusService } from 'src/app/services/in-focus.service';
 
+import { SectionNavItem } from 'src/app/components/section-nav/section-nav.component';
+
 @Component({
   selector: 'app-water',
   templateUrl: './water.page.html',
@@ -25,6 +27,14 @@ export class WaterPage implements OnInit {
   inFocuses$: Observable<InFocus[]>;
   coffeeConversations$: Observable<CoffeeConversation[]>;
   elementName: string = ELEMENT_SELECT.WATER;
+
+  pageSections: SectionNavItem[] = [
+    { label: 'Featured', sectionId: 'water-featured-video' },
+    { label: 'In Focus', sectionId: 'water-in-focus' },
+    { label: 'Conversations', sectionId: 'water-conversations' },
+    { label: 'Blogs', sectionId: 'water-blogs' },
+    { label: 'Videos', sectionId: 'water-videos' }
+  ];
 
   constructor(
     private blogService: BlogService,

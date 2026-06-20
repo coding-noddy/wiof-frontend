@@ -8,26 +8,34 @@
 }
 
 .ph-widget-height {
-  height: 577px;
+  height: auto;
+  min-height: 400px;
 }
 
 .title-text {
-  font-size: 20px;
-  font-weight: $font-weight-medium;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: $dark-color;
 }
 
 .wiof-food-ph-widget-card-header {
   background-color: $earth-color;
-  border-bottom: white 2px solid;
+  border-bottom: 2px solid white;
+  color: $dark-color;
 }
 
 .wiof-food-ph-widget-card-background {
-  background-color: rgba($earth-color, $tint-fraction);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
+  margin: 0 !important;
+  background-color: lighten($earth-color, 10%);
 }
 
 .wiof-food-ph-widget-card-content {
-  height: 500px;
+  max-height: 520px;
   overflow: auto;
+  padding: 1rem;
 }
 
 .divider {

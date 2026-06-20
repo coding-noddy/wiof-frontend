@@ -1,80 +1,57 @@
 @import '../../wiof-custom-theming.scss';
 
-.wiof-video-player-content {
-  padding: 0px;
-  text-align: center;
-}
-
-@media (max-width: 479px) {
-  .wiof-video-player-content {
-    height: 220px;
-  }
-}
-
-@media (min-width: 480px) and (max-width: 767px) {
-  .wiof-video-player-content {
-    height: 320px;
-  }
-}
-
-@media (min-width: 768px) {
-  .wiof-video-player-content {
-    height: 520px;
-  }
-}
-
-.videoPlayer {
+.video-widget-section {
   width: 100%;
   height: 100%;
-  margin-top: auto;
-  margin-bottom: auto;
-  border: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.title-text {
-  font-size: 20px;
-  font-weight: $font-weight-medium;
+.video-widget-card {
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
+  background: #000;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-@mixin video-widget-style($color) {
-  background-color: $color;
-  &.background {
-    background-color: rgba($color, $tint-fraction);
-  }
+// ── Header bar — element colored, like coffee conversation & in-focus ─────────
+.video-widget-header {
+  padding: 0.65rem 1rem;
+  border-bottom: 2px solid white;
+  background-color: $home-color;
+  color: $dark-color;
+
+  &.wiof-earth  { background-color: $earth-color; }
+  &.wiof-water  { background-color: $water-color; }
+  &.wiof-fire   { background-color: $energy-color; }
+  &.wiof-air    { background-color: $air-color; }
+  &.wiof-spirit { background-color: $spirit-color; }
+  &.wiof-config { background-color: $dark-color; color: $light-color; }
 }
 
-.wiof-earth {
-  @include video-widget-style($earth-color);
-}
+.video-widget-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: $dark-color;
 
-.wiof-water {
-  @include video-widget-style($water-color);
-}
-
-.wiof-fire {
-  @include video-widget-style($energy-color);
-}
-
-.wiof-air {
-  @include video-widget-style($air-color);
-}
-
-.wiof-spirit {
-  @include video-widget-style($spirit-color);
-}
-
-.wiof-config {
-  background-color: $dark-color;
-  .title-text {
-    font-size: 20px;
-    font-weight: $font-weight-medium;
+  .wiof-config & {
     color: $light-color;
   }
-  &.background {
-    background-color: rgba($dark-color, $tint-fraction);
-  }
 }
 
-.wiof-video-player-header {
-  border-bottom: white 2px solid;
+.video-widget-player {
+  width: 100%;
+  flex: 1;
+  min-height: 280px;
+}
+
+.video-player {
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  border: none;
+  display: block;
 }

@@ -5,19 +5,24 @@
   left: 50%;
 }
 
-.water-widget-padding {
-  padding: 10px;
-  overflow: auto;
-  height: 500px;
-}
-
 .wiof-water-widget-card-header {
   background-color: $water-color;
-  border-bottom: white 2px solid;
+  border-bottom: 2px solid white;
+  color: $dark-color;
 }
 
 .wiof-water-widget-card-background {
-  background-color: rgba($water-color, $tint-fraction);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
+  margin: 0 !important;
+  background-color: lighten($water-color, 6%);
+}
+
+.water-widget-padding {
+  padding: 10px;
+  overflow: auto;
+  max-height: 520px;
 }
 
 .wiof-water-widget-icons {

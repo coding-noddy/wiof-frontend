@@ -1,0 +1,186 @@
+@import '../wiof-custom-theming.scss';
+
+// ─── Shared layout for all element pages ──────────────────────────────────────
+// Mirrors the home page design tokens and patterns
+
+$page-padding-desktop: 16px 6vw;
+$page-padding-mobile:  16px;
+
+// ── Page background ───────────────────────────────────────────────────────────
+ion-content {
+  --background: #f4f7fb;
+}
+
+// ── Content wrapper ───────────────────────────────────────────────────────────
+.page-container {
+  padding: $page-padding-mobile;
+
+  @media (min-width: 768px) {
+    padding: $page-padding-desktop;
+  }
+}
+
+// ── Element banner / hero ─────────────────────────────────────────────────────
+.element-hero {
+  border-radius: 18px;
+  overflow: hidden;
+  position: relative;
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  // Overlay
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.38) 0%,
+      rgba(0, 0, 0, 0.12) 50%,
+      rgba(0, 0, 0, 0.42) 100%
+    );
+    border-radius: 18px;
+  }
+
+  .hero-text {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: #fff;
+    padding: 1.5rem 1rem;
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      text-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+      margin: 0 0 0.4rem;
+      line-height: 1.15;
+
+      @media (min-width: 768px) {
+        font-size: 2.6rem;
+      }
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.9);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+  }
+
+  // Per-element backgrounds
+  &.earth { background-image: url('/assets/banners/Earth_Banner.jpg'); }
+  &.water { background-image: url('/assets/banners/water_banner.jpg'); }
+  &.air   { background-image: url('/assets/banners/air_banner.jpg'); }
+  &.fire  { background-image: url('/assets/banners/Energy_Banner.jpg'); }
+  &.spirit { background-image: url('/assets/banners/spirit_banner.jpg'); }
+}
+
+// ── Section blocks ────────────────────────────────────────────────────────────
+.section-block {
+  margin-top: 1rem;
+  padding: 0.9rem 0;
+}
+
+.section-header {
+  margin-bottom: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.15rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #102f58;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 0;
+    color: #4a5975;
+    font-size: 0.9rem;
+  }
+}
+
+// ── Grid resets ───────────────────────────────────────────────────────────────
+ion-grid {
+  --ion-grid-padding: 0;
+}
+
+ion-row + ion-row {
+  margin-top: 0.75rem;
+}
+
+// Ensure widget components stretch to fill their column height
+.section-block app-video-widget,
+.section-block app-food-ph-indicator,
+.section-block app-water-widget,
+.section-block app-aqi-widget,
+.section-block app-energy-widget,
+.section-block app-eq-widget,
+.section-block app-in-focus-widget,
+.section-block app-coffee-conversation {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+// ── Video + Widget equal-height row ───────────────────────────────────────────
+.video-widget-row {
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+
+  .video-col {
+    flex: 7;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .widget-col {
+    flex: 5;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  app-video-widget,
+  app-food-ph-indicator,
+  app-water-widget,
+  app-aqi-widget,
+  app-energy-widget,
+  app-eq-widget {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  @media (max-width: 991px) {
+    flex-direction: column;
+
+    .video-col,
+    .widget-col {
+      flex: none;
+      width: 100%;
+    }
+  }
+}
+
+// ── Footer spacing ───────────────────────────────────────────────────────────
+app-wiof-footer {
+  margin-top: 2.5rem;
+}

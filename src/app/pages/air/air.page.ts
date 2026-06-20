@@ -15,6 +15,8 @@ import { CoffeeConversation } from 'src/app/models/CoffeeConversation';
 import { InFocus } from 'src/app/models/InFocus';
 import { InFocusService } from 'src/app/services/in-focus.service';
 
+import { SectionNavItem } from 'src/app/components/section-nav/section-nav.component';
+
 @Component({
   selector: 'app-air',
   templateUrl: './air.page.html',
@@ -28,6 +30,14 @@ export class AirPage implements OnInit {
   inFocuses$: Observable<InFocus[]>;
   coffeeConversations$: Observable<CoffeeConversation[]>;
   elementName: string = ELEMENT_SELECT.AIR;
+
+  pageSections: SectionNavItem[] = [
+    { label: 'Featured', sectionId: 'air-featured-video' },
+    { label: 'In Focus', sectionId: 'air-in-focus' },
+    { label: 'Conversations', sectionId: 'air-conversations' },
+    { label: 'Blogs', sectionId: 'air-blogs' },
+    { label: 'Videos', sectionId: 'air-videos' }
+  ];
 
   constructor(
     private blogService: BlogService,

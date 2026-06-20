@@ -15,6 +15,8 @@ $element-themes: (
   overflow: hidden;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
   background-color: #fff;
+  display: flex;
+  flex-direction: column;
 
   // ── Layout: home (side-by-side) ──────────────────────────────────────────
   &.layout-home {
@@ -44,25 +46,26 @@ $element-themes: (
     }
   }
 
-  // ── Layout: element pages (always stacked) ───────────────────────────────
+  // ── Layout: element pages (same horizontal card as home) ───────────────────
   &.layout-element {
     height: auto;
 
     ::ng-deep .background {
       height: auto;
+      flex: 1;
     }
 
     .coffee-conv-card {
       height: auto;
 
       ion-card-content ion-row {
-        align-items: flex-start;
+        height: auto;
+        align-items: stretch;
       }
 
       .media-container {
-        min-height: 0;
-        max-height: none;
-        aspect-ratio: 16 / 9;
+        min-height: 280px;
+        max-height: 420px;
       }
     }
   }

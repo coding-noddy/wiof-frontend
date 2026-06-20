@@ -18,11 +18,10 @@
           <ion-card class="coffee-conv-card">
             <ion-card-content class="ion-text-start card-content">
               <ion-row>
-                <!-- Home page: side-by-side on md+. Element pages: always stacked -->
                 <ion-col
                   class="media-container"
                   size-xs="12"
-                  [attr.size-lg]="fromHomePage ? '6' : '12'"
+                  size-lg="6"
                 >
                   <iframe
                     class="media-player"
@@ -34,7 +33,7 @@
                 <ion-col
                   class="coffee-conv-content"
                   size-xs="12"
-                  [attr.size-lg]="fromHomePage ? '6' : '12'"
+                  size-lg="6"
                 >
                   <h2>
                     <strong>{{ coffeeConv.topic }}</strong>

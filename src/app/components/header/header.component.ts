@@ -18,7 +18,6 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit() {}
   getColor() {
-    // console.log(this.route.snapshot.url);
     const url_array = this.route.snapshot['_routerState'].url.split('/');
     if (url_array.includes('home')) {
       this.colorName = 'home';
