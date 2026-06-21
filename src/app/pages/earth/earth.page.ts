@@ -54,5 +54,15 @@ export class EarthPage implements OnInit {
     this.inFocuses$ = this.inFocusService.getActiveInFocuses(
       ELEMENT_BLOG_CATEGORY.EARTH
     );
+
+    // Disable nav items if no data
+    this.blogs$.subscribe(blogs => {
+      const item = this.pageSections.find(s => s.sectionId === 'earth-blogs');
+      if (item) item.disabled = !blogs || blogs.length === 0;
+    });
+    this.videos$.subscribe(videos => {
+      const item = this.pageSections.find(s => s.sectionId === 'earth-videos');
+      if (item) item.disabled = !videos || videos.length === 0;
+    });
   }
 }

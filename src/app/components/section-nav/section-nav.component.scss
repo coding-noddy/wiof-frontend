@@ -1,27 +1,25 @@
 @import '../../wiof-custom-theming.scss';
 
+// ── Nav bar — always visible below header ─────────────────────────────────────
 .section-nav {
   display: flex;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 999px;
-  padding: 0.35rem 0.5rem;
-  margin: 0.75rem auto 0.5rem;
-  max-width: fit-content;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  align-items: center;
+  background: #fffaf0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 0.4rem 1rem;
+  width: 100%;
 }
 
 .nav-scroll {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.3rem;
+  gap: 0.35rem;
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  padding: 0 0.25rem;
 
   &::-webkit-scrollbar {
     display: none;
@@ -31,9 +29,9 @@
 .nav-item {
   flex-shrink: 0;
   border: none;
-  background: transparent;
-  padding: 0.38rem 0.85rem;
-  font-size: 0.8rem;
+  background: rgba(0, 0, 0, 0.04);
+  padding: 0.4rem 0.9rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: #475569;
   border-radius: 999px;
@@ -42,7 +40,7 @@
   white-space: nowrap;
 
   &:hover {
-    background: rgba($home-color, 0.1);
+    background: rgba($home-color, 0.12);
     color: $home-color-dark;
   }
 
@@ -50,6 +48,12 @@
     background: $home-color;
     color: #fff;
     box-shadow: 0 3px 10px rgba($home-color, 0.3);
+  }
+
+  &.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
   }
 }
 
@@ -89,16 +93,19 @@
 }
 .theme-spirit .nav-item:hover { background: rgba($spirit-color, 0.15); color: darken($spirit-color, 30%); }
 
+// ── Responsive ────────────────────────────────────────────────────────────────
 @media (max-width: 767px) {
   .section-nav {
-    margin: 0.5rem 0.5rem;
-    max-width: 100%;
-    border-radius: 14px;
-    padding: 0.3rem 0.4rem;
+    padding: 0.35rem 0.5rem;
+  }
+
+  .nav-scroll {
+    justify-content: flex-start;
+    padding: 0 0.1rem;
   }
 
   .nav-item {
-    font-size: 0.72rem;
-    padding: 0.3rem 0.65rem;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.75rem;
   }
 }

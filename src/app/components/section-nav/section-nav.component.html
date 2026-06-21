@@ -4,7 +4,9 @@
       *ngFor="let item of sections"
       class="nav-item"
       [class.active]="activeSection === item.sectionId"
-      (click)="scrollTo(item.sectionId)"
+      [class.disabled]="item.disabled"
+      [disabled]="item.disabled"
+      (click)="!item.disabled && scrollTo(item.sectionId)"
     >
       {{ item.label }}
     </button>

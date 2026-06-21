@@ -2,6 +2,7 @@
 <app-subscribe [page]="'air'"></app-subscribe>
 <app-social-share style="z-index: 2"></app-social-share>
 
+<app-section-nav [sections]="pageSections" [element]="elementName"></app-section-nav>
 <ion-content>
   <div class="page-container">
 
@@ -14,11 +15,7 @@
     </div>
 
     <app-life-elements [element]="elementName"></app-life-elements>
-
-    <!-- ── Section Nav ─────────────────────────────────────────── -->
-    <app-section-nav [sections]="pageSections" [element]="elementName"></app-section-nav>
-
-    <!-- ── Video + Widget ──────────────────────────────────────── -->
+<!-- ── Video + Widget ──────────────────────────────────────── -->
         <section class="section-block" id="air-featured-video">
       <div class="video-widget-row">
         <div class="video-col">

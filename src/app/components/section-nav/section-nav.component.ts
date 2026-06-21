@@ -1,12 +1,9 @@
-import {
-  Component,
-  Input,
-  OnInit
-} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 export interface SectionNavItem {
   label: string;
   sectionId: string;
+  disabled?: boolean;
 }
 
 @Component({

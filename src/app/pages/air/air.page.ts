@@ -57,5 +57,14 @@ export class AirPage implements OnInit {
     this.inFocuses$ = this.inFocusService.getActiveInFocuses(
       ELEMENT_BLOG_CATEGORY.AIR
     );
+
+    this.blogs$.subscribe(blogs => {
+      const item = this.pageSections.find(s => s.sectionId === 'air-blogs');
+      if (item) item.disabled = !blogs || blogs.length === 0;
+    });
+    this.videos$.subscribe(videos => {
+      const item = this.pageSections.find(s => s.sectionId === 'air-videos');
+      if (item) item.disabled = !videos || videos.length === 0;
+    });
   }
 }

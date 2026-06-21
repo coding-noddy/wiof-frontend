@@ -54,5 +54,14 @@ export class FirePage implements OnInit {
     this.inFocuses$ = this.inFocusService.getActiveInFocuses(
       ELEMENT_BLOG_CATEGORY.ENERGY
     );
+
+    this.blogs$.subscribe(blogs => {
+      const item = this.pageSections.find(s => s.sectionId === 'fire-blogs');
+      if (item) item.disabled = !blogs || blogs.length === 0;
+    });
+    this.videos$.subscribe(videos => {
+      const item = this.pageSections.find(s => s.sectionId === 'fire-videos');
+      if (item) item.disabled = !videos || videos.length === 0;
+    });
   }
 }
