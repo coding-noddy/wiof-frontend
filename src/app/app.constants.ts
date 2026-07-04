@@ -106,7 +106,7 @@ export const COFFEE_CONV_SLIDER_OPTIONS = {
 
 export const BLOG_SLIDER_OPTIONS = {
   slidesPerView: 4,
-  spaceBetween: 1,
+  spaceBetween: 10,
   freeMode: true,
   coverflowEffect: {
     rotate: 50,

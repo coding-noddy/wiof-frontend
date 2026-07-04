@@ -1,25 +1,27 @@
-<ion-card class="blog-card" [routerLink]="['blog', blog.id]">
-  <ion-card-content class="ion-text-start card-content">
-    <div class="img-container">
-      <img [src]="blog.image$ | async" alt="" />
+<ion-card class="blog-card" [routerLink]="['blog', blog.id]" [ngClass]="element">
+  <div class="blog-image-wrap">
+    <img
+      [src]="blog.image$ | async"
+      [alt]="blog.title"
+      class="blog-image"
+    />
+    <div class="blog-image-overlay"></div>
+  </div>
+
+  <div class="blog-body">
+    <h3 class="blog-title">
+      <a class="link-title">{{ blog.title }}</a>
+    </h3>
+    <p class="blog-excerpt">{{ blog.shortDescription }}</p>
+    <div class="blog-meta">
+      <span class="blog-author">
+        <ion-icon name="person-outline"></ion-icon>
+        {{ blog.author }}
+      </span>
+      <span class="blog-read-time">
+        <ion-icon name="time-outline"></ion-icon>
+        {{ blog.timeToRead }} min read
+      </span>
     </div>
-    <div class="ion-padding">
-      <h3 class="blog-card-title">
-        <a class="link-title">{{ blog.title }}</a>
-      </h3>
-      <div>
-        <small class="author-name" [attr.aria-label]="'author ' + blog.author"
-          >by {{ blog.author }}</small
-        >
-        <small class="time-to-read"
-          ><ion-icon slot="icon-only" name="stopwatch-outline"></ion-icon
-          >{{ blog.timeToRead }} min read</small
-        >
-      </div>
-      <div></div>
-    </div>
-    <p class="blog-card-content ion-padding-horizontal">
-      {{ blog.shortDescription }}
-    </p>
-  </ion-card-content>
+  </div>
 </ion-card>

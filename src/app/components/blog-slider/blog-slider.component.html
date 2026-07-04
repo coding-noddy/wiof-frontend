@@ -16,31 +16,7 @@
   <div *ngIf="blogList; else loading" class="slider-wrap">
     <ion-slides #wiofBlogSlider [options]="slideOpts">
       <ion-slide *ngFor="let blog of blogList">
-        <div class="blog-card" [routerLink]="['blog', blog.id]">
-
-          <!-- Image with gradient overlay -->
-          <div class="blog-image-wrap">
-            <img [src]="blog.image$ | async" [alt]="blog.title" class="blog-image" />
-            <div class="blog-image-overlay"></div>
-          </div>
-
-          <!-- Card body -->
-          <div class="blog-body">
-            <h3 class="blog-title">{{ blog.title }}</h3>
-            <p class="blog-excerpt">{{ blog.shortDescription }}</p>
-            <div class="blog-meta">
-              <span class="blog-author">
-                <ion-icon name="person-outline"></ion-icon>
-                {{ blog.author }}
-              </span>
-              <span class="blog-read-time">
-                <ion-icon name="time-outline"></ion-icon>
-                {{ blog.timeToRead }} min
-              </span>
-            </div>
-          </div>
-
-        </div>
+        <app-blog-card [blog]="blog" [element]="element"></app-blog-card>
       </ion-slide>
     </ion-slides>
 

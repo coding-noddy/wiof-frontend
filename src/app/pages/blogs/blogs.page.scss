@@ -23,6 +23,19 @@
     background-color: rgba($spirit-color, $tint-fraction);
   }
 
+  ion-row {
+    align-items: stretch;
+  }
+
+  ion-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  app-blog-card {
+    flex: 1;
+  }
+
   .no-blogs-container {
     margin: 0;
     padding: 20px;
