@@ -20,7 +20,12 @@
           <!-- ── Image — fixed height so modal doesn't jump ────────── -->
           <div class="occasion-image-wrap">
             <img
-              class="occasion-image"
+              class="occasion-image occasion-image-blur"
+              [src]="occasn.image | async"
+              [alt]="occasn.name"
+            />
+            <img
+              class="occasion-image occasion-image-main"
               [src]="occasn.image | async"
               [alt]="occasn.name"
             />

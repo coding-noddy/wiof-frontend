@@ -29,7 +29,7 @@
 // ── Media (card thumbnail) ────────────────────────────────────────────────────
 .media-container {
   width: 100%;
-  height: 220px;
+  height: auto;
   overflow: hidden;
   background: #f1f7ff;
   flex-shrink: 0;
@@ -309,7 +309,7 @@
 // ── Responsive ────────────────────────────────────────────────────────────────
 @media (max-width: 767px) {
   .media-container {
-    height: 180px;
+    height: auto;
   }
 
   .ngo-content {

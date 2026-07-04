@@ -15,9 +15,9 @@
           Enlighten through Knowledge<br />
           Protect through Action
         </h1>
-        <p class="hero-text">
+        <!-- <p class="hero-text">
           Discover stories, courses, and conversations that empower you to act for people and the planet.
-        </p>
+        </p> -->
         <button class="cta" [routerLink]="['/discover-more']">Discover More</button>
       </div>
     </section>
@@ -26,10 +26,10 @@
 
     <!-- Coffee Conversation -->
     <section class="section-block conversation-section">
-      <div class="section-header">
+      <!-- <div class="section-header">
         <h2>Coffee Conversation</h2>
         <p>Watch the latest conversation and engage with insights from the WIOF community.</p>
-      </div>
+      </div> -->
       <app-coffee-conversation
         [coffeeConvList]="coffeeConversations$ | async"
         [fromHomePage]="true">
@@ -38,19 +38,19 @@
 
     <!-- Breaking News -->
     <section class="section-block">
-      <div class="section-header">
+      <!-- <div class="section-header">
         <h2>Breaking News</h2>
         <p>Latest updates and important stories from the WIOF community.</p>
-      </div>
+      </div> -->
       <app-breaking-news [newsList]="newsList$ | async"></app-breaking-news>
     </section>
 
     <!-- Impact & Learn -->
     <section class="section-block impact-row">
-      <div class="section-header">
+      <!-- <div class="section-header">
         <h2>Impact & Learn</h2>
         <p>Discover stories of action alongside key courses for meaningful learning.</p>
-      </div>
+      </div> -->
       <ion-grid>
         <ion-row>
           <ion-col size-xs="12" size-md="6">
