@@ -8,8 +8,21 @@
     <ion-grid class="wiof-calendar-container">
       <ion-row>
         <ion-col class="month-header">
-          <h1>{{ displayMonth }}</h1>
-          <p>{{ displayDay }}</p>
+          <div class="month-switcher">
+            <button class="month-nav" (click)="changeMonth(-1)" aria-label="Previous month">
+              <ion-icon name="caret-back-outline"></ion-icon>
+            </button>
+            <div class="month-title">
+              <h1>{{ displayMonth }}</h1>
+              <p>{{ displayDay }}</p>
+            </div>
+            <button class="month-nav" (click)="changeMonth(1)" aria-label="Next month">
+              <ion-icon name="caret-forward-outline"></ion-icon>
+            </button>
+          </div>
+          <div *ngIf="isLoading" class="calendar-loading">
+            Loading calendar...
+          </div>
         </ion-col>
       </ion-row>
       <ion-row class="weekday">

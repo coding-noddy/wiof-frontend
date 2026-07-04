@@ -9,6 +9,8 @@ import { EnvcalService } from '../../services/envcal-service';
 })
 export class EnvCalenderComponent implements OnInit {
   todayDate = new Date();
+  currentMonth: number = this.todayDate.getMonth();
+  currentYear: number = this.todayDate.getFullYear();
   openDialog: boolean = false;
   displayMonth: string;
   displayDay: string;
@@ -21,16 +23,26 @@ export class EnvCalenderComponent implements OnInit {
     selectedOccasionIndex: number;
   }[] = [];
   EnvDays: EnvDay[];
+  isLoading: boolean = false;
+  months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ];
 
   constructor(private envDayService: EnvcalService) {}
 
   ngOnInit() {
-    this.envDayService
-      .getEnvCal(this.todayDate.getMonth())
-      .subscribe((data) => {
-        this.EnvDays = data;
-        this.renderCalendar();
-      });
+    this.loadMonth(this.currentMonth, this.currentYear);
   }
 
   getOccasion(day, month) {
@@ -50,35 +62,39 @@ export class EnvCalenderComponent implements OnInit {
     return occasion;
   }
 
+  loadMonth(month: number, year: number) {
+    this.currentMonth = month;
+    this.currentYear = year;
+    this.isLoading = true;
+    this.envDayService.getEnvCal(this.currentMonth).subscribe(
+      (data) => {
+        this.EnvDays = data;
+        this.todayDate = new Date(this.currentYear, this.currentMonth, 1);
+        this.renderCalendar();
+        this.isLoading = false;
+      },
+      () => {
+        this.isLoading = false;
+      }
+    );
+  }
+
+  changeMonth(delta: number) {
+    const nextDate = new Date(this.currentYear, this.currentMonth + delta, 1);
+    this.loadMonth(nextDate.getMonth(), nextDate.getFullYear());
+  }
+
   renderCalendar() {
+    this.days = [];
     this.todayDate.setDate(1);
     const lastDay = new Date(
       this.todayDate.getFullYear(),
       this.todayDate.getMonth() + 1,
       0
     ).getDate();
-    const prevLastDay = new Date(
-      this.todayDate.getFullYear(),
-      this.todayDate.getMonth(),
-      0
-    ).getDate();
     const firstDayIndex = this.todayDate.getDay();
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
-    ];
-    this.displayMonth = months[this.todayDate.getMonth()];
-    this.displayDay = new Date().toDateString();
+    this.displayMonth = this.months[this.todayDate.getMonth()];
+    this.displayDay = String(this.todayDate.getFullYear());
     for (let x = firstDayIndex; x > 0; x--) {
       this.days.push({
         class: 'day',
@@ -89,30 +105,20 @@ export class EnvCalenderComponent implements OnInit {
     }
 
     for (let i = 1; i <= lastDay; i++) {
-      if (
+      const isToday =
         i === new Date().getDate() &&
-        this.todayDate.getMonth() === new Date().getMonth()
-      ) {
-        this.days.push({
-          class: 'day today',
-          day: String(i),
-          occasion: this.getOccasion(
-            String(i),
-            String(this.todayDate.getMonth())
-          ),
-          selectedOccasionIndex: 0
-        });
-      } else {
-        this.days.push({
-          class: 'day',
-          day: String(i),
-          occasion: this.getOccasion(
-            String(i),
-            String(this.todayDate.getMonth())
-          ),
-          selectedOccasionIndex: 0
-        });
-      }
+        this.todayDate.getMonth() === new Date().getMonth() &&
+        this.todayDate.getFullYear() === new Date().getFullYear();
+
+      this.days.push({
+        class: isToday ? 'day today' : 'day',
+        day: String(i),
+        occasion: this.getOccasion(
+          String(i),
+          String(this.todayDate.getMonth())
+        ),
+        selectedOccasionIndex: 0
+      });
     }
   }
   closeDialog() {
