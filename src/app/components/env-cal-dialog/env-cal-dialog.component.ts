@@ -21,6 +21,7 @@ export class EnvCalDialogComponent implements OnInit {
   width: number;
   slideOpts = BREAKING_NEWS_SLIDER_OPTIONS;
   showNavigation: boolean = false;
+  imageLoadState: { [key: number]: { loaded: boolean; error: boolean } } = {};
 
   @HostListener('window:resize', [])
   public onResize() {
@@ -68,6 +69,22 @@ export class EnvCalDialogComponent implements OnInit {
 
   detectScreenSize() {
     this.width = window.innerWidth;
+  }
+
+  onImageLoad(index: number) {
+    this.imageLoadState[index] = { loaded: true, error: false };
+  }
+
+  onImageError(index: number) {
+    this.imageLoadState[index] = { loaded: false, error: true };
+  }
+
+  isImageLoaded(index: number) {
+    return this.imageLoadState[index]?.loaded === true;
+  }
+
+  isImageError(index: number) {
+    return this.imageLoadState[index]?.error === true;
   }
 
   closeDialog() {

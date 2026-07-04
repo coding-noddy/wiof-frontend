@@ -1,7 +1,7 @@
 <div class="wiof-env-calendar-dialog">
   <div *ngIf="occasionDetails; else loading">
     <ion-slides #wiofOccasionSlider [options]="slideOpts">
-      <ion-slide *ngFor="let occasn of occasionDetails.occasion">
+      <ion-slide *ngFor="let occasn of occasionDetails.occasion; let i = index">
         <ion-card class="occasion-card">
 
           <!-- ── Header ─────────────────────────────────────────────── -->
@@ -19,16 +19,31 @@
 
           <!-- ── Image — fixed height so modal doesn't jump ────────── -->
           <div class="occasion-image-wrap">
-            <img
-              class="occasion-image occasion-image-blur"
-              [src]="occasn.image | async"
-              [alt]="occasn.name"
-            />
-            <img
-              class="occasion-image occasion-image-main"
-              [src]="occasn.image | async"
-              [alt]="occasn.name"
-            />
+            <ng-container *ngIf="occasn.image | async as imageSrc">
+              <img
+                class="occasion-image occasion-image-blur"
+                *ngIf="!isImageError(i)"
+                [src]="imageSrc"
+                [alt]="occasn.name"
+                [class.image-hidden]="!isImageLoaded(i)"
+              />
+              <img
+                class="occasion-image occasion-image-main"
+                *ngIf="!isImageError(i)"
+                [src]="imageSrc"
+                [alt]="occasn.name"
+                loading="lazy"
+                [class.image-hidden]="!isImageLoaded(i)"
+                (load)="onImageLoad(i)"
+                (error)="onImageError(i)"
+              />
+            </ng-container>
+            <div class="occasion-image-placeholder" *ngIf="!isImageLoaded(i) && !isImageError(i)">
+              <div class="placeholder-pulse"></div>
+            </div>
+            <div class="occasion-image-fallback" *ngIf="isImageError(i)">
+              <span>Image unavailable</span>
+            </div>
           </div>
 
           <!-- ── Body ──────────────────────────────────────────────── -->
