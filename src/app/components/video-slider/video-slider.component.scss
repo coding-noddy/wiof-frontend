@@ -1,87 +1,104 @@
 @import '../../wiof-custom-theming.scss';
 
-.video-card-footer {
-  background-color: white;
-  border-top: 1px solid lightgrey;
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  color: $dark-color;
-}
-
 .video-card {
-  min-width: 20%;
-  height: calc(100% - 20px);
+  @include wiof-card(18px, 0 18px 42px rgba(0, 0, 0, 0.08), 1px solid rgba(0, 0, 0, 0.08));
+  min-width: 18%;
   width: 100%;
-  margin: 5px 10px;
+  margin: 10px 8px;
   cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-  ion-card-content {
-    padding: 0 0 1rem 0;
-
-    .img-container {
-      overflow: hidden;
+  &:hover {
+    .img-container::before {
+      color: rgba(255, 255, 255, 0.8);
     }
-
-    img {
-      transform: scale(1);
-      transition: transform 1s;
+    .thumbnailImage {
+      transform: scale(1.08);
+    }
+    h3 {
+      color: $home-color;
     }
   }
 
-  &:hover {
-    a {
-      text-decoration: underline;
-    }
-    .img-container img {
-      transform: scale(1.2);
-      transition: transform 1s;
-    }
+  ion-card-content {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.img-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 220px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &::before {
+    content: '▶';
+    position: absolute;
+    font-size: 2.5rem;
+    color: rgba(255, 255, 255, 0);
+    z-index: 2;
+    transition: color 0.3s ease;
   }
 }
 
 .thumbnailImage {
-  align-self: center;
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.video-card h3 {
+  margin: 0;
+  padding: 1.25rem;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  font-weight: 700;
+  color: #2c3e50;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
 }
 
 .wiof-slider-header {
-  border-bottom: white 2px solid;
-  color: $dark-color;
+  border-bottom: none;
+  background: linear-gradient(135deg, $home-color 0%, darken($home-color, 5%) 100%);
+  color: $home-text-color;
+  padding: 14px 18px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  .title-text {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: $home-text-color;
+  }
+
+  ion-row {
+    align-items: center;
+  }
+
+  ion-col {
+    padding: 0 !important;
+  }
 }
-
-// /* Using SCSS variables to store breakpoints */
-// $breakpoint-desktop: 1024px;
-// $breakpoint-tablet: 767px;
-// $breakpoint-mobile: 480px;
-
-// //xsmall view from 0 to 479
-// @media (max-width: $breakpoint-mobile){
-//   .thumbnailImage{
-//     width:320px;
-//   }
-// }
-
-// //small view from 480 to 766
-// @media (max-width: $breakpoint-tablet){
-//   .thumbnailImage{
-//     width:320px;
-//   }
-// }
-
-// //medium view from 767 to 1023
-// @media (max-width: $breakpoint-desktop){
-//   .thumbnailImage{
-//     width:249.5px;
-//   }
-// }
-
-// //large view 1024 and above
-// @media (min-width: $breakpoint-desktop){
-//   .thumbnailImage{
-//     width:249.5px;
-//   }
-// }
 
 .wiof-spinner {
   position: absolute;
@@ -96,25 +113,11 @@
   }
 }
 
-.wiof-earth {
-  @include video-card-style($earth-color);
-}
-
-.wiof-water {
-  @include video-card-style($water-color);
-}
-
-.wiof-fire {
-  @include video-card-style($energy-color);
-}
-
-.wiof-air {
-  @include video-card-style($air-color);
-}
-
-.wiof-spirit {
-  @include video-card-style($spirit-color);
-}
+.wiof-earth  { @include video-card-style($earth-color); }
+.wiof-water  { @include video-card-style($water-color); }
+.wiof-fire   { @include video-card-style($energy-color); }
+.wiof-air    { @include video-card-style($air-color); }
+.wiof-spirit { @include video-card-style($spirit-color); }
 
 .show-more-card {
   height: calc(100% - 20px);
@@ -133,30 +136,4 @@
 
 .swiper-slide {
   height: auto;
-}
-
-// .video-title {
-//   text-decoration: none;
-// }
-
-// ─── Header ──────────────────────────────────────────────────
-.wiof-slider-header {
-  border-bottom: white 2px solid;
-  color: $home-text-color;
-  padding: 8px 16px;
-  flex-shrink: 0;
-
-  .title-text {
-    font-size: 15px;
-    font-weight: $font-weight-medium;
-    color: $home-text-color;
-  }
-
-  ion-row {
-    align-items: center;
-  }
-
-  ion-col {
-    padding: 0 !important;
-  }
 }
