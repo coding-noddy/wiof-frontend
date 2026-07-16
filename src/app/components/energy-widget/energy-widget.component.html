@@ -55,7 +55,9 @@
         <span class="input-error" *ngIf="consumptionError">
           Enter a positive number (e.g. 250)
         </span>
-        <span class="input-hint">Check your monthly electricity bill for kWh units</span>
+        <span class="input-hint">
+          Check your electricity bill for kWh · Avg. Indian household: ~90–120 kWh/month
+        </span>
       </div>
 
     </div>
@@ -135,7 +137,50 @@
         </div>
 
       </div>
+
+      <!-- Sources -->
+      <div class="calc-sources">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <span>Sources: </span>
+        <a href="https://cea.nic.in/cdm-co2-baseline-database/" target="_blank" rel="noopener noreferrer">
+          CEA CO₂ Baseline Database — Grid factor (0.82 kg/kWh)
+        </a>
+        <span class="src-sep">·</span>
+        <a href="https://www.ipcc.ch/report/2019-refinement-to-the-2006-ipcc-guidelines/" target="_blank" rel="noopener noreferrer">
+          IPCC 2019 Guidelines — Petrol (2.31 kg/L) &amp; Diesel (2.68 kg/L)
+        </a>
+      </div>
+
     </div>
 
+  </div><!-- /energy-widget-body -->
+
+  <!-- ── Did You Know strip ──────────────────────────────────── -->
+  <div class="fact-strip" [class.fact-strip--expanded]="factExpanded">
+    <div class="fact-content">
+      <ion-icon name="bulb-outline" class="fact-icon"></ion-icon>
+      <div class="fact-body">
+        <p class="fact-text" [class.expanded]="factExpanded">{{ currentFact.text }}</p>
+        <div class="fact-meta-row">
+          <a class="fact-source" [href]="currentFact.url" target="_blank" rel="noopener noreferrer">
+            <ion-icon name="link-outline"></ion-icon>{{ currentFact.source }}
+          </a>
+          <button class="fact-expand-btn" (click)="factExpanded = !factExpanded">
+            {{ factExpanded ? 'Show less' : 'Read more' }}
+            <ion-icon [name]="factExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="fact-controls">
+      <button class="fact-btn" (click)="prevFact()" aria-label="Previous fact">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <span class="fact-counter">{{ currentFactIndex + 1 }} / {{ energyFacts.length }}</span>
+      <button class="fact-btn" (click)="nextFact()" aria-label="Next fact">
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </button>
+    </div>
   </div>
-</div>
+
+</div><!-- /energy-widget-card -->

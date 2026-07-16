@@ -102,9 +102,8 @@ $radius-item: 14px;
 // ── Input row ────────────────────────────────────────────────────
 .input-row {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 0.75rem;
-  align-items: flex-end;
   margin-bottom: 1rem;
 }
 
@@ -112,16 +111,6 @@ $radius-item: 14px;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  flex: 1 1 120px;
-}
-
-.btn-group {
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
-  flex: 0 1 auto;
-  // Push button down by the exact height of label + gap so it aligns with the input
-  padding-top: calc(0.72rem * 1.2 + 4px);
 }
 
 .input-label {
@@ -169,7 +158,7 @@ $radius-item: 14px;
   background: rgba($e-dark, 0.10);
   border: 1.5px solid rgba($e-dark, 0.25);
   border-left: none;
-  border-radius: 0 10px 10px 0;
+  border-right: none;   // no right border — button continues the line
   font-size: 0.8rem;
   font-weight: 700;
   color: $e-dark;
@@ -195,17 +184,23 @@ $radius-item: 14px;
 
 // ── Buttons ──────────────────────────────────────────────────────
 .calc-btn {
-  height: 40px;
+  // Kill every global that causes the button to be taller or offset
+  margin: 0 !important;
+  min-height: unset !important;
+  min-width: unset !important;
+  height: 40px !important;
+  // Continue the combined input border seamlessly
+  border-radius: 0 10px 10px 0 !important;
   white-space: nowrap;
   padding: 0 1.1rem !important;
   font-size: 0.86rem !important;
-  min-width: unset !important;
-  // Override the global home-colour gradient with energy theme
+  // Energy theme — dark amber on light amber
   background: linear-gradient(135deg, darken($e, 15%) 0%, darken($e, 28%) 100%) !important;
   color: $dark-color !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
 
   &:hover {
+    transform: none !important;   // kill global translateY so it doesn't jump
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18) !important;
   }
 }
@@ -395,6 +390,181 @@ $radius-item: 14px;
   font-size: 0.7rem;
   color: rgba($dark-color, 0.55);
   font-weight: 500;
+}
+
+// ── Sources row ──────────────────────────────────────────────────
+.calc-sources {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 0.65rem;
+  font-size: 0.68rem;
+  color: rgba($dark-color, 0.5);
+
+  ion-icon {
+    font-size: 0.78rem;
+    flex-shrink: 0;
+  }
+
+  a {
+    color: $e-dark;
+    text-decoration: none;
+    font-weight: 600;
+    opacity: 0.8;
+    transition: opacity 0.15s ease;
+
+    &:hover { opacity: 1; text-decoration: underline; }
+  }
+}
+
+.src-sep {
+  color: rgba($dark-color, 0.3);
+}
+
+// ── Did You Know strip ───────────────────────────────────────────
+.fact-strip {
+  margin: 0.5rem 0 0;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba($e-dark, 0.15);
+  border-top: 1px solid rgba($e-dark, 0.12);
+  border-radius: 0 0 20px 20px;
+  padding: 0.6rem 0.75rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  min-height: 90px;
+  height: 90px;
+  overflow: hidden;
+
+  &.fact-strip--expanded {
+    height: auto;
+    min-height: 90px;
+  }
+}
+
+.fact-content {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.fact-icon {
+  font-size: 1rem;
+  color: $e-dark;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.fact-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.fact-text {
+  font-size: 0.76rem;
+  color: $dark-color;
+  line-height: 1.5;
+  margin: 0;
+  min-height: calc(0.76rem * 1.5 * 3);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  animation: factFadeIn 0.4s ease;
+
+  &.expanded {
+    display: block;
+    overflow: visible;
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
+  }
+}
+
+@keyframes factFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fact-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fact-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: $e-dark;
+  text-decoration: none;
+  opacity: 0.8;
+  transition: opacity 0.15s ease;
+
+  ion-icon { font-size: 0.65rem; }
+  &:hover { opacity: 1; text-decoration: underline; }
+}
+
+.fact-expand-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: $e-dark;
+  cursor: pointer;
+  opacity: 0.75;
+  margin-left: auto;
+  transition: opacity 0.15s ease;
+
+  ion-icon { font-size: 0.65rem; }
+  &:hover { opacity: 1; }
+}
+
+.fact-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.fact-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid rgba($e-dark, 0.25);
+  background: rgba(255, 255, 255, 0.7);
+  color: $dark-color;
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+
+  ion-icon { font-size: 0.8rem; }
+  &:hover {
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+}
+
+.fact-counter {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: $e-dark;
+  min-width: 28px;
+  text-align: center;
 }
 
 // ── Responsive ───────────────────────────────────────────────────
