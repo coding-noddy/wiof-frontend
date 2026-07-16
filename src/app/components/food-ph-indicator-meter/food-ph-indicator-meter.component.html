@@ -1,53 +1,58 @@
-<div class="food-ph-indicator-meter">
-  <ion-row style="padding-top: 50px">
-    <ion-col size="12">
-      <ion-row>
-        <ion-col style="text-align: center" size="4">Acidic</ion-col>
-        <ion-col style="text-align: center" size="4">Neutral</ion-col>
-        <ion-col style="text-align: center" size="4">Alkaline</ion-col>
-      </ion-row>
-    </ion-col>
-    <ion-col size="12">
-      <ion-row>
-        <ion-col class="phScale" size="12">
-          <div class="phScaleBlock ph0"></div>
-          <div class="phScaleBlock ph1"></div>
-          <div class="phScaleBlock ph2"></div>
-          <div class="phScaleBlock ph3"></div>
-          <div class="phScaleBlock ph4"></div>
-          <div class="phScaleBlock ph5"></div>
-          <div class="phScaleBlock ph6"></div>
-          <div class="phScaleBlock ph7"></div>
-          <div class="phScaleBlock ph8"></div>
-          <div class="phScaleBlock ph9"></div>
-          <div class="phScaleBlock ph10"></div>
-          <div class="phScaleBlock ph11"></div>
-          <div class="phScaleBlock ph12"></div>
-          <div class="phScaleBlock ph13"></div>
-          <div class="phScaleBlock ph14"></div>
-        </ion-col>
-        <ion-col class="phScale" size="12">
-          <div class="phScaleBlock"><p class="ph-widget-scale-text">0</p></div>
-          <div class="phScaleBlock"><p class="ph-widget-scale-text">1</p></div>
-          <div class="phScaleBlock"><p class="ph-widget-scale-text">2</p></div>
-          <div class="phScaleBlock"><p class="ph-widget-scale-text">3</p></div>
-          <div class="phScaleBlock"><p class="ph-widget-scale-text">4</p></div>
-          <div class="phScaleBlock"><p class="ph-widget-scale-text">5</p></div>
-          <div class="phScaleBlock"><p class="ph-widget-scale-text">6</p></div>
-          <div class="phScaleBlock"><p class="ph-widget-scale-text">7</p></div>
-          <div class="phScaleBlock"><p class="ph-widget-scale-text">8</p></div>
-          <div class="phScaleBlock"><p class="ph-widget-scale-text">9</p></div>
-          <div class="phScaleBlock"><p class="ph-widget-scale-text">10</p></div>
-          <div class="phScaleBlock"><p class="ph-widget-scale-text">11</p></div>
-          <div class="phScaleBlock"><p class="ph-widget-scale-text">12</p></div>
-          <div class="phScaleBlock"><p class="ph-widget-scale-text">13</p></div>
-          <div class="phScaleBlock"><p class="ph-widget-scale-text">14</p></div>
-        </ion-col>
-      </ion-row>
-      <div class="bracket" [ngClass]="updatePhPointer()"></div>
-    </ion-col>
-    <ion-col size="12" class="text">
-      {{ message }}
-    </ion-col>
-  </ion-row>
+<div class="food-ph-indicator-meter" aria-label="Food pH meter">
+  <div class="meter-summary">
+    <div class="meter-info">
+      <span class="meter-label">Selected food</span>
+      <h3 class="meter-food-title">
+        {{ food?.name === 'Default' ? 'Pick a food item' : food?.name }}
+      </h3>
+      <p class="meter-food-copy">
+        {{ food?.name === 'Default' ? 'Search a food and hit Calculate to see where it lands on the pH scale.' : 'This item sits in the ' + foodStatus.toLowerCase() + ' zone with a pH of ' + food?.value + '.' }}
+      </p>
+    </div>
+    <span class="meter-status-badge" [ngClass]="foodStatusClass">
+      {{ foodStatus }}
+    </span>
+    <div class="scale-key">
+      <span class="scale-key-item acidic">Acidic</span>
+      <span class="scale-key-item neutral">Neutral</span>
+      <span class="scale-key-item alkaline">Alkaline</span>
+    </div>
+  </div>
+
+  <div class="ph-scale-wrap">
+    <div class="phScale" aria-hidden="true">
+      <div class="phScaleBlock ph0"></div>
+      <div class="phScaleBlock ph1"></div>
+      <div class="phScaleBlock ph2"></div>
+      <div class="phScaleBlock ph3"></div>
+      <div class="phScaleBlock ph4"></div>
+      <div class="phScaleBlock ph5"></div>
+      <div class="phScaleBlock ph6"></div>
+      <div class="phScaleBlock ph7"></div>
+      <div class="phScaleBlock ph8"></div>
+      <div class="phScaleBlock ph9"></div>
+      <div class="phScaleBlock ph10"></div>
+      <div class="phScaleBlock ph11"></div>
+      <div class="phScaleBlock ph12"></div>
+      <div class="phScaleBlock ph13"></div>
+      <div class="phScaleBlock ph14"></div>
+    </div>
+
+    <div class="phScaleLabels" aria-hidden="true">
+      <span>0</span>
+      <span>7</span>
+      <span>14</span>
+    </div>
+
+    <div class="bracket" [ngClass]="updatePhPointer()"></div>
+  </div>
+
+  <div
+    class="ph-meter-message"
+    role="status"
+    aria-live="polite"
+    *ngIf="food?.name === 'Default'"
+  >
+    {{ message }}
+  </div>
 </div>

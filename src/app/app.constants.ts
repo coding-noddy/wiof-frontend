@@ -142,8 +142,24 @@ export const ENDPOINTS = {
     VIDEO: 'https://www.googleapis.com/youtube/v3/videos',
     PLAYLIST: 'https://www.googleapis.com/youtube/v3/playlistItems'
   },
-  AQI_WIDGET: 'https://api.waqi.info'
+  AQI_WIDGET: 'https://api.waqi.info',
+  OPEN_METEO: 'https://api.open-meteo.com/v1/forecast'
 };
+
+export const INDIAN_CITIES = [
+  { name: 'Mumbai',    lat: 19.076,  lon: 72.877 },
+  { name: 'Delhi',     lat: 28.644,  lon: 77.216 },
+  { name: 'Bangalore', lat: 12.972,  lon: 77.594 },
+  { name: 'Chennai',   lat: 13.083,  lon: 80.270 },
+  { name: 'Kolkata',   lat: 22.572,  lon: 88.363 },
+  { name: 'Hyderabad', lat: 17.385,  lon: 78.486 },
+  { name: 'Pune',      lat: 18.520,  lon: 73.856 },
+  { name: 'Ahmedabad', lat: 23.023,  lon: 72.572 },
+  { name: 'Jaipur',    lat: 26.912,  lon: 75.787 },
+  { name: 'Lucknow',   lat: 26.847,  lon: 80.947 },
+  { name: 'Bhopal',    lat: 23.259,  lon: 77.413 },
+  { name: 'Bhubaneswar', lat: 20.296, lon: 85.824 },
+];
 
 export const FIREBASE_COLLECTION = {
   BLOGS: 'Blogs',

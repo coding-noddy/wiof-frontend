@@ -1,79 +1,143 @@
 <ion-card class="wiof-food-ph-widget-card-background ph-widget-height">
+  <!-- ================= Header ================= -->
+
   <ion-card-header class="wiof-food-ph-widget-card-header">
-    <ion-card-title class="title-text"> pH Widget </ion-card-title>
+    <div class="food-ph-widget-header">
+      <div class="header-left">
+        <ion-icon name="leaf-outline" class="header-icon" aria-hidden="true">
+        </ion-icon>
+
+        <span class="title-text"> Food pH Widget </span>
+      </div>
+
+      <button
+        type="button"
+        class="about-toggle"
+        (click)="about = !about"
+        [attr.aria-expanded]="about"
+        aria-controls="foodPhAbout"
+        aria-label="About Food pH Widget"
+      >
+        <ion-icon
+          [name]="about ? 'information-circle' : 'information-circle-outline'"
+        >
+        </ion-icon>
+
+        <span>About</span>
+      </button>
+    </div>
   </ion-card-header>
-  <ion-card-content
-    class="wiof-food-ph-widget-card-content"
-    style="padding: 5px"
-  >
-    <ion-grid>
-      <ion-row>
-        <ion-col size="12" class="text">
-          <a style="cursor: pointer" (click)="about = !about">
-            About Food pH Indicator
-            <ion-icon *ngIf="!about" name="chevron-down-outline"></ion-icon
-            ><ion-icon *ngIf="about" name="chevron-up-outline"></ion-icon
-          ></a>
-          <p *ngIf="about" style="text-align: justify">
-            The human body is built to naturally maintain a healthy balance of
-            acidity and alkalinity, called a pH balance. One way we can help our
-            body maintain a healthy pH balance is through our diet. A diet low
-            in acid producing foods can help maintain a healthy body pH balance.
-            The scale below will tell you the pH balance of commonly consumed
-            foods.
-          </p>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size="12">
-          <ion-label class="text">
-            Check the pH value of various commonly consumed food items.
-          </ion-label>
-        </ion-col>
-        <ion-col size="12" size-md="6" size-xl="7">
-          <form>
+
+  <!-- ================= Content ================= -->
+
+  <ion-card-content class="wiof-food-ph-widget-card-content">
+    <!-- About -->
+
+    <section
+      id="foodPhAbout"
+      class="about-panel"
+      [class.open]="about"
+      [attr.aria-hidden]="!about"
+    >
+      <div class="about-content">
+        <h3 class="about-title">Understanding Food pH</h3>
+
+        <ul class="about-list">
+          <li>
+            Foods are commonly classified as acidic, neutral, or alkaline.
+          </li>
+          <li>
+            Search and select any food to view its position on the pH scale.
+          </li>
+          <li>The pH meter updates instantly after a selection is made.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ================= Main Layout ================= -->
+
+    <div class="food-ph-grid">
+      <!-- Search Panel -->
+
+      <section class="food-ph-input-area">
+        <label class="field-label" for="foodSearch"> Search Food </label>
+
+        <form
+          class="food-form"
+          autocomplete="off"
+          (submit)="$event.preventDefault()"
+        >
+          <div class="food-search-wrapper">
+            <ion-icon
+              class="search-icon"
+              name="search-outline"
+              aria-hidden="true"
+            >
+            </ion-icon>
+
             <input
+              id="foodSearch"
+              #foodSearchInput
               class="select-food-input"
               type="text"
-              placeholder="Select food"
-              aria-label="Select food"
+              placeholder="Search for a food..."
+              autocomplete="off"
+              spellcheck="false"
+              aria-label="Search food"
               matInput
               [matAutocomplete]="auto"
               [formControl]="foodInputCtrl"
             />
-            <mat-autocomplete
-              #auto="matAutocomplete"
-              [displayWith]="getSelectedFoodName"
-              (optionSelected)="setSelectedFoodName($event.option.value)"
+
+            <button
+              *ngIf="selectedFood.name !== 'Default'"
+              type="button"
+              class="clear-btn"
+              (click)="clearSelection()"
+              aria-label="Clear selected food"
+              title="Clear"
             >
-              <mat-option
-                *ngFor="let food of filteredfoodOptions$ | async"
-                [value]="food"
-              >
-                <span>{{ food.name | titlecase }}</span> |
-                <small>pH: {{ food.value }}</small>
-              </mat-option>
-            </mat-autocomplete>
-          </form>
-        </ion-col>
-        <ion-col size="12" size-md="6" size-xl="5" style="align-items: center">
-          <button
-            class="wiof-primary-btn full-width full-height"
-            (click)="updateBridgeVariable()"
+              <ion-icon name="close-circle"></ion-icon>
+            </button>
+          </div>
+
+          <mat-autocomplete
+            #auto="matAutocomplete"
+            [displayWith]="getSelectedFoodName"
+            (optionSelected)="setSelectedFoodName($event.option.value)"
           >
-            <ion-icon name="calculator-outline"></ion-icon>Calculate pH value
-          </button>
-        </ion-col>
-      </ion-row>
-      <hr class="divider" />
-      <ion-row>
-        <ion-col>
-          <p class="ph-meter-text">pH Meter</p>
-          <app-food-ph-indicator-meter
-            [food]="bridgeVariable"
-          ></app-food-ph-indicator-meter>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+            <mat-option
+              *ngFor="let food of filteredFoodOptions$ | async"
+              [value]="food"
+            >
+              <div class="dropdown-option">
+                <div class="option-info">
+                  <span class="option-title">
+                    {{ food.name | titlecase }}
+                  </span>
+                </div>
+              </div>
+            </mat-option>
+          </mat-autocomplete>
+        </form>
+
+        <p class="food-hint">
+          Start typing to discover where foods fall on the pH scale.
+        </p>
+      </section>
+
+      <!-- Meter Panel -->
+
+      <section class="food-ph-meter-panel" aria-labelledby="phMeterHeading">
+        <header class="meter-header">
+          <span id="phMeterHeading" class="ph-meter-text"> pH Meter </span>
+        </header>
+
+        <div class="meter-wrapper" aria-live="polite">
+          <app-food-ph-indicator-meter [food]="selectedFood">
+          </app-food-ph-indicator-meter>
+        </div>
+      </section>
+    </div>
   </ion-card-content>
 </ion-card>

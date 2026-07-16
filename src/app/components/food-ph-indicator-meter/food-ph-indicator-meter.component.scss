@@ -1,171 +1,228 @@
 @import '../../wiof-custom-theming.scss';
 
 .ph-widget-scale-text {
-  font-size: 12px;
+  font-size: clamp(0.75rem, 1vw, 0.95rem);
+  color: rgba(0, 0, 0, 0.72);
+}
 
-  @media screen and (max-width: 350px) {
-    font-size: 11px;
-  }
+.meter-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: start;
+  margin-bottom: 1rem;
+}
+
+.meter-info {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.meter-label {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.meter-food-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: $dark-color;
+}
+
+.meter-food-copy {
+  margin: 0;
+  font-size: 0.86rem;
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 1.5;
+}
+
+.meter-status-badge {
+  align-self: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: $dark-color;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.meter-status-badge.acidic-badge {
+  color: #a2311a;
+  background: rgba(255, 150, 120, 0.16);
+  border-color: rgba(162, 49, 26, 0.2);
+}
+
+.meter-status-badge.neutral-badge {
+  color: #46623f;
+  background: rgba(116, 168, 130, 0.18);
+  border-color: rgba(70, 98, 63, 0.22);
+}
+
+.meter-status-badge.alkaline-badge {
+  color: #195b52;
+  background: rgba(76, 175, 80, 0.14);
+  border-color: rgba(25, 91, 82, 0.22);
 }
 
 .food-ph-indicator-meter {
-  border-radius: 5px;
-  background-color: white;
+  border-radius: 22px;
+  background-color: rgba(255, 255, 255, 0.98);
+  position: relative;
+  padding: 1.3rem 1rem 1.3rem;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.08);
 }
 
-.bracket {
-  border: #202020 4px solid;
-  width: 8.19%;
-  height: 48px;
-  z-index: 2;
-  position: absolute;
-  padding: 0.8%;
-  transition-delay: 1s;
-  transition: 0.5s;
-  top: 5px;
-  // left: 5.5px;
-  &.ph0 {
-    left: $ph0;
-    background-color: #ff0000;
-  }
-  &.ph1 {
-    left: $ph1;
-    background-color: #ff7c00;
-  }
-  &.ph2 {
-    left: $ph2;
-    background-color: #edaa46;
-  }
-  &.ph3 {
-    left: $ph3;
-    background-color: #fed957;
-  }
-  &.ph4 {
-    left: $ph4;
-    background-color: #b4e873;
-  }
-  &.ph5 {
-    left: $ph5;
-    background-color: #a6db63;
-  }
-  &.ph6 {
-    left: $ph6;
-    background-color: #95cc50;
-  }
-  &.ph7 {
-    left: $ph7;
-    background-color: #81b540;
-  }
-  &.ph8 {
-    left: $ph8;
-    background-color: #34be8d;
-  }
-  &.ph9 {
-    left: $ph9;
-    background-color: #43c8d0;
-  }
-  &.ph10 {
-    left: $ph10;
-    background-color: #438cd0;
-  }
-  &.ph11 {
-    left: $ph11;
-    background-color: #4a66cb;
-  }
-  &.ph12 {
-    left: $ph12;
-    background-color: #786cbf;
-  }
-  &.ph13 {
-    left: $ph13;
-    background-color: #5e4fb6;
-  }
-  &.ph14 {
-    left: $ph14;
-    background-color: #3d2d9b;
-  }
+.scale-key {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.scale-key-item {
+  padding: 0.65rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.scale-key-item.acidic { color: #a2311a; background: rgba(255, 150, 120, 0.16); }
+.scale-key-item.neutral { color: #46623f; background: rgba(116, 168, 130, 0.18); }
+.scale-key-item.alkaline { color: #195b52; background: rgba(76, 175, 80, 0.14); }
+
+.ph-scale-wrap {
+  position: relative;
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+}
+
+.phScale {
+  display: grid;
+  grid-template-columns: repeat(15, minmax(0, 1fr));
+  gap: 0;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.03);
+  min-height: 46px;
 }
 
 .phScaleBlock {
-  // border: black px solid;
-  // width: 32.8px;
-  width: 6.667%;
-  // border:white 0.25% solid;
-  text-align: center;
-  font: 'roboto';
-  color: black;
-  display: inline-block;
-  height: 40px;
-  border: white 1.7px solid;
-  z-index: 1;
-  // position: absolute;
+  min-height: 46px;
+  display: block;
+}
 
-  top: 5px;
-  &.ph0 {
-    // left:0%;
-    background-color: #ff0000;
-  }
-  &.ph1 {
-    // left:7.38%;
-    background-color: #ff7c00;
-  }
-  &.ph2 {
-    // left:14.3%;
-    background-color: #edaa46;
-  }
-  &.ph3 {
-    // left:21.22%;
-    background-color: #fed957;
-  }
-  &.ph4 {
-    // left:28.14%;
-    background-color: #b4e873;
-  }
-  &.ph5 {
-    // left:35.06%;
-    background-color: #a6db63;
-  }
-  &.ph6 {
-    // left:41.98%;
-    background-color: #95cc50;
-  }
-  &.ph7 {
-    // left:48.9%;
-    background-color: #81b540;
-  }
-  &.ph8 {
-    // left:55.82%;
-    background-color: #34be8d;
-  }
-  &.ph9 {
-    // left:62.74%;
-    background-color: #43c8d0;
-  }
-  &.ph10 {
-    // left:69.66%;
-    background-color: #438cd0;
-  }
-  &.ph11 {
-    // left:76.58%;
-    background-color: #4a66cb;
-  }
-  &.ph12 {
-    // left:83.5%;
-    background-color: #786cbf;
-  }
-  &.ph13 {
-    // left:90.42%;
-    background-color: #5e4fb6;
-  }
-  &.ph14 {
-    // left:97.34%;
-    background-color: #3d2d9b;
-  }
+.phScaleBlock:first-child {
+  border-top-left-radius: 999px;
+  border-bottom-left-radius: 999px;
+}
+
+.phScaleBlock:last-child {
+  border-top-right-radius: 999px;
+  border-bottom-right-radius: 999px;
+}
+
+.phScaleBlock {
+  &.ph0 { background-color: #ff0000; }
+  &.ph1 { background-color: #ff7c00; }
+  &.ph2 { background-color: #edaa46; }
+  &.ph3 { background-color: #fed957; }
+  &.ph4 { background-color: #b4e873; }
+  &.ph5 { background-color: #a6db63; }
+  &.ph6 { background-color: #95cc50; }
+  &.ph7 { background-color: #81b540; }
+  &.ph8 { background-color: #34be8d; }
+  &.ph9 { background-color: #43c8d0; }
+  &.ph10 { background-color: #438cd0; }
+  &.ph11 { background-color: #4a66cb; }
+  &.ph12 { background-color: #786cbf; }
+  &.ph13 { background-color: #5e4fb6; }
+  &.ph14 { background-color: #3d2d9b; }
+}
+
+.phScaleLabels {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin-top: 0.75rem;
+  color: rgba(0, 0, 0, 0.82);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.phScaleLabels span {
+  text-align: center;
+}
+
+.phScaleLegend {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin-top: 0.35rem;
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 0.82rem;
+}
+
+.phScaleLegend span {
+  text-align: center;
+}
+
+.phScaleLegend .acidic-label { color: #a2311a; }
+.phScaleLegend .neutral-label { color: #46623f; }
+.phScaleLegend .alkaline-label { color: #195b52; }
+
+.bracket {
+  border: 3px solid rgba(0, 0, 0, 0.85);
+  border-radius: 999px;
+  width: 5%;
+  height: 46px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 14px 22px rgba(0, 0, 0, 0.12);
+  transition: left 0.35s ease, background-color 0.25s ease;
+
+  &.ph0 { left: $ph0; background-color: #ff0000; }
+  &.ph1 { left: $ph1; background-color: #ff7c00; }
+  &.ph2 { left: $ph2; background-color: #edaa46; }
+  &.ph3 { left: $ph3; background-color: #fed957; }
+  &.ph4 { left: $ph4; background-color: #b4e873; }
+  &.ph5 { left: $ph5; background-color: #a6db63; }
+  &.ph6 { left: $ph6; background-color: #95cc50; }
+  &.ph7 { left: $ph7; background-color: #81b540; }
+  &.ph8 { left: $ph8; background-color: #34be8d; }
+  &.ph9 { left: $ph9; background-color: #43c8d0; }
+  &.ph10 { left: $ph10; background-color: #438cd0; }
+  &.ph11 { left: $ph11; background-color: #4a66cb; }
+  &.ph12 { left: $ph12; background-color: #786cbf; }
+  &.ph13 { left: $ph13; background-color: #5e4fb6; }
+  &.ph14 { left: $ph14; background-color: #3d2d9b; }
+}
+
+.ph-meter-message {
+  margin-top: 1.1rem;
+  font-size: 0.95rem;
+  color: $dark-color;
+  text-align: center;
+  line-height: 1.55;
 }
 
 .text {
   color: #000;
-  padding: 40px;
-  padding-top: 5px;
+  padding: 1rem;
+  padding-top: 0.25rem;
   text-align: center;
 }
