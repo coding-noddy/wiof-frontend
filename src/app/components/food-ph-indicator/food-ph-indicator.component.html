@@ -1,92 +1,143 @@
 <ion-card class="wiof-food-ph-widget-card-background ph-widget-height">
+  <!-- ================= Header ================= -->
+
   <ion-card-header class="wiof-food-ph-widget-card-header">
     <div class="food-ph-widget-header">
       <div class="header-left">
-        <ion-icon name="leaf-outline" class="header-icon"></ion-icon>
-        <span class="title-text">Food pH Widget</span>
+        <ion-icon name="leaf-outline" class="header-icon" aria-hidden="true">
+        </ion-icon>
+
+        <span class="title-text"> Food pH Widget </span>
       </div>
+
       <button
         type="button"
         class="about-toggle"
         (click)="about = !about"
         [attr.aria-expanded]="about"
+        aria-controls="foodPhAbout"
+        aria-label="About Food pH Widget"
       >
-        <ion-icon [name]="about ? 'information-circle' : 'information-circle-outline'"></ion-icon>
+        <ion-icon
+          [name]="about ? 'information-circle' : 'information-circle-outline'"
+        >
+        </ion-icon>
+
         <span>About</span>
       </button>
     </div>
   </ion-card-header>
 
+  <!-- ================= Content ================= -->
+
   <ion-card-content class="wiof-food-ph-widget-card-content">
-    <div class="about-panel" [class.open]="about">
-      <p class="about-text">
-        Food pH values help you understand whether a food is generally acidic,
-        neutral, or alkaline. This widget compares common food items on a modern
-        scale with clear visual cues.
-      </p>
-    </div>
+    <!-- About -->
+
+    <section
+      id="foodPhAbout"
+      class="about-panel"
+      [class.open]="about"
+      [attr.aria-hidden]="!about"
+    >
+      <div class="about-content">
+        <h3 class="about-title">Understanding Food pH</h3>
+
+        <ul class="about-list">
+          <li>
+            Foods are commonly classified as acidic, neutral, or alkaline.
+          </li>
+          <li>
+            Search and select any food to view its position on the pH scale.
+          </li>
+          <li>The pH meter updates instantly after a selection is made.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ================= Main Layout ================= -->
 
     <div class="food-ph-grid">
-      <div class="food-ph-input-area">
-        <label class="field-label" for="foodSearch">Find a food item</label>
-        <form class="food-form" (submit)="$event.preventDefault()">
+      <!-- Search Panel -->
+
+      <section class="food-ph-input-area">
+        <label class="field-label" for="foodSearch"> Search Food </label>
+
+        <form
+          class="food-form"
+          autocomplete="off"
+          (submit)="$event.preventDefault()"
+        >
           <div class="food-search-wrapper">
+            <ion-icon
+              class="search-icon"
+              name="search-outline"
+              aria-hidden="true"
+            >
+            </ion-icon>
+
             <input
               id="foodSearch"
+              #foodSearchInput
               class="select-food-input"
               type="text"
-              placeholder="Start typing a food name"
-              aria-label="Select food"
+              placeholder="Search for a food..."
+              autocomplete="off"
+              spellcheck="false"
+              aria-label="Search food"
               matInput
               [matAutocomplete]="auto"
               [formControl]="foodInputCtrl"
-              #foodSearchInput
             />
+
             <button
               *ngIf="selectedFood.name !== 'Default'"
               type="button"
               class="clear-btn"
               (click)="clearSelection()"
-              aria-label="Clear selection"
-              title="Clear selection"
+              aria-label="Clear selected food"
+              title="Clear"
             >
               <ion-icon name="close-circle"></ion-icon>
             </button>
           </div>
+
           <mat-autocomplete
             #auto="matAutocomplete"
             [displayWith]="getSelectedFoodName"
             (optionSelected)="setSelectedFoodName($event.option.value)"
           >
             <mat-option
-              *ngFor="let food of filteredfoodOptions$ | async"
+              *ngFor="let food of filteredFoodOptions$ | async"
               [value]="food"
             >
               <div class="dropdown-option">
                 <div class="option-info">
-                  <span class="option-title">{{ food.name | titlecase }}</span>
-                  <!-- <span class="option-subtitle">
-                    pH {{ food.value }} ·
-                    {{ food.value < 7 ? 'Acidic' : food.value === 7 ? 'Neutral' : 'Alkaline' }}
-                  </span> -->
+                  <span class="option-title">
+                    {{ food.name | titlecase }}
+                  </span>
                 </div>
-                <!-- <span class="option-badge">pH {{ food.value }}</span> -->
               </div>
             </mat-option>
           </mat-autocomplete>
         </form>
+
         <p class="food-hint">
-          Use autocomplete to find a food, then tap Calculate for an instant result.
+          Start typing to discover where foods fall on the pH scale.
         </p>
-      </div>
+      </section>
 
-      <div class="food-ph-meter-panel">
-        <div class="meter-header">
-          <span class="ph-meter-text">pH Meter</span>
+      <!-- Meter Panel -->
+
+      <section class="food-ph-meter-panel" aria-labelledby="phMeterHeading">
+        <header class="meter-header">
+          <span id="phMeterHeading" class="ph-meter-text"> pH Meter </span>
+        </header>
+
+        <div class="meter-wrapper" aria-live="polite">
+          <app-food-ph-indicator-meter [food]="selectedFood">
+          </app-food-ph-indicator-meter>
         </div>
-
-        <app-food-ph-indicator-meter [food]="selectedFood"></app-food-ph-indicator-meter>
-      </div>
+      </section>
     </div>
   </ion-card-content>
 </ion-card>
