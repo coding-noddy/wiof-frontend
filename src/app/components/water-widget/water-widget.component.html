@@ -1,55 +1,166 @@
-<ion-card class="wiof-water-widget-card-background widget-height">
-  <ion-card-header class="wiof-water-widget-card-header">
-    <ion-card-title class="title-text">Water Widget</ion-card-title>
-  </ion-card-header>
-  <ion-card-content class="water-widget-padding">
-    <div scrollY="true" class="wiof-water-widget-items">
-      <ion-row>
-        <ion-col size="12" class="text">
-          <a style="cursor: pointer" (click)="about = !about">
-            About Water Widget
-            <ion-icon *ngIf="!about" name="chevron-down-outline"></ion-icon
-            ><ion-icon *ngIf="about" name="chevron-up-outline"></ion-icon
-          ></a>
-          <p *ngIf="about" style="text-align: justify; color: #2d2d2d">
-            Widget to understand India's water wealth and resources. Get access
-            to telemetry based real time statistics on surface and ground water
-            availability and Quality.
-          </p>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col
-          size-xs="6"
-          size-sm="4"
-          size-md="6"
-          size-lg="4"
-          *ngFor="let widgetItem of waterWidgetItems"
-        >
-          <ion-card
-            class="wiof-water-widget-icons"
-            href="{{ widgetItem.url }}"
-            target="_blank"
-          >
-            <ion-card-header style="padding: 0px">
-              <p class="wiof-water-widget-icons-text">
-                {{ widgetItem.name }}
-              </p>
-            </ion-card-header>
-            <ion-card-content class="wiof-water-widget-icons-text">
-              <img src="{{ widgetItem.icon }}" alt="" />
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-      </ion-row>
+<div class="water-widget-card widget-height">
+
+  <!-- ── Header ─────────────────────────────────────────────── -->
+  <div class="water-widget-header">
+    <div class="header-left">
+      <ion-icon name="water-outline" class="header-icon"></ion-icon>
+      <span class="title-text">Water Widget</span>
     </div>
-    <ion-row>
-      <ion-col class="wiof-water-widget-disclaimer">
-        <p>
-          Above icons will take you to third party website which gives
-          interactive map showing data which you select here.
-        </p>
-      </ion-col>
-    </ion-row>
-  </ion-card-content>
-</ion-card>
+    <button class="about-toggle" (click)="about = !about" [attr.aria-expanded]="about">
+      <ion-icon [name]="about ? 'information-circle' : 'information-circle-outline'"></ion-icon>
+      <span>About</span>
+    </button>
+  </div>
+
+  <!-- ── About panel ─────────────────────────────────────────── -->
+  <div class="about-panel" [class.open]="about">
+    <p class="about-text">
+      Explore India's water wealth and resources. Get access to telemetry-based
+      real-time statistics on surface and groundwater availability and quality,
+      powered by India WRIS.
+    </p>
+  </div>
+
+  <!-- ── Live Rainfall Card ──────────────────────────────────── -->
+  <div class="rainfall-card">
+    <div class="rainfall-header">
+      <div class="rainfall-title">
+        <ion-icon name="rainy-outline" class="rainfall-icon"></ion-icon>
+        <span>Live Rainfall</span>
+        <span class="live-badge">LIVE</span>
+      </div>
+
+      <!-- City selector -->
+      <div class="city-selector-wrap">
+        <select
+          class="city-select"
+          [ngModel]="selectedCity"
+          (ngModelChange)="onCityChange($event)"
+          [compareWith]="compareCities"
+          aria-label="Select city"
+        >
+          <option *ngFor="let city of cities" [ngValue]="city">{{ city.name }}</option>
+        </select>
+        <ion-icon name="chevron-down-outline" class="select-chevron"></ion-icon>
+      </div>
+    </div>
+
+    <!-- Loading state -->
+    <div class="rainfall-loading" *ngIf="rainfallLoading">
+      <div class="loading-dots">
+        <span></span><span></span><span></span>
+      </div>
+      <span>Fetching live data...</span>
+    </div>
+
+    <!-- Error state -->
+    <div class="rainfall-error" *ngIf="rainfallError && !rainfallLoading">
+      <ion-icon name="cloud-offline-outline"></ion-icon>
+      <span>Could not fetch rainfall data.</span>
+      <button class="retry-btn" (click)="fetchRainfall()">Retry</button>
+    </div>
+
+    <!-- Data state -->
+    <div class="rainfall-data" *ngIf="rainfall && !rainfallLoading">
+      <div class="rainfall-value-row">
+        <span class="rainfall-value">{{ rainfall.precipitationToday }}</span>
+        <span class="rainfall-unit">{{ rainfall.precipitationUnit }}</span>
+        <span class="rainfall-desc">{{ rainfallDescription }}</span>
+      </div>
+      <div class="rainfall-bar-wrap">
+        <div
+          class="rainfall-bar-fill"
+          [style.width]="rainfallBarWidth"
+          [style.background]="rainfallBarColor"
+        ></div>
+      </div>
+      <div class="rainfall-meta">
+        <span>Source: Open-Meteo</span>
+        <span>Updated: {{ rainfall.fetchedAt | date: 'h:mm a' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Body ───────────────────────────────────────────────── -->
+  <div class="water-widget-body">
+
+    <!-- Category filter tabs -->
+    <div class="category-tabs" role="tablist" aria-label="Water data categories">
+      <button
+        *ngFor="let cat of categories"
+        class="cat-tab"
+        role="tab"
+        [class.active]="activeCategory === cat.key"
+        [attr.aria-selected]="activeCategory === cat.key"
+        (click)="setCategory(cat.key)"
+      >
+        <ion-icon [name]="cat.icon"></ion-icon>
+        <span>{{ cat.label }}</span>
+      </button>
+    </div>
+
+    <!-- Items grid -->
+    <div class="water-items-grid">
+      <a
+        class="water-item"
+        *ngFor="let item of filteredItems"
+        [href]="item.url"
+        target="_blank"
+        rel="noopener noreferrer"
+        [attr.aria-label]="'Open ' + item.name + ' on India WRIS'"
+        (click)="onItemClick(item)"
+      >
+        <span class="last-visited-badge" *ngIf="isLastVisited(item)">
+          <ion-icon name="time-outline"></ion-icon> Last visited
+        </span>
+        <div class="water-item-icon-wrap">
+          <img [src]="item.icon" [alt]="item.name" class="water-item-icon" />
+        </div>
+        <span class="water-item-label">{{ item.name }}</span>
+        <ion-icon name="open-outline" class="water-item-external"></ion-icon>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- ── Did You Know strip ──────────────────────────────────── -->
+  <div class="fact-strip" [class.fact-strip--expanded]="factExpanded">
+    <div class="fact-content">
+      <ion-icon name="bulb-outline" class="fact-icon"></ion-icon>
+      <div class="fact-body">
+        <p class="fact-text" [class.expanded]="factExpanded">{{ currentFact.text }}</p>
+        <div class="fact-meta-row">
+          <a
+            class="fact-source"
+            [href]="currentFact.url"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <ion-icon name="link-outline"></ion-icon>
+            {{ currentFact.source }}
+          </a>
+          <button class="fact-expand-btn" (click)="factExpanded = !factExpanded">
+            {{ factExpanded ? 'Show less' : 'Read more' }}
+            <ion-icon [name]="factExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="fact-controls">
+      <button class="fact-btn" (click)="prevFact()" aria-label="Previous fact">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <span class="fact-counter">{{ currentFactIndex + 1 }} / {{ waterFacts.length }}</span>
+      <button class="fact-btn" (click)="nextFact()" aria-label="Next fact">
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Footer disclaimer ───────────────────────────────────── -->
+  <div class="water-widget-footer">
+    <ion-icon name="shield-checkmark-outline" class="footer-icon"></ion-icon>
+    <span>Links open India WRIS — a third-party interactive map portal.</span>
+  </div>
+
+</div>

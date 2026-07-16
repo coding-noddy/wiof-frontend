@@ -1,102 +1,414 @@
 @import '../../wiof-custom-theming.scss';
 
-.wiof-select {
-  color: $dark-color;
-}
+// ── Token shortcuts ──────────────────────────────────────────────
+$e:      $energy-color;           // rgb(255,235,184)
+$e-mid:  darken($e, 12%);
+$e-dark: darken($e, 28%);
+$e-bg:   lighten($e, 3%);
+$radius-card: 20px;
+$radius-item: 14px;
 
-.wiof-fire-widget-card-header {
-  background-color: $energy-color;
-  border-bottom: 2px solid white;
-  color: $dark-color;
-}
-
-.inputbar::-webkit-input-placeholder {
-  font-size: x-small;
-}
-
-#Diesel-main {
-  position: relative;
-}
-
-#Petrol-main {
-  position: relative;
-}
-
-#Diesel-sub {
-}
-
-@media only screen and (max-width: 600px) {
-  #Diesel-sub {
-  }
-
-  #Petrol-sub {
-  }
-}
-
-#Petrol-sub {
-}
-
-#Petrol {
-}
-
-body {
-  overflow: auto;
-}
-
-.wiof-fire-widget-card-background {
-  border-radius: 18px;
+// ── Card shell ───────────────────────────────────────────────────
+.energy-widget-card {
+  border-radius: $radius-card;
   overflow: hidden;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
-  margin: 0 !important;
-  background-color: lighten($energy-color, 10%);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.10);
+  background-color: $e-bg;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
 }
 
-.energy-widget-content {
-  max-height: 520px;
-  overflow: auto;
-  padding: 0.75rem;
+// ── Header ───────────────────────────────────────────────────────
+.energy-widget-header {
+  background-color: $e;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.8);
+  padding: 0.9rem 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
-.pump-station {
-  height: 225px;
-  width: 200px;
-  margin: 1rem;
-
-  .litresText {
-    position: absolute;
-    top: 15%;
-    width: 80px;
-    text-align: center;
-    left: 55px;
-    font-weight: bold;
-    font-size: 15px;
-  }
-
-  .pump-image {
-    height: 100%;
-  }
-
-  .label {
-    position: absolute;
-    bottom: 30%;
-    left: 65px;
-    font-weight: bold;
-    font-size: 20px;
-    color: white;
-    text-shadow: 1px 1px 5px #000;
-  }
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.unit-dropdown {
-  background: #fff;
-  border: 1px solid #ccc;
+.header-icon {
+  font-size: 1.4rem;
+  color: $e-dark;
 }
 
-.unit-option {
-  padding: 10px;
+// ── About panel ──────────────────────────────────────────────────
+.about-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: $dark-color;
   cursor: pointer;
+  transition: background 0.18s ease, box-shadow 0.18s ease;
+  white-space: nowrap;
+
+  ion-icon { font-size: 1rem; }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
 }
 
-.unit-option:hover {
-  background: #f2f2f2;
+.about-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  background: rgba(255, 255, 255, 0.55);
+  border-bottom: 1px solid rgba($e-dark, 0.15);
+
+  &.open {
+    max-height: 120px;
+    padding: 0.75rem 1.1rem;
+  }
+}
+
+.about-text {
+  font-size: 0.88rem;
+  color: $dark-color;
+  line-height: 1.6;
+  margin: 0;
+  text-align: justify;
+}
+
+// ── Body ─────────────────────────────────────────────────────────
+.energy-widget-body {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba($e-dark, 0.2);
+    border-radius: 4px;
+  }
+}
+
+// ── Input row ────────────────────────────────────────────────────
+.input-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 120px;
+}
+
+.btn-group {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  flex: 0 1 auto;
+  // Push button down by the exact height of label + gap so it aligns with the input
+  padding-top: calc(0.72rem * 1.2 + 4px);
+}
+
+.input-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: $e-dark;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.energy-input {
+  height: 40px;
+  border-radius: 10px 0 0 10px;
+  border: 1.5px solid rgba($e-dark, 0.25);
+  border-right: none;
+  background: rgba(255, 255, 255, 0.75);
+  padding: 0 12px;
+  font-size: 0.88rem;
+  color: $dark-color;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  width: 100%;
+  flex: 1;
+
+  &:focus {
+    border-color: $e-dark;
+    box-shadow: 0 0 0 3px rgba($e-dark, 0.12);
+    background: #fff;
+  }
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button { -webkit-appearance: none; }
+  -moz-appearance: textfield;
+}
+
+.input-with-unit {
+  display: flex;
+  align-items: stretch;
+}
+
+.unit-badge {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  background: rgba($e-dark, 0.10);
+  border: 1.5px solid rgba($e-dark, 0.25);
+  border-left: none;
+  border-radius: 0 10px 10px 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: $e-dark;
+  white-space: nowrap;
+}
+
+.input-hint {
+  font-size: 0.67rem;
+  color: rgba($dark-color, 0.45);
+  margin-top: 2px;
+}
+
+.has-error .energy-input,
+.has-error .unit-pills {
+  border-color: #c62828 !important;
+}
+
+.input-error {
+  font-size: 0.68rem;
+  color: #c62828;
+  line-height: 1.4;
+}
+
+// ── Buttons ──────────────────────────────────────────────────────
+.calc-btn {
+  height: 40px;
+  white-space: nowrap;
+  padding: 0 1.1rem !important;
+  font-size: 0.86rem !important;
+  min-width: unset !important;
+  // Override the global home-colour gradient with energy theme
+  background: linear-gradient(135deg, darken($e, 15%) 0%, darken($e, 28%) 100%) !important;
+  color: $dark-color !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+
+  &:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18) !important;
+  }
+}
+
+.reset-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid rgba($e-dark, 0.3);
+  background: rgba(255, 255, 255, 0.6);
+  color: $e-dark;
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+  flex-shrink: 0;
+
+  ion-icon { font-size: 1rem; }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// ── Results ──────────────────────────────────────────────────────
+.results-section {
+  animation: fadeSlideUp 0.3s ease;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// CO2 hero card
+.co2-card {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: $radius-item;
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.85rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.co2-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.65rem;
+}
+
+.co2-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba($e-dark, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 1.3rem;
+    color: $e-dark;
+  }
+}
+
+.co2-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+}
+
+.co2-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: $e-dark;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.co2-value {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: $dark-color;
+  line-height: 1.1;
+}
+
+.co2-unit {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $e-dark;
+}
+
+.co2-level-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  align-self: flex-start;
+}
+
+.co2-bar-wrap {
+  height: 6px;
+  background: rgba($e-dark, 0.12);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.4rem;
+}
+
+.co2-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f9a825, #e65100);
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+
+.co2-hint {
+  font-size: 0.67rem;
+  color: rgba($dark-color, 0.45);
+  margin: 0;
+}
+
+// Equivalence cards
+.equivalence-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: $e-dark;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.6rem;
+}
+
+.equiv-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.55rem;
+}
+
+.equiv-card {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 0.65rem 0.75rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.equiv-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  ion-icon { font-size: 1.1rem; }
+
+  &.fuel-petrol  { background: rgba(#43a047, 0.12); ion-icon { color: #2e7d32; } }
+  &.fuel-diesel  { background: rgba(#1565c0, 0.12); ion-icon { color: #1565c0; } }
+  &.travel-car   { background: rgba(#6a1b9a, 0.12); ion-icon { color: #6a1b9a; } }
+  &.travel-suv   { background: rgba(#bf360c, 0.12); ion-icon { color: #bf360c; } }
+}
+
+.equiv-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.equiv-value {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: $dark-color;
+  white-space: nowrap;
+}
+
+.equiv-name {
+  font-size: 0.7rem;
+  color: rgba($dark-color, 0.55);
+  font-weight: 500;
+}
+
+// ── Responsive ───────────────────────────────────────────────────
+@media (max-width: 480px) {
+  .input-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-group {
+    flex-direction: row;
+  }
+
+  .calc-btn {
+    flex: 1;
+  }
 }

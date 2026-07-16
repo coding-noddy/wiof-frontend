@@ -2,6 +2,7 @@ export const environment = {
   production: true,
   youtube_api_key: "AIzaSyBTfpeDChRfmYSgBevDVHcCEdkiPDNqdBs",
   aqi_api_key: "655a2796ba9301e9aa31a2119528c6dfaa383f53",
+  data_gov_api_key: "579b464db66ec23bdd000001621cba90a5da4f495a68b73125383b41",
 
   firebaseConfig: {
     apiKey: "AIzaSyAYH1Y5nG3RtKyYqfr0bgDluxAwczAoyRo",
