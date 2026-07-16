@@ -49,9 +49,9 @@ export class EnergyWidgetComponent implements OnInit, OnDestroy {
 
   energyFacts: EnergyFact[] = [
     {
-      text: 'India\'s renewable energy capacity crossed 200 GW in 2024, with solar alone contributing over 90 GW — making it the fastest-growing solar market in the world.',
-      source: 'PIB, Govt. of India',
-      url: 'https://pib.gov.in/FactsheetDetails.aspx?Id=149095'
+      text: 'India\'s renewable energy capacity crossed 200 GW in October 2024 — solar alone contributes over 90 GW, making India the fastest-growing solar market globally.',
+      source: 'Central Electricity Authority (CEA)',
+      url: 'https://cea.nic.in/installed-capacity-report/'
     },
     {
       text: 'India has committed to achieving 500 GW of non-fossil electricity capacity by 2030 — a pledge made at COP26 in Glasgow.',
@@ -60,16 +60,16 @@ export class EnergyWidgetComponent implements OnInit, OnDestroy {
     },
     {
       text: 'India surpassed the European Union to become the world\'s third-largest source of CO₂ emissions in 2023, driven largely by coal-fired power generation.',
-      source: 'IEA CO₂ Emissions 2023',
+      source: 'IEA CO₂ Emissions Report 2023',
       url: 'https://www.iea.org/reports/co2-emissions-in-2023/the-changing-landscape-of-global-emissions'
     },
     {
       text: 'India\'s per-capita electricity consumption was ~1,015 kWh in 2022-23 — roughly one-third of the global average of ~3,100 kWh per person.',
-      source: 'Ministry of Power / IEA',
-      url: 'https://www.iea.org/countries/india'
+      source: 'IEA Energy Statistics',
+      url: 'https://www.iea.org/reports/co2-emissions-in-2023'
     },
     {
-      text: 'India hit its COP26 goal of 50% non-fossil power capacity five years ahead of schedule, crossing the mark in June 2025.',
+      text: 'India achieved 50% of its installed power capacity from non-fossil sources in June 2025 — five years ahead of the 2030 target set under its Paris Agreement NDC.',
       source: 'Newsonair, Govt. of India',
       url: 'https://newsonair.gov.in/india-achieves-50-non-fossil-power-capacity-five-years-ahead-of-target/'
     },

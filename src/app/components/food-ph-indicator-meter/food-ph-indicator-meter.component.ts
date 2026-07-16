@@ -13,20 +13,33 @@ export class FoodPhIndicatorMeterComponent implements OnInit {
 
   ngOnInit() {
     this.updatePhPointer();
-    // this.generateMessage();
   }
 
   ngOnChanges() {
     this.updatePhPointer();
-    // this.generateMessage();
+  }
+
+  get foodStatus(): string {
+    if (!this.food || this.food.name === 'Default') {
+      return 'Neutral';
+    }
+    return this.food.value < 7
+      ? 'Acidic'
+      : this.food.value === 7
+      ? 'Neutral'
+      : 'Alkaline';
+  }
+
+  get foodStatusClass(): string {
+    return this.foodStatus.toLowerCase() + '-badge';
   }
 
   updatePhPointer() {
-    if (this.food.name === 'Default') {
+    if (!this.food || this.food.name === 'Default') {
       this.message = 'Please select a food to find its pH value.';
       return 'ph7';
     } else {
-      this.message = `ph Level of ${this.food.name} is ${this.food.value}`;
+      this.message = `pH level of ${this.food.name} is ${this.food.value}`;
       return `ph${this.food.value}`;
     }
   }

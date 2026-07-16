@@ -18,8 +18,8 @@ export class FoodPhIndicatorComponent implements OnInit {
   filteredfoodOptions$;
   selectedFood = { name: 'Default', value: 8 };
   foodInputCtrl = new FormControl('');
-  bridgeVariable = this.selectedFood;
   about = false;
+  foodSearchInput: any;
 
   constructor() {}
 
@@ -309,9 +309,14 @@ export class FoodPhIndicatorComponent implements OnInit {
 
   setSelectedFoodName(selectedFood: any) {
     this.selectedFood = selectedFood;
+    this.foodInputCtrl.setValue(selectedFood);
   }
 
-  updateBridgeVariable() {
-    this.bridgeVariable = this.selectedFood;
+  clearSelection() {
+    this.selectedFood = { name: 'Default', value: 8 };
+    this.foodInputCtrl.setValue('');
+    if (this.foodSearchInput) {
+      setTimeout(() => this.foodSearchInput.focus(), 0);
+    }
   }
 }
