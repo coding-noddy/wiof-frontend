@@ -5,13 +5,13 @@ export const environment = {
   data_gov_api_key: "579b464db66ec23bdd000001621cba90a5da4f495a68b73125383b41",
 
   firebaseConfig: {
-    apiKey: "AIzaSyAYH1Y5nG3RtKyYqfr0bgDluxAwczAoyRo",
-    authDomain: "wiof-production.firebaseapp.com",
-    databaseURL: "https://wiof-production.firebaseio.com",
-    projectId: "wiof-production",
-    storageBucket: "wiof-production.appspot.com",
-    messagingSenderId: "473258267258",
-    appId: "1:473258267258:web:3570a04884ffc96616e1c3",
-    measurementId: "G-LVRMZJ5K4C"
+    apiKey: "AIzaSyBru9kG2e19cnaeRwnGIp0zT9Op1DOcvWM",
+    authDomain: "wiof-staging.firebaseapp.com",
+    databaseURL: "https://wiof-staging.firebaseio.com",
+    projectId: "wiof-staging",
+    storageBucket: "wiof-staging.appspot.com",
+    messagingSenderId: "1062529288860",
+    appId: "1:1062529288860:web:d503fcf87348389340fb59",
+    measurementId: "G-9WDZE318VX"
   }
 };
