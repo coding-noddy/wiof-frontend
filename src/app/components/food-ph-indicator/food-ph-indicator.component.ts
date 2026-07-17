@@ -3,12 +3,7 @@ import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
-import { FOOD_ITEMS } from './food-data';
-
-export interface Food {
-  name: string;
-  value: number;
-}
+import { Food, FoodDataService } from '../../services/food-data.service';
 
 @Component({
   selector: 'app-food-ph-indicator',
@@ -19,24 +14,30 @@ export class FoodPhIndicatorComponent implements OnInit {
 
   foodOptions: Food[] = [];
   filteredFoodOptions$!: Observable<Food[]>;
+  selectedFood: Food | null = null;
 
-  selectedFood: Food = {
-    name: 'Default',
-    value: 8
-  };
-
- foodInputCtrl = new FormControl('');
+  foodInputCtrl = new FormControl('');
 
   about = false;
 
   @ViewChild('foodSearchInput')
   foodSearchInput!: ElementRef<HTMLInputElement>;
 
-  ngOnInit(): void {
-    this.foodOptions = [...FOOD_ITEMS].sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
+  constructor(private foodDataService: FoodDataService) { }
 
+  ngOnInit(): void {
+    this.foodDataService.getFoods().subscribe(
+      foods => {
+        this.foodOptions = foods;
+        this.initializeAutocomplete();
+      },
+      error => {
+        console.error('Failed to load food dataset.', error);
+      }
+    );
+  }
+
+  private initializeAutocomplete(): void {
     this.filteredFoodOptions$ = this.foodInputCtrl.valueChanges.pipe(
       startWith(''),
       map(value => typeof value === 'string' ? value : value?.name ?? ''),
@@ -52,25 +53,23 @@ export class FoodPhIndicatorComponent implements OnInit {
     const search = searchText.trim().toLowerCase();
 
     return this.foodOptions.filter(food =>
-      food.name.toLowerCase().includes(search)
+      food.name.toLowerCase().includes(search) ||
+      food.scientificName.toLowerCase().includes(search) ||
+      food.category.toLowerCase().includes(search)
     );
   }
 
   getSelectedFoodName(food?: Food): string {
-    return food?.name ?? '';
+    return food ? food.name : '';
   }
 
-  setSelectedFoodName(selectedFood: Food): void {
-    this.selectedFood = selectedFood;
-    this.foodInputCtrl.setValue(selectedFood);
+  setSelectedFoodName(food: Food): void {
+    this.selectedFood = food;
+    this.foodInputCtrl.setValue(food);
   }
 
   clearSelection(): void {
-    this.selectedFood = {
-      name: 'Default',
-      value: 8
-    };
-
+    this.selectedFood = null;
     this.foodInputCtrl.setValue('');
 
     if (this.foodSearchInput) {

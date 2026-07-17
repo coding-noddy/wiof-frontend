@@ -4,8 +4,7 @@
   <ion-card-header class="wiof-food-ph-widget-card-header">
     <div class="food-ph-widget-header">
       <div class="header-left">
-        <ion-icon name="leaf-outline" class="header-icon" aria-hidden="true">
-        </ion-icon>
+        <ion-icon name="leaf-outline" class="header-icon"> </ion-icon>
 
         <span class="title-text"> Food pH Widget </span>
       </div>
@@ -16,7 +15,6 @@
         (click)="about = !about"
         [attr.aria-expanded]="about"
         aria-controls="foodPhAbout"
-        aria-label="About Food pH Widget"
       >
         <ion-icon
           [name]="about ? 'information-circle' : 'information-circle-outline'"
@@ -28,36 +26,27 @@
     </div>
   </ion-card-header>
 
-  <!-- ================= Content ================= -->
+  <!-- ================= Body ================= -->
 
   <ion-card-content class="wiof-food-ph-widget-card-content">
-    <!-- About -->
+    <!-- ================= About ================= -->
 
-    <section
-      id="foodPhAbout"
-      class="about-panel"
-      [class.open]="about"
-      [attr.aria-hidden]="!about"
-    >
+    <section id="foodPhAbout" class="about-panel" [class.open]="about">
       <div class="about-content">
         <h3 class="about-title">Understanding Food pH</h3>
 
         <ul class="about-list">
-          <li>
-            Foods are commonly classified as acidic, neutral, or alkaline.
-          </li>
-          <li>
-            Search and select any food to view its position on the pH scale.
-          </li>
-          <li>The pH meter updates instantly after a selection is made.</li>
+          <li>Foods are classified as acidic, neutral or alkaline.</li>
+          <li>Search any food to instantly view its pH information.</li>
+          <li>Values are based on published food science references.</li>
         </ul>
       </div>
     </section>
 
-    <!-- ================= Main Layout ================= -->
+    <!-- ================= Search + Meter ================= -->
 
     <div class="food-ph-grid">
-      <!-- Search Panel -->
+      <!-- Search -->
 
       <section class="food-ph-input-area">
         <label class="field-label" for="foodSearch"> Search Food </label>
@@ -68,36 +57,28 @@
           (submit)="$event.preventDefault()"
         >
           <div class="food-search-wrapper">
-            <ion-icon
-              class="search-icon"
-              name="search-outline"
-              aria-hidden="true"
-            >
-            </ion-icon>
+            <ion-icon class="search-icon" name="search-outline"> </ion-icon>
 
             <input
               id="foodSearch"
               #foodSearchInput
               class="select-food-input"
               type="text"
-              placeholder="Search for a food..."
+              placeholder="Search food..."
               autocomplete="off"
               spellcheck="false"
-              aria-label="Search food"
               matInput
               [matAutocomplete]="auto"
               [formControl]="foodInputCtrl"
             />
 
             <button
-              *ngIf="selectedFood.name !== 'Default'"
+              *ngIf="selectedFood"
               type="button"
               class="clear-btn"
               (click)="clearSelection()"
-              aria-label="Clear selected food"
-              title="Clear"
             >
-              <ion-icon name="close-circle"></ion-icon>
+              <ion-icon name="close-circle"> </ion-icon>
             </button>
           </div>
 
@@ -113,8 +94,10 @@
               <div class="dropdown-option">
                 <div class="option-info">
                   <span class="option-title">
-                    {{ food.name | titlecase }}
+                    {{ food.name }}
                   </span>
+
+                  <small> {{ food.category }} • {{ food.foodState }} </small>
                 </div>
               </div>
             </mat-option>
@@ -122,11 +105,11 @@
         </form>
 
         <p class="food-hint">
-          Start typing to discover where foods fall on the pH scale.
+          Search by food name, category or scientific name.
         </p>
       </section>
 
-      <!-- Meter Panel -->
+      <!-- Meter -->
 
       <section class="food-ph-meter-panel" aria-labelledby="phMeterHeading">
         <header class="meter-header">
@@ -137,7 +120,148 @@
           <app-food-ph-indicator-meter [food]="selectedFood">
           </app-food-ph-indicator-meter>
         </div>
+
+        <div class="ph-summary" *ngIf="selectedFood">
+          <div class="summary-item">
+            <span>Current pH</span>
+
+            <strong>
+              {{ selectedFood.ph }}
+            </strong>
+          </div>
+
+          <div class="summary-item">
+            <span>pH Range</span>
+
+            <strong> {{ selectedFood.min }} - {{ selectedFood.max }} </strong>
+          </div>
+
+          <div class="summary-item">
+            <span>Classification</span>
+
+            <strong>
+              {{
+                selectedFood.ph < 7
+                  ? "Acidic"
+                  : selectedFood.ph > 7
+                    ? "Alkaline"
+                    : "Neutral"
+              }}
+            </strong>
+          </div>
+        </div>
       </section>
     </div>
+
+    <!-- ================= Food Information ================= -->
+
+    <ion-card class="food-details-card" *ngIf="selectedFood">
+      <ion-card-header>
+        <ion-card-title>
+          {{ selectedFood.name }}
+        </ion-card-title>
+
+        <ion-card-subtitle>
+          <em>{{ selectedFood.scientificName }}</em>
+        </ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="details-grid">
+          <div class="detail-item">
+            <label>Category</label>
+
+            <span class="detail-badge">
+              {{ selectedFood.category }}
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <label>Food State</label>
+
+            <span class="detail-badge">
+              {{ selectedFood.foodState }}
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <label>Confidence</label>
+
+            <span class="confidence-stars">
+              <ng-container [ngSwitch]="selectedFood.confidence">
+                <span *ngSwitchCase="5">★★★★★</span>
+                <span *ngSwitchCase="4">★★★★☆</span>
+                <span *ngSwitchCase="3">★★★☆☆</span>
+                <span *ngSwitchCase="2">★★☆☆☆</span>
+                <span *ngSwitchDefault>★☆☆☆☆</span>
+              </ng-container>
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <label>Verification</label>
+
+            <span
+              class="status-chip"
+              [ngClass]="{
+                verified: selectedFood.verificationStatus === 'Verified',
+                approximate: selectedFood.verificationStatus === 'Approximate',
+                estimated: selectedFood.verificationStatus === 'Estimated'
+              }"
+            >
+              {{ selectedFood.verificationStatus }}
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <label>Last Verified</label>
+
+            <span>
+              {{ selectedFood.lastVerified }}
+            </span>
+          </div>
+
+          <div class="detail-item" *ngIf="selectedFood.organization">
+            <label>Organization</label>
+
+            <span>
+              {{ selectedFood.organization }}
+            </span>
+          </div>
+
+          <div class="detail-item" *ngIf="selectedFood.publication">
+            <label>Publication</label>
+
+            <span>
+              {{ selectedFood.publication }}
+            </span>
+          </div>
+
+          <div class="detail-item" *ngIf="selectedFood.sourceUrl">
+            <label>Reference</label>
+
+            <a
+              [href]="selectedFood.sourceUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              🔗 View Official Source
+            </a>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- ================= Notes ================= -->
+
+    <ion-card class="food-notes-card" *ngIf="selectedFood?.notes">
+      <ion-card-header>
+        <ion-card-title> Notes </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        {{ selectedFood.notes }}
+      </ion-card-content>
+    </ion-card>
   </ion-card-content>
 </ion-card>
