@@ -167,6 +167,94 @@ $radius-item: 14px;
   pointer-events: none;
 }
 
+// City search toggle button
+.city-search-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba($w-dark, 0.2);
+  background: rgba(255,255,255,.6);
+  color: $w-dark;
+  cursor: pointer;
+  margin-left: 4px;
+  transition: background .15s ease, box-shadow .15s ease;
+
+  ion-icon { font-size: .8rem; }
+
+  &:hover {
+    background: rgba(255,255,255,.95);
+    box-shadow: 0 2px 6px rgba(0,0,0,.08);
+  }
+}
+
+// City search panel
+.city-search-panel {
+  margin-top: .5rem;
+  padding: .5rem;
+  background: rgba(255,255,255,.85);
+  border: 1px solid rgba($w-dark, 0.15);
+  border-radius: 12px;
+}
+
+.city-search-input {
+  width: 100%;
+  height: 34px;
+  border: 1px solid rgba(0,0,0,.1);
+  border-radius: 10px;
+  padding: 0 12px;
+  font-size: .82rem;
+  color: $dark-color;
+  outline: none;
+  background: #fff;
+  transition: border-color .15s ease, box-shadow .15s ease;
+
+  &:focus {
+    border-color: $w-dark;
+    box-shadow: 0 0 0 3px rgba(0,100,180,.1);
+  }
+}
+
+.city-search-results {
+  margin-top: .4rem;
+  max-height: 150px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar-thumb { background: rgba($w-dark,.2); border-radius: 3px; }
+}
+
+.city-result-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: $dark-color;
+  font-size: .78rem;
+  cursor: pointer;
+  text-align: left;
+  transition: background .12s ease;
+
+  ion-icon { font-size: .85rem; color: $w-dark; flex-shrink: 0; }
+
+  &:hover { background: rgba($w-dark, .08); }
+}
+
+.city-searching,
+.city-no-results {
+  font-size: .75rem;
+  color: rgba(0,0,0,.5);
+  padding: .4rem .5rem;
+}
+
 // Loading dots
 .rainfall-loading {
   display: flex;
@@ -419,17 +507,33 @@ $radius-item: 14px;
   transition: opacity 0.18s ease;
 }
 
-// ── Did You Know strip ───────────────────────────────────────────
+// ── Disclaimer (inside body) ─────────────────────────────────────
+.water-widget-disclaimer {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  font-size: 0.72rem;
+  color: rgba($dark-color, 0.5);
+
+  ion-icon {
+    font-size: 0.85rem;
+    color: $w-dark;
+    flex-shrink: 0;
+  }
+}
+
+// ── Did You Know strip (sticks to card bottom) ───────────────────
 .fact-strip {
-  margin: 0.5rem 0.9rem 0;
+  margin: 0;
   background: rgba(255, 255, 255, 0.6);
   border: 1px solid rgba($w-dark, 0.15);
-  border-radius: 12px;
+  border-top: 1px solid rgba($w-dark, 0.12);
+  border-radius: 0 0 $radius-card $radius-card;
   padding: 0.6rem 0.75rem;
   display: flex;
   align-items: flex-start;
   gap: 0.6rem;
-  // Fixed height for 2 lines of text + source row + padding — never shifts parent layout
   min-height: 76px;
   height: 76px;
   overflow: hidden;
@@ -568,26 +672,6 @@ $radius-item: 14px;
   color: $w-dark;
   min-width: 28px;
   text-align: center;
-}
-
-// ── Footer ───────────────────────────────────────────────────────
-.water-widget-footer {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.55rem 1.1rem;
-  margin-top: 0.5rem;
-  background: rgba($w, 0.45);
-  border-top: 1px solid rgba($w-dark, 0.12);
-  font-size: 0.72rem;
-  color: darken($dark-color, 5%);
-  line-height: 1.4;
-}
-
-.footer-icon {
-  font-size: 0.9rem;
-  color: $w-dark;
-  flex-shrink: 0;
 }
 
 // ── Responsive ───────────────────────────────────────────────────

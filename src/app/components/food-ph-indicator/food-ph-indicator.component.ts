@@ -1,9 +1,10 @@
 import { Component, ElementRef, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { map, startWith, takeUntil, switchMap } from 'rxjs/operators';
 
 import { Food, FoodDataService } from '../../services/food-data.service';
+import { NutritionService, NutritionData } from '../../services/nutrition.service';
 
 interface CategoryChip {
   key: string;
@@ -35,6 +36,10 @@ export class FoodPhIndicatorComponent implements OnInit, OnDestroy {
   showDetails = false;
   activeCategory = 'all';
   showCategoryDropdown = false;
+
+  // Nutrition data
+  nutritionData: NutritionData | null = null;
+  nutritionLoading = false;
 
   // ── Category chips ─────────────────────────────────────────
   categoryChips: CategoryChip[] = [
@@ -101,7 +106,9 @@ export class FoodPhIndicatorComponent implements OnInit, OnDestroy {
   // ── Verified pH/nutrition facts ────────────────────────────
   currentFactIndex = 0;
   factExpanded = false;
-  private factTimer: any;
+  private factTimer: ReturnType<typeof setInterval> | null = null;
+  private destroy$ = new Subject<void>();
+  private nutritionRequest$ = new Subject<string>();
 
   phFacts: PhFact[] = [
     {
@@ -138,23 +145,40 @@ export class FoodPhIndicatorComponent implements OnInit, OnDestroy {
   @ViewChild('foodSearchInput')
   foodSearchInput!: ElementRef<HTMLInputElement>;
 
-  constructor(private foodDataService: FoodDataService) {}
+  constructor(
+    private foodDataService: FoodDataService,
+    private nutritionService: NutritionService
+  ) {}
 
   ngOnInit(): void {
-    this.foodDataService.getFoods().subscribe(
-      foods => {
+    this.foodDataService.getFoods().pipe(takeUntil(this.destroy$)).subscribe({
+      next: foods => {
         this.foodOptions = foods;
         this.initializeAutocomplete();
       },
-      error => {
-        console.error('Failed to load food dataset.', error);
-      }
-    );
+      error: err => console.error('Failed to load food dataset.', err)
+    });
+
+    // Nutrition pipeline — uses switchMap to cancel previous requests on rapid selection
+    this.nutritionRequest$.pipe(
+      switchMap(foodName => {
+        this.nutritionLoading = true;
+        this.nutritionData = null;
+        return this.nutritionService.getNutrition(foodName);
+      }),
+      takeUntil(this.destroy$)
+    ).subscribe(data => {
+      this.nutritionData = data;
+      this.nutritionLoading = false;
+    });
+
     this.startFactRotation();
   }
 
   ngOnDestroy(): void {
     this.stopFactRotation();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   // ── Category filter ────────────────────────────────────────
@@ -240,15 +264,22 @@ export class FoodPhIndicatorComponent implements OnInit, OnDestroy {
     this.selectedFood = food;
     this.showDetails = false;
     this.foodInputCtrl.setValue(food);
+    this.fetchNutrition(food.name);
   }
 
   clearSelection(): void {
     this.selectedFood = null;
     this.showDetails = false;
+    this.nutritionData = null;
+    this.nutritionLoading = false;
     this.foodInputCtrl.setValue('');
     if (this.foodSearchInput) {
       setTimeout(() => this.foodSearchInput.nativeElement.focus());
     }
+  }
+
+  private fetchNutrition(foodName: string): void {
+    this.nutritionRequest$.next(foodName);
   }
 
   // ── Health tip for selected food ───────────────────────────

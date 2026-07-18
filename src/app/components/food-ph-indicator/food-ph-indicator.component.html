@@ -201,6 +201,46 @@
                 </div>
               </div>
 
+              <!-- Nutrition info -->
+              <div class="nutrition-card" *ngIf="nutritionData || nutritionLoading">
+                <div class="nutrition-header">
+                  <span class="nutrition-title">Nutrition (per 100g)</span>
+                  <a
+                  class="nutrition-source"
+                  *ngIf="nutritionData"
+                  [href]="nutritionData.usdaUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="View full nutrition details on USDA"
+                >USDA ↗</a>
+                </div>
+                <div class="nutrition-loading" *ngIf="nutritionLoading">
+                  Loading...
+                </div>
+                <div class="nutrition-grid" *ngIf="nutritionData">
+                  <div class="nutrient-item">
+                    <span class="nutrient-value">{{ nutritionData.calories || '—' }}</span>
+                    <span class="nutrient-label">kcal</span>
+                  </div>
+                  <div class="nutrient-item">
+                    <span class="nutrient-value">{{ nutritionData.protein || '—' }}g</span>
+                    <span class="nutrient-label">Protein</span>
+                  </div>
+                  <div class="nutrient-item">
+                    <span class="nutrient-value">{{ nutritionData.fat || '—' }}g</span>
+                    <span class="nutrient-label">Fat</span>
+                  </div>
+                  <div class="nutrient-item">
+                    <span class="nutrient-value">{{ nutritionData.carbs || '—' }}g</span>
+                    <span class="nutrient-label">Carbs</span>
+                  </div>
+                  <div class="nutrient-item" *ngIf="nutritionData.fiber !== null">
+                    <span class="nutrient-value">{{ nutritionData.fiber }}g</span>
+                    <span class="nutrient-label">Fiber</span>
+                  </div>
+                </div>
+              </div>
+
               <a class="source-link" *ngIf="selectedFood.sourceUrl" [href]="selectedFood.sourceUrl" target="_blank" rel="noopener noreferrer">
                 <ion-icon name="link-outline"></ion-icon>
                 View Official Source

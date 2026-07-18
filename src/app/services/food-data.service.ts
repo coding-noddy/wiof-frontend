@@ -108,10 +108,6 @@ export class FoodDataService {
 
   }
 
-  refreshCache(): void {
-    this.foodsCache = null;
-  }
-
   private mapFood(row: any): Food {
 
     return {

@@ -37,7 +37,6 @@ export class EnergyWidgetComponent implements OnInit, OnDestroy {
 
   about = false;
   energyConsumption: number | null = null;
-  selectedUnit = 'kWh';
 
   consumptionError = false;
   result: EnergyResult | null = null;
@@ -45,7 +44,7 @@ export class EnergyWidgetComponent implements OnInit, OnDestroy {
   // ── Verified facts ─────────────────────────────────────────
   currentFactIndex = 0;
   factExpanded = false;
-  private factTimer: any;
+  private factTimer: ReturnType<typeof setInterval> | null = null;
 
   energyFacts: EnergyFact[] = [
     {
@@ -92,7 +91,7 @@ export class EnergyWidgetComponent implements OnInit, OnDestroy {
     this.result = null;
 
     const val = Number(this.energyConsumption);
-    if (!this.energyConsumption || isNaN(val) || val <= 0) {
+    if (!this.energyConsumption || isNaN(val) || val <= 0 || val > 10000) {
       this.consumptionError = true;
       return;
     }

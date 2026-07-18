@@ -55,9 +55,31 @@
 - Water Widget full redesign — modern card, category tabs, last-visited badge
 - Water Widget live rainfall via Open-Meteo (no API key, free tier)
 - Water Widget verified facts with official citations (World Bank, WHO, NITI Aayog, CGWB)
+- Energy Widget full redesign — CO₂ calculator with verified factors (CEA, IPCC)
+- Energy Widget fact strip with verified citations (PIB, MNRE, IEA, Newsonair)
+- Food pH Widget redesign — 543 foods, flip card, category dropdown, random button
+- Food pH Widget nutrition data via USDA FoodData Central API
+- Food pH Widget data verified against Clemson, USDA PMP, FDA tables (260 items)
+- Code review: memory leaks fixed (takeUntil pattern)
+- Code review: race condition fixed (switchMap for nutrition requests)
+- Code review: dead code removed (selectedUnit, refreshCache)
+- Code review: timer typing fixed (ReturnType<typeof setInterval>)
+- Code review: aria-live added to dynamic content sections
+- Code review: input upper bound added (10,000 kWh max)
 - Element pages (Air, Earth, Fire, Spirit, Water) — full modern UI redesign
 - Blog card / Blog slider redesign
 - Environment calendar — modal image section + next/prev month
 - NGO in-focus description removal
 - Home page hero image and tagline cleanup
 - Section nav component (sticky pills menu on element pages)
+
+## 📋 Known Limitations (Acceptable)
+
+- API keys are in client bundle — standard for frontend-only apps without backend
+  - USDA key has built-in rate limiting
+  - Open-Meteo needs no key
+  - Firebase keys are protected by Security Rules
+- Food pH category dropdown lacks full keyboard navigation (arrow keys, Escape)
+  - Acceptable for V1, can add @angular/cdk overlay later
+- 292 food pH items remain "Approximate" — no bulk Indian food pH database exists
+  - All pass category validation, honestly labeled in UI

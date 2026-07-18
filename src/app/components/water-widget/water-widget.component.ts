@@ -1,6 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { WaterWidgetService, RainfallData } from '../../services/water-widget.service';
 import { INDIAN_CITIES } from '../../app.constants';
+import { Subject } from 'rxjs';
+import { takeUntil, debounceTime, switchMap } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 
 interface WaterItem {
   name: string;
@@ -34,7 +37,8 @@ export class WaterWidgetComponent implements OnInit, OnDestroy {
   lastVisited: string | null = null;
   currentFactIndex = 0;
   factExpanded = false;
-  private factTimer: any;
+  private factTimer: ReturnType<typeof setInterval> | null = null;
+  private destroy$ = new Subject<void>();
 
   // ── Rainfall live data ─────────────────────────────────────
   cities: City[] = INDIAN_CITIES;
@@ -42,6 +46,13 @@ export class WaterWidgetComponent implements OnInit, OnDestroy {
   rainfall: RainfallData | null = null;
   rainfallLoading = false;
   rainfallError = false;
+
+  // ── City search ────────────────────────────────────────────
+  citySearchQuery = '';
+  citySearchResults: City[] = [];
+  citySearching = false;
+  showCitySearch = false;
+  private citySearch$ = new Subject<string>();
 
   // ── Verified facts with official citations only ────────────
   waterFacts: WaterFact[] = [
@@ -160,16 +171,49 @@ export class WaterWidgetComponent implements OnInit, OnDestroy {
     return '#01579b';
   }
 
-  constructor(private waterWidgetService: WaterWidgetService) {}
+  constructor(
+    private waterWidgetService: WaterWidgetService,
+    private http: HttpClient
+  ) {}
 
   ngOnInit() {
     this.lastVisited = localStorage.getItem(this.lastVisitedKey);
     this.startFactRotation();
     this.fetchRainfall();
+
+    // City search pipeline — debounce + geocoding API
+    this.citySearch$.pipe(
+      debounceTime(400),
+      switchMap(query => {
+        if (!query || query.length < 2) {
+          this.citySearchResults = [];
+          this.citySearching = false;
+          return [];
+        }
+        this.citySearching = true;
+        return this.http.get<any>(
+          `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=8&language=en&format=json`
+        );
+      }),
+      takeUntil(this.destroy$)
+    ).subscribe(res => {
+      this.citySearching = false;
+      if (res?.results) {
+        this.citySearchResults = res.results.map((r: any) => ({
+          name: `${r.name}${r.admin1 ? ', ' + r.admin1 : ''}${r.country ? ' (' + r.country + ')' : ''}`,
+          lat: r.latitude,
+          lon: r.longitude
+        }));
+      } else {
+        this.citySearchResults = [];
+      }
+    });
   }
 
   ngOnDestroy() {
     this.stopFactRotation();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   setCategory(cat: 'all' | 'availability' | 'quality' | 'climate') {
@@ -194,6 +238,43 @@ export class WaterWidgetComponent implements OnInit, OnDestroy {
     this.fetchRainfall();
   }
 
+  // ── City search methods ────────────────────────────────────
+  onCitySearchInput(query: string) {
+    this.citySearchQuery = query;
+    this.citySearch$.next(query);
+  }
+
+  selectSearchedCity(city: City) {
+    // Check if this city matches one in our preset dropdown
+    const presetMatch = this.cities.find(c =>
+      c.name.toLowerCase() === city.name.split(',')[0].trim().toLowerCase()
+    );
+
+    if (presetMatch) {
+      this.selectedCity = presetMatch;
+    } else {
+      // Add to cities list temporarily so dropdown reflects the selection
+      this.selectedCity = city;
+      // Ensure dropdown shows the custom city
+      if (!this.cities.find(c => c.name === city.name)) {
+        this.cities = [city, ...INDIAN_CITIES];
+      }
+    }
+
+    this.showCitySearch = false;
+    this.citySearchQuery = '';
+    this.citySearchResults = [];
+    this.fetchRainfall();
+  }
+
+  toggleCitySearch() {
+    this.showCitySearch = !this.showCitySearch;
+    if (!this.showCitySearch) {
+      this.citySearchQuery = '';
+      this.citySearchResults = [];
+    }
+  }
+
   fetchRainfall() {
     this.rainfallLoading = true;
     this.rainfallError = false;
@@ -201,6 +282,7 @@ export class WaterWidgetComponent implements OnInit, OnDestroy {
 
     this.waterWidgetService
       .getRainfall(this.selectedCity.lat, this.selectedCity.lon, this.selectedCity.name)
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: data => {
           this.rainfall = data;
