@@ -215,7 +215,9 @@
                 >USDA ↗</a>
                 </div>
                 <div class="nutrition-loading" *ngIf="nutritionLoading">
-                  Loading...
+                  <div style="display: flex; gap: .5rem;">
+                    <div class="skeleton" style="height: 32px; width: 40px; border-radius: 6px;" *ngFor="let i of [1,2,3,4,5]"></div>
+                  </div>
                 </div>
                 <div class="nutrition-grid" *ngIf="nutritionData">
                   <div class="nutrient-item">

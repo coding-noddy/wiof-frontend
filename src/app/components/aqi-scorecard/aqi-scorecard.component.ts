@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AqiWidgetService } from '../../services/aqi-widget.service';
-import { AqiResponseData } from '../../models/Aqi';
 import { map } from 'rxjs/operators';
 
 @Component({
@@ -9,41 +8,97 @@ import { map } from 'rxjs/operators';
   templateUrl: './aqi-scorecard.component.html',
   styleUrls: ['./aqi-scorecard.component.scss']
 })
-export class AqiScorecardComponent implements OnInit {
-  @Input() locationUrl: string;
-  aqiData$: Observable<AqiResponseData>;
+export class AqiScorecardComponent implements OnInit, OnChanges {
+  @Input() locationUrl!: string;
+  aqiData$!: Observable<any>;
+
+  // Human-readable labels for pollutant codes
+  private paramLabels: Record<string, string> = {
+    pm25: 'PM2.5',
+    pm10: 'PM10',
+    o3: 'Ozone (O₃)',
+    no2: 'NO₂',
+    so2: 'SO₂',
+    co: 'CO',
+    t: 'Temp',
+    w: 'Wind',
+    h: 'Humidity',
+    p: 'Pressure',
+    dew: 'Dew Point',
+    wg: 'Wind Gust',
+  };
+
+  private paramUnits: Record<string, string> = {
+    pm25: 'µg/m³',
+    pm10: 'µg/m³',
+    o3: 'ppb',
+    no2: 'ppb',
+    so2: 'ppb',
+    co: 'ppm',
+    t: '°C',
+    w: 'm/s',
+    h: '%',
+    p: 'hPa',
+    dew: '°C',
+    wg: 'm/s',
+  };
 
   constructor(private aqiService: AqiWidgetService) {}
 
   ngOnInit() {}
 
-  getAqiParameters(iaqi: any) {
-    return Object.entries(iaqi) as Array<[string, { v: number }]>;
-  }
-
   ngOnChanges() {
     this.aqiData$ = this.aqiService
       .getAqi(this.locationUrl)
-      .pipe(map((response) => response.data));
+      .pipe(map((response: any) => response.data));
   }
 
-  aqiColor(aqi: number) {
-    let aqiLevelClass = 'aqi-level-card ';
-    if (aqi > 0 && aqi < 51) {
-      aqiLevelClass += 'aqi-good';
-    } else if (aqi > 50 && aqi < 101) {
-      aqiLevelClass += 'aqi-moderate';
-    } else if (aqi > 100 && aqi < 151) {
-      aqiLevelClass += 'aqi-unhealthy-for-sensitive';
-    } else if (aqi > 150 && aqi < 201) {
-      aqiLevelClass += 'aqi-unhealthy';
-    } else if (aqi > 200 && aqi < 300) {
-      aqiLevelClass += 'aqi-very-unhealthy';
-    } else if (aqi > 300) {
-      aqiLevelClass += 'aqi-hazardous';
-    } else {
-      aqiLevelClass += 'aqi-na';
-    }
-    return aqiLevelClass;
+  getAqiParameters(iaqi: any): Array<[string, { v: number }]> {
+    if (!iaqi) return [];
+    return Object.entries(iaqi) as Array<[string, { v: number }]>;
+  }
+
+  getParameterLabel(code: string): string {
+    return this.paramLabels[code] || code.toUpperCase();
+  }
+
+  getParameterUnit(code: string): string {
+    return this.paramUnits[code] || '';
+  }
+
+  aqiColor(aqi: number): string {
+    if (aqi > 0 && aqi < 51) return 'aqi-good';
+    if (aqi >= 51 && aqi < 101) return 'aqi-moderate';
+    if (aqi >= 101 && aqi < 151) return 'aqi-unhealthy-for-sensitive';
+    if (aqi >= 151 && aqi < 201) return 'aqi-unhealthy';
+    if (aqi >= 201 && aqi < 300) return 'aqi-very-unhealthy';
+    if (aqi >= 300) return 'aqi-hazardous';
+    return 'aqi-na';
+  }
+
+  aqiLabel(aqi: number): string {
+    if (aqi > 0 && aqi < 51) return 'Good';
+    if (aqi >= 51 && aqi < 101) return 'Moderate';
+    if (aqi >= 101 && aqi < 151) return 'Sensitive Groups';
+    if (aqi >= 151 && aqi < 201) return 'Unhealthy';
+    if (aqi >= 201 && aqi < 300) return 'Very Unhealthy';
+    if (aqi >= 300) return 'Hazardous';
+    return 'N/A';
+  }
+
+  getAdvice(aqi: number): string {
+    if (aqi > 0 && aqi < 51) return 'Air quality is satisfactory. Enjoy outdoor activities!';
+    if (aqi >= 51 && aqi < 101) return 'Acceptable air quality. Sensitive individuals should limit prolonged outdoor exertion.';
+    if (aqi >= 101 && aqi < 151) return 'Members of sensitive groups may experience health effects. General public less likely to be affected.';
+    if (aqi >= 151 && aqi < 201) return 'Everyone may begin to experience health effects. Sensitive groups more serious effects.';
+    if (aqi >= 201 && aqi < 300) return 'Health alert: everyone may experience serious health effects. Avoid outdoor activity.';
+    if (aqi >= 300) return 'Health emergency! The entire population is likely to be affected. Stay indoors.';
+    return 'AQI data unavailable for this location.';
+  }
+
+  getAdviceIcon(aqi: number): string {
+    if (aqi < 101) return 'checkmark-circle-outline';
+    if (aqi < 201) return 'warning-outline';
+    return 'alert-circle-outline';
   }
 }

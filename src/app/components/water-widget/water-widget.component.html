@@ -79,10 +79,12 @@
 
     <!-- Loading state -->
     <div class="rainfall-loading" *ngIf="rainfallLoading">
-      <div class="loading-dots">
-        <span></span><span></span><span></span>
+      <div class="skeleton" style="height: 24px; width: 40%; border-radius: 6px;"></div>
+      <div class="skeleton" style="height: 6px; width: 100%; border-radius: 999px; margin-top: 8px;"></div>
+      <div style="display: flex; justify-content: space-between; margin-top: 6px;">
+        <div class="skeleton" style="height: 10px; width: 30%; border-radius: 4px;"></div>
+        <div class="skeleton" style="height: 10px; width: 25%; border-radius: 4px;"></div>
       </div>
-      <span>Fetching live data...</span>
     </div>
 
     <!-- Error state -->
