@@ -1,69 +1,392 @@
 @import '../../wiof-custom-theming.scss';
 
-.wiof-spirit-widget-card-header {
-  background-color: $spirit-color;
-  border-bottom: 2px solid white;
-  color: $dark-color;
-}
+$s: $spirit-color;
+$s-dark: darken($s, 22%);
+$s-mid: darken($s, 10%);
+$radius-card: 20px;
 
-.wiof-spirit-widget-card-background {
-  border-radius: 18px;
+// ── Card shell ───────────────────────────────────────────────────
+.eq-widget-card {
+  border-radius: $radius-card;
   overflow: hidden;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
-  margin: 0 !important;
-  background-color: lighten($spirit-color, 10%);
-  height: auto;
-  min-height: 400px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.10);
+  background-color: lighten($s, 4%);
+  display: flex;
+  flex-direction: column;
+  margin: 0;
 }
 
-.eq-widget-card-content {
-  text-align: justify;
-  text-justify: inter-word;
+// ── Header ───────────────────────────────────────────────────────
+.eq-widget-header {
+  background-color: $s;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.8);
+  padding: 0.9rem 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.header-icon {
+  font-size: 1.4rem;
+  color: $s-dark;
+}
+
+.about-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
   color: $dark-color;
-  max-height: 520px;
-  overflow: auto;
-  padding: 1rem;
-
-  strong {
-    font-size: 1rem;
-    color: #10263c;
-  }
-}
-
-.show-test-button {
   cursor: pointer;
-}
+  transition: background 0.18s ease, box-shadow 0.18s ease;
+  white-space: nowrap;
 
-.eq-user-response {
-  overflow: auto;
-  max-height: 480px;
-  display: block;
-  width: 100%;
-}
-
-.answer-text {
-  font-weight: bold;
-  text-decoration: underline;
-  cursor: pointer;
-  font-size: 0.95rem;
-  color: $dark-color;
+  ion-icon { font-size: 1rem; }
 
   &:hover {
-    opacity: 0.8;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   }
 }
 
-.eq-param-desc p {
-  padding: 5px 10px;
-  border: 1px solid lightgrey;
-  background: white;
-  border-radius: 1rem;
-  font-weight: $font-weight-medium;
-  margin-top: 5px;
-  font-size: 0.9rem;
+// ── About panel ──────────────────────────────────────────────────
+.about-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  background: rgba(255, 255, 255, 0.55);
+  border-bottom: 1px solid rgba($s-dark, 0.15);
+
+  &.open {
+    max-height: 120px;
+    padding: 0.75rem 1.1rem;
+  }
 }
 
-.eq-param-heading {
-  padding-left: 10px;
-  padding-bottom: 10px;
+.about-text {
+  font-size: 0.85rem;
+  color: $dark-color;
+  line-height: 1.6;
+  margin: 0;
+  text-align: justify;
+}
+
+// ── Body ─────────────────────────────────────────────────────────
+.eq-widget-body {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba($s-dark, 0.2);
+    border-radius: 4px;
+  }
+}
+
+// ── Landing view ─────────────────────────────────────────────────
+.eq-landing {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.eq-hero {
+  text-align: center;
+}
+
+.eq-hero-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.eq-hero-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: $dark-color;
+  margin: 0 0 0.4rem;
+}
+
+.eq-hero-desc {
+  font-size: 0.85rem;
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 1.6;
+  margin: 0;
+  max-width: 380px;
+  margin-inline: auto;
+}
+
+// ── 3 Dimensions ─────────────────────────────────────────────────
+.eq-dimensions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.eq-dim-card {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.7rem 0.85rem;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.dim-emoji {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.dim-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  strong {
+    font-size: 0.88rem;
+    color: $dark-color;
+  }
+
+  span {
+    font-size: 0.76rem;
+    color: rgba(0, 0, 0, 0.55);
+    line-height: 1.4;
+  }
+}
+
+// ── CTA ──────────────────────────────────────────────────────────
+.eq-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.eq-gender-select {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem;
+  justify-content: center;
+}
+
+.gender-label {
+  font-size: .82rem;
+  font-weight: 600;
+  color: $dark-color;
+}
+
+.gender-pills {
+  display: flex;
+  gap: .4rem;
+}
+
+.gender-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  border: 1.5px solid rgba($s-dark, .25);
+  background: rgba(255,255,255,.7);
+  font-size: .82rem;
+  font-weight: 600;
+  color: $dark-color;
+  cursor: pointer;
+  transition: all .15s ease;
+
+  &:hover { background: rgba(255,255,255,.95); border-color: $s-dark; }
+
+  &.active {
+    background: $s-dark;
+    border-color: $s-dark;
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,.1);
+  }
+}
+
+.eq-start-btn {
+  padding: 0.7rem 1.5rem !important;
+  font-size: 0.95rem !important;
+}
+
+.eq-meta {
+  font-size: 0.72rem;
+  color: rgba(0, 0, 0, 0.45);
+  font-weight: 500;
+}
+
+// ── Test view (sub-component) ────────────────────────────────────
+app-eq-widget-question-card {
+  display: block;
+  max-height: 450px;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba($s-dark, 0.2);
+    border-radius: 4px;
+  }
+}
+
+// ── Fact strip ───────────────────────────────────────────────────
+.fact-strip {
+  margin: 0;
+  background: rgba(255, 255, 255, 0.6);
+  border-top: 1px solid rgba($s-dark, 0.12);
+  border-radius: 0 0 $radius-card $radius-card;
+  padding: 0.6rem 0.75rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  min-height: 76px;
+  height: 76px;
+  overflow: hidden;
+
+  &.fact-strip--expanded {
+    height: auto;
+    min-height: 76px;
+  }
+}
+
+.fact-content {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.fact-icon {
+  font-size: 1rem;
+  color: $s-dark;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.fact-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.fact-text {
+  font-size: 0.76rem;
+  color: $dark-color;
+  line-height: 1.5;
+  margin: 0;
+  min-height: calc(0.76rem * 1.5 * 2);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  animation: factFadeIn 0.4s ease;
+
+  &.expanded {
+    display: block;
+    overflow: visible;
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
+  }
+}
+
+@keyframes factFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fact-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fact-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: $s-dark;
+  text-decoration: none;
+  opacity: 0.8;
+  transition: opacity 0.15s ease;
+
+  ion-icon { font-size: 0.65rem; }
+  &:hover { opacity: 1; text-decoration: underline; }
+}
+
+.fact-expand-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: $s-dark;
+  cursor: pointer;
+  opacity: 0.75;
+  margin-left: auto;
+  transition: opacity 0.15s ease;
+
+  ion-icon { font-size: 0.65rem; }
+  &:hover { opacity: 1; }
+}
+
+.fact-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.fact-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid rgba($s-dark, 0.25);
+  background: rgba(255, 255, 255, 0.7);
+  color: $dark-color;
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+
+  ion-icon { font-size: 0.8rem; }
+  &:hover { background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+}
+
+.fact-counter {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: $s-dark;
+  min-width: 28px;
+  text-align: center;
 }

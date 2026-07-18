@@ -1,42 +1,124 @@
-<ion-card class="wiof-spirit-widget-card-background widget-height">
-  <ion-card-header class="wiof-spirit-widget-card-header">
-    <ion-card-title class="title-text">
-      Emotional Quotient Widget
-    </ion-card-title>
-  </ion-card-header>
-  <ion-card-content class="eq-widget-card-content">
-    <div *ngIf="!showTest">
-      <br />
-      <strong>What is emotional intelligence or EQ?</strong>
-      <br />
-      <p>
-        Emotional intelligence (otherwise known as emotional quotient or EQ) is
-        the ability to understand, use, and manage your own emotions in positive
-        ways to relieve stress, communicate effectively, empathize with others,
-        overcome challenges and defuse conflict. Emotional intelligence helps
-        you build stronger relationships, succeed at school and work, and
-        achieve your career and personal goals. It can also help you to connect
-        with your feelings, turn intention into action, and make informed
-        decisions about what matters most to you.
-      </p>
-      <br />
-      <p (click)="startTest()" class="answer-text">
-        Answer these 24 questions to find your Emotional Quotient
-      </p>
-      <br />
-      <p class="eq-param-heading">
-        On the basis of the following three dimensions.
-      </p>
-      <div class="eq-param-desc">
-        <p>Attention: I am able to feel and express feelings properly.</p>
-        <p>Clarity: I understand my states well.</p>
-        <p>Reparation: I am able to regulate emotional states correctly.</p>
-      </div>
+<div class="eq-widget-card widget-height">
+
+  <!-- ── Header ─────────────────────────────────────────────── -->
+  <div class="eq-widget-header">
+    <div class="header-left">
+      <ion-icon name="heart-outline" class="header-icon"></ion-icon>
+      <span class="title-text">Emotional Quotient</span>
     </div>
+    <button class="about-toggle" (click)="about = !about" [attr.aria-expanded]="about">
+      <ion-icon [name]="about ? 'information-circle' : 'information-circle-outline'"></ion-icon>
+      <span>About</span>
+    </button>
+  </div>
+
+  <!-- ── About panel ─────────────────────────────────────────── -->
+  <div class="about-panel" [class.open]="about">
+    <p class="about-text">
+      Emotional intelligence (EQ) is the ability to understand, use, and manage your emotions
+      in positive ways. This test uses the TMMS-24 scale — a validated instrument measuring
+      Attention, Clarity, and Reparation of emotional states.
+    </p>
+  </div>
+
+  <!-- ── Body ───────────────────────────────────────────────── -->
+  <div class="eq-widget-body">
+
+    <!-- Landing view (before test) -->
+    <div class="eq-landing" *ngIf="!showTest">
+
+      <!-- Hero section -->
+      <div class="eq-hero">
+        <div class="eq-hero-icon">🧠</div>
+        <h3 class="eq-hero-title">Discover Your Emotional Intelligence</h3>
+        <p class="eq-hero-desc">
+          Answer 24 research-backed questions to understand how you
+          perceive, understand, and regulate your emotions.
+        </p>
+      </div>
+
+      <!-- 3 Dimensions -->
+      <div class="eq-dimensions">
+        <div class="eq-dim-card">
+          <span class="dim-emoji">👁️</span>
+          <div class="dim-info">
+            <strong>Attention</strong>
+            <span>How well you perceive and express feelings</span>
+          </div>
+        </div>
+        <div class="eq-dim-card">
+          <span class="dim-emoji">💡</span>
+          <div class="dim-info">
+            <strong>Clarity</strong>
+            <span>How clearly you understand your emotional states</span>
+          </div>
+        </div>
+        <div class="eq-dim-card">
+          <span class="dim-emoji">🔄</span>
+          <div class="dim-info">
+            <strong>Reparation</strong>
+            <span>How effectively you regulate and repair your mood</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gender + CTA -->
+      <div class="eq-cta">
+        <div class="eq-gender-select">
+          <span class="gender-label">I identify as:</span>
+          <div class="gender-pills">
+            <button class="gender-pill" [class.active]="gender === 'M'" (click)="gender = 'M'">
+              ♂️ Male
+            </button>
+            <button class="gender-pill" [class.active]="gender === 'F'" (click)="gender = 'F'">
+              ♀️ Female
+            </button>
+          </div>
+        </div>
+        <button class="wiof-primary-btn eq-start-btn" (click)="startTest()">
+          <ion-icon name="play-outline"></ion-icon>
+          Start EQ Assessment
+        </button>
+        <span class="eq-meta">24 questions • ~5 minutes • free</span>
+      </div>
+
+    </div>
+
+    <!-- Test view -->
     <app-eq-widget-question-card
-      class="eq-user-response"
       *ngIf="showTest"
+      [gender]="gender"
       (back)="showTest = false"
     ></app-eq-widget-question-card>
-  </ion-card-content>
-</ion-card>
+
+  </div>
+
+  <!-- ── Fact strip ──────────────────────────────────────────── -->
+  <div class="fact-strip" [class.fact-strip--expanded]="factExpanded">
+    <div class="fact-content">
+      <ion-icon name="bulb-outline" class="fact-icon"></ion-icon>
+      <div class="fact-body">
+        <p class="fact-text" [class.expanded]="factExpanded">{{ currentFact.text }}</p>
+        <div class="fact-meta-row">
+          <a class="fact-source" [href]="currentFact.url" target="_blank" rel="noopener noreferrer">
+            <ion-icon name="link-outline"></ion-icon>{{ currentFact.source }}
+          </a>
+          <button class="fact-expand-btn" (click)="factExpanded = !factExpanded">
+            {{ factExpanded ? 'Show less' : 'Read more' }}
+            <ion-icon [name]="factExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="fact-controls">
+      <button class="fact-btn" (click)="prevFact()" aria-label="Previous fact">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <span class="fact-counter">{{ currentFactIndex + 1 }} / {{ eqFacts.length }}</span>
+      <button class="fact-btn" (click)="nextFact()" aria-label="Next fact">
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
+
+</div>
