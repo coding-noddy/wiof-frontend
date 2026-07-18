@@ -70,7 +70,7 @@
           <button
             class="result-item"
             *ngFor="let location of searchLocationResults.data"
-            (click)="expandLocationAqiDetails(location.station.name)"
+            (click)="expandLocationAqiDetails('@' + location.uid)"
           >
             <div class="result-station">
               <ion-icon name="location-outline"></ion-icon>
