@@ -84,16 +84,17 @@
             <ion-button
               (click)="publishNgoInFocus(ngoInFocus.id, ngoInFocus.category)"
               *ngIf="ngoInFocus.status == 'inactive'"
-              disabled
+              title="Click to Re-publish Firm In Focus"
               ><ion-icon
                 slot="icon-only"
-                name="rocket"
+                name="rocket-outline"
                 class="status-inactive"
               ></ion-icon
             ></ion-button>
             <ion-button
               *ngIf="ngoInFocus.status == 'published'"
-              title="Published Ngo In Focus"
+              title="Click to Unpublish Firm In Focus"
+              (click)="unpublishSingleNgoInFocus(ngoInFocus)"
               ><ion-icon
                 slot="icon-only"
                 name="rocket"

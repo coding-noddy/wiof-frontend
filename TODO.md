@@ -5,6 +5,34 @@
 
 ---
 
+## 🔴 WIOF Fixes (Next Sprint)
+
+### Responsiveness & Mobile
+- **[HIGH]** Widget responsiveness — ensure all 5 widgets display properly on mobile (proper padding, no overflow)
+- **[HIGH]** Card width and gaps should be consistent in responsive mode across all pages
+- **[HIGH]** Breaking news — image/video not displayed in mobile mode
+- **[HIGH]** Coffee conversation — too much upper/lower spacing on mobile element pages
+- **[HIGH]** Course section — image not fully visible on mobile devices
+
+### Design Improvements
+- **[HIGH]** Subscribe section — needs modern redesign (currently old side-drawer style)
+- **[HIGH]** Privacy policy acceptance strip — redesign to look modern (cookie-consent style bar)
+- **[MED]** Blog page design — individual blog post page needs better layout
+  - Reference: https://wiof-staging.web.app/element/air/blog/KkeNELNVMtzOPQZ8r1A1
+- **[MED]** About us page — card designs should be improved
+- **[MED]** Calendar loading — cards jump due to "loading calendar" text. Use skeleton/overlay instead.
+
+### Functional Fixes
+- **[HIGH]** Privacy policy year range — should be dynamic: "2020-{currentYear}" not hardcoded
+- **[MED]** "Discover More" button — should scroll to element section or coffee conversation on home page
+  instead of navigating away
+- **[MED]** "About Us" → consider renaming to "Meet Our Team" (more personal, less corporate)
+  - "About Us" implies mission/vision. "Meet Our Team" implies people → more engaging for users
+  - Business perspective: Users connect with people, not statements. "Meet Our Team" builds trust.
+  - Recommendation: Keep "About Us" as the page but rename the nav link to "Our Team" or "Meet the Team"
+
+---
+
 ## 🔵 Widget Improvements
 
 ### Water Widget

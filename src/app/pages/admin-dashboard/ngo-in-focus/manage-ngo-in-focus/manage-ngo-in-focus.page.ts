@@ -94,26 +94,33 @@ export class ManageNgoInFocusPage implements OnInit, OnDestroy {
         ITEMS.NGO_IN_FOCUS
       )
     );
+    // Start with deleting the Firestore document first (most important)
+    // Then attempt image cleanup (non-blocking if images don't exist)
     this.ngoInFocusService
-      .deleteNgoInFocusImage(ngoInFocus.ngoLogo)
+      .deleteNgoInFocus(ngoInFocus.id)
       .pipe(
         takeUntil(this.destroy$),
         switchMap(() => {
-          if (ngoInFocus.mediaType === MEDIA_TYPE.IMAGE) {
-            return this.ngoInFocusService.deleteNgoInFocusImage(
-              ngoInFocus.mediaLink
+          // Try to delete logo — ignore errors if it doesn't exist
+          if (ngoInFocus.ngoLogo) {
+            return this.ngoInFocusService.deleteNgoInFocusImage(ngoInFocus.ngoLogo).pipe(
+              catchError(() => of(true))
             );
-          } else {
-            return of(true);
           }
+          return of(true);
         }),
         switchMap(() => {
-          return this.ngoInFocusService.deleteNgoInFocus(ngoInFocus.id);
+          // Try to delete media image — ignore errors if it doesn't exist
+          if (ngoInFocus.mediaType === MEDIA_TYPE.IMAGE && ngoInFocus.mediaLink) {
+            return this.ngoInFocusService.deleteNgoInFocusImage(ngoInFocus.mediaLink).pipe(
+              catchError(() => of(true))
+            );
+          }
+          return of(true);
         })
       )
       .subscribe(
         (response) => {
-          console.log(response);
           loader.dismiss();
           this.uiUtil.presentAlert(
             UI_MESSAGES.SUCCESS_HEADER,
@@ -126,7 +133,7 @@ export class ManageNgoInFocusPage implements OnInit, OnDestroy {
           ngoInFocusList.splice(index, 1);
         },
         (error) => {
-          console.log(error);
+          console.error('Delete failed:', error);
           loader.dismiss();
           this.uiUtil.presentAlert(
             UI_MESSAGES.FAILURE_HEADER,
@@ -142,7 +149,6 @@ export class ManageNgoInFocusPage implements OnInit, OnDestroy {
 
   publishNgoInFocus(id: string, category: string) {
     this.ngoInFocusService.publishNgoInFocus(id, category).subscribe((data) => {
-      console.log(data);
       this.uiUtil.presentAlert(
         UI_MESSAGES.SUCCESS_HEADER,
         UI_MESSAGES.SUCCESS_PUBLISH_ITEM_DESC.replace(
@@ -151,6 +157,21 @@ export class ManageNgoInFocusPage implements OnInit, OnDestroy {
         ),
         [UI_MESSAGES.FAILURE_CTA_TEXT]
       );
+      this.refreshData();
+    });
+  }
+
+  unpublishSingleNgoInFocus(ngoInFocus: NgoInFocus) {
+    this.ngoInFocusService.unpublishSingleItem(ngoInFocus.id).subscribe(() => {
+      this.uiUtil.presentAlert(
+        UI_MESSAGES.SUCCESS_HEADER,
+        UI_MESSAGES.SUCCESS_UNPUBLISH_ITEM_DESC.replace(
+          UI_MESSAGES.PLACEHOLDER,
+          ITEMS.NGO_IN_FOCUS
+        ),
+        [UI_MESSAGES.FAILURE_CTA_TEXT]
+      );
+      this.refreshData();
     });
   }
 
