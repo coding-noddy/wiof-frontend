@@ -7,6 +7,10 @@
 
 ## 🔴 WIOF Fixes (Next Sprint)
 
+### Admin Dashboard
+- **[HIGH]** Refine admin dashboard — modern card-based UI, better navigation, responsive layout
+- **[MED]** All admin manage pages — consistent table/card designs, better mobile experience
+
 ### Responsiveness & Mobile
 - **[HIGH]** Widget responsiveness — ensure all 5 widgets display properly on mobile (proper padding, no overflow)
 - **[HIGH]** Card width and gaps should be consistent in responsive mode across all pages

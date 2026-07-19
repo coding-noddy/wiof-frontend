@@ -14,6 +14,7 @@
   <p class="subscribe-text">Subscribe</p>
   <ion-icon class="mail" name="mail-outline"></ion-icon>
 </div>
+
 <div
   class="wiof-subscribe"
   [ngClass]="{
@@ -26,43 +27,50 @@
     energy: page == 'energy'
   }"
 >
-  <h4 class="subscribe-heading">Subscribe to WIOF NewsLetter</h4>
-  <button
-    class="close-button"
-    title="Close subscription box"
-    (click)="onBack()"
-  >
-    <ion-icon name="close-circle-outline"></ion-icon>
+  <h4 class="subscribe-heading">Subscribe to Newsletter</h4>
+  <button class="close-button" title="Close" (click)="onBack()">
+    <ion-icon name="close-outline"></ion-icon>
   </button>
+
   <form
     [formGroup]="addSubscriberForm"
     (submit)="onSubmit()"
     class="wiof-subscribe-form"
   >
-    <ion-item>
-      <ion-label position="floating">First Name</ion-label>
-      <ion-input formControlName="firstName"></ion-input> </ion-item
-    ><br />
-    <ion-item>
-      <ion-label position="floating">Last Name</ion-label>
-      <ion-input formControlName="lastName"></ion-input> </ion-item
-    ><br />
-    <ion-item>
-      <ion-label position="floating">Email</ion-label>
-      <ion-input formControlName="email"></ion-input> </ion-item
-    ><br />
+    <div class="form-field">
+      <input
+        type="text"
+        formControlName="firstName"
+        placeholder="First Name"
+        class="subscribe-input"
+      />
+    </div>
+    <div class="form-field">
+      <input
+        type="text"
+        formControlName="lastName"
+        placeholder="Last Name"
+        class="subscribe-input"
+      />
+    </div>
+    <div class="form-field">
+      <input
+        type="email"
+        formControlName="email"
+        placeholder="Email address"
+        class="subscribe-input"
+      />
+    </div>
     <button
       [disabled]="!addSubscriberForm.valid"
-      class="wiof-primary-btn"
+      class="subscribe-submit-btn"
       type="submit"
     >
-      Subscribe</button
-    ><br />
-    <p>
-      Please be rest assured that you will not receive any promotional emails
-      from us and we also do not share our mailing lists with any third party.
-      By Subscribing to us, you only receive information about new relevant
-      content added to our website.
+      <ion-icon name="mail-outline"></ion-icon>
+      Subscribe
+    </button>
+    <p class="subscribe-note">
+      No spam — only updates about new content on our site.
     </p>
   </form>
 </div>
