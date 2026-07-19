@@ -230,17 +230,23 @@
   .calendar-loading {
     font-size: 0.75rem;
     color: rgba($dark-color, 0.75);
-    margin-top: 0.35rem;
   }
 
-  h1 {
-    font-size: 1.1rem;
-    margin: 0 0 0.15rem;
+  .days-grid-wrapper {
+    position: relative;
   }
 
-  p {
-    font-size: 0.82rem;
-    margin: 0;
+  .calendar-loading-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    background: rgba(255,255,255,.6);
+    border-radius: 8px;
+  }
+
+  .loading-blur {
+    opacity: 0.4;
+    pointer-events: none;
   }
 }
 

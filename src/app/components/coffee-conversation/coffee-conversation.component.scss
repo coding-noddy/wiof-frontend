@@ -236,6 +236,32 @@ $element-themes: (
 }
 
 // ─── Misc (outside container, not scoped) ────────────────────────────────────
+
+// ── Mobile responsive for coffee conversation ─────────────────────────────────
+@media (max-width: 767px) {
+  .coffee-conv-container {
+    .coffee-conv-card {
+      .media-container {
+        min-height: 200px !important;
+        max-height: 220px !important;
+      }
+
+      ion-card-content .coffee-conv-content {
+        padding: 0.85rem !important;
+
+        h2 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+        p { margin-bottom: 0.5rem; }
+        .interviewee-details { margin: 0.5rem 0; padding: 10px; }
+      }
+    }
+
+    &.layout-element .coffee-conv-card .media-container {
+      min-height: 180px !important;
+      max-height: 200px !important;
+    }
+  }
+}
+
 .video-card-footer {
   background-color: white;
   border-top: 1px solid lightgrey;

@@ -184,3 +184,26 @@ ion-row + ion-row {
 app-wiof-footer {
   margin-top: 2.5rem;
 }
+
+// ── Global mobile widget fixes ───────────────────────────────────────────────
+@media (max-width: 767px) {
+  // Ensure all widget cards don't overflow on mobile
+  .water-widget-card,
+  .energy-widget-card,
+  .aqi-widget-card,
+  .eq-widget-card,
+  .wiof-food-ph-widget-card-background {
+    border-radius: 16px;
+    margin: 0 !important;
+  }
+
+  // Consistent section spacing on mobile
+  .section-block {
+    margin-bottom: 1rem;
+  }
+
+  // Fix card gaps on mobile
+  .video-widget-row {
+    gap: 0.75rem;
+  }
+}

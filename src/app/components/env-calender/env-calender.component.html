@@ -20,9 +20,6 @@
               <ion-icon name="caret-forward-outline"></ion-icon>
             </button>
           </div>
-          <div *ngIf="isLoading" class="calendar-loading">
-            Loading calendar...
-          </div>
         </ion-col>
       </ion-row>
       <ion-row class="weekday">
@@ -34,7 +31,11 @@
         <ion-col>Fri</ion-col>
         <ion-col>Sat</ion-col>
       </ion-row>
-      <div class="days-grid">
+      <div class="days-grid-wrapper">
+        <div class="calendar-loading-overlay" *ngIf="isLoading">
+          <div class="skeleton" style="height: 100%; border-radius: 8px;"></div>
+        </div>
+        <div class="days-grid" [class.loading-blur]="isLoading">
         <div
           *ngFor="let day of days"
           [class]="day.class"
@@ -88,7 +89,8 @@
             </div>
           </div>
         </div>
-      </div>
+      </div><!-- /days-grid -->
+      </div><!-- /days-grid-wrapper -->
     </ion-grid>
     <div class="wiof-env-calendar-dialog-container" *ngIf="openDialog">
       <app-env-cal-dialog

@@ -102,7 +102,7 @@ $page-padding-mobile:  16px;
 
 .section-block {
   margin-top: 1rem;
-  padding: 0.9rem 0;
+  padding: 0;
 }
 
 .section-header {
@@ -142,15 +142,15 @@ $page-padding-mobile:  16px;
 }
 
 .impact-row ion-row {
-  margin: 0 -0.6rem;
+  margin: 0 -0.5rem;
   display: flex;
-  align-items: stretch;   // both cols stretch to the same height
+  align-items: stretch;
 }
 
 .impact-row ion-col {
-  padding: 0 0.6rem;
+  padding: 0 0.5rem;
   margin-bottom: 1rem;
-  display: flex;          // propagate height down to the host element
+  display: flex;
   flex-direction: column;
 }
 
@@ -168,6 +168,19 @@ $page-padding-mobile:  16px;
   --ion-grid-padding: 0;
 }
 
+.bottom-row ion-row {
+  margin: 0 -0.5rem;
+  display: flex;
+  align-items: stretch;
+}
+
+.bottom-row ion-col {
+  padding: 0 0.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
 ion-content {
   --background: #f4f7fb;
 }
@@ -182,4 +195,31 @@ ion-grid {
 
 ion-row + ion-row {
   margin-top: 1rem;
+}
+
+// ── Mobile consistency ────────────────────────────────────────────
+@media (max-width: 767px) {
+  .section-block {
+    margin-top: 0.5rem;
+    padding: 0.25rem 0;
+  }
+
+  .impact-row ion-row,
+  .bottom-row ion-row {
+    margin: 0;
+  }
+
+  .impact-row ion-col,
+  .bottom-row ion-col {
+    padding: 0;
+    margin-bottom: 0.75rem;
+  }
+
+  ion-row + ion-row {
+    margin-top: 0.75rem;
+  }
+
+  .section-block + .section-block {
+    margin-top: 0.5rem;
+  }
 }

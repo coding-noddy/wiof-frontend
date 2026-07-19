@@ -6,6 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./wiof-footer.component.scss']
 })
 export class WiofFooterComponent implements OnInit {
+  currentYear = new Date().getFullYear();
+
   constructor() {}
 
   ngOnInit() {}
