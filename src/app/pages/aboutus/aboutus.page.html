@@ -1,84 +1,64 @@
 <app-header></app-header>
 
 <ion-content>
-  <ion-toolbar style="margin-top: 10px">
-    <ion-title>About Us</ion-title>
-    <app-back-button slot="end" class="back-button"></app-back-button>
-  </ion-toolbar>
-  <ion-grid>
-    <ion-row>
-      <!-- Loop through profiles using the observable -->
-      <ion-col
-        class="ion-padding profile-card-container"
-        size="12"
-        size-md="6"
-        size-lg="4"
-        size-xl="3"
-        *ngFor="let profile of aboutUsProfiles$ | async"
-      >
-        <ion-card class="ion-margin profile-card">
-          <ion-card-content class="ion-no-padding">
-            <!-- Default Profile View -->
-            <ion-row *ngIf="!profile.showKnowMore">
-              <ion-col size="12" class="profile-header">
-                <img
-                  class="profile-image"
-                  [src]="profile.imageLink"
-                  [alt]="'Profile image of ' + profile.name"
-                />
-                <ion-card-title class="profile-name">
-                  {{ profile.name }}
-                </ion-card-title>
-                <p class="linked-in-container">
-                  <ion-icon
-                    *ngIf="profile.socialLink"
-                    name="logo-linkedin"
-                    class="logo"
-                  ></ion-icon>
-                  <a
-                    *ngIf="profile.socialLink"
-                    [href]="profile.socialLink"
-                    target="_blank"
-                    class="link"
-                  >
-                    Visit LinkedIn Profile
-                  </a>
-                </p>
-              </ion-col>
-              <ion-col size="12" class="ion-padding">
-                <p class="profile-bio-text">{{ profile.bio }}</p>
-                <p style="text-align: center">
-                  <button
-                    class="wiof-primary-link"
-                    (click)="profile.showKnowMore = true"
-                  >
-                    Read More
-                  </button>
-                </p>
-              </ion-col>
-            </ion-row>
+  <div class="team-page">
 
-            <!-- Expanded Profile View -->
-            <ion-row *ngIf="profile.showKnowMore">
-              <ion-col size="12" class="ion-no-padding">
-                <ion-card-title class="ion-padding">
-                  <span class="profile-detail-bio-header">
-                    About {{ profile.name }}
-                  </span>
-                  <span
-                    class="close-icon"
-                    (click)="profile.showKnowMore = false"
-                  >
-                    <ion-icon name="close-outline"></ion-icon>
-                  </span>
-                </ion-card-title>
-                <p class="profile-detail-bio">{{ profile.bio }}</p>
-              </ion-col>
-            </ion-row>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+    <!-- Hero -->
+    <section class="team-hero">
+      <app-back-button></app-back-button>
+      <h1 class="team-title">Meet Our Team</h1>
+      <p class="team-subtitle">The people behind World is One Family</p>
+    </section>
+
+    <!-- Team grid -->
+    <section class="team-grid" *ngIf="aboutUsProfiles$ | async as profiles">
+      <div class="team-card" *ngFor="let profile of profiles">
+
+        <!-- Default view -->
+        <div class="card-front" *ngIf="!profile.showKnowMore">
+          <div class="card-avatar-section">
+            <img
+              class="team-avatar"
+              [src]="profile.imageLink"
+              [alt]="'Profile image of ' + profile.name"
+            />
+          </div>
+          <div class="card-info">
+            <h3 class="team-name">{{ profile.name }}</h3>
+            <a
+              *ngIf="profile.socialLink"
+              [href]="profile.socialLink"
+              target="_blank"
+              rel="noopener"
+              class="team-linkedin"
+            >
+              <ion-icon name="logo-linkedin"></ion-icon>
+              LinkedIn
+            </a>
+            <p class="team-bio">{{ profile.bio }}</p>
+            <button class="read-more-btn" (click)="profile.showKnowMore = true">
+              Read Full Bio
+              <ion-icon name="arrow-forward-outline"></ion-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Expanded view -->
+        <div class="card-expanded" *ngIf="profile.showKnowMore">
+          <div class="expanded-header">
+            <img class="expanded-avatar" [src]="profile.imageLink" [alt]="profile.name" />
+            <h3>{{ profile.name }}</h3>
+            <button class="close-btn" (click)="profile.showKnowMore = false">
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
+          </div>
+          <p class="expanded-bio">{{ profile.bio }}</p>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
   <app-wiof-footer></app-wiof-footer>
 </ion-content>

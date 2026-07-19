@@ -90,16 +90,55 @@ $ph12: 78.04%;
 $ph13: 84.47%;
 $ph14: 90.9%;
 
-//air-widget colors
+//air-widget colors — softer pastels for modern UI
 
-$aqi-good-color: rgb(0, 228, 0);
-$aqi-moderate-color: rgb(255, 255, 0);
-$aqi-unhealthy-for-sensitive-color: rgb(255, 156, 0);
-$aqi-unhealthy-color: rgb(255, 0, 0);
-$aqi-very-unhealthy-color: rgb(143, 63, 151);
-$aqi-hazardous-color: rgb(126, 0, 35);
+$aqi-good-color: #a8e6a3;                    // soft green
+$aqi-moderate-color: #fff3a3;                 // soft yellow
+$aqi-unhealthy-for-sensitive-color: #ffcc80;  // soft orange
+$aqi-unhealthy-color: #e57373;               // medium red — still alarming but not harsh
+$aqi-very-unhealthy-color: #ce93d8;          // soft purple
+$aqi-hazardous-color: #b71c1c;               // keep dark — this IS an emergency
 
 $font-size-medium: 18px;
+
+// ── Loading skeletons ─────────────────────────────────────────────
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, rgba(0,0,0,.06) 25%, rgba(0,0,0,.12) 50%, rgba(0,0,0,.06) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+.skeleton-text {
+  @extend .skeleton;
+  height: 12px;
+  width: 80%;
+  margin-bottom: 6px;
+}
+
+.skeleton-text-short {
+  @extend .skeleton;
+  height: 12px;
+  width: 50%;
+  margin-bottom: 6px;
+}
+
+.skeleton-circle {
+  @extend .skeleton;
+  border-radius: 50%;
+}
+
+.skeleton-card {
+  @extend .skeleton;
+  height: 60px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
 
 .font-size-medium {
   font-size: $font-size-medium;

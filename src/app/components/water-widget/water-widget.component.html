@@ -42,15 +42,49 @@
           <option *ngFor="let city of cities" [ngValue]="city">{{ city.name }}</option>
         </select>
         <ion-icon name="chevron-down-outline" class="select-chevron"></ion-icon>
+        <button class="city-search-toggle" (click)="toggleCitySearch()" title="Search any city worldwide">
+          <ion-icon name="search-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- City search panel -->
+    <div class="city-search-panel" *ngIf="showCitySearch">
+      <input
+        class="city-search-input"
+        type="text"
+        placeholder="Search any city worldwide..."
+        [ngModel]="citySearchQuery"
+        (ngModelChange)="onCitySearchInput($event)"
+        aria-label="Search city"
+        autofocus
+      />
+      <div class="city-search-results" *ngIf="citySearchResults.length > 0">
+        <button
+          class="city-result-item"
+          *ngFor="let city of citySearchResults"
+          (click)="selectSearchedCity(city)"
+        >
+          <ion-icon name="location-outline"></ion-icon>
+          <span>{{ city.name }}</span>
+        </button>
+      </div>
+      <div class="city-searching" *ngIf="citySearching">
+        Searching...
+      </div>
+      <div class="city-no-results" *ngIf="!citySearching && citySearchQuery.length >= 2 && citySearchResults.length === 0">
+        No cities found. Try a different name.
       </div>
     </div>
 
     <!-- Loading state -->
     <div class="rainfall-loading" *ngIf="rainfallLoading">
-      <div class="loading-dots">
-        <span></span><span></span><span></span>
+      <div class="skeleton" style="height: 24px; width: 40%; border-radius: 6px;"></div>
+      <div class="skeleton" style="height: 6px; width: 100%; border-radius: 999px; margin-top: 8px;"></div>
+      <div style="display: flex; justify-content: space-between; margin-top: 6px;">
+        <div class="skeleton" style="height: 10px; width: 30%; border-radius: 4px;"></div>
+        <div class="skeleton" style="height: 10px; width: 25%; border-radius: 4px;"></div>
       </div>
-      <span>Fetching live data...</span>
     </div>
 
     <!-- Error state -->
@@ -61,7 +95,7 @@
     </div>
 
     <!-- Data state -->
-    <div class="rainfall-data" *ngIf="rainfall && !rainfallLoading">
+    <div class="rainfall-data" *ngIf="rainfall && !rainfallLoading" aria-live="polite">
       <div class="rainfall-value-row">
         <span class="rainfall-value">{{ rainfall.precipitationToday }}</span>
         <span class="rainfall-unit">{{ rainfall.precipitationUnit }}</span>
@@ -121,9 +155,15 @@
       </a>
     </div>
 
+    <!-- Footer disclaimer (inside body) -->
+    <div class="water-widget-disclaimer">
+      <ion-icon name="shield-checkmark-outline"></ion-icon>
+      <span>Links open India WRIS — a third-party interactive map portal.</span>
+    </div>
+
   </div>
 
-  <!-- ── Did You Know strip ──────────────────────────────────── -->
+  <!-- ── Did You Know strip (sticks to bottom like energy/pH) ── -->
   <div class="fact-strip" [class.fact-strip--expanded]="factExpanded">
     <div class="fact-content">
       <ion-icon name="bulb-outline" class="fact-icon"></ion-icon>
@@ -155,12 +195,6 @@
         <ion-icon name="chevron-forward-outline"></ion-icon>
       </button>
     </div>
-  </div>
-
-  <!-- ── Footer disclaimer ───────────────────────────────────── -->
-  <div class="water-widget-footer">
-    <ion-icon name="shield-checkmark-outline" class="footer-icon"></ion-icon>
-    <span>Links open India WRIS — a third-party interactive map portal.</span>
   </div>
 
 </div>

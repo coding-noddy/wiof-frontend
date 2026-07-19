@@ -85,11 +85,16 @@ export class NgoInFocusService {
     const ngoInFocusCollectn = this.database.collection(
       FIREBASE_COLLECTION.NGO_IN_FOCUS,
       (ref) => {
-        const query = ref
+        let query = ref
           .where('status', '==', ITEM_STATUS.PUBLISHED)
-          .orderBy('submitDate', 'desc');
+          .orderBy('submitDate', 'desc')
+          .limit(10);
         if (category !== undefined) {
-          return query.where('category', '==', category);
+          query = ref
+            .where('status', '==', ITEM_STATUS.PUBLISHED)
+            .where('category', '==', category)
+            .orderBy('submitDate', 'desc')
+            .limit(10);
         }
         return query;
       }
@@ -115,13 +120,21 @@ export class NgoInFocusService {
   }
 
   publishNgoInFocus(ngoInFocusId: string, category: string) {
-    return this.unpublishNgoInFocus(category).pipe(
-      concatMap(() => {
-        return this.ngoInFocusCollection.doc(ngoInFocusId).update({
-          status: ITEM_STATUS.PUBLISHED,
-          publishDate: new Date().getTime(),
-          unpublishDate: null
-        });
+    // Allow multiple published items — just publish this one without unpublishing others
+    return from(
+      this.ngoInFocusCollection.doc(ngoInFocusId).update({
+        status: ITEM_STATUS.PUBLISHED,
+        publishDate: new Date().getTime(),
+        unpublishDate: null
+      })
+    );
+  }
+
+  unpublishSingleItem(id: string) {
+    return from(
+      this.ngoInFocusCollection.doc(id).update({
+        status: ITEM_STATUS.INACTIVE,
+        unpublishDate: new Date().getTime()
       })
     );
   }

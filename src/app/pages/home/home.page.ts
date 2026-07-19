@@ -43,4 +43,11 @@ export class HomePage implements OnInit {
     this.viewConsentPopup = false;
     localStorage.setItem('privacyConsentAccepted', 'true');
   }
+
+  scrollToElements(): void {
+    const el = document.querySelector('app-life-elements');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
 }

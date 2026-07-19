@@ -31,3 +31,28 @@
 .toolbar-background-wrapper {
   --background: #fffaf0; // floral white
 }
+
+// ── Modern nav links ─────────────────────────────────────────────
+ion-buttons[slot="end"] {
+  ion-button {
+    --color: #10263c;
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    --padding-start: 14px;
+    --padding-end: 14px;
+    --border-radius: 999px;
+    margin-left: 4px;
+    transition: background 0.15s ease, color 0.15s ease;
+
+    &:hover {
+      --background: rgba(101, 175, 222, 0.1);
+      --color: #1a6fb5;
+    }
+
+    &::part(native) {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+  }
+}

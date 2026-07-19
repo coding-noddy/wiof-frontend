@@ -1,42 +1,163 @@
-.wiof-earth {
-  background-color: rgb(214, 254, 225);
+@import '../../wiof-custom-theming.scss';
+
+ion-content {
+  --background: #f8fafb;
 }
 
-.wiof-water {
-  background-color: rgb(223, 243, 255);
+// ── Wrapper ──────────────────────────────────────────────────────
+.blog-post-wrapper {
+  max-width: 100%;
 }
 
-.wiof-fire {
-  background-color: rgb(255, 235, 184);
+// ── Hero image ───────────────────────────────────────────────────
+.blog-hero {
+  width: 100%;
+  max-height: 400px;
+  overflow: hidden;
+  background: #eef4fb;
 }
 
-.wiof-air {
-  background-color: rgb(229, 229, 229);
+.blog-hero-img {
+  width: 100%;
+  height: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  display: block;
 }
 
-.wiof-spirit {
-  background-color: rgb(241, 222, 198);
+// ── Article ──────────────────────────────────────────────────────
+.blog-article {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
 }
 
-.wiof-blog-col {
+// ── Meta top (back button + read time) ───────────────────────────
+.blog-meta-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.blog-read-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: rgba(0, 0, 0, 0.5);
+  font-weight: 500;
+
+  ion-icon { font-size: 1rem; }
+}
+
+// ── Title ────────────────────────────────────────────────────────
+.blog-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #10263c;
+  line-height: 1.25;
+  margin: 0 0 1rem;
+
+  @media (max-width: 600px) {
+    font-size: 1.5rem;
+  }
+}
+
+// ── Author row ───────────────────────────────────────────────────
+.blog-author-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.author-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.author-name {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: $dark-color;
+}
+
+.blog-date {
+  font-size: 0.82rem;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+// ── Divider ──────────────────────────────────────────────────────
+.blog-divider {
+  border: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  margin: 1.5rem 0;
+}
+
+// ── Content ──────────────────────────────────────────────────────
+.blog-content {
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: #2d3748;
+  text-align: justify;
+
+  // Style inline HTML content from CMS
+  p { margin-bottom: 1.25rem; }
+  h2, h3, h4 { margin-top: 1.5rem; margin-bottom: 0.75rem; color: #10263c; }
+  img { max-width: 100%; border-radius: 12px; margin: 1rem 0; }
+  a { color: $home-color-dark; font-weight: 600; }
+  blockquote {
+    border-left: 4px solid $home-color;
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    color: #4a5568;
+    font-style: italic;
+  }
+  ul, ol { padding-left: 1.5rem; margin-bottom: 1.25rem; }
+  li { margin-bottom: 0.5rem; }
+}
+
+// ── About author ─────────────────────────────────────────────────
+.blog-about-author {
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 14px;
+  padding: 1.25rem;
+
+  h4 {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #10263c;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.92rem;
+    color: #475569;
+    line-height: 1.7;
+    text-align: justify;
+  }
+}
+
+// ── Loading skeleton ─────────────────────────────────────────────
+.blog-loading {
   min-height: 500px;
 }
 
-.blog-container {
-  border-radius: 10px;
-  box-shadow: lightgrey 5px 5px 25px;
-  padding: 20px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-
-  .time-to-read {
-    color: grey;
-    font-size: 15px;
-
-    ion-icon {
-      height: 18px;
-      width: 18px;
-      vertical-align: text-bottom;
-    }
+// ── Responsive ───────────────────────────────────────────────────
+@media (max-width: 600px) {
+  .blog-article {
+    padding: 1rem 1rem 2rem;
   }
+
+  .blog-content {
+    font-size: 0.95rem;
+    line-height: 1.75;
+  }
+
+  .blog-hero { max-height: 250px; }
+  .blog-hero-img { max-height: 250px; }
 }

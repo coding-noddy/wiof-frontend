@@ -1,123 +1,234 @@
 @import '../../wiof-custom-theming.scss';
 
-.aqi-good {
-  background-color: $aqi-good-color;
+$a-dark: darken($air-color, 24%);
+
+// ── Scorecard container ──────────────────────────────────────────
+.aqi-scorecard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.5rem 0;
+  animation: fadeSlideUp 0.3s ease;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// ── Hero AQI card ────────────────────────────────────────────────
+.aqi-hero {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
   color: $dark-color;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
 
-.aqi-moderate {
-  background-color: $aqi-moderate-color;
-  color: $dark-color;
+.aqi-hero-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
 }
 
-.aqi-unhealthy-for-sensitive {
-  background-color: $aqi-unhealthy-for-sensitive-color;
-  color: $dark-color;
+.aqi-number {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
 }
 
-.aqi-unhealthy {
-  background-color: $aqi-unhealthy-color;
-  color: $light-color;
+.aqi-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 3px;
+  text-align: center;
 }
 
-.aqi-very-unhealthy {
-  background-color: $aqi-very-unhealthy-color;
-  color: $light-color;
+.aqi-hero-right {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
 }
 
-.aqi-hazardous {
-  background-color: $aqi-hazardous-color;
-  color: $light-color;
-}
-
-.aqi-na {
-  background-color: $light-color;
-  color: $dark-color;
-}
-
-.card-non-aqi {
-  background-color: $light-color;
-  color: $dark-color;
-
-  ion-card-header {
-    padding: 0px;
-  }
-
-  ion-card-content {
-    padding: 0px;
-  }
-}
-
-//adding scroll to search results
-
-.wiof-aqi-widget-items {
-  height: 300px;
-}
-
-.wiof-aqi-widget-items [scrolly='true'] {
-  position: relative;
+.aqi-station {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 
-  ::-webkit-scrollbar {
-    display: none;
+  ion-icon { font-size: 0.9rem; flex-shrink: 0; }
+}
+
+.aqi-pollutant {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+// ── Health advice ────────────────────────────────────────────────
+.aqi-advice {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 0.5rem 0.7rem;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+
+  ion-icon {
+    font-size: 1rem;
+    color: $a-dark;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  span {
+    font-size: 0.78rem;
+    color: $dark-color;
+    line-height: 1.5;
   }
 }
 
-.wiof-aqi-widget-items[scrolly='true'] {
-  overflow-y: auto;
+// ── Pollutant grid ───────────────────────────────────────────────
+.pollutant-heading {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: $a-dark;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.4rem;
 }
 
-.wiof-aqi-search-result-expand {
-  cursor: pointer;
+.pollutant-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 0.4rem;
 }
 
-.aqi-data-card {
-  padding: 5px;
-  background-color: $air-color;
+.pollutant-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0.5rem 0.3rem;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.pollutant-name {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: $a-dark;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.pollutant-value {
+  font-size: 1rem;
+  font-weight: 800;
   color: $dark-color;
 }
 
-.aqi-level-card {
-  // box-shadow: -1px -1px 2px 0px #000000;
-  border-radius: 5px;
-  // border-top:1px #3d2e4b solid;
-  // border-left:1px  #3d2e4b solid;
-  // border-bottom:2px rgb(247, 228, 255)  solid;
-  // border-right:2px rgb(247, 228, 255) solid;
-  color: $dark-color;
-  padding: 2px 5px;
-  // font-size: 12px;
-  font-size: large;
+.pollutant-unit {
+  font-size: 0.58rem;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+// ── Credit ───────────────────────────────────────────────────────
+.aqi-credit {
+  font-size: 0.68rem;
+  color: rgba(0, 0, 0, 0.4);
   text-align: center;
+
+  a {
+    color: $a-dark;
+    font-weight: 600;
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
 }
 
-.aqi-station-name {
-  font-size: small;
-  text-align: left;
-  padding: 5px;
+// ── AQI colors ───────────────────────────────────────────────────
+.aqi-good { background-color: $aqi-good-color; color: $dark-color; }
+.aqi-moderate { background-color: $aqi-moderate-color; color: $dark-color; }
+.aqi-unhealthy-for-sensitive { background-color: $aqi-unhealthy-for-sensitive-color; color: $dark-color; }
+.aqi-unhealthy { background-color: $aqi-unhealthy-color; color: $light-color; }
+.aqi-very-unhealthy { background-color: $aqi-very-unhealthy-color; color: $light-color; }
+.aqi-hazardous { background-color: $aqi-hazardous-color; color: $light-color; }
+.aqi-na { background-color: rgba(0,0,0,.05); color: $dark-color; }
+
+// ── Loading ──────────────────────────────────────────────────────
+.aqi-scorecard-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 1.5rem;
+  font-size: 0.82rem;
+  color: rgba(0, 0, 0, 0.5);
 }
 
-.dominent-pollutant {
-  font-size: small;
-  text-align: center;
+.loading-dots {
+  display: flex;
+  gap: 4px;
+
+  span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: $a-dark;
+    animation: dotBounce 1.2s ease infinite;
+
+    &:nth-child(2) { animation-delay: 0.2s; }
+    &:nth-child(3) { animation-delay: 0.4s; }
+  }
 }
 
-.aqi-parameter {
-  color: $dark-color;
-  font-size: large;
-  text-align: center;
-  padding: 2px;
-  margin: 5px;
+@keyframes dotBounce {
+  0%, 80%, 100% { transform: scale(0.7); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
 }
 
-.aqi-parameter-value {
-  color: $dark-color;
-  font-size: medium;
-  text-align: center;
-  margin: 5px;
+// ── Loading skeleton ─────────────────────────────────────────────
+.aqi-scorecard-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
 }
 
-.data-credit {
-  font-size: small;
-  text-align: left;
+.skeleton-pollutant-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+}
+
+// ── Responsive ───────────────────────────────────────────────────
+@media (max-width: 400px) {
+  .pollutant-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .aqi-hero {
+    flex-direction: column;
+    text-align: center;
+  }
 }

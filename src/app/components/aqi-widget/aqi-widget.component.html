@@ -1,156 +1,126 @@
-<ion-card class="wiof-aqi-widget-card-background widget-height">
-  <ion-card-header class="wiof-aqi-widget-card-header">
-    <ion-card-title class="title-text">
-      AQI Widget
-      <!-- <ion-icon
-        name="information-circle-outline"
-      ></ion-icon> -->
-    </ion-card-title>
-  </ion-card-header>
-  <div class="aqi-widget-contents">
-    <ion-row>
-      <ion-col>
-        <a style="cursor: pointer" (click)="about = !about">
-          About AQI Widget
-          <ion-icon *ngIf="!about" name="chevron-down-outline"></ion-icon
-          ><ion-icon *ngIf="about" name="chevron-up-outline"></ion-icon
-        ></a>
-        <p *ngIf="about" style="text-align: justify; color: #2d2d2d">
-          Air Quality Index or AQI is an Indicator of the status of air at a
-          certain location. It simplifies the communication of Air quality to
-          general people making it easier for them to understand. Air quality at
-          a certain place consists of data of various pollutants and hence it is
-          not easy for general public to understand the complex data, AQI on the
-          other hand simplifies the data by expressing the whole data in a
-          single value.
-        </p>
-      </ion-col>
-    </ion-row>
-    <ion-toolbar color="air" class="wiof-aqi-widget-card-toolbar">
-      <button
-        class="wiof-primary-btn"
-        [ngClass]="{ active: !searchLocationTabSelect }"
-        (click)="loadMajorCitiesDiv()"
-      >
-        <ion-icon name="golf-outline"></ion-icon>Major Cities
-      </button>
-      <button
-        class="wiof-primary-btn"
-        [ngClass]="{ active: searchLocationTabSelect }"
-        (click)="loadSearchLocationDiv()"
-      >
-        <ion-icon name="search-outline"></ion-icon>Search Location
-      </button>
-      <!-- <button
-      class="wiof-primary-btn"
-      slot="start"
-      target="_blank"
-      href="https://waqi.info/forecast/#/!pol:pm25"
-    >
-      <ion-icon name="open-outline"></ion-icon> AQI Forecast
-    </button> -->
+<div class="aqi-widget-card widget-height">
 
-      <!-- <ion-button
-      fill="solid"
-      slot="start"
-      target="_blank"
-      href="https://waqi.info/forecast/#/!pol:pm25"
-      >AQI Forecast <ion-icon name="open-outline"></ion-icon
-    ></ion-button> -->
-      <!-- future use new window aqi map view button -->
-      <!-- <ion-button ><ion-icon name="browsers-outline"></ion-icon></ion-button> -->
-    </ion-toolbar>
-    <ion-toolbar
-      color="air"
-      class="wiof-aqi-widget-card-toolbar"
-      *ngIf="!searchLocationTabSelect"
-    >
-      <ion-item>
-        <ion-label>Location</ion-label>
-        <ion-select
-          interface="popover"
+  <!-- ── Header ─────────────────────────────────────────────── -->
+  <div class="aqi-widget-header">
+    <div class="header-left">
+      <ion-icon name="cloud-outline" class="header-icon"></ion-icon>
+      <span class="title-text">AQI Widget</span>
+    </div>
+    <button class="about-toggle" (click)="about = !about" [attr.aria-expanded]="about">
+      <ion-icon [name]="about ? 'information-circle' : 'information-circle-outline'"></ion-icon>
+      <span>About</span>
+    </button>
+  </div>
+
+  <!-- ── About panel ─────────────────────────────────────────── -->
+  <div class="about-panel" [class.open]="about">
+    <p class="about-text">
+      Air Quality Index (AQI) simplifies complex pollutant data into a single value.
+      Check real-time air quality for Indian cities or search any location globally.
+      Data powered by the World Air Quality Index project (waqi.info).
+    </p>
+  </div>
+
+  <!-- ── Body ───────────────────────────────────────────────── -->
+  <div class="aqi-widget-body">
+
+    <!-- City select + search (always visible, like water widget) -->
+    <div class="aqi-city-row">
+      <div class="city-select-wrap">
+        <select
+          class="city-select"
           [(ngModel)]="selectedLocation"
-          placeholder="Select Location"
+          aria-label="Select city"
         >
-          <ion-select-option
-            *ngFor="let majorLocation of majorLocations"
-            [value]="majorLocation"
-            >{{ majorLocation | titlecase }}</ion-select-option
-          >
-        </ion-select>
-      </ion-item>
-    </ion-toolbar>
+          <option *ngFor="let city of majorLocations" [value]="city">
+            {{ city | titlecase }}
+          </option>
+        </select>
+        <ion-icon name="chevron-down-outline" class="city-chevron"></ion-icon>
+      </div>
+      <button class="aqi-search-toggle" (click)="showSearch = !showSearch" [class.active]="showSearch" title="Search any location">
+        <ion-icon name="search-outline"></ion-icon>
+      </button>
+    </div>
 
-    <ion-toolbar
-      color="air"
-      class="wiof-aqi-widget-card-toolbar"
-      *ngIf="searchLocationTabSelect"
-    >
-      <ion-row>
-        <ion-col size="8" class="ion-no-padding">
-          <ion-item>
-            <ion-input
-              [(ngModel)]="searchLocation"
-              placeholder="Enter Location"
-            ></ion-input>
-          </ion-item>
-        </ion-col>
-        <ion-col size="4" class="ion-no-padding">
+    <!-- Search panel (toggleable) -->
+    <div class="aqi-search-panel" *ngIf="showSearch">
+      <input
+        class="aqi-search-input"
+        type="text"
+        [ngModel]="searchLocation"
+        (ngModelChange)="onSearchInput($event)"
+        placeholder="Search any city or station..."
+        aria-label="Search location"
+      />
+
+      <!-- Loading skeleton -->
+      <div class="aqi-search-loading" *ngIf="searchLoading">
+        <div class="skeleton" style="height: 34px; border-radius: 8px; margin-top: 6px;"></div>
+        <div class="skeleton" style="height: 34px; border-radius: 8px; margin-top: 4px;"></div>
+      </div>
+
+      <!-- Search results -->
+      <div class="aqi-search-results" *ngIf="searchLocationClickedFlag && !searchLoading && searchLocationResults">
+        <div *ngIf="!searchLocationResults.data || !searchLocationResults.data[0]" class="no-results">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <span>No AQI data found. Try another city.</span>
+        </div>
+        <div *ngIf="searchLocationResults.data && searchLocationResults.data[0]" class="results-list">
           <button
-            class="wiof-primary-btn full-width full-height no-margin"
-            style="border-radius: 0; min-width: 100%"
-            (click)="searchByLocation()"
+            class="result-item"
+            *ngFor="let location of searchLocationResults.data"
+            (click)="expandLocationAqiDetails('@' + location.uid)"
           >
-            Search
+            <div class="result-station">
+              <ion-icon name="location-outline"></ion-icon>
+              <span>{{ location.station.name }}</span>
+            </div>
+            <span
+              class="result-aqi"
+              [ngClass]="location.aqi && location.aqi !== '-' ? aqiColor(location.aqi) : 'aqi-na'"
+            >
+              {{ location.aqi && location.aqi !== '-' ? location.aqi : 'View' }}
+            </span>
           </button>
-        </ion-col>
-      </ion-row>
-      <div *ngIf="searchLocationClickedFlag">
-        <div scrollY="true" class="wiof-aqi-widget-items">
-          <div
-            *ngIf="
-              searchLocationResults | async as locationsFound;
-              else loading
-            "
-          >
-            <!-- <p> {{locationsFound.data|json}} </p> -->
-            <div *ngIf="!locationsFound.data[0]">
-              <p style="color: red">
-                AQI data for this location is not available.
-              </p>
-              <p style="color: grey">Please search for another location.</p>
-            </div>
-            <div *ngIf="locationsFound.data[0]">
-              <ion-list>
-                <ion-item>
-                  <strong class="wiof-aqi-search-result-expand">
-                    Station Name (Click on location for AQI details) </strong
-                  ><strong slot="end">AQI</strong>
-                </ion-item>
-
-                <ion-item *ngFor="let location of locationsFound.data">
-                  <span class="wiof-aqi-search-result-expand">{{
-                    location.station.name
-                  }}</span
-                  ><span
-                    class="aqi"
-                    slot="end"
-                    [ngClass]="aqiColor(location.aqi)"
-                    >{{ location.aqi }}</span
-                  >
-                </ion-item>
-              </ion-list>
-            </div>
-          </div>
-          <ng-template #loading> Fetching locations... </ng-template>
         </div>
       </div>
-    </ion-toolbar>
-    <ion-card-content style="padding: 5px">
-      <app-aqi-scorecard
-        *ngIf="showAqiScorecard"
-        [locationUrl]="selectedLocation"
-      ></app-aqi-scorecard>
-    </ion-card-content>
+    </div>
+
+    <!-- AQI Scorecard -->
+    <app-aqi-scorecard
+      *ngIf="showAqiScorecard"
+      [locationUrl]="selectedLocation"
+    ></app-aqi-scorecard>
+
   </div>
-</ion-card>
+
+  <!-- ── Fact strip ──────────────────────────────────────────── -->
+  <div class="fact-strip" [class.fact-strip--expanded]="factExpanded">
+    <div class="fact-content">
+      <ion-icon name="bulb-outline" class="fact-icon"></ion-icon>
+      <div class="fact-body">
+        <p class="fact-text" [class.expanded]="factExpanded">{{ currentFact.text }}</p>
+        <div class="fact-meta-row">
+          <a class="fact-source" [href]="currentFact.url" target="_blank" rel="noopener noreferrer">
+            <ion-icon name="link-outline"></ion-icon>{{ currentFact.source }}
+          </a>
+          <button class="fact-expand-btn" (click)="factExpanded = !factExpanded">
+            {{ factExpanded ? 'Show less' : 'Read more' }}
+            <ion-icon [name]="factExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="fact-controls">
+      <button class="fact-btn" (click)="prevFact()" aria-label="Previous fact">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <span class="fact-counter">{{ currentFactIndex + 1 }} / {{ aqiFacts.length }}</span>
+      <button class="fact-btn" (click)="nextFact()" aria-label="Next fact">
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
+
+</div>

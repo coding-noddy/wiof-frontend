@@ -5,6 +5,34 @@
 
 ---
 
+## 🔴 WIOF Fixes (Next Sprint)
+
+### Responsiveness & Mobile
+- **[HIGH]** Widget responsiveness — ensure all 5 widgets display properly on mobile (proper padding, no overflow)
+- **[HIGH]** Card width and gaps should be consistent in responsive mode across all pages
+- **[HIGH]** Breaking news — image/video not displayed in mobile mode
+- **[HIGH]** Coffee conversation — too much upper/lower spacing on mobile element pages
+- **[HIGH]** Course section — image not fully visible on mobile devices
+
+### Design Improvements
+- **[HIGH]** Subscribe section — needs modern redesign (currently old side-drawer style)
+- **[HIGH]** Privacy policy acceptance strip — redesign to look modern (cookie-consent style bar)
+- **[MED]** Blog page design — individual blog post page needs better layout
+  - Reference: https://wiof-staging.web.app/element/air/blog/KkeNELNVMtzOPQZ8r1A1
+- **[MED]** About us page — card designs should be improved
+- **[MED]** Calendar loading — cards jump due to "loading calendar" text. Use skeleton/overlay instead.
+
+### Functional Fixes
+- **[HIGH]** Privacy policy year range — should be dynamic: "2020-{currentYear}" not hardcoded
+- **[MED]** "Discover More" button — should scroll to element section or coffee conversation on home page
+  instead of navigating away
+- **[MED]** "About Us" → consider renaming to "Meet Our Team" (more personal, less corporate)
+  - "About Us" implies mission/vision. "Meet Our Team" implies people → more engaging for users
+  - Business perspective: Users connect with people, not statements. "Meet Our Team" builds trust.
+  - Recommendation: Keep "About Us" as the page but rename the nav link to "Our Team" or "Meet the Team"
+
+---
+
 ## 🔵 Widget Improvements
 
 ### Water Widget
@@ -55,9 +83,31 @@
 - Water Widget full redesign — modern card, category tabs, last-visited badge
 - Water Widget live rainfall via Open-Meteo (no API key, free tier)
 - Water Widget verified facts with official citations (World Bank, WHO, NITI Aayog, CGWB)
+- Energy Widget full redesign — CO₂ calculator with verified factors (CEA, IPCC)
+- Energy Widget fact strip with verified citations (PIB, MNRE, IEA, Newsonair)
+- Food pH Widget redesign — 543 foods, flip card, category dropdown, random button
+- Food pH Widget nutrition data via USDA FoodData Central API
+- Food pH Widget data verified against Clemson, USDA PMP, FDA tables (260 items)
+- Code review: memory leaks fixed (takeUntil pattern)
+- Code review: race condition fixed (switchMap for nutrition requests)
+- Code review: dead code removed (selectedUnit, refreshCache)
+- Code review: timer typing fixed (ReturnType<typeof setInterval>)
+- Code review: aria-live added to dynamic content sections
+- Code review: input upper bound added (10,000 kWh max)
 - Element pages (Air, Earth, Fire, Spirit, Water) — full modern UI redesign
 - Blog card / Blog slider redesign
 - Environment calendar — modal image section + next/prev month
 - NGO in-focus description removal
 - Home page hero image and tagline cleanup
 - Section nav component (sticky pills menu on element pages)
+
+## 📋 Known Limitations (Acceptable)
+
+- API keys are in client bundle — standard for frontend-only apps without backend
+  - USDA key has built-in rate limiting
+  - Open-Meteo needs no key
+  - Firebase keys are protected by Security Rules
+- Food pH category dropdown lacks full keyboard navigation (arrow keys, Escape)
+  - Acceptable for V1, can add @angular/cdk overlay later
+- 292 food pH items remain "Approximate" — no bulk Indian food pH database exists
+  - All pass category validation, honestly labeled in UI

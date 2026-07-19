@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
     </ion-buttons>
-    <ion-title>Manage Ngo In Focuses</ion-title>
+    <ion-title>Manage Firm In Focus</ion-title>
     <ion-buttons slot="end">
       <ion-button color="dark" fill="clear" size="large" (click)="refreshData()"
         ><ion-icon name="refresh-outline" slot="start"></ion-icon
@@ -13,7 +13,7 @@
         fill="solid"
         size="large"
         (click)="addNgoInFocus()"
-        ><ion-icon name="add-outline" slot="start"></ion-icon>Add New In
+        ><ion-icon name="add-outline" slot="start"></ion-icon>Add New Firm In
         Focus</ion-button
       >
     </ion-buttons>
@@ -27,7 +27,7 @@
     </ion-row>
     <ion-row class="item-divider-line">
       <ion-col size-md="2" class="ion-align-self-center"
-        ><strong>NGO Name</strong></ion-col
+        ><strong>Firm Name</strong></ion-col
       >
       <ion-col size-md="3" class="ion-align-self-center"
         ><strong>Know More Link</strong></ion-col
@@ -84,16 +84,17 @@
             <ion-button
               (click)="publishNgoInFocus(ngoInFocus.id, ngoInFocus.category)"
               *ngIf="ngoInFocus.status == 'inactive'"
-              disabled
+              title="Click to Re-publish Firm In Focus"
               ><ion-icon
                 slot="icon-only"
-                name="rocket"
+                name="rocket-outline"
                 class="status-inactive"
               ></ion-icon
             ></ion-button>
             <ion-button
               *ngIf="ngoInFocus.status == 'published'"
-              title="Published Ngo In Focus"
+              title="Click to Unpublish Firm In Focus"
+              (click)="unpublishSingleNgoInFocus(ngoInFocus)"
               ><ion-icon
                 slot="icon-only"
                 name="rocket"

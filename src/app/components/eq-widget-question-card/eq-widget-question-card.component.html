@@ -1,11 +1,29 @@
-<div *ngIf="!showResult">
-  <div
-    class="eq-user-response"
-    *ngFor="let question of questions; let i = index"
-    [formGroup]="userResponse"
-  >
-    <p>{{ i + 1 }} ) {{ question }}</p>
-    <ion-item>
+<!-- Progress bar -->
+<div class="eq-progress" *ngIf="!showResult">
+  <div class="progress-header">
+    <span class="progress-label">Progress</span>
+    <span class="progress-count">{{ answeredCount }} of 24 answered</span>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" [style.width.%]="(answeredCount / 24) * 100"></div>
+  </div>
+</div>
+
+<!-- Questions -->
+<div class="eq-questions" *ngIf="!showResult" [formGroup]="userResponse">
+  <div class="eq-question-card" *ngFor="let question of questions; let i = index">
+    <p class="question-text">
+      <span class="question-num">{{ i + 1 }}</span>
+      {{ question }}
+    </p>
+    <div class="range-labels">
+      <span class="range-label-text">Never</span>
+      <span class="range-label-text">Rarely</span>
+      <span class="range-label-text">Sometimes</span>
+      <span class="range-label-text">Often</span>
+      <span class="range-label-text">Always</span>
+    </div>
+    <ion-item class="range-item">
       <ion-range
         min="1"
         max="5"
@@ -22,46 +40,65 @@
   </div>
 </div>
 
-<div
-  class="ion-text-center ion-margin-top ion-margin-bottom"
-  *ngIf="!showResult"
->
-  <button class="wiof-primary-btn" (click)="onSubmit()">Submit</button>
-  <button class="wiof-secondary-btn" (click)="onBack()">Back</button>
+<!-- Submit / Back buttons -->
+<div class="eq-actions" *ngIf="!showResult">
+  <button class="wiof-primary-btn" (click)="onSubmit()">
+    <ion-icon name="checkmark-outline"></ion-icon>
+    Submit Assessment
+  </button>
+  <button class="wiof-secondary-btn" (click)="onBack()">
+    <ion-icon name="arrow-back-outline"></ion-icon>
+    Back
+  </button>
 </div>
 
-<div *ngIf="showResult">
-  <p class="eq-meter-heading">Your emotional intelligence is:</p>
-  <ion-row class="result-box">
-    <ion-col size="12" size-md="6">
-      <p class="eq-meter-heading">
-        Attention: {{ this.results[0] | number: '1.0-2' }}%
-      </p>
-      <app-eq-widget-test [gpr]="['m', '1', results[0]]"></app-eq-widget-test>
-    </ion-col>
-    <ion-col size="12" size-md="6">
-      <p class="eq-meter-heading">
-        Clarity: {{ this.results[1] | number: '1.0-2' }}%
-      </p>
-      <app-eq-widget-test [gpr]="['m', '2', results[1]]"></app-eq-widget-test>
-    </ion-col>
-    <ion-col size="12" size-md="6" offset-md="3">
-      <p class="eq-meter-heading">
-        Reparation: {{ this.results[2] | number: '1.0-2' }}%
-      </p>
-      <app-eq-widget-test [gpr]="['m', '3', results[2]]"></app-eq-widget-test>
-    </ion-col>
-  </ion-row>
-  <ion-row>
-    <ion-col size="12" class="eq-param-desc">
-      <p>Attention: {{ result1msg }}</p>
-      <p>Clarity: {{ result2msg }}</p>
-      <p>Reparation: {{ result3msg }}</p>
-    </ion-col>
-  </ion-row>
-  <div class="ion-text-center ion-padding-top ion-padding-bottom">
-    <button class="wiof-primary-btn" (click)="showResult = false">
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- Results -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div class="eq-results" *ngIf="showResult">
+
+  <h3 class="results-title">Your Emotional Intelligence Profile</h3>
+
+  <!-- Result cards -->
+  <div class="result-cards">
+    <div class="result-card" *ngFor="let r of results" [ngClass]="'level-' + r.level">
+      <div class="result-card-header">
+        <span class="result-emoji">{{ r.emoji }}</span>
+        <div class="result-info">
+          <strong>{{ r.dimension }}</strong>
+          <span class="result-score">{{ r.score }}/40 ({{ r.percent | number:'1.0-0' }}%)</span>
+        </div>
+        <span class="result-badge" [ngClass]="r.level">
+          {{ r.level === 'low' ? 'Needs Work' : r.level === 'adequate' ? 'Adequate' : 'Excellent' }}
+        </span>
+      </div>
+      <!-- Progress bar -->
+      <div class="result-bar-wrap">
+        <div class="result-bar-fill" [style.width.%]="r.percent"></div>
+      </div>
+      <p class="result-message">{{ r.message }}</p>
+    </div>
+  </div>
+
+  <!-- Citation -->
+  <div class="eq-citation">
+    <ion-icon name="information-circle-outline"></ion-icon>
+    <span>Based on TMMS-24 scale (Fernández-Berrocal et al., 2004) — validated in 20+ countries.</span>
+    <a href="https://pubmed.ncbi.nlm.nih.gov/15519370/" target="_blank" rel="noopener noreferrer">
+      View source
+    </a>
+  </div>
+
+  <!-- Actions -->
+  <div class="eq-actions">
+    <button class="wiof-primary-btn" (click)="retakeTest()">
+      <ion-icon name="refresh-outline"></ion-icon>
       Take Again
     </button>
+    <button class="wiof-secondary-btn" (click)="onBack()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+      Back to Info
+    </button>
   </div>
+
 </div>

@@ -1,28 +1,88 @@
 @import '../../wiof-custom-theming.scss';
 
-.wiof-concent-popup {
-  background-color: $dark-color;
-  padding: 10px;
+.consent-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(30, 30, 30, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  animation: slideDown 0.4s ease;
 }
 
-.wiof-concent-popup p {
-  margin: 0px;
-  padding: 5px;
-  color: #fff;
-  display: inline-block;
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
-.accept-button {
-  text-align: right;
-  border: 2px solid #fff;
-  background-color: $dark-color;
-  color: white;
-  font-size: medium;
-  padding: 5px;
-  border-radius: 5px;
-  float: right;
+.consent-content {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: 1;
+}
 
-  @media (max-width: 600px) {
-    float: none;
+.consent-icon {
+  font-size: 1.3rem;
+  color: rgba(255, 255, 255, 0.7);
+  flex-shrink: 0;
+}
+
+.consent-text {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+
+  a {
+    color: #90caf9;
+    text-decoration: underline;
+    font-weight: 600;
+
+    &:hover { color: #bbdefb; }
+  }
+}
+
+.consent-accept-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1.25rem;
+  border-radius: 999px;
+  border: none;
+  background: #fff;
+  color: $dark-color;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+  }
+
+  &:active { transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+  .consent-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .consent-accept-btn {
+    width: 100%;
   }
 }

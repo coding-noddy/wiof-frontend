@@ -1,67 +1,59 @@
-<ion-grid *ngIf="aqiData$ | async as aqiData" class="ion-no-padding">
-  <ion-row>
-    <ion-col size="12">
-      <ion-card>
-        <ion-card-content class="aqi-data-card">
-          <ion-row>
-            <ion-col>
-              <p class="aqi-station-name">
-                Station: {{ aqiData.city.name | titlecase }}
-              </p>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col>
-              <p class="aqi-level-card" [ngClass]="aqiColor(aqiData.aqi)">
-                AQI : {{ aqiData.aqi }}
-              </p>
-            </ion-col>
-            <ion-col>
-              <p class="dominent-pollutant">
-                Dominent Pollutant: {{ aqiData.dominentpol | uppercase }}
-              </p>
-            </ion-col>
-          </ion-row>
-        </ion-card-content>
-      </ion-card>
-    </ion-col>
-  </ion-row>
+<div class="aqi-scorecard" *ngIf="aqiData$ | async as aqiData; else loadingTpl">
 
-  <!-- Parameters data -->
-  <div scrollY="true" class="wiof-aqi-widget-items">
-    <ion-row>
-      <ion-col
-        size-xs="4"
-        size-md="6"
-        size-lg="4"
-        size-xl="3"
-        *ngFor="let parameter of getAqiParameters(aqiData.iaqi)"
-      >
-        <ion-card class="card-non-aqi">
-          <ion-card-header>
-            <p class="aqi-parameter">
-              {{ parameter[0] | uppercase }}
-            </p>
-          </ion-card-header>
-          <ion-card-content>
-            <p class="aqi-parameter-value">
-              {{ parameter[1].v | number: '1.0-1' }}
-            </p>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>
-        <p class="ion-padding">
-          Data Credit:&nbsp;<a
-            href="https://waqi.info/"
-            target="_blank"
-            class="data-credit"
-            >World Air Quality Index Project</a
-          >
-        </p>
-      </ion-col>
-    </ion-row>
+  <!-- Main AQI card -->
+  <div class="aqi-hero" [ngClass]="aqiColor(aqiData.aqi)">
+    <div class="aqi-hero-left">
+      <span class="aqi-number">{{ aqiData.aqi }}</span>
+      <span class="aqi-label">{{ aqiLabel(aqiData.aqi) }}</span>
+    </div>
+    <div class="aqi-hero-right">
+      <span class="aqi-station">
+        <ion-icon name="location-outline"></ion-icon>
+        {{ aqiData.city.name | titlecase }}
+      </span>
+      <span class="aqi-pollutant">
+        Dominant: <strong>{{ aqiData.dominentpol | uppercase }}</strong>
+      </span>
+    </div>
   </div>
-</ion-grid>
+
+  <!-- Health advice -->
+  <div class="aqi-advice">
+    <ion-icon [name]="getAdviceIcon(aqiData.aqi)"></ion-icon>
+    <span>{{ getAdvice(aqiData.aqi) }}</span>
+  </div>
+
+  <!-- Pollutant parameters grid -->
+  <div class="pollutant-grid" *ngIf="getAqiParameters(aqiData.iaqi).length > 0">
+    <p class="pollutant-heading">Pollutant Levels</p>
+    <div class="pollutant-cards">
+      <div
+        class="pollutant-card"
+        *ngFor="let param of getAqiParameters(aqiData.iaqi)"
+      >
+        <span class="pollutant-name">{{ getParameterLabel(param[0]) }}</span>
+        <span class="pollutant-value">{{ param[1].v | number: '1.0-1' }}</span>
+        <span class="pollutant-unit">{{ getParameterUnit(param[0]) }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data credit -->
+  <div class="aqi-credit">
+    <span>Data: </span>
+    <a href="https://waqi.info/" target="_blank" rel="noopener noreferrer">
+      World Air Quality Index Project
+    </a>
+  </div>
+
+</div>
+
+<ng-template #loadingTpl>
+  <div class="aqi-scorecard-skeleton">
+    <div class="skeleton-card" style="height: 72px;"></div>
+    <div class="skeleton" style="height: 40px; border-radius: 10px;"></div>
+    <div class="skeleton-pollutant-grid">
+      <div class="skeleton" style="height: 60px; border-radius: 10px;" *ngFor="let i of [1,2,3,4,5,6]"></div>
+    </div>
+  </div>
+</ng-template>

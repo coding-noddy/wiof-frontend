@@ -1,62 +1,300 @@
 @import '../../wiof-custom-theming.scss';
 
-.eq-meter-heading {
-  font-size: large;
-  font-weight: bold;
-  padding: 10px;
+$s: $spirit-color;
+$s-dark: darken($s, 22%);
+
+// ── Gender selection ─────────────────────────────────────────
+.eq-gender-select {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem;
 }
 
-.result-box {
-  border-radius: 5px;
-  background-color: white;
+.gender-label {
+  font-size: .85rem;
+  font-weight: 600;
+  color: $dark-color;
 }
 
-// Each result column — constrain width and center content
-.result-box ion-col {
+.gender-pills {
+  display: flex;
+  gap: .4rem;
+}
+
+.gender-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  border: 1.5px solid rgba($s-dark, .25);
+  background: rgba(255,255,255,.7);
+  font-size: .82rem;
+  font-weight: 600;
+  color: $dark-color;
+  cursor: pointer;
+  transition: all .15s ease;
+
+  &:hover { background: rgba(255,255,255,.95); border-color: $s-dark; }
+
+  &.active {
+    background: $s-dark;
+    border-color: $s-dark;
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,.1);
+  }
+}
+
+.gender-note {
+  width: 100%;
+  font-size: .7rem;
+  color: rgba(0,0,0,.45);
+  margin: .25rem 0 0;
+}
+
+// ── Progress bar ─────────────────────────────────────────────
+.eq-progress {
+  margin-bottom: .75rem;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(6px);
+  padding: .75rem .85rem;
+  border-radius: 10px;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: .35rem;
+}
+
+.progress-label {
+  font-size: .72rem;
+  font-weight: 700;
+  color: $s-dark;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.progress-count {
+  font-size: .72rem;
+  color: rgba(0,0,0,.5);
+  font-weight: 500;
+}
+
+.progress-bar-wrap {
+  height: 5px;
+  background: rgba(0,0,0,.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, $s-dark, darken($s-dark, 8%));
+  transition: width .3s ease;
+}
+
+// ── Range labels ─────────────────────────────────────────────
+.range-labels {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 2px;
+  margin-bottom: -2px;
+}
+
+.range-label-text {
+  font-size: .62rem;
+  color: rgba(0,0,0,.4);
+  font-weight: 500;
+  text-align: center;
+  flex: 1;
+}
+
+// ── Questions ────────────────────────────────────────────────
+.eq-questions {
   display: flex;
   flex-direction: column;
+  gap: .6rem;
+}
+
+.eq-question-card {
+  background: rgba(255,255,255,.7);
+  border: 1px solid rgba(255,255,255,.9);
+  border-radius: 14px;
+  padding: .65rem .85rem .4rem;
+}
+
+.question-text {
+  margin: 0 0 .3rem;
+  font-size: .85rem;
+  color: $dark-color;
+  line-height: 1.5;
+}
+
+.question-num {
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba($s-dark, .12);
+  color: $s-dark;
+  font-size: .7rem;
+  font-weight: 700;
+  margin-right: 6px;
 }
 
-.result-box app-eq-widget-test {
-  display: block;
-  width: 100%;
-  max-width: 420px;
-}
+.range-item {
+  --background: transparent;
+  --padding-start: 0;
+  --padding-end: 0;
+  --inner-padding-end: 0;
 
-.eq-user-response {
-  p {
-    padding: 10px 0 0;
+  ion-text {
+    font-size: .75rem;
+    font-weight: 600;
+    color: $dark-color;
   }
+}
 
-  ion-item {
-    border-radius: 20px;
-    margin: 5px;
+// ── Actions ──────────────────────────────────────────────────
+.eq-actions {
+  display: flex;
+  gap: .6rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  padding-bottom: .5rem;
+}
 
-    ion-text {
-      font-size: 14px;
-      color: $dark-color;
-      font-weight: $font-weight-medium;
-    }
+// ── Results ──────────────────────────────────────────────────
+.eq-results {
+  animation: fadeSlideUp .3s ease;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.results-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $dark-color;
+  text-align: center;
+  margin: 0 0 1rem;
+}
+
+.result-cards {
+  display: flex;
+  flex-direction: column;
+  gap: .7rem;
+}
+
+.result-card {
+  background: rgba(255,255,255,.8);
+  border: 1px solid rgba(255,255,255,.95);
+  border-radius: 14px;
+  padding: .75rem .85rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,.04);
+}
+
+.result-card-header {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin-bottom: .5rem;
+}
+
+.result-emoji {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.result-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+
+  strong {
+    font-size: .88rem;
+    color: $dark-color;
   }
 }
 
-.eq-param-desc p {
-  padding: 5px 10px;
-  border: 1px solid lightgrey;
-  background: white;
-  border-radius: 1rem;
-  font-weight: $font-weight-medium;
-  margin-top: 5px;
+.result-score {
+  font-size: .72rem;
+  color: rgba(0,0,0,.5);
 }
 
-.submit-eq ::ng-deep .button {
-  background-color: $energy-color;
+.result-badge {
+  font-size: .68rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+
+  &.low { background: rgba(198,40,40,.1); color: #c62828; }
+  &.adequate { background: rgba(245,127,23,.1); color: #f57f17; }
+  &.excellent { background: rgba(46,125,50,.1); color: #2e7d32; }
 }
 
-@media (max-width: 576px) {
-  .eq-meter-heading {
-    font-size: 0.95rem;
-    padding: 6px;
+// Progress bar
+.result-bar-wrap {
+  height: 6px;
+  background: rgba(0,0,0,.06);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: .5rem;
+}
+
+.result-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width .6s ease;
+}
+
+.level-low .result-bar-fill { background: linear-gradient(90deg, #ef5350, #ff8a65); }
+.level-adequate .result-bar-fill { background: linear-gradient(90deg, #ffa726, #ffcc80); }
+.level-excellent .result-bar-fill { background: linear-gradient(90deg, #66bb6a, #a5d6a7); }
+
+.result-message {
+  font-size: .78rem;
+  color: rgba(0,0,0,.6);
+  line-height: 1.5;
+  margin: 0;
+}
+
+// ── Citation ─────────────────────────────────────────────────
+.eq-citation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin-top: 1rem;
+  padding: .5rem .7rem;
+  background: rgba($s-dark, .05);
+  border-radius: 10px;
+  font-size: .7rem;
+  color: rgba(0,0,0,.5);
+
+  ion-icon { font-size: .85rem; color: $s-dark; flex-shrink: 0; }
+
+  a {
+    color: $s-dark;
+    font-weight: 600;
+    text-decoration: none;
+    margin-left: auto;
+
+    &:hover { text-decoration: underline; }
   }
 }

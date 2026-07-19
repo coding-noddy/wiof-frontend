@@ -1,21 +1,36 @@
 <div class="food-ph-indicator-meter" aria-label="Food pH meter">
   <div class="meter-summary">
     <div class="meter-info">
-      <span class="meter-label">Selected food</span>
+      <span class="meter-label"> Selected Food </span>
+
       <h3 class="meter-food-title">
-        {{ food?.name === 'Default' ? 'Pick a food item' : food?.name }}
+        {{ food?.name || "Pick a food item" }}
       </h3>
+
       <p class="meter-food-copy">
-        {{ food?.name === 'Default' ? 'Search a food and hit Calculate to see where it lands on the pH scale.' : 'This item sits in the ' + foodStatus.toLowerCase() + ' zone with a pH of ' + food?.value + '.' }}
+        {{
+          !food
+            ? "Search and select a food to see where it falls on the pH scale."
+            : food.name +
+              " is classified as " +
+              foodStatus.toLowerCase() +
+              " with a pH value of " +
+              food.ph +
+              "."
+        }}
       </p>
     </div>
+
     <span class="meter-status-badge" [ngClass]="foodStatusClass">
       {{ foodStatus }}
     </span>
+
     <div class="scale-key">
-      <span class="scale-key-item acidic">Acidic</span>
-      <span class="scale-key-item neutral">Neutral</span>
-      <span class="scale-key-item alkaline">Alkaline</span>
+      <span class="scale-key-item acidic"> Acidic </span>
+
+      <span class="scale-key-item neutral"> Neutral </span>
+
+      <span class="scale-key-item alkaline"> Alkaline </span>
     </div>
   </div>
 
@@ -47,12 +62,7 @@
     <div class="bracket" [ngClass]="updatePhPointer()"></div>
   </div>
 
-  <div
-    class="ph-meter-message"
-    role="status"
-    aria-live="polite"
-    *ngIf="food?.name === 'Default'"
-  >
+  <div class="ph-meter-message" role="status" aria-live="polite" *ngIf="!food">
     {{ message }}
   </div>
 </div>

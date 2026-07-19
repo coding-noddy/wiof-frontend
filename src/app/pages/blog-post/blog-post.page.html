@@ -1,53 +1,64 @@
 <app-header></app-header>
 <ion-content>
-  <ion-grid>
-    <ion-row>
-      <ion-col class="wiof-blog-col" size="12" size-lg="8" offset-lg="2">
-        <div class="blog-container">
-          <ion-row *ngIf="(blogDetails | async) as blog">
-            <ion-col size="12">
-              <h1>{{ blog.title }}</h1>
-            </ion-col>
-            <ion-col size="12">
-              <ion-img [src]="(blog.image$ | async)"></ion-img>
-            </ion-col>
-            <ion-col size="12">
-              <div>
-                <ion-text *ngIf="blog.author">By {{blog.author}}</ion-text> |
-                <span class="time-to-read"
-                  ><ion-icon
-                    slot="icon-only"
-                    name="stopwatch-outline"
-                  ></ion-icon>
-                  {{blog.timeToRead}} min read</span
-                >
-              </div>
-              <ion-text *ngIf="blog.publishDate"
-                >Published on {{blog.publishDate | date }}</ion-text
-              >
-            </ion-col>
-            <ion-col size="12">
-              <app-back-button></app-back-button>
-              <app-social-share></app-social-share>
-            </ion-col>
-            <ion-item-divider></ion-item-divider>
-            <ion-col size="12">
-              <ion-text
-                style="text-align: justify; text-justify: inter-word"
-                [innerHTML]="blog.content"
-              ></ion-text>
-            </ion-col>
-            <ion-item-divider></ion-item-divider>
-            <ion-col size="12">
-              <h4>About {{blog.author}}</h4>
-              <ion-text style="text-align: justify; text-justify: inter-word"
-                >{{blog.aboutAuthor}}</ion-text
-              >
-            </ion-col>
-          </ion-row>
+  <div class="blog-post-wrapper" *ngIf="(blogDetails | async) as blog; else loading">
+
+    <!-- Hero image -->
+    <div class="blog-hero">
+      <img [src]="blog.image$ | async" [alt]="blog.title" class="blog-hero-img" />
+    </div>
+
+    <!-- Article -->
+    <article class="blog-article">
+
+      <!-- Meta -->
+      <div class="blog-meta-top">
+        <app-back-button></app-back-button>
+        <span class="blog-read-time">
+          <ion-icon name="time-outline"></ion-icon>
+          {{ blog.timeToRead }} min read
+        </span>
+      </div>
+
+      <!-- Title -->
+      <h1 class="blog-title">{{ blog.title }}</h1>
+
+      <!-- Author + date -->
+      <div class="blog-author-row">
+        <div class="author-info">
+          <span class="author-name" *ngIf="blog.author">By {{ blog.author }}</span>
+          <span class="blog-date" *ngIf="blog.publishDate">{{ blog.publishDate | date: 'MMM dd, yyyy' }}</span>
         </div>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+        <app-social-share></app-social-share>
+      </div>
+
+      <hr class="blog-divider" />
+
+      <!-- Content -->
+      <div class="blog-content" [innerHTML]="blog.content"></div>
+
+      <hr class="blog-divider" />
+
+      <!-- About author -->
+      <div class="blog-about-author" *ngIf="blog.aboutAuthor">
+        <h4>About {{ blog.author }}</h4>
+        <p>{{ blog.aboutAuthor }}</p>
+      </div>
+
+    </article>
+  </div>
+
+  <ng-template #loading>
+    <div class="blog-loading">
+      <div class="skeleton" style="height: 300px; border-radius: 0;"></div>
+      <div style="max-width: 780px; margin: 2rem auto; padding: 0 1rem;">
+        <div class="skeleton" style="height: 32px; width: 80%; margin-bottom: 1rem;"></div>
+        <div class="skeleton" style="height: 16px; width: 40%; margin-bottom: 2rem;"></div>
+        <div class="skeleton" style="height: 14px; width: 100%; margin-bottom: 0.6rem;"></div>
+        <div class="skeleton" style="height: 14px; width: 95%; margin-bottom: 0.6rem;"></div>
+        <div class="skeleton" style="height: 14px; width: 90%; margin-bottom: 0.6rem;"></div>
+      </div>
+    </div>
+  </ng-template>
+
   <app-wiof-footer></app-wiof-footer>
 </ion-content>
