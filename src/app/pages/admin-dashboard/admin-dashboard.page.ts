@@ -36,7 +36,7 @@ export class AdminDashboardPage implements OnInit {
         actionUrl: 'manage-in-focus'
       },
       {
-        name: 'NGOs In Focus',
+        name: 'Firm In Focus',
         actionUrl: 'manage-ngo-in-focus'
       },
       {

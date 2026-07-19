@@ -152,6 +152,7 @@ $page-padding-mobile:  16px;
   margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 
 // Host elements fill the full col height

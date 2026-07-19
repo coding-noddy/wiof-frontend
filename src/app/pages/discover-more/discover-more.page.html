@@ -1,69 +1,74 @@
 <app-header></app-header>
 <ion-content>
-  <ion-row>
-    <ion-col size="12">
-      <h1 class="discover-more-title">Discover More</h1>
-      <app-back-button class="back-button"></app-back-button>
-    </ion-col>
-    <ion-col class="video-frame" size-md="8" size="12" offset-md="2">
-      <app-video-widget [element]="'config'"></app-video-widget>
-    </ion-col>
-    <ion-col size="12" class="ion-padding">
-      <div style="text-align: justify; text-justify: inter-word">
-        <h1>Our Purpose</h1>
-        <p>
-          An ancient Indian idea of Vasudhaiva Kutumbakam (The entire world is
-          one family) is the need of the hour for this planet as we battle
-          multiple challenges ranging from Climate Change, Global Warming,
-          Pollution, Poverty, Hunger, Floods, Famines, Inequality, Pandemics,
-          Riots, Mental Health Issues, Hyper-consumerism, Unemployment etc. The
-          idea of well informed interconnected people sharing knowledge and
-          helping each other can help us face these challenges in a much robust
-          manner. Nowhere was it more evident than in these unprecedented
-          challenging times of the Covid-19 crisis where people are staying
-          isolated for several weeks at a stretch, away from the families,
-          friends, communities and lifestyles that they are used to. Virtual
-          connects are a blessing during such times but can't be just limited to
-          socialization. We need meaningful connect with relevant information
-          sharing pertaining to the planet so that we can leave it in a better
-          one than we found it.
+  <div class="discover-page">
+
+    <!-- Hero section -->
+    <section class="discover-hero">
+      <div class="hero-inner">
+        <app-back-button></app-back-button>
+        <h1 class="discover-title">Our Purpose</h1>
+        <p class="discover-subtitle">
+          Vasudhaiva Kutumbakam — The entire world is one family
         </p>
-        <p>
-          What we then need is a deeper introspection about the kind of lives
-          that we had led over the years in the mad rat race of life and the
-          elusive search for money, fame, power which we think will bring us
-          happiness, but which has only brought us frustration and despondency
-          with a lack of fulfillment in general with our lives. We not only need
-          to heal ourselves by self care such that we feel more in harmony with
-          the universe, but also need to care about the ecosystem and the
-          biodiversity all around us, which is being decimated with every
-          passing day at an alarming rate. And armed with the knowledge that we
-          acquire in this quest, we need to disseminate it to a wider network by
-          having deeper meaningful connections.
-        </p>
-        <p>
-          It is with this idea, that we few like minded people, got together at
-          the height of the Coronavirus Pandemic to start this Website WIOF
-          (World Is One Family) which will combine the 3 major aspects of
-          Creativity, Knowledge and Action (as exemplified in our slogan :
-          Inspire through Creativity, Enlighten through Knowledge and Protect
-          through Action) to create a portal that can lead a wider community of
-          well-informed compassionate people helping each other to bring
-          betterment to the society and the planet at large.
-        </p>
-        <p>
-          We have created the website painstakingly, over many weekends of this
-          lock-down with one and only one purpose, to awaken, inform and
-          encourage people to come together to make a difference to their lives
-          and the lives of many others less fortunate so as to add meaning to
-          their lives. So, urge you all to please support us in this endeavor
-          and embark with us in this exciting journey of healing the universe.
-          Just take the first step and we promise you that it will be the ride
-          of your lives.
-        </p>
-        <p>So, Welcome to the Family</p>
       </div>
-    </ion-col>
-  </ion-row>
+    </section>
+
+    <!-- Video -->
+    <section class="discover-video">
+      <app-video-widget [element]="'config'"></app-video-widget>
+    </section>
+
+    <!-- Content -->
+    <section class="discover-content">
+
+      <div class="content-card">
+        <div class="card-icon">🌍</div>
+        <h2>Why We Exist</h2>
+        <p>
+          An ancient Indian idea of <em>Vasudhaiva Kutumbakam</em> (The entire world is one family)
+          is the need of the hour as we battle multiple challenges — Climate Change, Pollution,
+          Poverty, Mental Health, and more. Well-informed, interconnected people sharing knowledge
+          can face these challenges together. This was evident during the Covid-19 crisis where
+          meaningful virtual connections became essential.
+        </p>
+      </div>
+
+      <div class="content-card">
+        <div class="card-icon">🧘</div>
+        <h2>Our Philosophy</h2>
+        <p>
+          We need deeper introspection about our lives — moving beyond the rat race toward
+          harmony with the universe. We need to heal ourselves through self-care, protect the
+          ecosystem and biodiversity around us, and share the knowledge we acquire to build
+          deeper, meaningful connections with a wider community.
+        </p>
+      </div>
+
+      <div class="content-card">
+        <div class="card-icon">💡</div>
+        <h2>How We Started</h2>
+        <p>
+          A few like-minded people came together during the Coronavirus Pandemic to start WIOF —
+          combining three aspects: <strong>Creativity</strong>, <strong>Knowledge</strong>, and
+          <strong>Action</strong>. Our slogan captures it: <em>Inspire through Creativity,
+          Enlighten through Knowledge, Protect through Action</em>.
+        </p>
+      </div>
+
+      <div class="content-card">
+        <div class="card-icon">🤝</div>
+        <h2>Join the Family</h2>
+        <p>
+          We built this website to awaken, inform, and encourage people to come together —
+          to make a difference in their lives and the lives of those less fortunate.
+          Take the first step and embark with us on this exciting journey of healing the universe.
+        </p>
+        <p class="welcome-text">Welcome to the Family.</p>
+      </div>
+
+    </section>
+
+  </div>
+
   <app-wiof-footer></app-wiof-footer>
 </ion-content>
