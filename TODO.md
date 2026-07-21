@@ -11,6 +11,11 @@
 - **[HIGH]** Refine admin dashboard — modern card-based UI, better navigation, responsive layout
 - **[MED]** All admin manage pages — consistent table/card designs, better mobile experience
 
+### Pending Improvements
+- **[MED]** Environment Calendar — remove external padding, make calendar dates area bigger
+- **[MED]** Polls widget — show results from previous polls, show correct answers
+- **[LOW]** AQI temperature — values come directly from monitoring stations via WAQI API (correct as reported)
+
 ### Responsiveness & Mobile
 - **[HIGH]** Widget responsiveness — ensure all 5 widgets display properly on mobile (proper padding, no overflow)
 - **[HIGH]** Card width and gaps should be consistent in responsive mode across all pages

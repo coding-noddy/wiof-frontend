@@ -154,27 +154,17 @@ $panel-shadow:
 
 .about-panel {
   overflow: hidden;
-
   max-height: 0;
-
-  background: rgba(255,255,255,.76);
-
-  border: 1px solid rgba(0,0,0,.05);
-
-  border-radius: $input-radius;
-
+  background: rgba(255,255,255,.55);
+  border-bottom: 1px solid rgba(0,0,0,.06);
   transition:
-    max-height .35s ease,
-    padding .35s ease,
-    margin-bottom .35s ease;
+    max-height .3s ease,
+    padding .3s ease;
 }
 
 .about-panel.open {
-  max-height: 220px;
-
-  padding: 1rem 1.15rem;
-
-  margin-bottom: 1rem;
+  max-height: 160px;
+  padding: 0.75rem 1.1rem;
 }
 
 .about-content {

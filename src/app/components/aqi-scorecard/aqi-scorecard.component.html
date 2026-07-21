@@ -30,9 +30,11 @@
       <div
         class="pollutant-card"
         *ngFor="let param of getAqiParameters(aqiData.iaqi)"
+        [class.suspicious]="isValueSuspicious(param[0], param[1].v)"
       >
         <span class="pollutant-name">{{ getParameterLabel(param[0]) }}</span>
-        <span class="pollutant-value">{{ param[1].v | number: '1.0-1' }}</span>
+        <span class="pollutant-value" *ngIf="!isValueSuspicious(param[0], param[1].v)">{{ param[1].v | number: '1.0-1' }}</span>
+        <span class="pollutant-value suspicious-text" *ngIf="isValueSuspicious(param[0], param[1].v)">N/A</span>
         <span class="pollutant-unit">{{ getParameterUnit(param[0]) }}</span>
       </div>
     </div>

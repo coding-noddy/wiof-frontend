@@ -42,10 +42,10 @@
           <option *ngFor="let city of cities" [ngValue]="city">{{ city.name }}</option>
         </select>
         <ion-icon name="chevron-down-outline" class="select-chevron"></ion-icon>
-        <button class="city-search-toggle" (click)="toggleCitySearch()" title="Search any city worldwide">
-          <ion-icon name="search-outline"></ion-icon>
-        </button>
       </div>
+      <button class="city-search-toggle" (click)="toggleCitySearch()" title="Search any city worldwide">
+        <ion-icon name="search-outline"></ion-icon>
+      </button>
     </div>
 
     <!-- City search panel -->

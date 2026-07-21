@@ -141,29 +141,39 @@ $radius-item: 14px;
   position: relative;
   display: inline-flex;
   align-items: center;
+  flex: 1;
 }
 
 .city-select {
   appearance: none;
-  background: rgba($w, 0.6);
-  border: 1px solid rgba($w-dark, 0.25);
-  border-radius: 999px;
-  padding: 4px 26px 4px 10px;
-  font-size: 0.76rem;
-  font-weight: 600;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: 0 28px 0 10px;
+  font-size: 0.82rem;
+  font-weight: 500;
   color: $dark-color;
   cursor: pointer;
   outline: none;
-  transition: background 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
-  &:hover { background: rgba($w, 0.9); }
+  &:hover { border-color: rgba($w-dark, 0.4); }
+  &:focus {
+    border-color: $w-dark;
+    box-shadow: 0 0 0 3px rgba(0, 100, 180, 0.1);
+  }
 }
 
 .select-chevron {
   position: absolute;
-  right: 8px;
-  font-size: 0.7rem;
-  color: $w-dark;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.65rem;
+  color: rgba(0, 0, 0, 0.4);
   pointer-events: none;
 }
 

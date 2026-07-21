@@ -152,6 +152,16 @@ $a-dark: darken($air-color, 24%);
   color: rgba(0, 0, 0, 0.4);
 }
 
+.pollutant-card.suspicious {
+  opacity: 0.5;
+  border: 1px dashed rgba(0, 0, 0, 0.15);
+}
+
+.suspicious-text {
+  color: rgba(0, 0, 0, 0.3) !important;
+  font-size: 0.8rem !important;
+}
+
 // ── Credit ───────────────────────────────────────────────────────
 .aqi-credit {
   font-size: 0.68rem;

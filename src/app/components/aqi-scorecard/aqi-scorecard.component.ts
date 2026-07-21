@@ -66,6 +66,14 @@ export class AqiScorecardComponent implements OnInit, OnChanges {
     return this.paramUnits[code] || '';
   }
 
+  /** Flag obviously incorrect values (e.g. negative temperature in tropical cities) */
+  isValueSuspicious(code: string, value: number): boolean {
+    if (code === 't' && (value < -10 || value > 55)) return true;  // temperature sanity
+    if (code === 'w' && value > 40) return true;  // wind > 144 km/h is extreme
+    if (code === 'h' && (value < 0 || value > 100)) return true;  // humidity %
+    return false;
+  }
+
   aqiColor(aqi: number): string {
     if (aqi > 0 && aqi < 51) return 'aqi-good';
     if (aqi >= 51 && aqi < 101) return 'aqi-moderate';

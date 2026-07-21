@@ -581,4 +581,19 @@ $radius-item: 14px;
   .calc-btn {
     flex: 1;
   }
+
+  .fact-strip {
+    padding: 0.5rem 0.6rem;
+    gap: 0.4rem;
+  }
+
+  .fact-meta-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .fact-expand-btn {
+    margin-left: 0;
+  }
 }
