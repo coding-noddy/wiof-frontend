@@ -93,6 +93,7 @@ export class AddPollPage implements OnInit, OnDestroy {
         new FormControl('', Validators.required),
         new FormControl('', Validators.required)
       ]),
+      correctAnswer: new FormControl(''),
       publishStartDate: new FormControl(publishStartDate, Validators.required),
       publishEndDate: new FormControl(publishEndDate, Validators.required)
     });
@@ -105,6 +106,7 @@ export class AddPollPage implements OnInit, OnDestroy {
     this.addPollForm = new FormGroup({
       question: new FormControl(pollQuestion.question, Validators.required),
       options: new FormArray(optionControls),
+      correctAnswer: new FormControl(pollQuestion.correctAnswer || ''),
       publishStartDate: new FormControl(
         new Date(pollQuestion.publishStartDate),
         Validators.required
@@ -184,6 +186,7 @@ export class AddPollPage implements OnInit, OnDestroy {
       isEditMode ? pollQuestion.pollId : null,
       addPollForm.value.question,
       addPollForm.value.options,
+      addPollForm.value.correctAnswer || '',
       new Date(addPollForm.value.publishStartDate).getTime(),
       new Date(addPollForm.value.publishEndDate).getTime(),
       isEditMode ? pollQuestion.submitDate : new Date().getTime(),

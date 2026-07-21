@@ -62,6 +62,20 @@
         </ion-col>
       </ion-row>
       <ion-row>
+        <ion-col size-xs="12" size-lg="6">
+          <ion-item>
+            <ion-label position="floating">Correct Answer (optional)</ion-label>
+            <ion-select formControlName="correctAnswer" interface="popover" placeholder="Select correct option">
+              <ion-select-option
+                *ngFor="let option of getOptionControls().controls; let i = index"
+                [value]="'option' + (i + 1)"
+              >Option {{ i + 1 }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <p><ion-note>Select the correct answer to reveal after voting</ion-note></p>
+        </ion-col>
+      </ion-row>
+      <ion-row>
         <ion-col size-xs="12" size-md="6" size-lg="3">
           <mat-form-field appearance="fill">
             <mat-label>{{ pageContent.publishStartDateLabel }}</mat-label>

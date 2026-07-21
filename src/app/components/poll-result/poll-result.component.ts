@@ -44,6 +44,12 @@ export class PollResultComponent implements OnInit, OnDestroy {
       });
   }
 
+  getCorrectAnswerText(): string {
+    if (!this.pollQuestion.correctAnswer) return '';
+    const index = parseInt(this.pollQuestion.correctAnswer.replace('option', ''), 10) - 1;
+    return this.pollQuestion.options[index] || '';
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();

@@ -1,7 +1,7 @@
 @import '../../wiof-custom-theming.scss';
 
 .wiof-poll-card {
-  background-color: rgba($home-color, $tint-fraction);
+  background-color: #fff;
   height: calc(100% - 20px);
   border-radius: 18px;
   overflow: hidden;
@@ -80,7 +80,29 @@
 
 .poll-option input[type='radio']:checked + .option-body {
   border-color: $home-color;
-  box-shadow: 0 14px 30px rgba(33, 49, 92, 0.06);
+  box-shadow: 0 4px 16px rgba(33, 49, 92, 0.08);
+
+  &::after {
+    content: '✓';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: $home-color;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.option-body {
+  position: relative;
 }
 
 .option-text {

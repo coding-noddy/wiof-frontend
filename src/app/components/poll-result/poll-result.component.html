@@ -1,28 +1,43 @@
-<div class="polls-results-container">
-  <div class="title-text">Result ({{ totalVotes }} votes)</div>
-  <br />
-  <div class="font-size-medium">
-    <p>Poll Question</p>
-    <p style="font-size: large">{{ pollQuestion.question }}</p>
+<div class="poll-results-container">
+  <div class="results-header">
+    <span class="results-title">Results</span>
+    <span class="results-votes">{{ totalVotes }} votes</span>
   </div>
-  <br />
-  <p style="font-size: medium"></p>
-  <div
-    class="poll-options"
-    *ngFor="let option of pollQuestion.options; let i = index"
-  >
-    <ion-label>{{ option | titlecase }}</ion-label>
-    <div class="poll-bar">
-      <div
-        class="poll-bar-fill"
-        [style.width]="optionData['option' + (i + 1)]?.percent + '%'"
-      >
-        <span class="poll-percent"
-          >{{
-            optionData['option' + (i + 1)]?.percent | number: '1.0-2'
-          }}%</span
-        >
+
+  <p class="results-question">{{ pollQuestion.question }}</p>
+
+  <div class="poll-options-results">
+    <div
+      class="poll-option-result"
+      *ngFor="let option of pollQuestion.options; let i = index"
+      [class.correct-answer]="pollQuestion.correctAnswer === 'option' + (i + 1)"
+    >
+      <div class="option-header">
+        <span class="option-label">
+          {{ option }}
+          <ion-icon
+            *ngIf="pollQuestion.correctAnswer === 'option' + (i + 1)"
+            name="checkmark-circle"
+            class="correct-icon"
+          ></ion-icon>
+        </span>
+        <span class="option-percent">
+          {{ optionData['option' + (i + 1)]?.percent | number: '1.0-0' }}%
+        </span>
+      </div>
+      <div class="result-bar">
+        <div
+          class="result-bar-fill"
+          [style.width.%]="optionData['option' + (i + 1)]?.percent || 0"
+          [class.correct-bar]="pollQuestion.correctAnswer === 'option' + (i + 1)"
+        ></div>
       </div>
     </div>
+  </div>
+
+  <!-- Correct answer reveal -->
+  <div class="correct-answer-note" *ngIf="pollQuestion.correctAnswer">
+    <ion-icon name="checkmark-circle-outline"></ion-icon>
+    <span>Correct answer: <strong>{{ getCorrectAnswerText() }}</strong></span>
   </div>
 </div>

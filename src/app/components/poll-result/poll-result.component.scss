@@ -1,53 +1,130 @@
 @import '../../wiof-custom-theming.scss';
 
-.polls-results-container {
-  background-color: $home-color-light;
-  padding: 5%;
-  border-radius: 5px;
-  height: 100%;
+.poll-results-container {
+  padding: 0.75rem 0;
+  animation: fadeIn 0.3s ease;
 }
 
-.poll-options {
-  display: block;          // was inline-block — causes overflow
-  width: 100%;
-  background-color: #e0e0e0;
-  padding: 2%;
-  margin: 1% 0;
-  border-radius: 5px;
-  box-sizing: border-box;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.poll-bar {
-  height: 20px;
-  width: 100%;             // was fixed 300px
-  border: solid black 2px;
-  margin-bottom: 5px;
-  position: relative;
-  border-radius: 3px;
-  overflow: hidden;
-  box-sizing: border-box;
+.results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
 }
 
-.poll-bar-fill {
-  transition: width 1s ease;
-  height: 100%;
-  background-color: $home-color;
-  border-right: solid black 2px;
-  position: relative;
-}
-
-.poll-percent {
-  position: absolute;
-  left: 5px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 11px;
+.results-title {
+  font-size: 0.9rem;
+  font-weight: 700;
   color: $dark-color;
-  white-space: nowrap;
 }
 
-.wiof-polls-widget-card-background {
-  background-color: rgba($home-color, $tint-fraction);
-  color: black;
-  font-size: large;
+.results-votes {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.04);
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.results-question {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: $dark-color;
+  margin: 0 0 0.85rem;
+  line-height: 1.5;
+}
+
+// ── Options results ──────────────────────────────────────────────
+.poll-options-results {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.poll-option-result {
+  padding: 0.5rem 0.6rem;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: background 0.15s ease;
+
+  &.correct-answer {
+    background: rgba(46, 125, 50, 0.06);
+    border-color: rgba(46, 125, 50, 0.2);
+  }
+}
+
+.option-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.3rem;
+}
+
+.option-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: $dark-color;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.correct-icon {
+  color: #2e7d32;
+  font-size: 0.95rem;
+}
+
+.option-percent {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: $home-color-dark;
+}
+
+// ── Result bar ───────────────────────────────────────────────────
+.result-bar {
+  height: 6px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.result-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, $home-color, $home-color-dark);
+  transition: width 0.6s ease;
+
+  &.correct-bar {
+    background: linear-gradient(90deg, #66bb6a, #2e7d32);
+  }
+}
+
+// ── Correct answer note ──────────────────────────────────────────
+.correct-answer-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.7rem;
+  background: rgba(46, 125, 50, 0.06);
+  border: 1px solid rgba(46, 125, 50, 0.15);
+  border-radius: 10px;
+  font-size: 0.78rem;
+  color: #2e7d32;
+
+  ion-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  strong {
+    color: #1b5e20;
+  }
 }
