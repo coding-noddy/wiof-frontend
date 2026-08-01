@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
-// Imported from package.json at build time via angular.json
 declare const require: any;
 
 @Component({
@@ -11,7 +10,7 @@ declare const require: any;
 })
 export class WiofFooterComponent implements OnInit {
   currentYear = new Date().getFullYear();
-  appVersion = '1.0.11';
+  appVersion: string = require('../../../package.json').version;
   envLabel = environment.production ? 'prod' : 'staging';
 
   constructor() {}
