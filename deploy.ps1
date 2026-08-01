@@ -65,7 +65,9 @@ if (-not $SkipBranch) {
 
     # Update version in footer component so it shows in the app
     $footerTs = Get-Content "src\app\components\wiof-footer\wiof-footer.component.ts" -Raw
-    $footerTs = $footerTs -replace "appVersion = '[^']*'", "appVersion = '$version'"
+    $pattern = "appVersion = '.*?'"
+    $replacement = "appVersion = '" + $version + "'"
+    $footerTs = $footerTs -replace $pattern, $replacement
     Set-Content "src\app\components\wiof-footer\wiof-footer.component.ts" $footerTs
 
     # Check if branch already exists
