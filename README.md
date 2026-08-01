@@ -122,172 +122,63 @@ The build artifacts will be stored in the `dist/` directory.
 
 ## Deployment
 
-### Firebase Setup
+### Prerequisites
 
-#### 1. Initialize Firebase Project (First Time Only)
+- Firebase CLI logged in: `firebase login`
+- Angular CLI available: `npx ng version`
+- Correct Firebase projects in `.firebaserc`
 
-If you haven't initialized Firebase for this project yet:
+### Quick Deploy (Recommended)
 
-```bash
-firebase init
+Use the unified PowerShell deploy script:
+
+```powershell
+# Deploy to STAGING
+.\deploy.ps1 -Target staging
+
+# Deploy to PRODUCTION (requires confirmation)
+.\deploy.ps1 -Target prod
+
+# Deploy from current branch (skip release branch creation)
+.\deploy.ps1 -Target staging -SkipBranch
 ```
 
-Select the following options:
-- Hosting (use spacebar to select)
-- Use existing project or create a new one
-- Select your Firebase project
-- Set public directory to: `dist`
-- Configure as single-page app: `Yes`
-- Set up automatic builds with GitHub: `No` (optional)
+### What the script does:
 
-#### 2. Login to Firebase
+1. **Creates release branch** — `release-{version}` from `package.json` version
+2. **Cleans** previous `dist/` build
+3. **Installs** dependencies if `node_modules` is missing
+4. **Builds** — `ng build` for staging, `ng build --configuration production` for prod
+5. **Deploys** — `firebase deploy --only hosting --project wiof-staging|wiof-production`
+6. **Tags** — creates git tag `v{version}-staging` or `v{version}-prod`
 
-```bash
-firebase login
+### Firebase Projects
+
+| Alias | Project ID | URL |
+|-------|-----------|-----|
+| staging | wiof-staging | https://wiof-staging.web.app |
+| prod | wiof-production | https://wiof-production.web.app |
+
+### Manual Deploy (if needed)
+
+```powershell
+# Staging
+npx ng build
+firebase deploy --only hosting --project wiof-staging
+
+# Production
+npx ng build --configuration production
+firebase deploy --only hosting --project wiof-production
 ```
 
-This will open a browser window to authenticate with your Firebase account.
+### Release Process
 
-#### 3. Set Default Project
-
-```bash
-firebase use --add
-```
-
-Select your Firebase project and assign an alias (e.g., `staging`, `production`).
-
-### Staging Deployment
-
-#### Manual Staging Deployment
-
-```bash
-# Build for staging
-ng build --configuration staging
-
-# Deploy to staging Firebase project
-firebase deploy --project=staging
-```
-
-#### Automated Staging Script
-
-Create `deploy-staging.sh`:
-
-```bash
-#!/bin/bash
-
-echo "🚀 Building for Staging..."
-ng build --configuration staging
-
-if [ $? -eq 0 ]; then
-    echo "✅ Build successful!"
-    echo "🔥 Deploying to Firebase Staging..."
-    firebase deploy --project=staging
-    
-    if [ $? -eq 0 ]; then
-        echo "✅ Staging deployment successful!"
-        echo "🌐 Your app is now live at: https://wiof-staging.firebaseapp.com"
-    else
-        echo "❌ Staging deployment failed!"
-        exit 1
-    fi
-else
-    echo "❌ Build failed!"
-    exit 1
-fi
-```
-
-Make it executable:
-
-```bash
-chmod +x deploy-staging.sh
-```
-
-Run it:
-
-```bash
-./deploy-staging.sh
-```
-
-### Production Deployment
-
-#### Manual Production Deployment
-
-```bash
-# Build for production
-ng build --configuration production
-
-# Deploy to production Firebase project
-firebase deploy --project=production
-```
-
-#### Automated Production Script
-
-Create `deploy-production.sh`:
-
-```bash
-#!/bin/bash
-
-echo "⚠️  WARNING: You are about to deploy to PRODUCTION"
-echo "Press Ctrl+C to cancel or Enter to continue..."
-read
-
-echo "🚀 Building for Production..."
-ng build --configuration production
-
-if [ $? -eq 0 ]; then
-    echo "✅ Build successful!"
-    echo "🔥 Deploying to Firebase Production..."
-    firebase deploy --project=production
-    
-    if [ $? -eq 0 ]; then
-        echo "✅ Production deployment successful!"
-        echo "🌐 Your app is now live at: https://wiof-prod.firebaseapp.com"
-    else
-        echo "❌ Production deployment failed!"
-        exit 1
-    fi
-else
-    echo "❌ Build failed!"
-    exit 1
-fi
-```
-
-Make it executable:
-
-```bash
-chmod +x deploy-production.sh
-```
-
-Run it:
-
-```bash
-./deploy-production.sh
-```
-
-### Deploy Specific Hosting Target (Optional)
-
-If you have multiple hosting targets configured:
-
-```bash
-# Deploy to specific target
-firebase deploy --only hosting:staging
-
-firebase deploy --only hosting:production
-
-firebase deploy --only hosting --project=prod
-```
-
-### Rollback a Deployment
-
-```bash
-firebase deploy --project=production --force
-```
-
-To view deployment history:
-
-```bash
-firebase hosting:channel:list --project=production
-```
+1. Ensure all changes are committed to `master`
+2. Update version in `package.json` if needed
+3. Run `.\deploy.ps1 -Target staging` — test on staging
+4. Verify staging works at https://wiof-staging.web.app
+5. Run `.\deploy.ps1 -Target prod` — deploy to production
+6. Push the release branch and tags: `git push --all && git push --tags`
 
 ## Project Structure
 
@@ -320,12 +211,12 @@ wiof-frontend/
 | Script | Description |
 |--------|-------------|
 | `npm start` | Start development server |
-| `npm run build` | Build for production |
+| `npm run build` | Build for staging |
+| `npx ng build --configuration production` | Build for production |
 | `npm test` | Run unit tests |
-| `npm run lint` | Run TypeScript linting |
-| `npm run e2e` | Run end-to-end tests |
-| `./deploy-staging.sh` | Deploy to Firebase staging |
-| `./deploy-production.sh` | Deploy to Firebase production |
+| `.\deploy.ps1 -Target staging` | Full deploy to staging |
+| `.\deploy.ps1 -Target prod` | Full deploy to production |
+| `.\deploy.ps1 -Target staging -SkipBranch` | Quick deploy (no branch) |
 
 ## Technology Stack
 
@@ -416,4 +307,4 @@ This project is part of the World is One Family (WIOF) initiative.
 - Check the [Firebase Documentation](https://firebase.google.com/docs)
 - Check the [Ionic Documentation](https://ionicframework.com/docs)
 
-**Last Updated**: December 2025
+**Last Updated**: July 2026

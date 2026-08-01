@@ -76,6 +76,14 @@
 
 ## 🟢 Future Features
 
+- **[HIGH]** Deployment automation script
+  - Creates release branch from master (e.g. `release-1.0.7`)
+  - Accepts flag: `--staging` or `--prod`
+  - Staging: uses `environment.ts` config, runs `ng build`, deploys to `wiof-staging` Firebase project
+  - Production: uses `environment.prod.ts` config, runs `ng build --configuration production`, deploys to `wiof-production` Firebase project
+  - Single command: `npm run deploy -- --staging` or `npm run deploy -- --prod`
+  - Could also tag the release in git after successful deploy
+
 - **[MED]** AI-powered "Did You Know?" facts for all element widgets
   - Each element widget (Air, Earth, Fire, Spirit) gets a verified fact strip
   - Single Firestore collection per element, managed from admin panel
