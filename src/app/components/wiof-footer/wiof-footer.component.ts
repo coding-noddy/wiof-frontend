@@ -10,7 +10,7 @@ declare const require: any;
 })
 export class WiofFooterComponent implements OnInit {
   currentYear = new Date().getFullYear();
-  appVersion: string = require('../../../package.json').version;
+  appVersion: string = require('../../../../package.json').version;
   envLabel = environment.production ? 'prod' : 'staging';
 
   constructor() {}
