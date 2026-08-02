@@ -39,17 +39,25 @@ function isCrawler(userAgent) {
 
 /**
  * Get the download URL for a blog image from Firebase Storage
+ * Uses the public download URL format (requires Storage rules to allow public read)
  */
 async function getImageUrl(imageName) {
   try {
     const bucket = storage.bucket();
     const file = bucket.file(`blog-images/${imageName}`);
-    const [url] = await file.getSignedUrl({
-      action: 'read',
-      expires: Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
-    });
-    return url;
+    
+    // Check if file exists
+    const [exists] = await file.exists();
+    if (!exists) {
+      return 'https://wiof-staging.web.app/assets/banners/home_banner.jpg';
+    }
+
+    // Use the public Firebase Storage URL format (no signed URL needed)
+    const bucketName = bucket.name;
+    const encodedPath = encodeURIComponent(`blog-images/${imageName}`);
+    return `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodedPath}?alt=media`;
   } catch (e) {
+    console.error('Image URL error:', e.message);
     return 'https://wiof-staging.web.app/assets/banners/home_banner.jpg'; // fallback
   }
 }
@@ -139,18 +147,41 @@ exports.socialMetaTags = functions
   const userAgent = req.headers['user-agent'] || '';
   const originalUrl = `https://${req.hostname}${req.originalUrl}`;
 
-  // Only intercept crawler requests
+  // Only intercept crawler requests — real users get the SPA index.html
   if (!isCrawler(userAgent)) {
-    // Real users get the normal SPA
-    res.redirect(originalUrl);
+    // Serve the Angular SPA index.html so the app boots and handles routing
+    try {
+      const https = require('https');
+      const indexUrl = `https://${req.hostname}/index.html`;
+      https.get(indexUrl, (proxyRes) => {
+        res.set('Content-Type', 'text/html');
+        res.set('Cache-Control', 'public, max-age=600');
+        proxyRes.pipe(res);
+      }).on('error', () => {
+        res.status(500).send('Error loading page');
+      });
+    } catch (e) {
+      res.status(500).send('Error loading page');
+    }
     return;
   }
 
   // Extract blog param from URL: /element/:element/blog/:blogParam
   const blogMatch = req.path.match(/\/element\/\w+\/blog\/(.+)/);
   if (!blogMatch) {
-    // Not a blog URL — redirect to SPA
-    res.redirect(originalUrl);
+    // Not a blog URL — serve SPA
+    try {
+      const https = require('https');
+      const indexUrl = `https://${req.hostname}/index.html`;
+      https.get(indexUrl, (proxyRes) => {
+        res.set('Content-Type', 'text/html');
+        proxyRes.pipe(res);
+      }).on('error', () => {
+        res.status(500).send('Error loading page');
+      });
+    } catch (e) {
+      res.status(500).send('Error loading page');
+    }
     return;
   }
 
@@ -165,7 +196,7 @@ exports.socialMetaTags = functions
 
     const imageUrl = blog.imageName
       ? await getImageUrl(blog.imageName)
-      : 'https://wiof-staging.web.app/assets/banners/home_banner.jpg';
+      : `https://${req.hostname}/assets/banners/home_banner.jpg`;
 
     const html = generateMetaHtml(blog, imageUrl, originalUrl);
     res.set('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour

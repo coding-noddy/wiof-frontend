@@ -9,7 +9,10 @@
     "rewrites": [
       {
         "source": "/element/*/blog/**",
-        "function": "socialMetaTags"
+        "function": {
+          "functionId": "socialMetaTags",
+          "region": "asia-south1"
+        }
       },
       {
         "source": "**",
