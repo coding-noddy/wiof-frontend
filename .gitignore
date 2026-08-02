@@ -139,4 +139,5 @@ hosting.*
 service-account.json
 scripts/service-account.json
 scripts/.env
+scripts/backups/
 functions/node_modules/
