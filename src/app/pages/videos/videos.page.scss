@@ -1,67 +1,115 @@
 @import '../../wiof-custom-theming.scss';
 
-.videos-content {
-  padding-top: 60px;
-  min-height: calc(100% - 130px);
-
-  &.air {
-    background-color: rgba($air-color, $tint-fraction);
-  }
-
-  &.earth {
-    background-color: rgba($earth-color, $tint-fraction);
-  }
-
-  &.water {
-    background-color: rgba($water-color, $tint-fraction);
-  }
-
-  &.energy {
-    background-color: rgba($energy-color, $tint-fraction);
-  }
-
-  &.spirit {
-    background-color: rgba($spirit-color, $tint-fraction);
-  }
-
-  .no-videos-container {
-    margin: 0;
-    padding: 20px;
-  }
+ion-content {
+  --background: #f4f7fb;
 }
 
-.header-text {
-  font-size: larger;
-  transform: translateY(40%);
-  margin: 0px;
+.videos-page {
+  min-height: 100vh;
 }
 
+// ── Header ───────────────────────────────────────────────────────
 .videos-header {
-  margin: 0 auto;
-  position: fixed;
-  width: 100%;
+  position: sticky;
+  top: 0;
   z-index: 100;
-  font-size: 18px;
-  box-shadow: 0px 2px 5px 0px darkgrey;
-  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 
-  &.air {
-    background-color: $air-color;
+  &.air    { background-color: $air-color; }
+  &.earth  { background-color: $earth-color; }
+  &.water  { background-color: $water-color; }
+  &.energy { background-color: $energy-color; }
+  &.spirit { background-color: $spirit-color; }
+}
+
+.header-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: $dark-color;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.action-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.6);
+  color: $dark-color;
+  text-decoration: none;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+
+  ion-icon { font-size: 1.1rem; }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+}
+
+// ── Video grid ───────────────────────────────────────────────────
+.videos-grid-wrap {
+  padding: 1rem 1.5rem;
+
+  @media (max-width: 767px) {
+    padding: 0.75rem;
+  }
+}
+
+.videos-grid {
+  ion-row {
+    align-items: stretch;
   }
 
-  &.earth {
-    background-color: $earth-color;
+  ion-col {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.75rem;
   }
 
-  &.water {
-    background-color: $water-color;
+  app-video-card {
+    flex: 1;
+  }
+}
+
+// ── No content ───────────────────────────────────────────────────
+.no-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 3rem 1rem;
+  color: rgba(0, 0, 0, 0.4);
+
+  ion-icon {
+    font-size: 2.5rem;
   }
 
-  &.energy {
-    background-color: $energy-color;
+  p {
+    font-size: 0.95rem;
+    margin: 0;
   }
+}
 
-  &.spirit {
-    background-color: $spirit-color;
+// ── Loading ──────────────────────────────────────────────────────
+.videos-loading {
+  padding: 1rem 1.5rem;
+
+  @media (max-width: 767px) {
+    padding: 0.75rem;
   }
 }

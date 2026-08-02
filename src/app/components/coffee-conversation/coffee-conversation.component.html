@@ -93,7 +93,11 @@
       ></div>
     </div>
     <ng-template #loading>
-      <ion-spinner name="crescent" class="wiof-spinner"></ion-spinner><br />
+      <div style="padding: 1rem;">
+        <div class="skeleton" style="height: 180px; border-radius: 12px; margin-bottom: 0.75rem;"></div>
+        <div class="skeleton" style="height: 14px; width: 70%; border-radius: 6px; margin-bottom: 0.5rem;"></div>
+        <div class="skeleton" style="height: 12px; width: 50%; border-radius: 6px;"></div>
+      </div>
     </ng-template>
   </ion-card-content>
 </ion-card>

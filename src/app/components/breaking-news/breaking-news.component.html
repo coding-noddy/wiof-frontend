@@ -36,7 +36,15 @@
     </div>
 
     <ng-template #loading>
-      <div class="loading-wrap"><ion-spinner name="crescent" class="wiof-spinner"></ion-spinner></div>
+      <div class="loading-wrap">
+        <div class="skeleton" style="height: 220px; width: 33%; border-radius: 0;"></div>
+        <div style="flex: 1; padding: 1.5rem; display: flex; flex-direction: column; gap: 0.6rem;">
+          <div class="skeleton" style="height: 14px; width: 40%; border-radius: 6px;"></div>
+          <div class="skeleton" style="height: 20px; width: 80%; border-radius: 6px;"></div>
+          <div class="skeleton" style="height: 12px; width: 100%; border-radius: 6px;"></div>
+          <div class="skeleton" style="height: 12px; width: 90%; border-radius: 6px;"></div>
+        </div>
+      </div>
     </ng-template>
   </ion-card-content>
 </ion-card>

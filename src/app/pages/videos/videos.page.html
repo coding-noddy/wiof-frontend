@@ -1,61 +1,63 @@
 <app-header></app-header>
 
 <ion-content>
-  <h1 class="videos-header" [ngClass]="element">
-    <ion-row>
-      <ion-col size="6">
-        <p class="header-text">{{category}} Videos</p>
-      </ion-col>
-      <ion-col size="6" style="text-align: right">
+  <div class="videos-page" [ngClass]="element">
+
+    <!-- Header -->
+    <div class="videos-header" [ngClass]="element">
+      <h1 class="header-title">{{ category }} Videos</h1>
+      <div class="header-actions">
         <a
           [routerLink]="['take-action']"
-          class="wiof-icon-only-btn"
-          style="position: relative"
+          class="action-link"
           title="Go to Take Action"
           aria-label="Go to Take Action"
         >
           <ion-icon name="trail-sign-outline"></ion-icon>
         </a>
         <app-back-button></app-back-button>
-      </ion-col>
-    </ion-row>
-  </h1>
-
-  <div
-    *ngIf="videos | async as videosList; else loading"
-    class="videos-content"
-    [ngClass]="element"
-  >
-    <ion-grid *ngIf="videosList.length > 0">
-      <ion-row>
-        <ion-col
-          size="12"
-          size-sm="6"
-          size-md="4"
-          size-lg="3"
-          *ngFor="let video of videosList"
-        >
-          <app-video-card [video]="video" [element]="element"></app-video-card>
-        </ion-col>
-
-        <!-- Infinite scroll pending -->
-      </ion-row>
-    </ion-grid>
-
-    <p
-      *ngIf="videosList && videosList.length === 0"
-      class="no-videos-container"
-    >
-      We could not find videos under
-      <strong>{{ this.category }}</strong> category!
-    </p>
-  </div>
-
-  <ng-template #loading>
-    <div class="videos-content">
-      <app-wiof-spinner></app-wiof-spinner>
+      </div>
     </div>
-  </ng-template>
+
+    <!-- Video grid -->
+    <div *ngIf="videos | async as videosList; else loading" class="videos-grid-wrap">
+      <div class="videos-grid" *ngIf="videosList.length > 0">
+        <ion-grid>
+          <ion-row>
+            <ion-col
+              size="12"
+              size-sm="6"
+              size-md="4"
+              size-lg="3"
+              *ngFor="let video of videosList"
+            >
+              <app-video-card [video]="video" [element]="element"></app-video-card>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+
+      <div *ngIf="videosList && videosList.length === 0" class="no-content">
+        <ion-icon name="videocam-off-outline"></ion-icon>
+        <p>No videos found under <strong>{{ category }}</strong> category.</p>
+      </div>
+    </div>
+
+    <ng-template #loading>
+      <div class="videos-loading">
+        <ion-grid>
+          <ion-row>
+            <ion-col size="12" size-sm="6" size-md="4" size-lg="3" *ngFor="let i of [1,2,3,4,5,6,7,8]">
+              <div class="skeleton" style="height: 180px; border-radius: 12px; margin-bottom: 0.5rem;"></div>
+              <div class="skeleton" style="height: 14px; width: 80%; border-radius: 6px; margin-bottom: 0.4rem;"></div>
+              <div class="skeleton" style="height: 12px; width: 50%; border-radius: 6px;"></div>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </ng-template>
+
+  </div>
 
   <app-wiof-footer></app-wiof-footer>
 </ion-content>

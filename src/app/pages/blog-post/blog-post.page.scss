@@ -12,17 +12,38 @@ ion-content {
 // ── Hero image ───────────────────────────────────────────────────
 .blog-hero {
   width: 100%;
-  max-height: 400px;
+  position: relative;
   overflow: hidden;
-  background: #eef4fb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 250px;
+}
+
+.blog-hero-blur {
+  position: absolute;
+  inset: -20px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(20px) brightness(0.7);
+  transform: scale(1.1);
+  z-index: 0;
 }
 
 .blog-hero-img {
-  width: 100%;
-  height: 100%;
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
   max-height: 400px;
-  object-fit: cover;
+  height: auto;
   display: block;
+  object-fit: contain;
+  margin: 0 auto;
+  padding: 0;
+  // Slight sharpening for low-res images
+  image-rendering: -webkit-optimize-contrast;
+  filter: contrast(1.02) saturate(1.05);
 }
 
 // ── Article ──────────────────────────────────────────────────────
@@ -158,6 +179,4 @@ ion-content {
     line-height: 1.75;
   }
 
-  .blog-hero { max-height: 250px; }
-  .blog-hero-img { max-height: 250px; }
 }

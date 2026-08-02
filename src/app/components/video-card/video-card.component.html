@@ -1,21 +1,16 @@
-<ion-card class="video-card">
-  <ion-card-content class="ion-text-start card-content">
-    <div class="img-container">
-      <img
-        [src]="video.thumbnail"
-        class="thumbnailImage"
-        [routerLink]="['video', video.url]"
-        alt=""
-      />
+<div class="video-card" [routerLink]="['/element', element, 'video', video.url]">
+
+  <!-- Thumbnail with play icon overlay -->
+  <div class="video-image-wrap">
+    <img [src]="video.thumbnail" [alt]="video.title" class="video-image" />
+    <div class="play-overlay">
+      <ion-icon name="play-circle"></ion-icon>
     </div>
-    <h3 class="ion-padding">
-      <strong
-        ><a
-          class="link-title"
-          [routerLink]="['/element', element, 'video', video.url]"
-          >{{ video.title }}</a
-        ></strong
-      >
-    </h3>
-  </ion-card-content>
-</ion-card>
+  </div>
+
+  <!-- Title -->
+  <div class="video-body">
+    <h3 class="video-title">{{ video.title }}</h3>
+  </div>
+
+</div>

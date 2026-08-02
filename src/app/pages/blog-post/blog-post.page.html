@@ -2,9 +2,10 @@
 <ion-content>
   <div class="blog-post-wrapper" *ngIf="(blogDetails | async) as blog; else loading">
 
-    <!-- Hero image -->
-    <div class="blog-hero">
-      <img [src]="blog.image$ | async" [alt]="blog.title" class="blog-hero-img" />
+    <!-- Hero image with blurred background -->
+    <div class="blog-hero" *ngIf="(blog.image$ | async) as blogImage">
+      <div class="blog-hero-blur" [style.backgroundImage]="'url(' + blogImage + ')'"></div>
+      <img [src]="blogImage" [alt]="blog.title" class="blog-hero-img" />
     </div>
 
     <!-- Article -->

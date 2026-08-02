@@ -1,65 +1,72 @@
 <app-header></app-header>
 
 <ion-content>
-  <!-- <h1 class="ion-padding blogs-header" [ngClass]="element">
-    <ion-row>
-      <ion-col size=12>
-        <app-back-button></app-back-button>
-      </ion-col>
-    </ion-row>
-    {{category}} Blogs
-  </h1> -->
+  <div class="blogs-page" [ngClass]="element">
 
-  <h1 class="blogs-header" [ngClass]="element">
-    <ion-row>
-      <ion-col size="6">
-        <p class="header-text">{{category}} Blogs</p>
-      </ion-col>
-      <ion-col size="6" style="text-align: right">
+    <!-- Header -->
+    <div class="blogs-header" [ngClass]="element">
+      <h1 class="header-title">{{ category }} Blogs</h1>
+      <div class="header-actions">
         <a
           [routerLink]="['take-action']"
-          class="wiof-icon-only-btn"
-          style="position: relative"
+          class="action-link"
           title="Go to Take Action"
           aria-label="Go to Take Action"
         >
           <ion-icon name="trail-sign-outline"></ion-icon>
         </a>
         <app-back-button></app-back-button>
-      </ion-col>
-    </ion-row>
-  </h1>
-
-  <div
-    *ngIf="blogs | async as blogList; else loading"
-    class="blogs-content"
-    [ngClass]="element"
-  >
-    <ion-grid *ngIf="blogList.length > 0">
-      <ion-row>
-        <ion-col
-          size="12"
-          size-sm="6"
-          size-md="4"
-          size-lg="3"
-          *ngFor="let blog of blogList"
-        >
-          <app-blog-card [blog]="blog" [element]="element"></app-blog-card>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-
-    <p *ngIf="blogList && blogList.length === 0" class="no-blogs-container">
-      We could not find blogs under
-      <strong>{{ this.category }}</strong> category!
-    </p>
-  </div>
-
-  <ng-template #loading>
-    <div class="blogs-content">
-      <app-wiof-spinner></app-wiof-spinner>
+      </div>
     </div>
-  </ng-template>
+
+    <!-- Blog grid -->
+    <div *ngIf="blogs | async as blogList; else loading" class="blogs-grid-wrap">
+      <div class="blogs-grid" *ngIf="blogList.length > 0">
+        <ion-grid>
+          <ion-row>
+            <ion-col
+              size="12"
+              size-sm="6"
+              size-md="4"
+              size-lg="3"
+              *ngFor="let blog of blogList"
+            >
+              <app-blog-card [blog]="blog" [element]="element"></app-blog-card>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+
+      <div *ngIf="blogList && blogList.length === 0" class="no-content">
+        <ion-icon name="newspaper-outline"></ion-icon>
+        <p>No blogs found under <strong>{{ category }}</strong> category.</p>
+      </div>
+    </div>
+
+    <ng-template #loading>
+      <div class="blogs-loading">
+        <ion-grid>
+          <ion-row>
+            <ion-col size="12" size-sm="6" size-md="4" size-lg="3" *ngFor="let i of [1,2,3,4,5,6,7,8]">
+              <div style="background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 14px rgba(0,0,0,0.06);">
+                <div class="skeleton" style="height: 160px; border-radius: 0;"></div>
+                <div style="padding: 0.75rem;">
+                  <div class="skeleton" style="height: 16px; width: 90%; border-radius: 6px; margin-bottom: 0.5rem;"></div>
+                  <div class="skeleton" style="height: 12px; width: 100%; border-radius: 4px; margin-bottom: 0.3rem;"></div>
+                  <div class="skeleton" style="height: 12px; width: 75%; border-radius: 4px; margin-bottom: 0.75rem;"></div>
+                  <div style="display: flex; gap: 0.75rem;">
+                    <div class="skeleton" style="height: 10px; width: 35%; border-radius: 4px;"></div>
+                    <div class="skeleton" style="height: 10px; width: 25%; border-radius: 4px;"></div>
+                  </div>
+                </div>
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </ng-template>
+
+  </div>
 
   <app-wiof-footer></app-wiof-footer>
 </ion-content>

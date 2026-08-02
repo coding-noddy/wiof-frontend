@@ -86,7 +86,11 @@
     </div>
 
     <ng-template #loading>
-      <app-wiof-spinner></app-wiof-spinner>
+      <div style="padding: 1rem;">
+        <div class="skeleton" style="height: 200px; border-radius: 12px; margin-bottom: 0.75rem;"></div>
+        <div class="skeleton" style="height: 16px; width: 60%; border-radius: 6px; margin-bottom: 0.5rem;"></div>
+        <div class="skeleton" style="height: 12px; width: 80%; border-radius: 6px;"></div>
+      </div>
     </ng-template>
   </ion-card-content>
 </ion-card>
