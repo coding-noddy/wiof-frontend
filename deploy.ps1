@@ -99,8 +99,14 @@ Write-Host "      Build successful." -ForegroundColor Green
 
 # Step 5: Deploy
 Write-Host "[5/6] Deploying to Firebase ($firebaseProject)..." -ForegroundColor Yellow
-$globalFirebase = Join-Path $env:APPDATA "npm\firebase.cmd"
-if (-not (Test-Path $globalFirebase)) {
+# Prefer the nvm-managed firebase (latest), fall back to AppData, then PATH
+$nvmFirebase = "C:\nvm4w\nodejs\firebase.cmd"
+$appDataFirebase = Join-Path $env:APPDATA "npm\firebase.cmd"
+if (Test-Path $nvmFirebase) {
+    $globalFirebase = $nvmFirebase
+} elseif (Test-Path $appDataFirebase) {
+    $globalFirebase = $appDataFirebase
+} else {
     $globalFirebase = "firebase"
 }
 & $globalFirebase deploy --only hosting --project $firebaseProject
@@ -115,7 +121,8 @@ $tagName = "v$version-$Target"
 $existingTag = git tag --list $tagName 2>$null
 if (-not $existingTag) {
     git tag -a $tagName -m "Deploy $version to $envLabel"
-    Write-Host "[6/6] Tagged: $tagName" -ForegroundColor Green
+    git push origin $tagName
+    Write-Host "[6/6] Tagged & pushed: $tagName" -ForegroundColor Green
 } else {
     Write-Host "[6/6] Tag $tagName already exists, skipping." -ForegroundColor Yellow
 }
