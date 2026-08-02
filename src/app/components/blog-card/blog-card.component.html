@@ -1,4 +1,4 @@
-<ion-card class="blog-card" [routerLink]="['blog', blog.id]" [ngClass]="element">
+<ion-card class="blog-card" [routerLink]="['blog', blog.slug || blog.id]" [ngClass]="element">
   <div class="blog-image-wrap">
     <img
       [src]="blog.image$ | async"
@@ -6,6 +6,9 @@
       class="blog-image"
     />
     <div class="blog-image-overlay"></div>
+    <button class="blog-share-icon" (click)="shareBlog($event)" title="Share this blog">
+      <ion-icon name="share-social-outline"></ion-icon>
+    </button>
   </div>
 
   <div class="blog-body">

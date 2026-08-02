@@ -100,6 +100,9 @@ Write-Host "      Build successful." -ForegroundColor Green
 # Step 5: Deploy
 Write-Host "[5/6] Deploying to Firebase ($firebaseProject)..." -ForegroundColor Yellow
 $globalFirebase = Join-Path $env:APPDATA "npm\firebase.cmd"
+if (-not (Test-Path $globalFirebase)) {
+    $globalFirebase = "firebase"
+}
 & $globalFirebase deploy --only hosting --project $firebaseProject
 if ($LASTEXITCODE -ne 0) {
     Write-Host "[x] Deployment FAILED!" -ForegroundColor Red

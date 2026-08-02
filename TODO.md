@@ -76,13 +76,71 @@
 
 ## 🟢 Future Features
 
-- **[HIGH]** Deployment automation script
-  - Creates release branch from master (e.g. `release-1.0.7`)
-  - Accepts flag: `--staging` or `--prod`
-  - Staging: uses `environment.ts` config, runs `ng build`, deploys to `wiof-staging` Firebase project
-  - Production: uses `environment.prod.ts` config, runs `ng build --configuration production`, deploys to `wiof-production` Firebase project
-  - Single command: `npm run deploy -- --staging` or `npm run deploy -- --prod`
-  - Could also tag the release in git after successful deploy
+- **[HIGH]** Blog sharing feature
+  - Add share button on blog cards + blog detail page ✅ DONE
+  - Generate shareable link with blog hero image as Open Graph preview
+  - Use Web Share API on mobile for native share sheet ✅ DONE
+  - **TODO: Dynamic Open Graph meta tags for rich link previews**
+    - Problem: Angular SPA serves same `index.html` for all routes — crawlers see default image
+    - Solution: Firebase Cloud Function that intercepts crawler requests, reads blog from Firestore,
+      returns dynamic `<meta og:image>`, `<meta og:title>`, `<meta og:description>` tags
+    - When shared on WhatsApp/Twitter/LinkedIn, shows blog hero image + title instead of default
+    - Implementation: Firebase Hosting rewrite rule → Cloud Function for bot user-agents
+
+- **[HIGH]** Blog SEO-friendly URLs (slugs)
+  - Current: `/element/air/blog/KkeNELNVMtzOPQZ8r1A1` (Firebase document ID)
+  - Goal: `/element/air/blog/how-to-reduce-carbon-footprint` (slug from title)
+  - **Recommended approach:** Store `slug` field in Firestore
+  - Admin panel: auto-generate slug from title on save (with manual override)
+  - Blog service: `getBlogBySlug(slug)` using `where('slug', '==', slug).limit(1)`
+  - One-time migration script: backfill slugs for existing blogs
+  - Route: try slug lookup first, fallback to ID for backward compatibility
+  - Service caching: store selected blog in service for instant load from listing page
+
+- **[HIGH]** Rich blog content — multiple images in blog body
+  - Current: Only one hero image per blog
+  - Goal: Admin can insert images throughout the blog content (inline with text)
+  - Approach: Upgrade Quill editor to support image uploads within content
+  - Store additional images in Firebase Storage, embed URLs in blog HTML content
+  - Consider: Image gallery/carousel support within blog posts
+
+- **[HIGH]** Home page design refresh
+  - Make it more attractive and engaging
+  - Better hero section with animation/video background
+  - Card layouts with better visual hierarchy
+  - Consider: Testimonials, impact counters, featured content carousel
+
+- **[HIGH]** Take Action — Gamification & User Engagement
+  - **Concept:** Users take eco-challenges and track their impact
+  - **Challenge examples:**
+    - Plant 30 trees in a year
+    - Water 1 plant every day
+    - Turn off fan/light when leaving room
+    - Use public transport once a week
+    - Reduce single-use plastic for 30 days
+  - **Features:**
+    - Challenge cards with join button
+    - Progress tracker (daily/weekly check-ins)
+    - Impact calculator ("You saved X kg CO2, X litres water")
+    - Leaderboard (community motivation)
+    - Badges/achievements for completing challenges
+    - Streak counter (consecutive days)
+  - **Technical:**
+    - Firebase Auth (users need accounts)
+    - Firestore: Challenges, UserProgress, Achievements
+    - Push notifications for reminders (FCM)
+  - **Mini-games ideas:**
+    - Waste sorting game (drag to correct bin)
+    - Carbon footprint quiz
+    - "Spot the pollution" image game
+    - Water conservation trivia
+  - **Phases:**
+    - Phase 1: Challenge cards + join + daily check-in
+    - Phase 2: Impact calculator + badges
+    - Phase 3: Leaderboard + games
+
+- **[DONE]** Deployment automation script ✅
+  - `npm run deploy:staging` / `npm run deploy:prod`
 
 - **[MED]** AI-powered "Did You Know?" facts for all element widgets
   - Each element widget (Air, Earth, Fire, Spirit) gets a verified fact strip

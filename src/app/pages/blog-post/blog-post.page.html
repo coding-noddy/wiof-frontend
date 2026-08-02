@@ -29,7 +29,10 @@
           <span class="author-name" *ngIf="blog.author">By {{ blog.author }}</span>
           <span class="blog-date" *ngIf="blog.publishDate">{{ blog.publishDate | date: 'MMM dd, yyyy' }}</span>
         </div>
-        <app-social-share></app-social-share>
+        <button class="share-btn" (click)="shareBlog(blog)">
+          <ion-icon name="share-social-outline"></ion-icon>
+          Share
+        </button>
       </div>
 
       <hr class="blog-divider" />

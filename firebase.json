@@ -8,9 +8,22 @@
     ],
     "rewrites": [
       {
+        "source": "/element/*/blog/**",
+        "function": "socialMetaTags"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
     ]
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "functions": {
+    "source": "functions"
   }
 }

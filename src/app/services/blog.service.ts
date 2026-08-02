@@ -76,6 +76,24 @@ export class BlogService {
     );
   }
 
+  getBlogBySlug(slug: string): Observable<Blog> {
+    const blogCollection = this.database.collection(
+      FIREBASE_COLLECTION.BLOGS,
+      (ref) => ref.where('slug', '==', slug).limit(1)
+    );
+    return blogCollection.get().pipe(
+      map((querySnapshot) => {
+        if (querySnapshot.docs.length === 0) return null;
+        const doc = querySnapshot.docs[0];
+        const data = doc.data() as Blog;
+        data.id = doc.id;
+        data.image$ = this.getImage(data.imageName);
+        data.timeToRead = this.getTimeToRead(data.content);
+        return data;
+      })
+    );
+  }
+
   saveBlogImage(imageData: any, imageName: string) {
     const imageUploadTask = this.storage.upload(
       `/${FIREBASE_COLLECTION.BLOG_IMAGE_STORAGE}/${imageName}`,

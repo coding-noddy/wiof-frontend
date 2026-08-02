@@ -134,3 +134,9 @@ hosting.*
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Firebase service account (NEVER commit)
+service-account.json
+scripts/service-account.json
+scripts/.env
+functions/node_modules/
