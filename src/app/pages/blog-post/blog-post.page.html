@@ -38,7 +38,12 @@
       <hr class="blog-divider" />
 
       <!-- Content -->
-      <div class="blog-content" [innerHTML]="blog.content"></div>
+      <div *ngIf="blog.contentDelta; else htmlContent">
+        <quill-view [content]="blog.contentDelta" format="object" theme="snow"></quill-view>
+      </div>
+      <ng-template #htmlContent>
+        <div class="blog-content" [innerHTML]="blog.content"></div>
+      </ng-template>
 
       <hr class="blog-divider" />
 

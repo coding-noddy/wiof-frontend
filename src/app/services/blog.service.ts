@@ -5,7 +5,7 @@ import {
 } from '@angular/fire/compat/firestore';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { from, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { last, map, switchMap } from 'rxjs/operators';
 import { Blog } from '../models/Blog';
 import { FIREBASE_COLLECTION, AVG_WORD_READ_PER_MIN } from '../app.constants';
 
@@ -45,6 +45,7 @@ export class BlogService {
           const data = doc.data() as Blog;
           data.id = doc.id;
           data.image$ = this.getImage(data.imageName);
+          data.contentDelta = (doc.data() as any).contentDelta || null;
           data.timeToRead = this.getTimeToRead(data.content);
           return data;
         })
@@ -69,6 +70,7 @@ export class BlogService {
           const data = querySnapshot.data();
           data.id = querySnapshot.id;
           data.image$ = this.getImage(data.imageName);
+          data.contentDelta = (querySnapshot.data() as any).contentDelta || null;
           data.timeToRead = this.getTimeToRead(data.content);
           return data;
         }
@@ -88,18 +90,46 @@ export class BlogService {
         const data = doc.data() as Blog;
         data.id = doc.id;
         data.image$ = this.getImage(data.imageName);
+        data.contentDelta = (doc.data() as any).contentDelta || null;
         data.timeToRead = this.getTimeToRead(data.content);
         return data;
       })
     );
   }
 
-  saveBlogImage(imageData: any, imageName: string) {
-    const imageUploadTask = this.storage.upload(
-      `/${FIREBASE_COLLECTION.BLOG_IMAGE_STORAGE}/${imageName}`,
-      imageData
+  saveBlogImage(imageData: any, imageName: string): Observable<string> {
+    const imagePath = `/${FIREBASE_COLLECTION.BLOG_IMAGE_STORAGE}/${imageName}`;
+    const imageRef = this.storage.ref(imagePath);
+    const uploadTask = this.storage.upload(imagePath, imageData);
+    return uploadTask.snapshotChanges().pipe(
+      last(),
+      switchMap(() => imageRef.getDownloadURL())
     );
-    return from(imageUploadTask);
+  }
+
+  saveBlogInlineImage(file: File, imageName: string): Observable<string> {
+    const imagePath = `/${FIREBASE_COLLECTION.BLOG_IMAGE_STORAGE}/inline/${imageName}`;
+    const imageRef = this.storage.ref(imagePath);
+    const uploadTask = this.storage.upload(imagePath, file);
+    return uploadTask.snapshotChanges().pipe(
+      last(),
+      switchMap(() => imageRef.getDownloadURL())
+    );
+  }
+
+  /**
+   * Upload inline image and expose upload task + download URL observable
+   * Returns an object with `task` (upload task) and `downloadUrl$` observable
+   */
+  saveBlogInlineImageWithProgress(file: File, imageName: string) {
+    const imagePath = `/${FIREBASE_COLLECTION.BLOG_IMAGE_STORAGE}/inline/${imageName}`;
+    const imageRef = this.storage.ref(imagePath);
+    const task = this.storage.upload(imagePath, file);
+    const downloadUrl$ = task.snapshotChanges().pipe(
+      last(),
+      switchMap(() => imageRef.getDownloadURL())
+    );
+    return { task, downloadUrl$ };
   }
 
   deleteBlogImage(imageName: string) {

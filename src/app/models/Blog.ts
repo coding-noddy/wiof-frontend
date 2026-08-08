@@ -6,6 +6,7 @@ export class Blog {
   slug: string;
   shortDescription: string;
   content: string;
+  contentDelta?: any;
   imageName: string;
   image$: Observable<string>;
   externalUrl: string;
@@ -38,6 +39,7 @@ export class Blog {
     this.imageName = imageName;
     this.shortDescription = shortDescription;
     this.content = content;
+    this.contentDelta = null;
   }
 
   /**

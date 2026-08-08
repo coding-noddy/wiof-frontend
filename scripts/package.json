@@ -4,7 +4,16 @@
   "private": true,
   "description": "WIOF utility scripts (migrations, sync, etc.)",
   "dependencies": {
+    "dotenv": "^16.3.1",
     "firebase": "^10.7.0",
-    "dotenv": "^16.3.1"
-  }
+    "jsdom": "^28.1.0",
+    "quill": "^2.0.3"
+  },
+  "main": "cleanup-old-news.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

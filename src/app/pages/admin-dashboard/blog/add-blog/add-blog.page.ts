@@ -27,6 +27,22 @@ export class AddBlogPage implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject();
   isEditMode = false;
   blog: Blog = {} as Blog;
+  editor: any;
+  readonly MAX_IMAGE_BYTES = 2 * 1024 * 1024; // 2 MB
+  readonly maxImageMB = 2;
+  quillModules: any = {
+    toolbar: {
+      container: [
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ header: [1, 2, 3, false] }],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        ['link', 'image']
+      ],
+      handlers: {
+        image: this.imageHandler.bind(this)
+      }
+    }
+  };
 
   pageContent = {
     addBlogTitle: 'Add Blog',
@@ -96,7 +112,27 @@ export class AddBlogPage implements OnInit, OnDestroy {
   }
 
   onFileSelected(event) {
+    const file = event.target.files?.[0];
+    if (file && !this.isImageUnderSize(file)) {
+      event.target.value = '';
+      return;
+    }
     this.appUtil.onFileSelected(event, this);
+  }
+
+  private isImageUnderSize(file: File): boolean {
+    if (!file) {
+      return true;
+    }
+    if (file.size <= this.MAX_IMAGE_BYTES) {
+      return true;
+    }
+    this.uiUtil.presentAlert(
+      'Image too large',
+      'Please upload images smaller than 2 MB.',
+      ['OK']
+    );
+    return false;
   }
 
   async onSubmit() {
@@ -169,7 +205,10 @@ export class AddBlogPage implements OnInit, OnDestroy {
     blog: Blog,
     isEditMode: boolean
   ) {
-    return new Blog(
+    const contentDelta = this.editor ? this.editor.getContents() : null;
+    // Ensure delta is pure JSON (no prototypes, functions) so Firestore accepts it
+    const safeContentDelta = contentDelta ? JSON.parse(JSON.stringify(contentDelta)) : null;
+    const result = new Blog(
       isEditMode ? blog.id : null,
       addBlogForm.value.title,
       addBlogForm.value.authorName,
@@ -182,6 +221,146 @@ export class AddBlogPage implements OnInit, OnDestroy {
       addBlogForm.value.shortDescription,
       addBlogForm.value.content
     );
+    result.contentDelta = safeContentDelta;
+    return result;
+  }
+
+  onEditorCreated(editor: any) {
+    this.editor = editor;
+    // If editing an existing blog, paste current HTML into the editor to preserve formatting
+    if (this.isEditMode && this.blog && this.blog.content) {
+      try {
+        // Use Quill clipboard to paste HTML and preserve formatting
+        this.editor.clipboard.dangerouslyPasteHTML(this.blog.content);
+      } catch (e) {
+        // Fallback: set innerHTML
+        this.editor.root.innerHTML = this.blog.content;
+      }
+    }
+
+    // Attach paste handler to clean MS Word/Office markup and normalize HTML
+    try {
+      this.editor.root.addEventListener('paste', (evt: ClipboardEvent) => {
+        evt.preventDefault();
+        const clipboard = (evt.clipboardData || (window as any).clipboardData);
+        if (!clipboard) return;
+        const html = clipboard.getData('text/html');
+        const text = clipboard.getData('text/plain');
+        const rangeIndex = (this.editor.getSelection && this.editor.getSelection(true)?.index) ?? this.editor.getLength();
+        if (html) {
+          const cleaned = this.cleanPastedHTML(html);
+          // Paste cleaned HTML at current selection
+          this.editor.clipboard.dangerouslyPasteHTML(rangeIndex, cleaned);
+        } else if (text) {
+          this.editor.insertText(rangeIndex, text, 'user');
+        }
+      });
+    } catch (e) {
+      // ignore if attaching listener fails in some environments
+    }
+  }
+
+  /**
+   * Basic cleanup for HTML pasted from Word/Office or other sources.
+   * Removes MS-specific tags, inline styles and empty spans, and strips comments.
+   */
+  cleanPastedHTML(html: string): string {
+    if (!html) return '';
+    let out = html;
+    // Remove XML namespaces and comments
+    out = out.replace(/<!--([\s\S]*?)-->/gi, '');
+    out = out.replace(/<\?xml[^>]*>/gi, '');
+    out = out.replace(/<\w+:\w[^>]*>[\s\S]*?<\/\w+:\w>/gi, '');
+
+    // Remove Office tags like o:p, v:, w:
+    out = out.replace(/<\/?o:p[^>]*>/gi, '');
+    out = out.replace(/<\/?v:[^>]*>/gi, '');
+    out = out.replace(/<\/?w:[^>]*>/gi, '');
+
+    // Remove mso-xxx styles
+    out = out.replace(/mso-[^:;"']+:[^;"']+;?/gi, '');
+
+    // Remove style attributes and class attributes (keep inline formatting that is simple)
+    out = out.replace(/\sstyle=("|')([^"']*)("|')/gi, '');
+    out = out.replace(/\sclass=("|')([^"']*)("|')/gi, '');
+
+    // Remove empty spans and unnecessary tags
+    out = out.replace(/<span[^>]*>\s*<\/span>/gi, '');
+    out = out.replace(/<\/?meta[^>]*>/gi, '');
+
+    // Strip <!--[if ...]> conditional comments
+    out = out.replace(/<\!\[if[^\]]*\]>[\s\S]*?<\!\[endif\]>/gi, '');
+
+    // Normalize multiple breaks
+    out = out.replace(/(\r|\n)+/g, '\n');
+
+    // Trim outer body tags if present
+    out = out.replace(/^\s*<body[^>]*>/i, '');
+    out = out.replace(/<\/body>\s*$/i, '');
+
+    return out;
+  }
+
+  imageHandler() {
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) {
+        return;
+      }
+      if (!this.isImageUnderSize(file)) {
+        input.value = '';
+        return;
+      }
+
+      const imageName = this.appUtil.formatImageName('blog_inline_', file);
+      // show loader
+      this.loader = await this.uiUtil.showLoader('Uploading image 0%');
+
+      const { task, downloadUrl$ } = this.blogService.saveBlogInlineImageWithProgress(
+        file,
+        imageName
+      );
+
+      // subscribe to progress
+      const progressSub = (task as any).percentageChanges().subscribe((p: number) => {
+        try {
+          const percent = Math.round(p || 0);
+          if (this.loader) this.loader.message = `Uploading image ${percent}%`;
+        } catch (err) {
+          // ignore update errors
+        }
+      });
+
+      downloadUrl$.subscribe(
+        async (downloadUrl) => {
+          progressSub.unsubscribe();
+          try {
+            const range = this.editor?.getSelection(true);
+            const index = range?.index ?? this.editor?.getLength() ?? 0;
+            this.editor.insertEmbed(index, 'image', downloadUrl, 'user');
+            this.editor.setSelection(index + 1, 0, 'silent');
+          } catch (e) {
+            console.error('Insert image failed', e);
+          }
+          if (this.loader) this.loader.dismiss();
+        },
+        async (error) => {
+          progressSub.unsubscribe();
+          console.error('Inline image upload failed', error);
+          if (this.loader) this.loader.dismiss();
+          await this.uiUtil.presentAlert(
+            'Image upload failed',
+            'Could not upload the image. Please try again.',
+            ['OK']
+          );
+        }
+      );
+    };
   }
 
   ngOnDestroy(): void {

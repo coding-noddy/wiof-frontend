@@ -66,6 +66,7 @@
               (change)="onFileSelected($event)"
               formControlName="image"
             ></ion-input>
+            <ion-note slot="helper">Max file size {{ maxImageMB }} MB. Recommended JPG/PNG.</ion-note>
             <div><ion-img [src]="imageToDisplay"></ion-img></div>
           </ion-item>
         </ion-col>
@@ -93,7 +94,11 @@
 
         <ion-col size-xs="12">
           <ion-item><ion-label>Blog Content</ion-label></ion-item>
-          <quill-editor formControlName="content"></quill-editor>
+          <quill-editor
+            formControlName="content"
+            [modules]="quillModules"
+            (onEditorCreated)="onEditorCreated($event)"
+          ></quill-editor>
         </ion-col>
       </ion-row>
     </ion-grid>
