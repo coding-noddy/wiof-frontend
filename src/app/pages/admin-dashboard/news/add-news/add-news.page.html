@@ -1,127 +1,98 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
+      <ion-back-button defaultHref="/admin-dashboard/manage-news"></ion-back-button>
     </ion-buttons>
-    <ion-title *ngIf="!isEditMode">{{ pageContent.addNewsTitle }}</ion-title>
-    <ion-title *ngIf="isEditMode">{{ pageContent.editNewsTitle }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button color="success" fill="solid" size="large" (click)="onSubmit()"
-        >{{ pageContent.saveNewsLabel }}</ion-button
-      >
-      <ion-button
-        color="medium"
-        fill="clear"
-        size="large"
-        routerLink="/admin-dashboard/manage-news"
-        >{{ pageContent.cancelLabel }}</ion-button
-      >
-    </ion-buttons>
+    <ion-title>{{ isEditMode ? pageContent.editNewsTitle : pageContent.addNewsTitle }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <form [formGroup]="addNewsForm">
-    <ion-grid>
-      <ion-row>
-        <ion-col size-xs="12"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.headlineLabel}}</ion-label
-            >
+  <div class="admin-form-page">
+    <nav class="breadcrumb">
+      <a routerLink="/admin-dashboard">Dashboard</a>
+      <span class="separator">/</span>
+      <a routerLink="/admin-dashboard/manage-news">News</a>
+      <span class="separator">/</span>
+      <span class="current">{{ isEditMode ? 'Edit' : 'New' }}</span>
+    </nav>
+
+    <div class="form-header">
+      <h1>{{ isEditMode ? pageContent.editNewsTitle : pageContent.addNewsTitle }}</h1>
+      <div class="form-actions">
+        <button class="btn-secondary" routerLink="/admin-dashboard/manage-news">Cancel</button>
+        <button class="btn-primary" (click)="onSubmit()">
+          <ion-icon name="checkmark-outline"></ion-icon> Save
+        </button>
+      </div>
+    </div>
+
+    <form [formGroup]="addNewsForm">
+      <!-- Basic Info -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="newspaper-outline"></ion-icon> News Details</div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.headlineLabel }} *</ion-label>
             <ion-input formControlName="headline"></ion-input>
           </ion-item>
-        </ion-col>
-
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.categoryLabel}}</ion-label
-            >
+        </div>
+        <div class="form-row">
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.categoryLabel }} *</ion-label>
             <ion-select formControlName="category">
-              <ion-select-option
-                [value]="category"
-                *ngFor="let category of categories"
-                >{{ category }}</ion-select-option
-              >
+              <ion-select-option [value]="category" *ngFor="let category of categories">{{ category }}</ion-select-option>
             </ion-select>
           </ion-item>
-        </ion-col>
-
-        <ion-col size-xs="12" size-md="4">
           <mat-form-field appearance="standard" class="date-picker-field">
-            <mat-label> {{ pageContent.newsDateLabel }}</mat-label>
-            <input
-              matInput
-              [matDatepicker]="newsDatePicker"
-              formControlName="date"
-            />
-            <mat-datepicker-toggle
-              matSuffix
-              [for]="newsDatePicker"
-            ></mat-datepicker-toggle>
+            <mat-label>{{ pageContent.newsDateLabel }}</mat-label>
+            <input matInput [matDatepicker]="newsDatePicker" formControlName="date" />
+            <mat-datepicker-toggle matSuffix [for]="newsDatePicker"></mat-datepicker-toggle>
             <mat-datepicker #newsDatePicker></mat-datepicker>
           </mat-form-field>
-        </ion-col>
+        </div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.newsSourceLabel }}</ion-label>
+            <ion-input formControlName="newsSource"></ion-input>
+          </ion-item>
+        </div>
+      </div>
 
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.mediaTypeLabel}}</ion-label
-            >
+      <!-- Media Card -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="videocam-outline"></ion-icon> Media</div>
+        <div class="form-row">
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.mediaTypeLabel }} *</ion-label>
             <ion-select formControlName="mediaType" #mediaType>
               <ion-select-option [value]="'image'">Image</ion-select-option>
               <ion-select-option [value]="'video'">Video</ion-select-option>
             </ion-select>
           </ion-item>
-        </ion-col>
-
-        <ion-col
-          *ngIf="mediaType.value && mediaType.value === 'image'"
-          size-xs="12"
-          ><ion-item>
-            <ion-label position="stacked"
-              >{{pageContent.selectImageLabel}}</ion-label
-            >
-            <ion-input
-              type="file"
-              accept="image/*"
-              (change)="onFileSelected($event)"
-              formControlName="image"
-            ></ion-input>
-            <div>
-              <ion-img [src]="imageToDisplay"></ion-img>
-            </div>
+        </div>
+        <div class="form-row full-width" *ngIf="mediaType.value === 'image'">
+          <ion-item>
+            <ion-label position="stacked">{{ pageContent.selectImageLabel }}</ion-label>
+            <ion-input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="image"></ion-input>
           </ion-item>
-        </ion-col>
-
-        <ion-col
-          *ngIf="mediaType.value && mediaType.value === 'video'"
-          size-xs="12"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.mediaLinkLabel}}</ion-label
-            >
+          <div class="form-image-preview" *ngIf="imageToDisplay">
+            <ion-img [src]="imageToDisplay"></ion-img>
+          </div>
+        </div>
+        <div class="form-row full-width" *ngIf="mediaType.value === 'video'">
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.mediaLinkLabel }}</ion-label>
             <ion-input formControlName="mediaLink"></ion-input>
           </ion-item>
-        </ion-col>
+        </div>
+      </div>
 
-        <ion-col size-xs="12"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.newsSourceLabel}}</ion-label
-            >
-            <ion-input formControlName="newsSource"></ion-input>
-          </ion-item>
-        </ion-col>
-
-        <ion-col size-xs="12">
-          <ion-item
-            ><ion-label>{{pageContent.contentLabel}}</ion-label></ion-item
-          >
-          <quill-editor formControlName="content"></quill-editor>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </form>
+      <!-- Content Card -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="create-outline"></ion-icon> Content</div>
+        <quill-editor formControlName="content"></quill-editor>
+      </div>
+    </form>
+  </div>
 </ion-content>

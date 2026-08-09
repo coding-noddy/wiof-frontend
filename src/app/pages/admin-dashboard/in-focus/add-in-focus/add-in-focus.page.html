@@ -1,114 +1,93 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
+      <ion-back-button defaultHref="/admin-dashboard/manage-in-focus"></ion-back-button>
     </ion-buttons>
-    <ion-title *ngIf="!isEditMode">{{ pageContent.addInFocusTitle }}</ion-title>
-    <ion-title *ngIf="isEditMode">{{ pageContent.editInFocusTitle }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button color="success" fill="solid" size="large" (click)="onSubmit()"
-        >{{ pageContent.saveLabel }}</ion-button
-      >
-      <ion-button
-        color="medium"
-        fill="clear"
-        size="large"
-        routerLink="/admin-dashboard/manage-in-focus"
-        >{{ pageContent.cancelLabel }}</ion-button
-      >
-    </ion-buttons>
+    <ion-title>{{ isEditMode ? pageContent.editInFocusTitle : pageContent.addInFocusTitle }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <form [formGroup]="addInFocusForm">
-    <ion-grid>
-      <ion-row>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.titleLabel}}</ion-label
-            >
+  <div class="admin-form-page">
+    <nav class="breadcrumb">
+      <a routerLink="/admin-dashboard">Dashboard</a>
+      <span class="separator">/</span>
+      <a routerLink="/admin-dashboard/manage-in-focus">In Focus</a>
+      <span class="separator">/</span>
+      <span class="current">{{ isEditMode ? 'Edit' : 'New' }}</span>
+    </nav>
+
+    <div class="form-header">
+      <h1>{{ isEditMode ? pageContent.editInFocusTitle : pageContent.addInFocusTitle }}</h1>
+      <div class="form-actions">
+        <button class="btn-secondary" routerLink="/admin-dashboard/manage-in-focus">Cancel</button>
+        <button class="btn-primary" (click)="onSubmit()">
+          <ion-icon name="checkmark-outline"></ion-icon> Save
+        </button>
+      </div>
+    </div>
+
+    <form [formGroup]="addInFocusForm">
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="eye-outline"></ion-icon> Spotlight Details</div>
+        <div class="form-row">
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.titleLabel }} *</ion-label>
             <ion-input formControlName="title"></ion-input>
           </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="8"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.subTitleLabel}}</ion-label
-            >
-            <ion-input formControlName="subTitle"></ion-input>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.descriptionLabel}}</ion-label
-            >
-            <ion-textarea formControlName="description"></ion-textarea>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.categoryLabel}}</ion-label
-            >
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.categoryLabel }} *</ion-label>
             <ion-select formControlName="category">
-              <ion-select-option
-                [value]="category"
-                *ngFor="let category of categories"
-                >{{ category }}</ion-select-option
-              >
+              <ion-select-option [value]="category" *ngFor="let category of categories">{{ category }}</ion-select-option>
             </ion-select>
           </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.videoLinkLabel}}</ion-label
-            >
+        </div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.subTitleLabel }}</ion-label>
+            <ion-input formControlName="subTitle"></ion-input>
+          </ion-item>
+        </div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.descriptionLabel }}</ion-label>
+            <ion-textarea formControlName="description"></ion-textarea>
+          </ion-item>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="link-outline"></ion-icon> Links</div>
+        <div class="form-row">
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.videoLinkLabel }}</ion-label>
             <ion-input formControlName="videoLink"></ion-input>
           </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.knowMoreLinkLabel}}</ion-label
-            >
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.knowMoreLinkLabel }}</ion-label>
             <ion-input formControlName="knowMoreLink"></ion-input>
           </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.submitDateLabel}}</ion-label
-            >
-            <ion-input disabled [value]="inFocus.submitDate | date"></ion-input>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.publishDateLabel}}</ion-label
-            >
-            <ion-input
-              disabled
-              [value]="inFocus.publishDate | date"
-            ></ion-input>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.unpublishDateLabel}}</ion-label
-            >
-            <ion-input
-              disabled
-              [value]="inFocus.unpublishDate | date"
-            ></ion-input>
-          </ion-item>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </form>
+        </div>
+      </div>
+
+      <!-- Dates (edit mode) -->
+      <div class="form-card" *ngIf="isEditMode">
+        <div class="form-card-title"><ion-icon name="time-outline"></ion-icon> Timeline</div>
+        <div class="form-dates-row">
+          <div class="date-display">
+            <div class="date-label">Submitted</div>
+            <div class="date-value">{{ inFocus.submitDate | date:'dd MMM yyyy' }}</div>
+          </div>
+          <div class="date-display">
+            <div class="date-label">Published</div>
+            <div class="date-value">{{ inFocus.publishDate ? (inFocus.publishDate | date:'dd MMM yyyy') : '—' }}</div>
+          </div>
+          <div class="date-display">
+            <div class="date-label">Unpublished</div>
+            <div class="date-value">{{ inFocus.unpublishDate ? (inFocus.unpublishDate | date:'dd MMM yyyy') : '—' }}</div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
 </ion-content>

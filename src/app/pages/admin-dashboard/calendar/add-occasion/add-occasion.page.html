@@ -1,89 +1,81 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
+      <ion-back-button defaultHref="/admin-dashboard/manage-calendar"></ion-back-button>
     </ion-buttons>
-    <ion-title>Add Occasion</ion-title>
-    <ion-buttons slot="end">
-      <ion-button color="success" fill="solid" size="large" (click)="onSubmit()"
-        >Save</ion-button
-      >
-      <ion-button
-        color="medium"
-        fill="clear"
-        size="large"
-        routerLink="/admin-dashboard"
-        >Cancel</ion-button
-      >
-    </ion-buttons>
+    <ion-title>{{ isEditMode ? 'Edit Occasion' : 'Add Occasion' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <form [formGroup]="addOccasionForm">
-    <ion-grid>
-      <ion-row>
-        <ion-col size-xs="12" size-md="12"
-          ><ion-item>
-            <ion-label position="floating">Occasion</ion-label>
+  <div class="admin-form-page">
+    <nav class="breadcrumb">
+      <a routerLink="/admin-dashboard">Dashboard</a>
+      <span class="separator">/</span>
+      <a routerLink="/admin-dashboard/manage-calendar">Calendar</a>
+      <span class="separator">/</span>
+      <span class="current">{{ isEditMode ? 'Edit' : 'New' }}</span>
+    </nav>
+
+    <div class="form-header">
+      <h1>{{ isEditMode ? 'Edit Occasion' : 'New Calendar Occasion' }}</h1>
+      <div class="form-actions">
+        <button class="btn-secondary" routerLink="/admin-dashboard/manage-calendar">Cancel</button>
+        <button class="btn-primary" (click)="onSubmit()">
+          <ion-icon name="checkmark-outline"></ion-icon> Save
+        </button>
+      </div>
+    </div>
+
+    <form [formGroup]="addOccasionForm">
+      <!-- Details Card -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="calendar-outline"></ion-icon> Occasion Details</div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="floating">Occasion Name *</ion-label>
             <ion-input formControlName="occasion"></ion-input>
           </ion-item>
-        </ion-col>
-
-        <ion-col size-xs="12" size-md="6"
-          ><ion-item>
-            <ion-label position="floating">Day</ion-label>
+        </div>
+        <div class="form-row">
+          <ion-item>
+            <ion-label position="floating">Day *</ion-label>
             <ion-input formControlName="day"></ion-input>
           </ion-item>
-        </ion-col>
-
-        <ion-col size-xs="12" size-md="6"
-          ><ion-item>
-            <ion-label position="floating">Month</ion-label>
+          <ion-item>
+            <ion-label position="floating">Month *</ion-label>
             <ion-select formControlName="month">
-              <ion-select-option
-                [value]="i"
-                *ngFor="let month of months; let i = index;"
-                >{{ month }}</ion-select-option
-              >
+              <ion-select-option [value]="i" *ngFor="let month of months; let i = index;">{{ month }}</ion-select-option>
             </ion-select>
           </ion-item>
-        </ion-col>
-
-        <ion-col size-xs="12"
-          ><ion-item>
-            <ion-label position="stacked">Occasion Image URL</ion-label>
-            <ion-input
-              type="file"
-              accept="image/*"
-              (change)="onFileSelected($event)"
-              formControlName="imageName"
-            ></ion-input>
-            <div><ion-img [src]="imageToDisplay"></ion-img></div>
-          </ion-item>
-        </ion-col>
-
-        <ion-col size-xs="12">
+        </div>
+        <div class="form-row full-width">
           <ion-item>
-            <ion-label position="floating"
-              >Special Event's Short Description</ion-label
-            >
-            <ion-textarea
-              formControlName="description"
-              rows="2"
-              auto-grow="true"
-            >
-            </ion-textarea>
+            <ion-label position="floating">Short Description</ion-label>
+            <ion-textarea formControlName="description" rows="2" auto-grow="true"></ion-textarea>
           </ion-item>
-        </ion-col>
-
-        <ion-col size-xs="12" size-md="6"
-          ><ion-item>
-            <ion-label position="floating">External Link</ion-label>
+        </div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="floating">External Link (Know More)</ion-label>
             <ion-input formControlName="showMoreLink"></ion-input>
           </ion-item>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </form>
+        </div>
+      </div>
+
+      <!-- Image Card -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="image-outline"></ion-icon> Occasion Image</div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="stacked">Upload Image</ion-label>
+            <ion-input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="imageName"></ion-input>
+          </ion-item>
+        </div>
+        <div class="form-image-preview" *ngIf="imageToDisplay">
+          <ion-img [src]="imageToDisplay"></ion-img>
+        </div>
+      </div>
+    </form>
+  </div>
 </ion-content>

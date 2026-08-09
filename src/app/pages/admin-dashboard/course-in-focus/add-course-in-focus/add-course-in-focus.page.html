@@ -1,153 +1,118 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
+      <ion-back-button defaultHref="/admin-dashboard/manage-course-in-focus"></ion-back-button>
     </ion-buttons>
-    <ion-title *ngIf="!isEditMode"
-      >{{ pageContent.addCourseInFocusTitle }}</ion-title
-    >
-    <ion-title *ngIf="isEditMode"
-      >{{ pageContent.editCourseInFocusTitle }}</ion-title
-    >
-    <ion-buttons slot="end">
-      <ion-button color="success" fill="solid" size="large" (click)="onSubmit()"
-        >{{ pageContent.saveLabel }}</ion-button
-      >
-      <ion-button
-        color="medium"
-        fill="clear"
-        size="large"
-        routerLink="/admin-dashboard/manage-course-in-focus"
-        >{{ pageContent.cancelLabel }}</ion-button
-      >
-    </ion-buttons>
+    <ion-title>{{ isEditMode ? pageContent.editCourseInFocusTitle : pageContent.addCourseInFocusTitle }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <form [formGroup]="addCourseInFocusForm">
-    <ion-grid>
-      <ion-row>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating">{{pageContent.nameLabel}}</ion-label>
+  <div class="admin-form-page">
+    <nav class="breadcrumb">
+      <a routerLink="/admin-dashboard">Dashboard</a>
+      <span class="separator">/</span>
+      <a routerLink="/admin-dashboard/manage-course-in-focus">Courses</a>
+      <span class="separator">/</span>
+      <span class="current">{{ isEditMode ? 'Edit' : 'New' }}</span>
+    </nav>
+
+    <div class="form-header">
+      <h1>{{ isEditMode ? pageContent.editCourseInFocusTitle : pageContent.addCourseInFocusTitle }}</h1>
+      <div class="form-actions">
+        <button class="btn-secondary" routerLink="/admin-dashboard/manage-course-in-focus">Cancel</button>
+        <button class="btn-primary" (click)="onSubmit()">
+          <ion-icon name="checkmark-outline"></ion-icon> Save
+        </button>
+      </div>
+    </div>
+
+    <form [formGroup]="addCourseInFocusForm">
+      <!-- Course Info -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="school-outline"></ion-icon> Course Information</div>
+        <div class="form-row">
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.nameLabel }} *</ion-label>
             <ion-input formControlName="name"></ion-input>
           </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating">{{pageContent.linkLabel}}</ion-label>
-            <ion-input formControlName="link"></ion-input>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="2"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.platformLabel}}</ion-label
-            >
-            <ion-input formControlName="platform"></ion-input>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="2"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.categoryLabel}}</ion-label
-            >
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.categoryLabel }} *</ion-label>
             <ion-select formControlName="category">
-              <ion-select-option
-                [value]="category"
-                *ngFor="let category of categories"
-                >{{ category }}</ion-select-option
-              >
+              <ion-select-option [value]="category" *ngFor="let category of categories">{{ category }}</ion-select-option>
             </ion-select>
           </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.offeredByLabel}}</ion-label
-            >
+        </div>
+        <div class="form-row">
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.platformLabel }}</ion-label>
+            <ion-input formControlName="platform"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.offeredByLabel }}</ion-label>
             <ion-input formControlName="offeredBy"></ion-input>
           </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.durationLabel}}</ion-label
-            >
+        </div>
+        <div class="form-row">
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.durationLabel }}</ion-label>
             <ion-input formControlName="duration"></ion-input>
           </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.approxCostLabel}}</ion-label
-            >
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.approxCostLabel }}</ion-label>
             <ion-input formControlName="approxCost"></ion-input>
           </ion-item>
-        </ion-col>
-        <ion-col size-xs="12"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.keyTopicsLabel}}</ion-label
-            >
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.linkLabel }}</ion-label>
+            <ion-input formControlName="link"></ion-input>
+          </ion-item>
+        </div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.keyTopicsLabel }}</ion-label>
             <ion-input formControlName="keyTopics"></ion-input>
           </ion-item>
-        </ion-col>
-        <ion-col size-xs="12"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.descriptionLabel}}</ion-label
-            >
+        </div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.descriptionLabel }}</ion-label>
             <ion-textarea formControlName="description" rows="3"></ion-textarea>
           </ion-item>
-        </ion-col>
-        <ion-col size-xs="12"
-          ><ion-item>
-            <ion-label position="stacked">{{pageContent.imageLabel}}</ion-label>
-            <ion-input
-              type="file"
-              accept="image/*"
-              (change)="onFileSelected($event)"
-              formControlName="image"
-            ></ion-input>
-            <div><ion-img [src]="imageToDisplay"></ion-img></div>
+        </div>
+      </div>
+
+      <!-- Image -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="image-outline"></ion-icon> Course Image</div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="stacked">{{ pageContent.imageLabel }}</ion-label>
+            <ion-input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="image"></ion-input>
           </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.submitDateLabel}}</ion-label
-            >
-            <ion-input
-              disabled
-              [value]="courseInFocus.submitDate | date"
-            ></ion-input>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.publishDateLabel}}</ion-label
-            >
-            <ion-input
-              disabled
-              [value]="courseInFocus.publishDate | date"
-            ></ion-input>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.unpublishDateLabel}}</ion-label
-            >
-            <ion-input
-              disabled
-              [value]="courseInFocus.unpublishDate | date"
-            ></ion-input>
-          </ion-item>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </form>
+        </div>
+        <div class="form-image-preview" *ngIf="imageToDisplay">
+          <ion-img [src]="imageToDisplay"></ion-img>
+        </div>
+      </div>
+
+      <!-- Timeline (edit mode) -->
+      <div class="form-card" *ngIf="isEditMode">
+        <div class="form-card-title"><ion-icon name="time-outline"></ion-icon> Timeline</div>
+        <div class="form-dates-row">
+          <div class="date-display">
+            <div class="date-label">Submitted</div>
+            <div class="date-value">{{ courseInFocus.submitDate | date:'dd MMM yyyy' }}</div>
+          </div>
+          <div class="date-display">
+            <div class="date-label">Published</div>
+            <div class="date-value">{{ courseInFocus.publishDate ? (courseInFocus.publishDate | date:'dd MMM yyyy') : '—' }}</div>
+          </div>
+          <div class="date-display">
+            <div class="date-label">Unpublished</div>
+            <div class="date-value">{{ courseInFocus.unpublishDate ? (courseInFocus.unpublishDate | date:'dd MMM yyyy') : '—' }}</div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
 </ion-content>

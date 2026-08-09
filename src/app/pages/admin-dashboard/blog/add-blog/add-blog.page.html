@@ -1,106 +1,98 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
+      <ion-back-button defaultHref="/admin-dashboard/manage-blog"></ion-back-button>
     </ion-buttons>
-    <ion-title>Add Blog</ion-title>
-    <ion-buttons slot="end">
-      <ion-button color="success" fill="solid" size="large" (click)="onSubmit()"
-        >Save</ion-button
-      >
-      <ion-button
-        color="medium"
-        fill="clear"
-        size="large"
-        routerLink="/admin-dashboard"
-        >Cancel</ion-button
-      >
-    </ion-buttons>
+    <ion-title>{{ isEditMode ? 'Edit Blog' : 'New Blog' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <form [formGroup]="addBlogForm">
-    <ion-grid>
-      <ion-row>
-        <ion-col size-xs="12" size-md="6"
-          ><ion-item>
-            <ion-label position="floating">Blog Title</ion-label>
+  <div class="admin-form-page">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+      <a routerLink="/admin-dashboard">Dashboard</a>
+      <span class="separator">/</span>
+      <a routerLink="/admin-dashboard/manage-blog">Blogs</a>
+      <span class="separator">/</span>
+      <span class="current">{{ isEditMode ? 'Edit' : 'New' }}</span>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="form-header">
+      <h1>{{ isEditMode ? 'Edit Blog Post' : 'Create New Blog Post' }}</h1>
+      <div class="form-actions">
+        <button class="btn-secondary" routerLink="/admin-dashboard/manage-blog">Cancel</button>
+        <button class="btn-primary" (click)="onSubmit()" [disabled]="!addBlogForm.valid">
+          <ion-icon name="checkmark-outline"></ion-icon> {{ isEditMode ? 'Update' : 'Publish' }}
+        </button>
+      </div>
+    </div>
+
+    <form [formGroup]="addBlogForm">
+      <!-- Basic Info Card -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="document-text-outline"></ion-icon> Basic Information</div>
+        <div class="form-row">
+          <ion-item>
+            <ion-label position="floating">Blog Title *</ion-label>
             <ion-input formControlName="title"></ion-input>
           </ion-item>
-        </ion-col>
-
-        <ion-col size-xs="12" size-md="6"
-          ><ion-item>
-            <ion-label position="floating">Author Name</ion-label>
+          <ion-item>
+            <ion-label position="floating">Author Name *</ion-label>
             <ion-input formControlName="authorName"></ion-input>
           </ion-item>
-        </ion-col>
-
-        <ion-col size-xs="12" size-md="6"
-          ><ion-item>
-            <ion-label position="floating">Category</ion-label>
+        </div>
+        <div class="form-row">
+          <ion-item>
+            <ion-label position="floating">Category *</ion-label>
             <ion-select formControlName="category">
-              <ion-select-option
-                [value]="category"
-                *ngFor="let category of categories"
-                >{{ category }}</ion-select-option
-              >
+              <ion-select-option [value]="category" *ngFor="let category of categories">{{ category }}</ion-select-option>
             </ion-select>
           </ion-item>
-        </ion-col>
-
-        <ion-col size-xs="12" size-md="6"
-          ><ion-item>
-            <ion-label position="floating">Sub Category</ion-label>
+          <ion-item>
+            <ion-label position="floating">Sub Category *</ion-label>
             <ion-input formControlName="subCategory"></ion-input>
           </ion-item>
-        </ion-col>
+        </div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="floating">Short Description *</ion-label>
+            <ion-textarea formControlName="shortDescription" rows="2" auto-grow="true"></ion-textarea>
+          </ion-item>
+        </div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="floating">About Author *</ion-label>
+            <ion-textarea formControlName="aboutAuthor" rows="2" auto-grow="true"></ion-textarea>
+          </ion-item>
+        </div>
+      </div>
 
-        <ion-col size-xs="12"
-          ><ion-item>
-            <ion-label position="stacked">Blog Image</ion-label>
-            <ion-input
-              type="file"
-              accept="image/*"
-              (change)="onFileSelected($event)"
-              formControlName="image"
-            ></ion-input>
+      <!-- Image Card -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="image-outline"></ion-icon> Blog Image</div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="stacked">Upload Hero Image *</ion-label>
+            <ion-input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="image"></ion-input>
             <ion-note slot="helper">Max file size {{ maxImageMB }} MB. Recommended JPG/PNG.</ion-note>
-            <div><ion-img [src]="imageToDisplay"></ion-img></div>
           </ion-item>
-        </ion-col>
+        </div>
+        <div class="form-image-preview" *ngIf="imageToDisplay">
+          <ion-img [src]="imageToDisplay"></ion-img>
+        </div>
+      </div>
 
-        <ion-col size-xs="12"
-          ><ion-item>
-            <ion-label position="floating">Blog Short Description</ion-label>
-            <ion-textarea
-              formControlName="shortDescription"
-              rows="2"
-              auto-grow="true"
-            ></ion-textarea>
-          </ion-item>
-        </ion-col>
-        <ion-col size-xs="12"
-          ><ion-item>
-            <ion-label position="floating">About Author</ion-label>
-            <ion-textarea
-              formControlName="aboutAuthor"
-              rows="2"
-              auto-grow="true"
-            ></ion-textarea>
-          </ion-item>
-        </ion-col>
-
-        <ion-col size-xs="12">
-          <ion-item><ion-label>Blog Content</ion-label></ion-item>
-          <quill-editor
-            formControlName="content"
-            [modules]="quillModules"
-            (onEditorCreated)="onEditorCreated($event)"
-          ></quill-editor>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </form>
+      <!-- Content Card -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="create-outline"></ion-icon> Blog Content</div>
+        <quill-editor
+          formControlName="content"
+          [modules]="quillModules"
+          (onEditorCreated)="onEditorCreated($event)"
+        ></quill-editor>
+      </div>
+    </form>
+  </div>
 </ion-content>

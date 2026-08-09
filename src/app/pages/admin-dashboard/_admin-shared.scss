@@ -894,6 +894,8 @@ ion-header {
 
       &.sorted { color: #818cf8; }
       &:hover { background: #1a2744; }
+      .sort-icon { color: #64748b; }
+      &.sorted .sort-icon { color: #818cf8; }
     }
 
     tbody {
@@ -906,14 +908,22 @@ ion-header {
   }
 
   .cell-title { color: #f1f5f9; }
-  .cell-subtitle, .cell-subtitle-inline { color: #64748b; }
+  .cell-subtitle, .cell-subtitle-inline { color: #94a3b8; }
   .cell-date { color: #94a3b8; }
   .cell-link { color: #818cf8; }
+  .cell-category { color: #e2e8f0; }
+
+  .action-btn {
+    &.view { color: #818cf8; }
+    &.publish { color: #34d399; }
+    &.unpublish { color: #fbbf24; }
+    &.delete { color: #f87171; }
+  }
 
   .status-badge {
-    &.published { background: rgba(16, 185, 129, 0.15); }
-    &.submitted { background: rgba(245, 158, 11, 0.15); }
-    &.inactive { background: rgba(107, 114, 128, 0.15); }
+    &.published { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    &.submitted { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+    &.inactive { background: rgba(107, 114, 128, 0.15); color: #94a3b8; }
   }
 
   .btn-primary {
@@ -949,4 +959,295 @@ ion-header {
   }
 
   .cell-thumbnail { background: #334155; }
+}
+
+// ── Form Pages (Add/Edit) ───────────────────────────────────────────
+
+.admin-form-page {
+  padding: 24px;
+  padding-bottom: 80px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  h1 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin: 0;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 10px;
+  }
+}
+
+.form-card {
+  background: $card-bg;
+  border: 1px solid $border-color;
+  border-radius: $card-radius;
+  padding: 24px;
+  margin-bottom: 16px;
+
+  .form-card-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid $border-color;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    ion-icon {
+      font-size: 18px;
+      color: $accent;
+    }
+  }
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 12px;
+
+  &.full-width {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-image-preview {
+  margin-top: 12px;
+  max-width: 300px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid $border-color;
+
+  img, ion-img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+.form-dates-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 14px;
+  background: #f9fafb;
+  border-radius: 10px;
+  margin-top: 12px;
+
+  .date-display {
+    text-align: center;
+
+    .date-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: $text-muted;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .date-value {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: $text-primary;
+      margin-top: 4px;
+    }
+  }
+}
+
+// ── Dark theme for forms ──────────────────────────────────────
+
+:host-context(body.admin-dark-theme) {
+  .form-card {
+    background: #1e293b;
+    border-color: #334155;
+    .form-card-title { color: #f1f5f9; border-color: #334155; }
+  }
+
+  .form-dates-row {
+    background: #0f172a;
+    .date-display .date-label { color: #64748b; }
+    .date-display .date-value { color: #e2e8f0; }
+  }
+
+  .form-image-preview { border-color: #334155; }
+}
+
+@media (max-width: 768px) {
+  .admin-form-page {
+    padding: 14px;
+    padding-bottom: 80px;
+  }
+
+  .form-card {
+    padding: 16px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-dates-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+// ── Modern Ion Form Styling (applies to add/edit pages) ─────────────
+
+ion-content {
+  --background: #{$admin-bg};
+}
+
+form {
+  ion-grid {
+    padding: 0;
+  }
+
+  ion-item {
+    --background: #{$card-bg};
+    --border-color: #{$border-color};
+    --border-radius: 10px;
+    --padding-start: 14px;
+    --inner-padding-end: 14px;
+    margin-bottom: 4px;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    --highlight-color-focused: #{$accent};
+
+    ion-label {
+      font-size: 0.85rem !important;
+      font-weight: 500;
+    }
+
+    ion-input, ion-textarea, ion-select {
+      font-size: 0.9rem;
+    }
+  }
+
+  ion-note {
+    font-size: 0.75rem;
+    color: $text-muted;
+    padding-left: 4px;
+  }
+
+  quill-editor {
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 4px;
+  }
+}
+
+// Dark theme form overrides
+:host-context(body.admin-dark-theme) form {
+  ion-item {
+    --background: #1e293b;
+    --border-color: #334155;
+    border-color: #334155;
+    --color: #f1f5f9;
+
+    ion-label { color: #94a3b8 !important; }
+    ion-input, ion-textarea, ion-select { color: #f1f5f9 !important; --color: #f1f5f9; }
+  }
+
+  ion-note { color: #64748b; }
+
+  quill-editor {
+    border-color: #334155;
+    
+    ::ng-deep {
+      .ql-toolbar { background: #0f172a; border-color: #334155; }
+      .ql-toolbar .ql-stroke { stroke: #94a3b8; }
+      .ql-toolbar .ql-fill { fill: #94a3b8; }
+      .ql-toolbar .ql-picker-label { color: #94a3b8; }
+      .ql-container { background: #1e293b; border-color: #334155; color: #e2e8f0; }
+      .ql-editor { color: #e2e8f0; }
+      .ql-editor.ql-blank::before { color: #64748b; }
+    }
+  }
+}
+
+// Dark theme for ion-content and overall page background
+:host-context(body.admin-dark-theme) {
+  ion-content {
+    --background: #0f172a;
+  }
+}
+
+// ── Breadcrumbs ─────────────────────────────────────────────────────
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  font-size: 0.78rem;
+  color: $text-muted;
+
+  a {
+    color: $accent;
+    text-decoration: none;
+    font-weight: 500;
+    &:hover { text-decoration: underline; }
+  }
+
+  .separator {
+    color: #d1d5db;
+  }
+
+  .current {
+    color: $text-primary;
+    font-weight: 600;
+  }
+}
+
+// ── Form Validation States ──────────────────────────────────────────
+
+form {
+  ion-item {
+    &.ion-invalid.ion-touched {
+      border-color: $danger;
+      --highlight-color-focused: #{$danger};
+    }
+  }
+
+  .field-error {
+    font-size: 0.72rem;
+    color: $danger;
+    padding: 4px 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    ion-icon {
+      font-size: 13px;
+    }
+  }
+}
+
+// ── Dark theme breadcrumbs ──────────────────────────────────────────
+
+:host-context(body.admin-dark-theme) {
+  .breadcrumb {
+    color: #64748b;
+    a { color: #818cf8; }
+    .separator { color: #475569; }
+    .current { color: #e2e8f0; }
+  }
 }

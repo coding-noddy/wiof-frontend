@@ -1,130 +1,103 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
+      <ion-back-button defaultHref="/admin-dashboard/manage-coffee-conversation"></ion-back-button>
     </ion-buttons>
-    <ion-title *ngIf="!isEditMode"
-      >{{ pageContent.addCoffeeConversationTitle }}</ion-title
-    >
-    <ion-title *ngIf="isEditMode"
-      >{{ pageContent.editCoffeeConversationTitle }}</ion-title
-    >
-    <ion-buttons slot="end">
-      <ion-button color="success" fill="solid" size="large" (click)="onSubmit()"
-        >{{ pageContent.saveLabel }}</ion-button
-      >
-      <ion-button
-        color="medium"
-        fill="clear"
-        size="large"
-        routerLink="/admin-dashboard/manage-coffee-conversation"
-        >{{ pageContent.cancelLabel }}</ion-button
-      >
-    </ion-buttons>
+    <ion-title>{{ isEditMode ? pageContent.editCoffeeConversationTitle : pageContent.addCoffeeConversationTitle }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <form [formGroup]="addCoffeeConversationForm">
-    <ion-grid>
-      <ion-row>
-        <ion-col size-xs="12" size-md="8"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.topicLabel}}</ion-label
-            >
+  <div class="admin-form-page">
+    <nav class="breadcrumb">
+      <a routerLink="/admin-dashboard">Dashboard</a>
+      <span class="separator">/</span>
+      <a routerLink="/admin-dashboard/manage-coffee-conversation">Conversations</a>
+      <span class="separator">/</span>
+      <span class="current">{{ isEditMode ? 'Edit' : 'New' }}</span>
+    </nav>
+
+    <div class="form-header">
+      <h1>{{ isEditMode ? pageContent.editCoffeeConversationTitle : pageContent.addCoffeeConversationTitle }}</h1>
+      <div class="form-actions">
+        <button class="btn-secondary" routerLink="/admin-dashboard/manage-coffee-conversation">Cancel</button>
+        <button class="btn-primary" (click)="onSubmit()">
+          <ion-icon name="checkmark-outline"></ion-icon> Save
+        </button>
+      </div>
+    </div>
+
+    <form [formGroup]="addCoffeeConversationForm">
+      <!-- Topic Card -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="cafe-outline"></ion-icon> Conversation Details</div>
+        <div class="form-row">
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.topicLabel }} *</ion-label>
             <ion-input formControlName="topic"></ion-input>
           </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.categoryLabel}}</ion-label
-            >
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.categoryLabel }} *</ion-label>
             <ion-select formControlName="category">
-              <ion-select-option
-                [value]="category"
-                *ngFor="let category of categories"
-                >{{ category }}</ion-select-option
-              >
+              <ion-select-option [value]="category" *ngFor="let category of categories">{{ category }}</ion-select-option>
             </ion-select>
           </ion-item>
-        </ion-col>
-
-        <ion-col size-xs="12"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.topicShortDescLabel}}</ion-label
-            >
+        </div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.topicShortDescLabel }}</ion-label>
             <ion-input formControlName="topicShortDesc"></ion-input>
           </ion-item>
-        </ion-col>
+        </div>
+      </div>
 
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.interviewerNameLabel}}</ion-label
-            >
+      <!-- People Card -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="people-outline"></ion-icon> People</div>
+        <div class="form-row">
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.interviewerNameLabel }}</ion-label>
             <ion-input formControlName="interviewerName"></ion-input>
           </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.intervieweeNameLabel}}</ion-label
-            >
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.intervieweeNameLabel }} *</ion-label>
             <ion-input formControlName="intervieweeName"></ion-input>
           </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="4">
           <mat-form-field appearance="standard" class="date-picker-field">
-            <mat-label> {{ pageContent.interviewDateLabel }}</mat-label>
-            <input
-              matInput
-              [matDatepicker]="coffeeConversationDatePicker"
-              formControlName="interviewDate"
-            />
-            <mat-datepicker-toggle
-              matSuffix
-              [for]="coffeeConversationDatePicker"
-            ></mat-datepicker-toggle>
+            <mat-label>{{ pageContent.interviewDateLabel }}</mat-label>
+            <input matInput [matDatepicker]="coffeeConversationDatePicker" formControlName="interviewDate" />
+            <mat-datepicker-toggle matSuffix [for]="coffeeConversationDatePicker"></mat-datepicker-toggle>
             <mat-datepicker #coffeeConversationDatePicker></mat-datepicker>
           </mat-form-field>
-        </ion-col>
-
-        <ion-col size-xs="12"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.intervieweeDescLabel}}</ion-label
-            >
+        </div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.intervieweeDescLabel }}</ion-label>
             <ion-input formControlName="intervieweeDesc"></ion-input>
           </ion-item>
-        </ion-col>
+        </div>
+      </div>
 
-        <ion-col size-xs="12" size-md="6"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.videoLinkLabel}}</ion-label
-            >
+      <!-- Links Card -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="link-outline"></ion-icon> Links</div>
+        <div class="form-row">
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.videoLinkLabel }}</ion-label>
             <ion-input formControlName="videoLink"></ion-input>
           </ion-item>
-        </ion-col>
-        <ion-col size-xs="12" size-md="6"
-          ><ion-item>
-            <ion-label position="floating"
-              >{{pageContent.knowMoreLinkLabel}}</ion-label
-            >
+          <ion-item>
+            <ion-label position="floating">{{ pageContent.knowMoreLinkLabel }}</ion-label>
             <ion-input formControlName="knowMoreLink"></ion-input>
           </ion-item>
-        </ion-col>
+        </div>
+      </div>
 
-        <ion-col size-xs="12">
-          <ion-item
-            ><ion-label>{{pageContent.topicDescLabel}}</ion-label></ion-item
-          >
-          <quill-editor formControlName="topicDesc"></quill-editor>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </form>
+      <!-- Content Card -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="create-outline"></ion-icon> Description</div>
+        <quill-editor formControlName="topicDesc"></quill-editor>
+      </div>
+    </form>
+  </div>
 </ion-content>
