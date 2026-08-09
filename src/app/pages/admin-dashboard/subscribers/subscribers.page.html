@@ -3,57 +3,65 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
     </ion-buttons>
-    <ion-title>View Subscribers</ion-title>
-    <!-- <ion-buttons slot="end">
-      <ion-button color="dark" fill="clear" size="large" (click)="refreshData()"
-        ><ion-icon name="refresh-outline" slot="start"></ion-icon
-        >Refresh</ion-button
-      ><ion-button
-        color="success"
-        fill="solid"
-        size="large"
-        (click)="addNewPoll()"
-        ><ion-icon name="add-outline" slot="start"></ion-icon>Add New
-        Poll</ion-button
-      >
-    </ion-buttons> -->
+    <ion-title>Subscribers</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-grid *ngIf="subscribersJson">
-    <ion-row class="item-divider-line">
-      <ion-col size="12" size-md="6" class="ion-align-self-center">
-        <strong>Subscribers List</strong>
-      </ion-col>
-      <ion-col size="12" size-md="6" class="ion-align-self-center">
-        <ion-button color="dark" fill="solid" (click)="generateExcel()">
-          <ion-icon name="cloud-download"></ion-icon>
-          Export List
-        </ion-button>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col size="12">
-        <table border="1">
+  <div class="admin-page">
+    <div class="admin-page-header">
+      <div>
+        <h1>Newsletter Subscribers</h1>
+        <p class="header-meta">{{ summary.total }} unique subscribers</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-primary" (click)="generateExcel()">
+          <ion-icon name="download-outline"></ion-icon> Export Excel
+        </button>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon green"><ion-icon name="mail-outline"></ion-icon></div>
+        <div class="summary-info">
+          <span class="summary-value">{{ summary.total }}</span>
+          <span class="summary-label">Total Subscribers</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="admin-table-card" *ngIf="subscribersJson?.length > 0">
+      <table class="admin-table">
+        <thead>
           <tr>
-            <th class="table-heading">Sr</th>
-            <th class="table-heading">First Name</th>
-            <th class="table-heading">Last Name</th>
-            <th class="table-heading">Email Id</th>
-            <th class="table-heading">Subscription Date and Time</th>
+            <th>#</th>
+            <th (click)="sortBy('firstName')" [class.sorted]="sortColumn === 'firstName'">
+              <span class="sort-header">First Name <ion-icon class="sort-icon" [name]="sortColumn === 'firstName' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+            </th>
+            <th (click)="sortBy('lastName')" [class.sorted]="sortColumn === 'lastName'">
+              <span class="sort-header">Last Name <ion-icon class="sort-icon" [name]="sortColumn === 'lastName' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+            </th>
+            <th (click)="sortBy('email')" [class.sorted]="sortColumn === 'email'">
+              <span class="sort-header">Email <ion-icon class="sort-icon" [name]="sortColumn === 'email' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+            </th>
+            <th (click)="sortBy('datetime')" [class.sorted]="sortColumn === 'datetime'">
+              <span class="sort-header">Subscribed <ion-icon class="sort-icon" [name]="sortColumn === 'datetime' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+            </th>
           </tr>
-          <tr *ngFor="let subscriber of subscribersJson; let i = index">
-            <td class="table-data">{{ i + 1 }}</td>
-            <td class="table-data">{{subscriber.firstName|titlecase}}</td>
-            <td class="table-data">{{subscriber.lastName|titlecase}}</td>
-            <td class="table-data">{{subscriber.email}}</td>
-            <td class="table-data" *ngIf="subscriber.datetime">
-              {{subscriber.datetime}}
-            </td>
+        </thead>
+        <tbody>
+          <tr *ngFor="let sub of subscribersJson; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td><span class="cell-title">{{ sub.firstName | titlecase }}</span></td>
+            <td>{{ sub.lastName | titlecase }}</td>
+            <td>{{ sub.email }}</td>
+            <td><span class="cell-date">{{ sub.datetime || '—' }}</span></td>
           </tr>
-        </table>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </ion-content>

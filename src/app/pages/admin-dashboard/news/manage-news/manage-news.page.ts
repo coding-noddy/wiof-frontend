@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NewsService } from 'src/app/services/news.service';
 import { News } from 'src/app/models/News';
-import { Subject, Observable, throwError, of } from 'rxjs';
-import { takeUntil, map, catchError, switchMap } from 'rxjs/operators';
+import { Subject, of } from 'rxjs';
+import { takeUntil, switchMap } from 'rxjs/operators';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MEDIA_TYPE, UI_MESSAGES, ITEMS } from 'src/app/app.constants';
@@ -14,7 +14,18 @@ import { MEDIA_TYPE, UI_MESSAGES, ITEMS } from 'src/app/app.constants';
 })
 export class ManageNewsPage implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject();
-  newsList$: Observable<News[]>;
+
+  allNews: News[] = [];
+  displayedNews: News[] = [];
+  sortColumn = 'date';
+  sortDirection: 'asc' | 'desc' = 'desc';
+  filterCategory = '';
+  filterMediaType = '';
+  openDropdown = '';
+  currentPage = 1;
+  pageSize = 10;
+  totalPages = 1;
+  summary = { total: 0, withImage: 0, withVideo: 0 };
 
   constructor(
     private newsService: NewsService,
@@ -23,110 +34,98 @@ export class ManageNewsPage implements OnInit, OnDestroy {
     private route: ActivatedRoute
   ) {}
 
-  ngOnInit() {
-    this.initPage();
-  }
+  ngOnInit() { this.loadData(); }
 
-  initPage() {
-    this.newsList$ = this.newsService.getAllNews().pipe(
-      takeUntil(this.destroy$),
-      map((newsList) => {
-        return newsList.sort((a, b) => b.date - a.date);
-      }),
-      catchError((err) => {
-        return throwError(err);
-      })
-    );
-  }
-
-  refreshData() {
-    this.initPage();
-  }
-
-  addBreakinNews() {
-    this.router.navigate(['news', 'new'], { relativeTo: this.route });
-  }
-
-  viewNewsDetails(news: News) {
-    this.newsService.setViewEditModeNews(news);
-    this.router.navigate(['news', 'edit'], {
-      relativeTo: this.route,
-      queryParams: { id: news.newsId }
+  loadData() {
+    this.newsService.getAllNews().pipe(takeUntil(this.destroy$)).subscribe(list => {
+      this.allNews = list;
+      this.computeSummary(list);
+      this.applyFilterSortPaginate();
     });
   }
 
-  deleteNews(newsList: News[], index: number, news: News) {
-    this.uiUtil.presentAlert(
-      UI_MESSAGES.CONFIRM_HEADER,
-      UI_MESSAGES.CONFIRM_DELETE_ITEM_DESC.replace(
-        UI_MESSAGES.PLACEHOLDER,
-        ITEMS.NEWS
-      ),
-      [
-        {
-          text: UI_MESSAGES.CONFIRM_DELETE_PRIMARY_CTA,
-          handler: async () => {
-            await this.delNews(newsList, index, news);
-          }
-        },
-        {
-          text: UI_MESSAGES.CONFIRM_DELETE_SECONDARY_CTA,
-          role: 'cancel'
+  private computeSummary(list: News[]) {
+    this.summary.total = list.length;
+    this.summary.withImage = list.filter(n => n.mediaType === 'image').length;
+    this.summary.withVideo = list.filter(n => n.mediaType === 'video').length;
+  }
+
+  applyFilterSortPaginate() {
+    let filtered = [...this.allNews];
+    if (this.filterCategory) {
+      filtered = filtered.filter(n => (n.category || '').toLowerCase() === this.filterCategory);
+    }
+    if (this.filterMediaType) {
+      filtered = filtered.filter(n => n.mediaType === this.filterMediaType);
+    }
+    filtered.sort((a, b) => {
+      let valA = a[this.sortColumn]; let valB = b[this.sortColumn];
+      if (valA == null) valA = ''; if (valB == null) valB = '';
+      if (typeof valA === 'string') { valA = valA.toLowerCase(); valB = (valB as string).toLowerCase(); }
+      if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+    this.totalPages = Math.ceil(filtered.length / this.pageSize) || 1;
+    if (this.currentPage > this.totalPages) this.currentPage = 1;
+    const start = (this.currentPage - 1) * this.pageSize;
+    this.displayedNews = filtered.slice(start, start + this.pageSize);
+  }
+
+  get filteredCount(): number {
+    if (!this.filterCategory) return this.allNews.length;
+    return this.allNews.filter(n => (n.category || '').toLowerCase() === this.filterCategory).length;
+  }
+
+  get pageNumbers(): number[] {
+    const pages = []; const max = 5;
+    let start = Math.max(1, this.currentPage - Math.floor(max / 2));
+    let end = Math.min(this.totalPages, start + max - 1);
+    if (end - start < max - 1) start = Math.max(1, end - max + 1);
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
+  }
+
+  sortBy(column: string) {
+    if (this.sortColumn === column) this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    else { this.sortColumn = column; this.sortDirection = 'desc'; }
+    this.currentPage = 1;
+    this.applyFilterSortPaginate();
+  }
+
+  onFilterChange() { this.currentPage = 1; this.openDropdown = ''; this.applyFilterSortPaginate(); }
+  toggleDropdown(name: string) { this.openDropdown = this.openDropdown === name ? '' : name; }
+  removeFilter(key: string) { this[key] = ''; this.onFilterChange(); }
+  clearAllFilters() { this.filterCategory = ''; this.filterMediaType = ''; this.onFilterChange(); }
+  get hasActiveFilters(): boolean { return !!(this.filterCategory || this.filterMediaType); }
+  onPageSizeChange() { this.currentPage = 1; this.applyFilterSortPaginate(); }
+  goToPage(page: number) { if (page >= 1 && page <= this.totalPages) { this.currentPage = page; this.applyFilterSortPaginate(); } }
+  refreshData() { this.loadData(); }
+
+  addBreakinNews() { this.router.navigate(['news', 'new'], { relativeTo: this.route }); }
+  viewNewsDetails(news: News) {
+    this.newsService.setViewEditModeNews(news);
+    this.router.navigate(['news', 'edit'], { relativeTo: this.route, queryParams: { id: news.newsId } });
+  }
+
+  deleteNews(index: number, news: News) {
+    this.uiUtil.presentAlert(UI_MESSAGES.CONFIRM_HEADER,
+      UI_MESSAGES.CONFIRM_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.NEWS),
+      [{
+        text: UI_MESSAGES.CONFIRM_DELETE_PRIMARY_CTA,
+        handler: async () => {
+          const loader = await this.uiUtil.showLoader(UI_MESSAGES.DELETE_IN_PROGRESS.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.NEWS));
+          this.newsService.deleteNews(news.newsId).pipe(takeUntil(this.destroy$),
+            switchMap(() => news.mediaType === MEDIA_TYPE.IMAGE ? this.newsService.deleteNewsImage(news.mediaLink) : of(true))
+          ).subscribe(() => { loader.dismiss(); this.loadData();
+            this.uiUtil.presentAlert(UI_MESSAGES.SUCCESS_HEADER, UI_MESSAGES.SUCCESS_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.NEWS), [UI_MESSAGES.FAILURE_CTA_TEXT]);
+          }, () => { loader.dismiss();
+            this.uiUtil.presentAlert(UI_MESSAGES.FAILURE_HEADER, UI_MESSAGES.FAILURE_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.NEWS), [UI_MESSAGES.FAILURE_CTA_TEXT]);
+          });
         }
-      ]
+      }, { text: UI_MESSAGES.CONFIRM_DELETE_SECONDARY_CTA, role: 'cancel' }]
     );
   }
 
-  private async delNews(newsList: News[], index: number, news: News) {
-    const loader = await this.uiUtil.showLoader(
-      UI_MESSAGES.DELETE_IN_PROGRESS.replace(
-        UI_MESSAGES.PLACEHOLDER,
-        ITEMS.NEWS
-      )
-    );
-    this.newsService
-      .deleteNews(news.newsId)
-      .pipe(
-        takeUntil(this.destroy$),
-        switchMap((data) => {
-          if (news.mediaType === MEDIA_TYPE.IMAGE) {
-            return this.newsService.deleteNewsImage(news.mediaLink);
-          } else {
-            return of(true);
-          }
-        })
-      )
-      .subscribe(
-        (response) => {
-          console.log(response);
-          loader.dismiss();
-          this.uiUtil.presentAlert(
-            UI_MESSAGES.SUCCESS_HEADER,
-            UI_MESSAGES.SUCCESS_DELETE_ITEM_DESC.replace(
-              UI_MESSAGES.PLACEHOLDER,
-              ITEMS.NEWS
-            ),
-            [UI_MESSAGES.FAILURE_CTA_TEXT]
-          );
-          newsList.splice(index, 1);
-        },
-        (error) => {
-          console.log(error);
-          loader.dismiss();
-          this.uiUtil.presentAlert(
-            UI_MESSAGES.FAILURE_HEADER,
-            UI_MESSAGES.FAILURE_DELETE_ITEM_DESC.replace(
-              UI_MESSAGES.PLACEHOLDER,
-              ITEMS.NEWS
-            ),
-            [UI_MESSAGES.FAILURE_CTA_TEXT]
-          );
-        }
-      );
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.unsubscribe();
-  }
+  ngOnDestroy(): void { this.destroy$.next(true); this.destroy$.unsubscribe(); }
 }

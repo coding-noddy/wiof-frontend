@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subject, Observable, throwError } from 'rxjs';
+import { Subject } from 'rxjs';
 import { CourseInFocus } from 'src/app/models/CourseInFocus';
 import { CourseInFocusService } from 'src/app/services/course-in-focus.service';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 import { Router, ActivatedRoute } from '@angular/router';
-import { takeUntil, catchError, map, switchMap } from 'rxjs/operators';
+import { takeUntil, switchMap } from 'rxjs/operators';
 import { UI_MESSAGES, ITEMS } from 'src/app/app.constants';
 
 @Component({
@@ -14,147 +14,83 @@ import { UI_MESSAGES, ITEMS } from 'src/app/app.constants';
 })
 export class ManageCourseInFocusPage implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject();
-  courseInFocusList$: Observable<CourseInFocus[]>;
+  allItems: CourseInFocus[] = [];
+  displayedItems: CourseInFocus[] = [];
+  sortColumn = 'submitDate';
+  sortDirection: 'asc' | 'desc' = 'desc';
+  filterCategory = '';
+  filterPlatform = '';
+  filterStatus = '';
+  openDropdown = '';
+  availablePlatforms: string[] = [];
+  currentPage = 1;
+  pageSize = 10;
+  totalPages = 1;
 
-  constructor(
-    private courseInFocusService: CourseInFocusService,
-    private uiUtil: UiUtilService,
-    private router: Router,
-    private route: ActivatedRoute
-  ) {}
+  constructor(private courseInFocusService: CourseInFocusService, private uiUtil: UiUtilService, private router: Router, private route: ActivatedRoute) {}
 
-  ngOnInit() {
-    this.initPage();
-  }
+  ngOnInit() { this.loadData(); }
 
-  initPage() {
-    this.courseInFocusList$ = this.courseInFocusService
-      .getCoursesInFocus()
-      .pipe(
-        takeUntil(this.destroy$),
-        map((data) =>
-          data.sort((a, b) => (a.submitDate < b.submitDate ? -1 : 1))
-        ),
-        catchError((err) => {
-          return throwError(err);
-        })
-      );
-  }
-
-  refreshData() {
-    this.initPage();
-  }
-
-  addCourseInFocus() {
-    this.router.navigate(['course-in-focus', 'new'], {
-      relativeTo: this.route
+  loadData() {
+    this.courseInFocusService.getCoursesInFocus().pipe(takeUntil(this.destroy$)).subscribe(list => {
+      this.allItems = list;
+      this.availablePlatforms = [...new Set(list.map(c => c.platform).filter(p => p))].sort();
+      this.applySort();
     });
   }
 
-  viewCourseInFocusDetails(courseInFocus: CourseInFocus) {
-    this.courseInFocusService.setViewEditModeCourseInFocus(courseInFocus);
-    this.router.navigate(['course-in-focus', 'edit'], {
-      relativeTo: this.route,
-      queryParams: { id: courseInFocus.id }
+  applySort() {
+    let filtered = [...this.allItems];
+    if (this.filterCategory) filtered = filtered.filter(c => (c.category || '').toLowerCase() === this.filterCategory);
+    if (this.filterPlatform) filtered = filtered.filter(c => c.platform === this.filterPlatform);
+    if (this.filterStatus) filtered = filtered.filter(c => c.status === this.filterStatus);
+    const sorted = filtered.sort((a, b) => {
+      let valA = a[this.sortColumn]; let valB = b[this.sortColumn];
+      if (valA == null) valA = ''; if (valB == null) valB = '';
+      if (typeof valA === 'string') { valA = valA.toLowerCase(); valB = (valB as string).toLowerCase(); }
+      if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
+      return 0;
     });
+    this.totalPages = Math.ceil(sorted.length / this.pageSize) || 1;
+    if (this.currentPage > this.totalPages) this.currentPage = 1;
+    const start = (this.currentPage - 1) * this.pageSize;
+    this.displayedItems = sorted.slice(start, start + this.pageSize);
   }
 
-  deleteCourseInFocus(
-    courseInFocusList: CourseInFocus[],
-    index: number,
-    courseInFocus: CourseInFocus
-  ) {
-    this.uiUtil.presentAlert(
-      UI_MESSAGES.CONFIRM_HEADER,
-      UI_MESSAGES.CONFIRM_DELETE_ITEM_DESC.replace(
-        UI_MESSAGES.PLACEHOLDER,
-        ITEMS.COURSE_IN_FOCUS
-      ),
-      [
-        {
-          text: UI_MESSAGES.CONFIRM_DELETE_PRIMARY_CTA,
-          handler: async () => {
-            await this.delCourseInFocus(
-              courseInFocusList,
-              index,
-              courseInFocus
-            );
-          }
-        },
-        {
-          text: UI_MESSAGES.CONFIRM_DELETE_SECONDARY_CTA,
-          role: 'cancel'
-        }
-      ]
-    );
-  }
+  sortBy(column: string) { if (this.sortColumn === column) this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc'; else { this.sortColumn = column; this.sortDirection = 'desc'; } this.currentPage = 1; this.applySort(); }
+  onFilterChange() { this.currentPage = 1; this.openDropdown = ''; this.applySort(); }
+  toggleDropdown(name: string) { this.openDropdown = this.openDropdown === name ? '' : name; }
+  removeFilter(key: string) { this[key] = ''; this.onFilterChange(); }
+  clearAllFilters() { this.filterCategory = ''; this.filterPlatform = ''; this.filterStatus = ''; this.onFilterChange(); }
+  get hasActiveFilters(): boolean { return !!(this.filterCategory || this.filterPlatform || this.filterStatus); }
+  goToPage(p: number) { if (p >= 1 && p <= this.totalPages) { this.currentPage = p; this.applySort(); } }
+  onPageSizeChange() { this.currentPage = 1; this.applySort(); }
+  get pageNumbers(): number[] { const pages = []; let s = Math.max(1, this.currentPage - 2); let e = Math.min(this.totalPages, s + 4); if (e - s < 4) s = Math.max(1, e - 4); for (let i = s; i <= e; i++) pages.push(i); return pages; }
+  refreshData() { this.loadData(); }
 
-  private async delCourseInFocus(
-    courseInFocusList: CourseInFocus[],
-    index: number,
-    courseInFocus: CourseInFocus
-  ) {
-    const loader = await this.uiUtil.showLoader(
-      UI_MESSAGES.DELETE_IN_PROGRESS.replace(
-        UI_MESSAGES.PLACEHOLDER,
-        ITEMS.COURSE_IN_FOCUS
-      )
-    );
-    this.courseInFocusService
-      .deleteCourseInFocusImage(courseInFocus.image)
-      .pipe(
-        takeUntil(this.destroy$),
-        switchMap(() => {
-          return this.courseInFocusService.deleteCourseInFocus(
-            courseInFocus.id
-          );
-        })
-      )
-      .subscribe(
-        (response) => {
-          console.log(response);
-          loader.dismiss();
-          this.uiUtil.presentAlert(
-            UI_MESSAGES.SUCCESS_HEADER,
-            UI_MESSAGES.SUCCESS_DELETE_ITEM_DESC.replace(
-              UI_MESSAGES.PLACEHOLDER,
-              ITEMS.COURSE_IN_FOCUS
-            ),
-            [UI_MESSAGES.FAILURE_CTA_TEXT]
-          );
-          courseInFocusList.splice(index, 1);
-        },
-        (error) => {
-          console.log(error);
-          loader.dismiss();
-          this.uiUtil.presentAlert(
-            UI_MESSAGES.FAILURE_HEADER,
-            UI_MESSAGES.FAILURE_DELETE_ITEM_DESC.replace(
-              UI_MESSAGES.PLACEHOLDER,
-              ITEMS.COURSE_IN_FOCUS
-            ),
-            [UI_MESSAGES.FAILURE_CTA_TEXT]
-          );
-        }
-      );
+  addCourseInFocus() { this.router.navigate(['course-in-focus', 'new'], { relativeTo: this.route }); }
+  viewCourseInFocusDetails(course: CourseInFocus) { this.courseInFocusService.setViewEditModeCourseInFocus(course); this.router.navigate(['course-in-focus', 'edit'], { relativeTo: this.route, queryParams: { id: course.id } }); }
+
+  deleteCourseInFocus(index: number, course: CourseInFocus) {
+    this.uiUtil.presentAlert(UI_MESSAGES.CONFIRM_HEADER, UI_MESSAGES.CONFIRM_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.COURSE_IN_FOCUS),
+      [{ text: UI_MESSAGES.CONFIRM_DELETE_PRIMARY_CTA, handler: async () => {
+        const loader = await this.uiUtil.showLoader(UI_MESSAGES.DELETE_IN_PROGRESS.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.COURSE_IN_FOCUS));
+        this.courseInFocusService.deleteCourseInFocusImage(course.image).pipe(takeUntil(this.destroy$),
+          switchMap(() => this.courseInFocusService.deleteCourseInFocus(course.id))
+        ).subscribe(
+          () => { loader.dismiss(); this.loadData(); this.uiUtil.presentAlert(UI_MESSAGES.SUCCESS_HEADER, UI_MESSAGES.SUCCESS_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.COURSE_IN_FOCUS), [UI_MESSAGES.FAILURE_CTA_TEXT]); },
+          () => { loader.dismiss(); this.uiUtil.presentAlert(UI_MESSAGES.FAILURE_HEADER, UI_MESSAGES.FAILURE_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.COURSE_IN_FOCUS), [UI_MESSAGES.FAILURE_CTA_TEXT]); }
+        );
+      }}, { text: UI_MESSAGES.CONFIRM_DELETE_SECONDARY_CTA, role: 'cancel' }]);
   }
 
   publishCourseInFocus(id: string) {
-    this.courseInFocusService.publishCourseInFocus(id).subscribe((data) => {
-      console.log(data);
-      this.uiUtil.presentAlert(
-        UI_MESSAGES.SUCCESS_HEADER,
-        UI_MESSAGES.SUCCESS_PUBLISH_ITEM_DESC.replace(
-          UI_MESSAGES.PLACEHOLDER,
-          ITEMS.COURSE_IN_FOCUS
-        ),
-        [UI_MESSAGES.FAILURE_CTA_TEXT]
-      );
+    this.courseInFocusService.publishCourseInFocus(id).subscribe(() => {
+      this.uiUtil.presentAlert(UI_MESSAGES.SUCCESS_HEADER, UI_MESSAGES.SUCCESS_PUBLISH_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.COURSE_IN_FOCUS), [UI_MESSAGES.FAILURE_CTA_TEXT]);
+      this.loadData();
     });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.unsubscribe();
-  }
+  ngOnDestroy(): void { this.destroy$.next(true); this.destroy$.unsubscribe(); }
 }

@@ -13,32 +13,28 @@
 
 ### Pending Improvements
 - **[MED]** Environment Calendar — remove external padding, make calendar dates area bigger
-- **[MED]** Polls widget — show results from previous polls, show correct answers
+- ~~**[MED]** Polls widget — show results from previous polls, show correct answers~~ ✅ DONE
 - **[LOW]** AQI temperature — values come directly from monitoring stations via WAQI API (correct as reported)
 
 ### Responsiveness & Mobile
 - **[HIGH]** Widget responsiveness — ensure all 5 widgets display properly on mobile (proper padding, no overflow)
 - **[HIGH]** Card width and gaps should be consistent in responsive mode across all pages
-- **[HIGH]** Breaking news — image/video not displayed in mobile mode
-- **[HIGH]** Coffee conversation — too much upper/lower spacing on mobile element pages
-- **[HIGH]** Course section — image not fully visible on mobile devices
+- ~~**[HIGH]** Breaking news — image/video not displayed in mobile mode~~ ✅ DONE
+- ~~**[HIGH]** Coffee conversation — too much upper/lower spacing on mobile element pages~~ ✅ DONE
+- ~~**[HIGH]** Course section — image not fully visible on mobile devices~~ ✅ DONE
 
 ### Design Improvements
-- **[HIGH]** Subscribe section — needs modern redesign (currently old side-drawer style)
-- **[HIGH]** Privacy policy acceptance strip — redesign to look modern (cookie-consent style bar)
-- **[MED]** Blog page design — individual blog post page needs better layout
-  - Reference: https://wiof-staging.web.app/element/air/blog/KkeNELNVMtzOPQZ8r1A1
-- **[MED]** About us page — card designs should be improved
-- **[MED]** Calendar loading — cards jump due to "loading calendar" text. Use skeleton/overlay instead.
+- ~~**[HIGH]** Subscribe section — needs modern redesign (currently old side-drawer style)~~ ✅ DONE
+- ~~**[HIGH]** Privacy policy acceptance strip — redesign to look modern (cookie-consent style bar)~~ ✅ DONE
+- ~~**[MED]** Blog page design — individual blog post page needs better layout~~ ✅ DONE
+- ~~**[MED]** About us page — card designs should be improved~~ ✅ DONE
+- ~~**[MED]** Calendar loading — cards jump due to "loading calendar" text. Use skeleton/overlay instead.~~ ✅ DONE
 
 ### Functional Fixes
-- **[HIGH]** Privacy policy year range — should be dynamic: "2020-{currentYear}" not hardcoded
-- **[MED]** "Discover More" button — should scroll to element section or coffee conversation on home page
-  instead of navigating away
-- **[MED]** "About Us" → consider renaming to "Meet Our Team" (more personal, less corporate)
-  - "About Us" implies mission/vision. "Meet Our Team" implies people → more engaging for users
-  - Business perspective: Users connect with people, not statements. "Meet Our Team" builds trust.
-  - Recommendation: Keep "About Us" as the page but rename the nav link to "Our Team" or "Meet the Team"
+- ~~**[HIGH]** Privacy policy year range — should be dynamic: "2020-{currentYear}" not hardcoded~~ ✅ DONE
+- ~~**[MED]** "Discover More" button — should scroll to element section or coffee conversation on home page
+  instead of navigating away~~ ✅ DONE
+- ~~**[MED]** "About Us" → consider renaming to "Meet Our Team" (more personal, less corporate)~~ ✅ DONE (Header nav updated)
 
 ---
 
@@ -65,37 +61,32 @@
 
 ## 🟡 Design Polish (Next Up)
 
-- **[HIGH]** Energy Widget — redesign pump-station result (gas station JPG is very dated),
-  modern unit dropdown, better CO₂ output visualization
+- ~~**[HIGH]** Energy Widget — redesign pump-station result (gas station JPG is very dated),
+  modern unit dropdown, better CO₂ output visualization~~ ✅ DONE
 - **[HIGH]** AQI Widget — internal tab switcher and ion-toolbar buttons need modern treatment
 - **[MED]** Take Action Content — fixed heights, iframe cards, hover font-size jump
-- **[MED]** Food pH Indicator — input styling, layout consistency with other widgets
-- **[LOW]** Subscribe side-panel — polish slide-in drawer, update deprecated floating labels
+- ~~**[MED]** Food pH Indicator — input styling, layout consistency with other widgets~~ ✅ DONE
+- ~~**[LOW]** Subscribe side-panel — polish slide-in drawer, update deprecated floating labels~~ ✅ DONE
 
 ---
 
 ## 🟢 Future Features
 
-- **[HIGH]** Blog sharing feature
-  - Add share button on blog cards + blog detail page ✅ DONE
-  - Generate shareable link with blog hero image as Open Graph preview
-  - Use Web Share API on mobile for native share sheet ✅ DONE
-  - **TODO: Dynamic Open Graph meta tags for rich link previews**
-    - Problem: Angular SPA serves same `index.html` for all routes — crawlers see default image
-    - Solution: Firebase Cloud Function that intercepts crawler requests, reads blog from Firestore,
-      returns dynamic `<meta og:image>`, `<meta og:title>`, `<meta og:description>` tags
-    - When shared on WhatsApp/Twitter/LinkedIn, shows blog hero image + title instead of default
-    - Implementation: Firebase Hosting rewrite rule → Cloud Function for bot user-agents
+- ~~**[HIGH]** Blog sharing feature~~ ✅ DONE
+  - ~~Add share button on blog cards + blog detail page~~ ✅
+  - ~~Generate shareable link with blog hero image as Open Graph preview~~ ✅
+  - ~~Use Web Share API on mobile for native share sheet~~ ✅
+  - **[IN PROGRESS]** Dynamic Open Graph meta tags for rich link previews
+    - Cloud Function deployed to staging ✅
+    - Production deploy pending (IAM permission fix needed)
+    - Real user page loading fixed (serves index.html instead of redirect loop)
 
-- **[HIGH]** Blog SEO-friendly URLs (slugs)
-  - Current: `/element/air/blog/KkeNELNVMtzOPQZ8r1A1` (Firebase document ID)
-  - Goal: `/element/air/blog/how-to-reduce-carbon-footprint` (slug from title)
-  - **Recommended approach:** Store `slug` field in Firestore
-  - Admin panel: auto-generate slug from title on save (with manual override)
-  - Blog service: `getBlogBySlug(slug)` using `where('slug', '==', slug).limit(1)`
-  - One-time migration script: backfill slugs for existing blogs
-  - Route: try slug lookup first, fallback to ID for backward compatibility
-  - Service caching: store selected blog in service for instant load from listing page
+- ~~**[HIGH]** Blog SEO-friendly URLs (slugs)~~ ✅ DONE
+  - ~~Store `slug` field in Firestore~~ ✅
+  - ~~Admin panel: auto-generate slug from title on save~~ ✅
+  - ~~Blog service: `getBlogBySlug(slug)`~~ ✅
+  - ~~One-time migration script: backfill slugs for existing blogs~~ ✅
+  - ~~Route: slug lookup first, fallback to ID~~ ✅
 
 - **[HIGH]** Rich blog content — multiple images in blog body
   - Current: Only one hero image per blog
@@ -139,7 +130,7 @@
     - Phase 2: Impact calculator + badges
     - Phase 3: Leaderboard + games
 
-- **[DONE]** Deployment automation script ✅
+- ~~**[DONE]** Deployment automation script~~ ✅
   - `npm run deploy:staging` / `npm run deploy:prod`
 
 - **[MED]** AI-powered "Did You Know?" facts for all element widgets
@@ -163,6 +154,8 @@
 - Food pH Widget redesign — 543 foods, flip card, category dropdown, random button
 - Food pH Widget nutrition data via USDA FoodData Central API
 - Food pH Widget data verified against Clemson, USDA PMP, FDA tables (260 items)
+- EQ Widget (Spirit) — TMMS-24 scoring fix, gender selection, progress bar, result cards
+- AQI Widget (Air) — auto-search, scorecard, pollutant grid, suspicious data filtering, pastel colors
 - Code review: memory leaks fixed (takeUntil pattern)
 - Code review: race condition fixed (switchMap for nutrition requests)
 - Code review: dead code removed (selectedUnit, refreshCache)
@@ -175,6 +168,33 @@
 - NGO in-focus description removal
 - Home page hero image and tagline cleanup
 - Section nav component (sticky pills menu on element pages)
+- Subscribe section — modern redesign (glass-morphism bar)
+- Privacy policy consent bar — modernized (top bar, glass-morphism)
+- Privacy policy year range — dynamic (2020-currentYear)
+- Blog post page — redesigned (blurred bg image, better layout)
+- About us page — content cards redesign
+- Team page — profile cards redesign
+- Calendar loading — skeleton overlay
+- "Discover More" — scrolls to elements section
+- Header nav — updated (About Us + Our Team links)
+- Back button — modernized
+- Loading skeletons — added across site
+- Breaking news — mobile media fix
+- Coffee conversation — mobile spacing fix
+- Course section — mobile image fix
+- Blog sharing — share button on cards + detail page (Web Share API + clipboard fallback)
+- Blog slugs — model, service, admin auto-generate, migration script
+- Blog listing page — modernized (sticky header, skeleton loading)
+- Video listing page — redesigned to match element page cards
+- Video detail page — 16:9 responsive player + article layout
+- Video card component — redesigned to match element page slider cards
+- Firm in Focus — multiple firms, publish/unpublish toggle, delete fix
+- Polls — correct answer feature, green highlight, checkmark
+- Deployment automation — unified PowerShell script, npm commands, git tagging
+- Version tracking — footer auto-reads from package.json, CHANGELOG.md
+- OG meta tags Cloud Function — deployed to staging (production pending)
+- Prod→Staging sync scripts (Firestore + Storage)
+- Old news cleanup script (archive + delete, configurable retention)
 
 ## 📋 Known Limitations (Acceptable)
 

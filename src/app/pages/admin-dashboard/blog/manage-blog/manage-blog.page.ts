@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { throwError, Subject, Observable } from 'rxjs';
+import { throwError, Subject } from 'rxjs';
 import { catchError, map, takeUntil, switchMap } from 'rxjs/operators';
 import { Blog } from 'src/app/models/Blog';
 import { BlogService } from 'src/app/services/blog.service';
@@ -14,7 +14,28 @@ import { UI_MESSAGES, ITEMS } from 'src/app/app.constants';
 })
 export class ManageBlogPage implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject();
-  blogList$: Observable<Blog[]>;
+
+  // Data
+  allBlogs: Blog[] = [];
+  displayedBlogs: Blog[] = [];
+
+  // Sorting
+  sortColumn = 'submitDate';
+  sortDirection: 'asc' | 'desc' = 'desc';
+
+  // Filter
+  filterCategory = '';
+  filterAuthor = '';
+  availableAuthors: string[] = [];
+  openDropdown = '';
+
+  // Pagination
+  currentPage = 1;
+  pageSize = 10;
+  totalPages = 1;
+
+  // Summary
+  summary = { total: 0, earth: 0, water: 0, air: 0, fire: 0, spirit: 0 };
 
   constructor(
     private blogService: BlogService,
@@ -24,23 +45,127 @@ export class ManageBlogPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.initPage();
+    this.loadData();
   }
 
-  initPage() {
-    this.blogList$ = this.blogService.getBlogs().pipe(
+  loadData() {
+    this.blogService.getBlogs().pipe(
       takeUntil(this.destroy$),
-      map((blogList) => {
-        return blogList.sort((a, b) => (a.category > b.category ? 1 : -1));
-      }),
-      catchError((err) => {
-        return throwError(err);
-      })
-    );
+      catchError((err) => throwError(err))
+    ).subscribe(blogList => {
+      this.allBlogs = blogList;
+      this.availableAuthors = [...new Set(blogList.map(b => b.author).filter(a => a))].sort();
+      this.computeSummary(blogList);
+      this.applyFilterSortPaginate();
+    });
+  }
+
+  private computeSummary(list: Blog[]) {
+    this.summary = { total: list.length, earth: 0, water: 0, air: 0, fire: 0, spirit: 0 };
+    list.forEach(b => {
+      const cat = (b.category || '').toLowerCase();
+      if (this.summary.hasOwnProperty(cat)) this.summary[cat]++;
+    });
+  }
+
+  applyFilterSortPaginate() {
+    let filtered = [...this.allBlogs];
+
+    // Filters
+    if (this.filterCategory) {
+      filtered = filtered.filter(b => (b.category || '').toLowerCase() === this.filterCategory);
+    }
+    if (this.filterAuthor) {
+      filtered = filtered.filter(b => b.author === this.filterAuthor);
+    }
+
+    // Sort
+    filtered.sort((a, b) => {
+      let valA = a[this.sortColumn];
+      let valB = b[this.sortColumn];
+      if (valA == null) valA = '';
+      if (valB == null) valB = '';
+      if (typeof valA === 'string') valA = valA.toLowerCase();
+      if (typeof valB === 'string') valB = valB.toLowerCase();
+      if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    // Paginate
+    this.totalPages = Math.ceil(filtered.length / this.pageSize) || 1;
+    if (this.currentPage > this.totalPages) this.currentPage = 1;
+    const start = (this.currentPage - 1) * this.pageSize;
+    this.displayedBlogs = filtered.slice(start, start + this.pageSize);
+  }
+
+  sortBy(column: string) {
+    if (this.sortColumn === column) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortColumn = column;
+      this.sortDirection = 'desc';
+    }
+    this.currentPage = 1;
+    this.applyFilterSortPaginate();
+  }
+
+  onFilterChange() {
+    this.currentPage = 1;
+    this.openDropdown = '';
+    this.applyFilterSortPaginate();
+  }
+
+  toggleDropdown(name: string) {
+    this.openDropdown = this.openDropdown === name ? '' : name;
+  }
+
+  removeFilter(key: string) {
+    this[key] = '';
+    this.onFilterChange();
+  }
+
+  clearAllFilters() {
+    this.filterCategory = '';
+    this.filterAuthor = '';
+    this.onFilterChange();
+  }
+
+  get hasActiveFilters(): boolean {
+    return !!(this.filterCategory || this.filterAuthor);
+  }
+
+  onPageSizeChange() {
+    this.currentPage = 1;
+    this.applyFilterSortPaginate();
+  }
+
+  goToPage(page: number) {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.applyFilterSortPaginate();
+  }
+
+  get pageNumbers(): number[] {
+    const pages = [];
+    const maxVisible = 5;
+    let start = Math.max(1, this.currentPage - Math.floor(maxVisible / 2));
+    let end = Math.min(this.totalPages, start + maxVisible - 1);
+    if (end - start < maxVisible - 1) start = Math.max(1, end - maxVisible + 1);
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
+  }
+
+  get filteredCount(): number {
+    let filtered = this.allBlogs;
+    if (this.filterCategory) {
+      filtered = filtered.filter(b => (b.category || '').toLowerCase() === this.filterCategory);
+    }
+    return filtered.length;
   }
 
   refreshData() {
-    this.initPage();
+    this.loadData();
   }
 
   ngOnDestroy(): void {
@@ -48,88 +173,45 @@ export class ManageBlogPage implements OnInit, OnDestroy {
     this.destroy$.unsubscribe();
   }
 
-  public async deleteBlog(
-    blogList: Blog[],
-    index: number,
-    blogId: string,
-    blogImage: string
-  ) {
+  public async deleteBlog(index: number, blogId: string, blogImage: string) {
     this.uiUtil.presentAlert(
       UI_MESSAGES.CONFIRM_HEADER,
-      UI_MESSAGES.CONFIRM_DELETE_ITEM_DESC.replace(
-        UI_MESSAGES.PLACEHOLDER,
-        ITEMS.BLOG
-      ),
+      UI_MESSAGES.CONFIRM_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.BLOG),
       [
         {
           text: UI_MESSAGES.CONFIRM_DELETE_PRIMARY_CTA,
           handler: async () => {
-            await this.delBlog(blogList, index, blogId, blogImage);
+            const loader = await this.uiUtil.showLoader(
+              UI_MESSAGES.DELETE_IN_PROGRESS.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.BLOG)
+            );
+            this.blogService.deleteBlogImage(blogImage).pipe(
+              takeUntil(this.destroy$),
+              switchMap(() => this.blogService.deleteBlog(blogId))
+            ).subscribe(
+              () => {
+                loader.dismiss();
+                this.uiUtil.presentAlert(UI_MESSAGES.SUCCESS_HEADER,
+                  UI_MESSAGES.SUCCESS_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.BLOG),
+                  [UI_MESSAGES.FAILURE_CTA_TEXT]);
+                this.loadData();
+              },
+              () => {
+                loader.dismiss();
+                this.uiUtil.presentAlert(UI_MESSAGES.FAILURE_HEADER,
+                  UI_MESSAGES.FAILURE_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.BLOG),
+                  [UI_MESSAGES.FAILURE_CTA_TEXT]);
+              }
+            );
           }
         },
-        {
-          text: UI_MESSAGES.CONFIRM_DELETE_SECONDARY_CTA,
-          role: 'cancel'
-        }
+        { text: UI_MESSAGES.CONFIRM_DELETE_SECONDARY_CTA, role: 'cancel' }
       ]
     );
   }
 
-  private async delBlog(
-    blogList: Blog[],
-    index: number,
-    blogId: string,
-    blogImage: string
-  ) {
-    const loader = await this.uiUtil.showLoader(
-      UI_MESSAGES.DELETE_IN_PROGRESS.replace(
-        UI_MESSAGES.PLACEHOLDER,
-        ITEMS.BLOG
-      )
-    );
-    this.blogService
-      .deleteBlogImage(blogImage)
-      .pipe(
-        takeUntil(this.destroy$),
-        switchMap((data) => {
-          return this.blogService.deleteBlog(blogId);
-        })
-      )
-      .subscribe(
-        (response) => {
-          console.log(response);
-          loader.dismiss();
-          this.uiUtil.presentAlert(
-            UI_MESSAGES.SUCCESS_HEADER,
-            UI_MESSAGES.SUCCESS_DELETE_ITEM_DESC.replace(
-              UI_MESSAGES.PLACEHOLDER,
-              ITEMS.BLOG
-            ),
-            [UI_MESSAGES.FAILURE_CTA_TEXT]
-          );
-          blogList.splice(index, 1);
-        },
-        (error) => {
-          console.log(error);
-          loader.dismiss();
-          this.uiUtil.presentAlert(
-            UI_MESSAGES.FAILURE_HEADER,
-            UI_MESSAGES.FAILURE_DELETE_ITEM_DESC.replace(
-              UI_MESSAGES.PLACEHOLDER,
-              ITEMS.BLOG
-            ),
-            [UI_MESSAGES.FAILURE_CTA_TEXT]
-          );
-        }
-      );
-  }
-
   viewBlogDetails(blog: Blog) {
     this.blogService.setViewEditModeBlog(blog);
-    this.router.navigate(['blog', 'edit'], {
-      relativeTo: this.route,
-      queryParams: { id: blog.id }
-    });
+    this.router.navigate(['blog', 'edit'], { relativeTo: this.route, queryParams: { id: blog.id } });
   }
 
   addNewBlog() {

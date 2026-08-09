@@ -34,7 +34,8 @@ export class ManageCalendarPage implements OnInit, OnDestroy {
     this.initPage();
   }
 
-  onSelectMonth() {
+  onSelectMonth(month: number) {
+    this.selectedMonth = +month; // ensure it's a number
     this.initPage();
   }
 

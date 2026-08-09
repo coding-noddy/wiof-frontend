@@ -1,33 +1,86 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Admin Dashboard</ion-title>
-    <ion-buttons slot="end">
-      <ion-button expand="full" (click)="onLogout()"> Logout </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<div class="admin-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.collapsed]="sidebarCollapsed">
+    <div class="sidebar-header">
+      <img src="assets/icon/favicon.png" alt="WIOF" class="sidebar-logo" *ngIf="!sidebarCollapsed">
+      <span class="sidebar-title" *ngIf="!sidebarCollapsed">WIOF Admin</span>
+      <button class="sidebar-toggle" (click)="toggleSidebar()">
+        <ion-icon [name]="sidebarCollapsed ? 'menu-outline' : 'close-outline'"></ion-icon>
+      </button>
+    </div>
 
-<ion-content>
-  <ion-grid>
-    <ion-row>
-      <h1>Manage all site data...</h1>
-    </ion-row>
-    <ion-row>
-      <ion-col
-        size-xs="12"
-        size-md="6"
-        size-lg="4"
-        *ngFor="let button of adminDB.buttons"
-      >
-        <ion-button
-          color="secondary"
-          class="admin-panel-button"
-          expand="full"
-          [routerLink]="button.actionUrl"
-        >
-          {{ button.name }}
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-content>
+    <nav class="sidebar-nav">
+      <a class="nav-item" routerLink="/admin-dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        <ion-icon name="grid-outline"></ion-icon>
+        <span *ngIf="!sidebarCollapsed">Dashboard</span>
+      </a>
+      <a class="nav-item" *ngFor="let item of navItems" [routerLink]="item.route" routerLinkActive="active">
+        <ion-icon [name]="item.icon"></ion-icon>
+        <span *ngIf="!sidebarCollapsed">{{ item.name }}</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer" *ngIf="!sidebarCollapsed">
+      <button class="theme-btn" (click)="toggleTheme()">
+        <ion-icon [name]="isDarkTheme ? 'sunny-outline' : 'moon-outline'"></ion-icon>
+        <span>{{ isDarkTheme ? 'Light Mode' : 'Dark Mode' }}</span>
+      </button>
+      <button class="logout-btn" (click)="onLogout()">
+        <ion-icon name="log-out-outline"></ion-icon>
+        <span>Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Top Bar -->
+    <header class="topbar">
+      <button class="mobile-menu-btn" (click)="toggleSidebar()">
+        <ion-icon name="menu-outline"></ion-icon>
+      </button>
+      <h1 class="page-title">Dashboard</h1>
+      <div class="topbar-actions">
+        <span class="topbar-greeting">Welcome back 👋</span>
+        <a routerLink="/home" class="topbar-link">
+          <ion-icon name="globe-outline"></ion-icon>
+          <span>View Site</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-content">
+      <!-- Stats Row with animation -->
+      <div class="stats-row">
+        <div class="stat-card" *ngFor="let stat of stats; let i = index" [style.animation-delay]="(i * 0.1) + 's'">
+          <div class="stat-icon" [style.background]="stat.bgColor">
+            <ion-icon [name]="stat.icon"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ stat.value }}</span>
+            <span class="stat-label">{{ stat.label }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions Grid -->
+      <h2 class="section-title">Content Management</h2>
+      <div class="admin-grid">
+        <a class="admin-card" *ngFor="let item of navItems; let i = index" [routerLink]="item.route" [style.animation-delay]="(i * 0.05) + 's'">
+          <div class="card-icon" [style.background]="item.color">
+            <ion-icon [name]="item.icon"></ion-icon>
+          </div>
+          <div class="card-body">
+            <h3>{{ item.name }}</h3>
+            <p>{{ item.description }}</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="card-arrow"></ion-icon>
+        </a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Mobile overlay -->
+<div class="sidebar-overlay" *ngIf="!sidebarCollapsed && isMobile" (click)="toggleSidebar()"></div>
