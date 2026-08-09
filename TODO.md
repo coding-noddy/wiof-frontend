@@ -8,8 +8,8 @@
 ## 🔴 WIOF Fixes (Next Sprint)
 
 ### Admin Dashboard
-- **[HIGH]** Refine admin dashboard — modern card-based UI, better navigation, responsive layout
-- **[MED]** All admin manage pages — consistent table/card designs, better mobile experience
+- ~~**[HIGH]** Refine admin dashboard — modern card-based UI, better navigation, responsive layout~~ ✅ DONE
+- ~~**[MED]** All admin manage pages — consistent table/card designs, better mobile experience~~ ✅ DONE
 
 ### Pending Improvements
 - **[MED]** Environment Calendar — remove external padding, make calendar dates area bigger
@@ -195,6 +195,19 @@
 - OG meta tags Cloud Function — deployed to staging (production pending)
 - Prod→Staging sync scripts (Firestore + Storage)
 - Old news cleanup script (archive + delete, configurable retention)
+- Admin Dashboard — full modern redesign (sidebar nav, stats cards, animations, dark/light theme)
+- Admin Manage Pages — modern table design with sorting, pagination, filter dropdowns + removable chips
+- Admin Add/Edit Forms — card-based layout, grouped sections, breadcrumbs, image previews
+- Admin Dark Theme — full dark mode across dashboard, manage pages, and forms (localStorage toggle)
+- Admin Filters — category, status, year, platform, media type, author filters per page
+- Admin Pagination — page size control (5/10/25/50), page numbers, item count
+- Admin Column Sorting — click-to-sort on all columns, default by most recent date
+- Admin Summary Cards — KPI metrics at top of each manage page (totals, breakdowns)
+- Admin Breadcrumbs — navigation context on all manage + form pages
+- Admin Responsive — mobile-first with collapsible sidebar, stacked layouts, scrollable tables
+- Admin Team Profiles — circular avatar thumbnails from Firebase Storage
+- Admin Calendar — occasion image thumbnails in table
+- Admin Polls — live vote count per poll, total votes, avg votes/poll metrics
 
 ## 📋 Known Limitations (Acceptable)
 
