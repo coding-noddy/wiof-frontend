@@ -22,14 +22,63 @@
     <div class="form-header">
       <h1>{{ isEditMode ? 'Edit Blog Post' : 'Create New Blog Post' }}</h1>
       <div class="form-actions">
+        <button class="btn-secondary" (click)="showShortcuts = !showShortcuts" title="Keyboard shortcuts">
+          <ion-icon name="help-circle-outline"></ion-icon>
+        </button>
+        <button class="btn-secondary" (click)="togglePreview()" title="Preview blog">
+          <ion-icon [name]="showPreview ? 'create-outline' : 'eye-outline'"></ion-icon>
+          {{ showPreview ? 'Edit' : 'Preview' }}
+        </button>
         <button class="btn-secondary" routerLink="/admin-dashboard/manage-blog">Cancel</button>
-        <button class="btn-primary" (click)="onSubmit()" [disabled]="!addBlogForm.valid">
+        <button class="btn-primary" (click)="onSubmit()" [disabled]="!addBlogForm.valid || isSaving">
           <ion-icon name="checkmark-outline"></ion-icon> {{ isEditMode ? 'Update' : 'Publish' }}
         </button>
       </div>
     </div>
 
-    <form [formGroup]="addBlogForm">
+    <!-- Auto-save indicator -->
+    <div class="autosave-bar" *ngIf="!isEditMode">
+      <span class="autosave-status" *ngIf="lastSavedAt">
+        <ion-icon name="cloud-done-outline"></ion-icon> Draft saved {{ lastSavedAt | date:'shortTime' }}
+      </span>
+      <span class="autosave-status unsaved" *ngIf="isDirty && !lastSavedAt">
+        <ion-icon name="ellipse"></ion-icon> Unsaved changes
+      </span>
+    </div>
+
+    <!-- Keyboard shortcuts panel -->
+    <div class="shortcuts-panel" *ngIf="showShortcuts">
+      <div class="shortcuts-title">Keyboard Shortcuts</div>
+      <div class="shortcuts-grid">
+        <div class="shortcut-item" *ngFor="let s of shortcuts">
+          <kbd>{{ s.keys }}</kbd>
+          <span>{{ s.action }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview Mode -->
+    <div class="preview-panel" *ngIf="showPreview">
+      <div class="preview-card">
+        <div class="preview-header">
+          <span class="preview-category">{{ addBlogForm.get('category')?.value | uppercase }}</span>
+          <h1 class="preview-title">{{ addBlogForm.get('title')?.value || 'Untitled' }}</h1>
+          <div class="preview-meta">
+            <span>By {{ addBlogForm.get('authorName')?.value || 'Author' }}</span>
+            <span>·</span>
+            <span>{{ readTime }} min read</span>
+          </div>
+        </div>
+        <div class="preview-image" *ngIf="imageToDisplay">
+          <img [src]="imageToDisplay" alt="Blog image">
+        </div>
+        <p class="preview-desc">{{ addBlogForm.get('shortDescription')?.value }}</p>
+        <div class="preview-content" [innerHTML]="addBlogForm.get('content')?.value"></div>
+      </div>
+    </div>
+
+    <!-- Edit Mode Form -->
+    <form [formGroup]="addBlogForm" *ngIf="!showPreview">
       <!-- Basic Info Card -->
       <div class="form-card">
         <div class="form-card-title"><ion-icon name="document-text-outline"></ion-icon> Basic Information</div>
@@ -42,6 +91,11 @@
             <ion-label position="floating">Author Name *</ion-label>
             <ion-input formControlName="authorName"></ion-input>
           </ion-item>
+        </div>
+        <!-- Slug preview -->
+        <div class="slug-preview" *ngIf="slugPreview">
+          <ion-icon name="link-outline"></ion-icon>
+          <span>/element/{{ addBlogForm.get('category')?.value || '...' }}/blog/<strong>{{ slugPreview }}</strong></span>
         </div>
         <div class="form-row">
           <ion-item>
@@ -76,7 +130,7 @@
           <ion-item>
             <ion-label position="stacked">Upload Hero Image *</ion-label>
             <ion-input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="image"></ion-input>
-            <ion-note slot="helper">Max file size {{ maxImageMB }} MB. Recommended JPG/PNG.</ion-note>
+            <ion-note slot="helper">Max file size {{ maxImageMB }} MB. Recommended JPG/PNG. This appears as the blog thumbnail and header.</ion-note>
           </ion-item>
         </div>
         <div class="form-image-preview" *ngIf="imageToDisplay">
@@ -91,7 +145,16 @@
           formControlName="content"
           [modules]="quillModules"
           (onEditorCreated)="onEditorCreated($event)"
+          placeholder="Start writing your blog post... Use the toolbar above for formatting, or paste from Word/Google Docs."
         ></quill-editor>
+        <div class="editor-stats">
+          <span><ion-icon name="text-outline"></ion-icon> {{ wordCount }} words</span>
+          <span><ion-icon name="code-outline"></ion-icon> {{ charCount }} chars</span>
+          <span><ion-icon name="time-outline"></ion-icon> ~{{ readTime }} min read</span>
+          <span class="editor-stats-right" *ngIf="isDirty">
+            <ion-icon name="ellipse" color="warning"></ion-icon> Unsaved
+          </span>
+        </div>
       </div>
     </form>
   </div>
