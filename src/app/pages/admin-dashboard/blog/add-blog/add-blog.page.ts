@@ -12,6 +12,10 @@ import { Blog } from 'src/app/models/Blog';
 import { BlogService } from 'src/app/services/blog.service';
 import { AppUtilService } from 'src/app/util/AppUtilService';
 import { UiUtilService } from 'src/app/util/UiUtilService';
+import Quill from 'quill';
+import ImageResize from 'quill-image-resize-module';
+
+Quill.register('modules/imageResize', ImageResize);
 
 @Component({
   selector: 'app-add-blog',
@@ -35,13 +39,19 @@ export class AddBlogPage implements OnInit, OnDestroy {
       container: [
         ['bold', 'italic', 'underline', 'strike'],
         [{ header: [1, 2, 3, false] }],
+        [{ align: [] }],
         [{ list: 'ordered' }, { list: 'bullet' }],
-        ['link', 'image']
+        [{ indent: '-1' }, { indent: '+1' }],
+        [{ color: [] }, { background: [] }],
+        ['blockquote'],
+        ['link', 'image', 'video'],
+        ['clean']
       ],
       handlers: {
         image: this.imageHandler.bind(this)
       }
-    }
+    },
+    imageResize: {}
   };
 
   pageContent = {
