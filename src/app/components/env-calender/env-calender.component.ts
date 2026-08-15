@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 import { EnvDay } from '../../models/env-cal-data';
 import { EnvcalService } from '../../services/envcal-service';
+import { EnvCalDialogComponent } from '../env-cal-dialog/env-cal-dialog.component';
 
 @Component({
   selector: 'app-env-calender',
@@ -39,7 +41,7 @@ export class EnvCalenderComponent implements OnInit {
     'December'
   ];
 
-  constructor(private envDayService: EnvcalService) {}
+  constructor(private envDayService: EnvcalService, private modalCtrl: ModalController) {}
 
   ngOnInit() {
     this.loadMonth(this.currentMonth, this.currentYear);
@@ -126,10 +128,14 @@ export class EnvCalenderComponent implements OnInit {
     this.occasionForDialog = null;
   }
 
-  openOccasionDialog(occasion) {
-    this.openDialog = true;
-    this.occasionForDialog = occasion;
-    console.log(this.occasionForDialog);
+  async openOccasionDialog(occasion) {
+    const modal = await this.modalCtrl.create({
+      component: EnvCalDialogComponent,
+      componentProps: { occasionDetails: occasion },
+      cssClass: 'env-cal-modal',
+      backdropDismiss: true
+    });
+    await modal.present();
   }
 
   nextOccasion(day) {

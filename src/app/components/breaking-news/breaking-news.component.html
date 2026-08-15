@@ -5,8 +5,8 @@
 
   <ion-card-content class="breaking-news-content">
     <div *ngIf="newsList; else loading">
-      <ion-slides #wiofNewsSlider [options]="slideOpts" class="breaking-news-slides">
-        <ion-slide *ngFor="let news of newsList">
+      <swiper-container #swiperNews [attr.slides-per-view]="1" [attr.space-between]="1" [attr.loop]="true" [attr.autoplay-delay]="5000" class="breaking-news-slides">
+        <swiper-slide *ngFor="let news of newsList">
           <div class="news-card">
             <div class="media-panel">
               <img *ngIf="news.mediaType === 'image'" class="news-media" [src]="news.image$ | async" [alt]="news.headline" />
@@ -22,8 +22,8 @@
               <a *ngIf="news.newsSource" [href]="news.newsSource" target="_blank" rel="noopener" class="wiof-primary-link">Read Full Story →</a>
             </div>
           </div>
-        </ion-slide>
-      </ion-slides>
+        </swiper-slide>
+      </swiper-container>
 
       <div class="news-marquee">
         <div [ngStyle]="{ 'animation-duration': newsList.length * 10 + 's' }">
@@ -31,8 +31,12 @@
         </div>
       </div>
 
-      <div *ngIf="newsList.length > 1" class="swiper-button-prev navigation-arrow-custom-styling" (click)="wiofNewsSlider.slidePrev()"></div>
-      <div *ngIf="newsList.length > 1" class="swiper-button-next navigation-arrow-custom-styling" (click)="wiofNewsSlider.slideNext()"></div>
+      <button class="swiper-nav-btn prev" *ngIf="newsList.length > 1" (click)="swiperNews.swiper.slidePrev()">
+        <ion-icon name="chevron-back"></ion-icon>
+      </button>
+      <button class="swiper-nav-btn next" *ngIf="newsList.length > 1" (click)="swiperNews.swiper.slideNext()">
+        <ion-icon name="chevron-forward"></ion-icon>
+      </button>
     </div>
 
     <ng-template #loading>

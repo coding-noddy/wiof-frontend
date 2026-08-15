@@ -6,8 +6,8 @@
   </ion-card-header>
 
   <ion-card-content class="ion-no-padding background">
-    <ion-slides #slider [options]="slideOpts">
-      <ion-slide *ngFor="let ngoInFocus of ngosInFocus">
+    <swiper-container #swiperNgo [attr.slides-per-view]="1" [attr.space-between]="10">
+      <swiper-slide *ngFor="let ngoInFocus of ngosInFocus">
         <div class="ngo-slide">
 
           <!-- ── Media — click opens modal ──────────────────────────── -->
@@ -73,19 +73,14 @@
           </div>
 
         </div>
-      </ion-slide>
-    </ion-slides>
-
-    <div
-      *ngIf="ngosInFocus.length > 1"
-      class="swiper-button-prev navigation-arrow-custom-styling"
-      (click)="slider.slidePrev()"
-    ></div>
-    <div
-      *ngIf="ngosInFocus.length > 1"
-      class="swiper-button-next navigation-arrow-custom-styling"
-      (click)="slider.slideNext()"
-    ></div>
+      </swiper-slide>
+    </swiper-container>
+    <button class="swiper-nav-btn prev" *ngIf="ngosInFocus.length > 1" (click)="swiperNgo.swiper.slidePrev()">
+      <ion-icon name="chevron-back"></ion-icon>
+    </button>
+    <button class="swiper-nav-btn next" *ngIf="ngosInFocus.length > 1" (click)="swiperNgo.swiper.slideNext()">
+      <ion-icon name="chevron-forward"></ion-icon>
+    </button>
   </ion-card-content>
 </ion-card>
 

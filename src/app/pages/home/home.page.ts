@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { CoffeeConversation } from 'src/app/models/CoffeeConversation';
 import { NgoInFocus } from 'src/app/models/NgoInFocus';
 import { CourseInFocusService } from 'src/app/services/course-in-focus.service';
-import { CourseInFocus } from 'src/app/models/courseInFocus';
+import { CourseInFocus } from 'src/app/models/CourseInFocus';
 import { NewsService } from 'src/app/services/news.service';
 import { News } from 'src/app/models/News';
 

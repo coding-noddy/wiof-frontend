@@ -45,3 +45,22 @@ html, body {
 // .wiof-alert .alert-wrapper {
 //   background: black;
 // }
+
+/* Fix for Ionic 7: allow position:fixed elements to escape ion-content */
+ion-content {
+  --ion-safe-area-top: 0;
+  contain: none !important;
+}
+
+ion-content::part(scroll) {
+  contain: none !important;
+}
+
+/* Calendar dialog - presented via ModalController (viewport-centered) */
+.env-cal-modal {
+  --width: 440px;
+  --max-width: 95vw;
+  --height: auto;
+  --max-height: 90vh;
+  --border-radius: 16px;
+}

@@ -1,7 +1,7 @@
 <div class="wiof-env-calendar-dialog">
   <div *ngIf="occasionDetails; else loading">
-    <ion-slides #wiofOccasionSlider [options]="slideOpts">
-      <ion-slide *ngFor="let occasn of occasionDetails.occasion; let i = index">
+    <swiper-container #swiperCal [attr.slides-per-view]="1" [attr.space-between]="10">
+      <swiper-slide *ngFor="let occasn of occasionDetails.occasion; let i = index">
         <ion-card class="occasion-card">
 
           <!-- ── Header ─────────────────────────────────────────────── -->
@@ -57,19 +57,14 @@
           </ion-card-content>
 
         </ion-card>
-      </ion-slide>
-    </ion-slides>
-
-    <div
-      class="swiper-button-prev navigation-arrow-custom-styling"
-      (click)="wiofOccasionSlider.slidePrev()"
-      *ngIf="showNavigation"
-    ></div>
-    <div
-      class="swiper-button-next navigation-arrow-custom-styling"
-      (click)="wiofOccasionSlider.slideNext()"
-      *ngIf="showNavigation"
-    ></div>
+      </swiper-slide>
+    </swiper-container>
+    <button class="swiper-nav-btn prev" *ngIf="showNavigation" (click)="swiperCal.swiper.slidePrev()">
+      <ion-icon name="chevron-back"></ion-icon>
+    </button>
+    <button class="swiper-nav-btn next" *ngIf="showNavigation" (click)="swiperCal.swiper.slideNext()">
+      <ion-icon name="chevron-forward"></ion-icon>
+    </button>
   </div>
 
   <ng-template #loading>

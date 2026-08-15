@@ -14,26 +14,24 @@
 
   <!-- Slider -->
   <div *ngIf="blogList; else loading" class="slider-wrap">
-    <ion-slides #wiofBlogSlider [options]="slideOpts">
-      <ion-slide *ngFor="let blog of blogList">
+    <swiper-container
+      #swiperRef
+      [attr.slides-per-view]="4"
+      [attr.space-between]="10"
+      [attr.free-mode]="true"
+      breakpoints='{"0":{"slidesPerView":1},"480":{"slidesPerView":2},"767":{"slidesPerView":3},"1024":{"slidesPerView":4}}'
+    >
+      <swiper-slide *ngFor="let blog of blogList">
         <app-blog-card [blog]="blog" [element]="element"></app-blog-card>
-      </ion-slide>
-    </ion-slides>
+      </swiper-slide>
+    </swiper-container>
 
-    <div
-      class="nav-btn nav-prev"
-      (click)="wiofBlogSlider.slidePrev()"
-      *ngIf="showNavigator()"
-    >
+    <button class="swiper-nav-btn prev" (click)="swiperRef.swiper.slidePrev()" *ngIf="showNavigator()">
       <ion-icon name="chevron-back"></ion-icon>
-    </div>
-    <div
-      class="nav-btn nav-next"
-      (click)="wiofBlogSlider.slideNext()"
-      *ngIf="showNavigator()"
-    >
+    </button>
+    <button class="swiper-nav-btn next" (click)="swiperRef.swiper.slideNext()" *ngIf="showNavigator()">
       <ion-icon name="chevron-forward"></ion-icon>
-    </div>
+    </button>
   </div>
 
   <ng-template #loading>

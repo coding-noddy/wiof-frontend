@@ -14,41 +14,34 @@
 
   <!-- Slider -->
   <div *ngIf="videoList; else loading" class="slider-wrap">
-    <ion-slides #wiofVideoSlider [options]="slideOpts">
-      <ion-slide *ngFor="let video of videoList">
+    <swiper-container
+      #swiperRef
+      [attr.slides-per-view]="4"
+      [attr.space-between]="10"
+      [attr.free-mode]="true"
+      breakpoints='{"0":{"slidesPerView":1},"480":{"slidesPerView":2},"767":{"slidesPerView":3},"1024":{"slidesPerView":4}}'
+    >
+      <swiper-slide *ngFor="let video of videoList">
         <div class="video-card" [routerLink]="['video', video.url]">
-
-          <!-- Thumbnail with play icon overlay -->
           <div class="video-image-wrap">
             <img [src]="video.thumbnail" [alt]="video.title" class="video-image" />
             <div class="play-overlay">
               <ion-icon name="play-circle"></ion-icon>
             </div>
           </div>
-
-          <!-- Title -->
           <div class="video-body">
             <h3 class="video-title">{{ video.title }}</h3>
           </div>
-
         </div>
-      </ion-slide>
-    </ion-slides>
+      </swiper-slide>
+    </swiper-container>
 
-    <div
-      class="nav-btn nav-prev"
-      (click)="wiofVideoSlider.slidePrev()"
-      *ngIf="showNavigator()"
-    >
+    <button class="swiper-nav-btn prev" (click)="swiperRef.swiper.slidePrev()" *ngIf="showNavigator()">
       <ion-icon name="chevron-back"></ion-icon>
-    </div>
-    <div
-      class="nav-btn nav-next"
-      (click)="wiofVideoSlider.slideNext()"
-      *ngIf="showNavigator()"
-    >
+    </button>
+    <button class="swiper-nav-btn next" (click)="swiperRef.swiper.slideNext()" *ngIf="showNavigator()">
       <ion-icon name="chevron-forward"></ion-icon>
-    </div>
+    </button>
   </div>
 
   <ng-template #loading>

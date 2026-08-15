@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CourseInFocus } from 'src/app/models/courseInFocus';
+import { CourseInFocus } from 'src/app/models/CourseInFocus';
 import { COFFEE_CONV_SLIDER_OPTIONS } from 'src/app/app.constants';
 
 @Component({

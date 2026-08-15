@@ -13,8 +13,8 @@
   </ion-card-header>
   <ion-card-content class="background" [ngClass]="coffeeConvClass">
     <div *ngIf="coffeeConvList; else loading">
-      <ion-slides #wiofCoffeeConvSlider [options]="slideOpts">
-        <ion-slide *ngFor="let coffeeConv of coffeeConvList">
+      <swiper-container #swiperCC [attr.slides-per-view]="1" [attr.space-between]="10">
+        <swiper-slide *ngFor="let coffeeConv of coffeeConvList">
           <ion-card class="coffee-conv-card">
             <ion-card-content class="ion-text-start card-content">
               <ion-row>
@@ -79,18 +79,14 @@
               </ion-row>
             </ion-card-content>
           </ion-card>
-        </ion-slide>
-      </ion-slides>
-      <div
-        *ngIf="coffeeConvList.length > 1"
-        class="swiper-button-prev navigation-arrow-custom-styling"
-        (click)="wiofCoffeeConvSlider.slidePrev()"
-      ></div>
-      <div
-        *ngIf="coffeeConvList.length > 1"
-        class="swiper-button-next navigation-arrow-custom-styling"
-        (click)="wiofCoffeeConvSlider.slideNext()"
-      ></div>
+        </swiper-slide>
+      </swiper-container>
+      <button class="swiper-nav-btn prev" *ngIf="coffeeConvList.length > 1" (click)="swiperCC.swiper.slidePrev()">
+        <ion-icon name="chevron-back"></ion-icon>
+      </button>
+      <button class="swiper-nav-btn next" *ngIf="coffeeConvList.length > 1" (click)="swiperCC.swiper.slideNext()">
+        <ion-icon name="chevron-forward"></ion-icon>
+      </button>
     </div>
     <ng-template #loading>
       <div style="padding: 1rem;">

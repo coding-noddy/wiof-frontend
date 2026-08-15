@@ -43,6 +43,62 @@ $font-weight-medium: 500;
   }
 }
 
+// Swiper 10 - hide built-in nav, we'll use custom arrows
+swiper-container {
+  --swiper-navigation-size: 16px;
+  --swiper-navigation-color: #fff;
+
+  &::part(button-prev),
+  &::part(button-next) {
+    display: none;
+  }
+}
+
+// Custom slider navigation arrows (outside shadow DOM)
+.slider-wrap,
+.background,
+ion-card-content {
+  position: relative;
+}
+
+.swiper-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: rgba(85, 83, 83, 0.1);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+
+  ion-icon {
+    font-size: 22px;
+    color: #fff;
+  }
+
+  &:hover {
+    background-color: rgba(130, 130, 130, 0.5);
+  }
+
+  &:active {
+    transform: translateY(-50%) scale(0.9);
+  }
+
+  &.prev {
+    left: 6px;
+  }
+
+  &.next {
+    right: 6px;
+  }
+}
+
 .swiper-button-next {
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2027%2044'%3E%3Cpath%20d%3D'M27%2C22L27%2C22L5%2C44l-2.1-2.1L22.8%2C22L2.9%2C2.1L5%2C0L27%2C22L27%2C22z'%20fill%3D'%23ffffff'%2F%3E%3C%2Fsvg%3E");
 }

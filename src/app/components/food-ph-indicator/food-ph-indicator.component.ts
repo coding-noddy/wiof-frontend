@@ -252,18 +252,20 @@ export class FoodPhIndicatorComponent implements OnInit, OnDestroy {
     if (pool.length === 0) return;
     const random = pool[Math.floor(Math.random() * pool.length)];
     this.setSelectedFoodName(random);
-    this.foodInputCtrl.setValue(random);
+    this.foodInputCtrl.setValue(random.name);
   }
 
   // ── Selection ──────────────────────────────────────────────
-  getSelectedFoodName(food?: Food): string {
-    return food ? food.name : '';
+  getSelectedFoodName(food?: any): string {
+    if (!food) return '';
+    if (typeof food === 'string') return food;
+    return food.name || '';
   }
 
   setSelectedFoodName(food: Food): void {
     this.selectedFood = food;
     this.showDetails = false;
-    this.foodInputCtrl.setValue(food);
+    this.foodInputCtrl.setValue(food.name);
     this.fetchNutrition(food.name);
   }
 

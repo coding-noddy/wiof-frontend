@@ -6,8 +6,7 @@ import {
   Input,
   EventEmitter
 } from '@angular/core';
-// import { EventEmitter } from 'protractor';
-
+import { ModalController } from '@ionic/angular';
 import { BREAKING_NEWS_SLIDER_OPTIONS } from 'src/app/app.constants';
 
 @Component({
@@ -41,7 +40,7 @@ export class EnvCalDialogComponent implements OnInit {
     'November',
     'December'
   ];
-  constructor() {}
+  constructor(private modalCtrl: ModalController) {}
 
   ngAfterViewInit() {
     this.detectScreenSize();
@@ -89,5 +88,6 @@ export class EnvCalDialogComponent implements OnInit {
 
   closeDialog() {
     this.close.emit('close');
+    this.modalCtrl.dismiss();
   }
 }

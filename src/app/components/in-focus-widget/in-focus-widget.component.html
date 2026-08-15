@@ -8,8 +8,8 @@
 
     <!-- Slider -->
     <div class="in-focus-slider-wrap">
-      <ion-slides #slider [options]="slideOpts">
-        <ion-slide *ngFor="let inFocus of inFocuses">
+      <swiper-container #swiperInFocus [attr.slides-per-view]="1" [attr.space-between]="10">
+        <swiper-slide *ngFor="let inFocus of inFocuses">
           <div class="in-focus-slide">
 
             <!-- Full-width video -->
@@ -29,24 +29,15 @@
             </div>
 
           </div>
-        </ion-slide>
-      </ion-slides>
+        </swiper-slide>
+      </swiper-container>
 
-      <!-- Nav arrows -->
-      <div
-        *ngIf="inFocuses.length > 1"
-        class="nav-btn nav-prev"
-        (click)="slider.slidePrev()"
-      >
+      <button class="swiper-nav-btn prev" *ngIf="inFocuses.length > 1" (click)="swiperInFocus.swiper.slidePrev()">
         <ion-icon name="chevron-back"></ion-icon>
-      </div>
-      <div
-        *ngIf="inFocuses.length > 1"
-        class="nav-btn nav-next"
-        (click)="slider.slideNext()"
-      >
+      </button>
+      <button class="swiper-nav-btn next" *ngIf="inFocuses.length > 1" (click)="swiperInFocus.swiper.slideNext()">
         <ion-icon name="chevron-forward"></ion-icon>
-      </div>
+      </button>
     </div>
 
   </div>

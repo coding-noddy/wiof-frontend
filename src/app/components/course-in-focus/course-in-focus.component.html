@@ -8,8 +8,8 @@
 
   <ion-card-content class="background ion-no-padding">
     <div *ngIf="coursesInFocus; else loading">
-      <ion-slides #slider [options]="slideOpts">
-        <ion-slide *ngFor="let courseInFocus of coursesInFocus">
+      <swiper-container #swiperCourse [attr.slides-per-view]="1" [attr.space-between]="10">
+        <swiper-slide *ngFor="let courseInFocus of coursesInFocus">
           <div class="course-card">
 
             <!-- ── Top row: title + thumbnail ─────────────────────── -->
@@ -70,19 +70,14 @@
             </div>
 
           </div>
-        </ion-slide>
-      </ion-slides>
-
-      <div
-        *ngIf="coursesInFocus.length > 1"
-        class="swiper-button-prev navigation-arrow-custom-styling"
-        (click)="slider.slidePrev()"
-      ></div>
-      <div
-        *ngIf="coursesInFocus.length > 1"
-        class="swiper-button-next navigation-arrow-custom-styling"
-        (click)="slider.slideNext()"
-      ></div>
+        </swiper-slide>
+      </swiper-container>
+      <button class="swiper-nav-btn prev" *ngIf="coursesInFocus.length > 1" (click)="swiperCourse.swiper.slidePrev()">
+        <ion-icon name="chevron-back"></ion-icon>
+      </button>
+      <button class="swiper-nav-btn next" *ngIf="coursesInFocus.length > 1" (click)="swiperCourse.swiper.slideNext()">
+        <ion-icon name="chevron-forward"></ion-icon>
+      </button>
     </div>
 
     <ng-template #loading>
