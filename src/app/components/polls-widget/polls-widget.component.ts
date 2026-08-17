@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { combineLatest, Subject, throwError } from 'rxjs';
-import { catchError, map, takeUntil } from 'rxjs/operators';
+import { catchError, first, map, takeUntil } from 'rxjs/operators';
 import { PollQuestion } from 'src/app/models/PollQuestion';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 import { AppUtilService } from 'src/app/util/AppUtilService';
@@ -10,6 +10,8 @@ import { PollQuestionService } from '../../services/poll-question.service';
 import { PollsService } from '../../services/polls.service';
 import { Poll } from 'src/app/models/Poll';
 import { UI_MESSAGES } from 'src/app/app.constants';
+import { ActivityService } from 'src/app/services/activity.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-polls-widget',
@@ -33,8 +35,10 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
     private pollsService: PollsService,
     private pollQuestionService: PollQuestionService,
     private ip: IpService,
-    private uiUtil: UiUtilService
-    ,private appUtil: AppUtilService
+    private uiUtil: UiUtilService,
+    private appUtil: AppUtilService,
+    private activityService: ActivityService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -106,6 +110,8 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
             this.showForm = false;
             // refresh results after successful vote
             this.loadResults();
+            // Log poll vote activity for authenticated users (fire-and-forget)
+            this.logPollVote();
           },
           (error) => {
             this.loader.dismiss();
@@ -141,6 +147,20 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
   showError() {
     this.errorShow = true;
     setTimeout(() => (this.errorShow = false), 2000);
+  }
+
+  private logPollVote(): void {
+    this.authService.isAuthenticated$.pipe(first()).subscribe(isAuth => {
+      if (!isAuth) return;
+      this.authService.currentUser$.pipe(first()).subscribe(user => {
+        if (!user) return;
+        this.activityService.logActivity({
+          activityType: 'poll_vote',
+          contentId: this.pollQuestion?.pollId || '',
+          userId: user.uid
+        }).catch(err => console.warn('Poll vote activity logging failed:', err));
+      });
+    });
   }
 
   ngOnDestroy(): void {

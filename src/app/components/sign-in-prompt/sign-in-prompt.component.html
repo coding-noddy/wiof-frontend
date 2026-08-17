@@ -1,0 +1,32 @@
+<div
+  class="sign-in-prompt"
+  *ngIf="visible"
+  role="tooltip"
+  aria-label="Sign in suggestion">
+  <div class="prompt-content">
+    <ion-icon name="person-circle-outline" class="prompt-icon" aria-hidden="true"></ion-icon>
+    <p class="prompt-message">{{ message }}</p>
+  </div>
+
+  <div class="prompt-actions">
+    <button
+      class="prompt-google-btn"
+      (click)="signInWithGoogle()"
+      [disabled]="signingIn"
+      type="button">
+      <ion-icon name="logo-google" aria-hidden="true" *ngIf="!signingIn"></ion-icon>
+      <ion-spinner name="crescent" *ngIf="signingIn"></ion-spinner>
+      <span>Continue with Google</span>
+    </button>
+
+    <button
+      class="prompt-dismiss-btn"
+      (click)="dismiss()"
+      aria-label="Dismiss sign-in prompt"
+      type="button">
+      <ion-icon name="close" aria-hidden="true"></ion-icon>
+    </button>
+  </div>
+
+  <p class="prompt-error" *ngIf="errorMessage">{{ errorMessage }}</p>
+</div>

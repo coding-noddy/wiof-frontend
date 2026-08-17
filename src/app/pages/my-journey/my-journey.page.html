@@ -1,0 +1,159 @@
+<app-header></app-header>
+
+<ion-content>
+  <div class="my-journey-page">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">My Journey</h1>
+      <p class="page-subtitle">Track your engagement and progress</p>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6" size-md="4" size-lg="2" *ngFor="let i of [1,2,3,4,5,6]">
+            <div class="metric-card skeleton-metric">
+              <div class="skeleton" style="height: 32px; width: 50%; border-radius: 6px; margin-bottom: 0.5rem;"></div>
+              <div class="skeleton" style="height: 14px; width: 80%; border-radius: 4px;"></div>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <div class="saved-content-section">
+        <div class="skeleton" style="height: 20px; width: 140px; border-radius: 6px; margin-bottom: 1rem;"></div>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="12" size-sm="6" size-md="4" *ngFor="let i of [1,2,3,4]">
+              <div class="saved-card-skeleton">
+                <div class="skeleton" style="height: 60px; width: 60px; border-radius: 8px;"></div>
+                <div style="flex: 1; padding-left: 0.75rem;">
+                  <div class="skeleton" style="height: 14px; width: 85%; border-radius: 4px; margin-bottom: 0.4rem;"></div>
+                  <div class="skeleton" style="height: 12px; width: 40%; border-radius: 4px;"></div>
+                </div>
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="hasError && !isLoading" class="error-state">
+      <ion-icon name="cloud-offline-outline"></ion-icon>
+      <p class="error-message">Unable to load your engagement data.</p>
+      <button class="retry-button" (click)="retry()">
+        <ion-icon name="refresh-outline"></ion-icon>
+        Try Again
+      </button>
+    </div>
+
+    <!-- Content (loaded successfully) -->
+    <div *ngIf="!isLoading && !hasError">
+
+      <!-- Engagement Metrics Cards -->
+      <div class="metrics-section">
+        <ion-grid>
+          <ion-row>
+            <ion-col size="6" size-md="4" size-lg="2">
+              <div class="metric-card">
+                <div class="metric-value">{{ metrics?.blogsRead ?? 0 }}</div>
+                <div class="metric-label">Blogs Read</div>
+                <ion-icon name="newspaper-outline" class="metric-icon"></ion-icon>
+              </div>
+            </ion-col>
+            <ion-col size="6" size-md="4" size-lg="2">
+              <div class="metric-card">
+                <div class="metric-value">{{ metrics?.videosWatched ?? 0 }}</div>
+                <div class="metric-label">Videos Watched</div>
+                <ion-icon name="videocam-outline" class="metric-icon"></ion-icon>
+              </div>
+            </ion-col>
+            <ion-col size="6" size-md="4" size-lg="2">
+              <div class="metric-card">
+                <div class="metric-value">{{ metrics?.pollsVoted ?? 0 }}</div>
+                <div class="metric-label">Polls Voted</div>
+                <ion-icon name="bar-chart-outline" class="metric-icon"></ion-icon>
+              </div>
+            </ion-col>
+            <ion-col size="6" size-md="4" size-lg="2">
+              <div class="metric-card">
+                <div class="metric-value" *ngIf="metrics?.lastEqScore !== null">{{ metrics?.lastEqScore }}</div>
+                <div class="metric-value muted" *ngIf="metrics?.lastEqScore === null">Not yet taken</div>
+                <div class="metric-label">
+                  EQ Score
+                  <span *ngIf="metrics?.lastEqDate" class="metric-date">{{ getFormattedEqDate() }}</span>
+                </div>
+                <ion-icon name="heart-outline" class="metric-icon"></ion-icon>
+              </div>
+            </ion-col>
+            <ion-col size="6" size-md="4" size-lg="2">
+              <div class="metric-card">
+                <div class="metric-value">{{ savedContentCount }}</div>
+                <div class="metric-label">Saved Content</div>
+                <ion-icon name="bookmark-outline" class="metric-icon"></ion-icon>
+              </div>
+            </ion-col>
+            <ion-col size="6" size-md="4" size-lg="2">
+              <div class="metric-card streak-card">
+                <div class="metric-value">{{ currentStreak }}</div>
+                <div class="metric-label">Day Streak</div>
+                <ion-icon name="flame-outline" class="metric-icon"></ion-icon>
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+
+      <!-- Saved Content Section -->
+      <div class="saved-content-section">
+        <h2 class="section-title">Saved Content</h2>
+
+        <!-- Saved Content List -->
+        <div *ngIf="hasSavedContent" class="saved-content-grid">
+          <ion-grid>
+            <ion-row>
+              <ion-col size="12" size-sm="6" size-md="4" *ngFor="let item of savedContent">
+                <a [routerLink]="getContentLink(item)" class="saved-card">
+                  <div class="saved-card-thumbnail">
+                    <img
+                      *ngIf="getImageUrl(item) | async as imgUrl"
+                      [src]="imgUrl"
+                      [alt]="item.contentTitle"
+                      loading="lazy"
+                      onerror="this.style.display='none'"
+                    />
+                    <ion-icon name="image-outline" class="thumbnail-fallback"></ion-icon>
+                  </div>
+                  <div class="saved-card-info">
+                    <h3 class="saved-card-title">{{ item.contentTitle }}</h3>
+                    <span class="saved-card-type" [ngClass]="item.contentType">
+                      {{ item.contentType === 'blog' ? 'Blog' : 'Video' }}
+                    </span>
+                  </div>
+                  <ion-icon name="chevron-forward-outline" class="saved-card-arrow"></ion-icon>
+                </a>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!hasSavedContent" class="empty-state">
+          <ion-icon name="bookmark-outline"></ion-icon>
+          <p class="empty-message">No saved content yet</p>
+          <p class="empty-hint">Explore blogs and videos to save your favorites.</p>
+          <a routerLink="/home" class="explore-link">
+            <ion-icon name="compass-outline"></ion-icon>
+            Explore Content
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <app-wiof-footer></app-wiof-footer>
+</ion-content>

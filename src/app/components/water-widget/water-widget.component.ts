@@ -2,8 +2,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { WaterWidgetService, RainfallData } from '../../services/water-widget.service';
 import { INDIAN_CITIES } from '../../app.constants';
 import { Subject } from 'rxjs';
-import { takeUntil, debounceTime, switchMap } from 'rxjs/operators';
+import { takeUntil, debounceTime, switchMap, first } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
+import { ActivityService } from 'src/app/services/activity.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 interface WaterItem {
   name: string;
@@ -173,7 +175,9 @@ export class WaterWidgetComponent implements OnInit, OnDestroy {
 
   constructor(
     private waterWidgetService: WaterWidgetService,
-    private http: HttpClient
+    private http: HttpClient,
+    private activityService: ActivityService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -223,6 +227,22 @@ export class WaterWidgetComponent implements OnInit, OnDestroy {
   onItemClick(item: WaterItem) {
     localStorage.setItem(this.lastVisitedKey, item.name);
     this.lastVisited = item.name;
+    // Log widget usage for authenticated users (fire-and-forget)
+    this.logWidgetUsage();
+  }
+
+  private logWidgetUsage(): void {
+    this.authService.isAuthenticated$.pipe(first()).subscribe(isAuth => {
+      if (!isAuth) return;
+      this.authService.currentUser$.pipe(first()).subscribe(user => {
+        if (!user) return;
+        this.activityService.logActivity({
+          activityType: 'widget_usage',
+          widgetName: 'Water Rainfall',
+          userId: user.uid
+        }).catch(err => console.warn('Water widget activity logging failed:', err));
+      });
+    });
   }
 
   isLastVisited(item: WaterItem): boolean {

@@ -36,6 +36,8 @@ import { TakeActionContentComponent } from './components/take-action-content/tak
 import { CoffeeConversationComponent } from './components/coffee-conversation/coffee-conversation.component';
 import { InFocusWidgetComponent } from './components/in-focus-widget/in-focus-widget.component';
 import { SectionNavComponent } from './components/section-nav/section-nav.component';
+import { AvatarDropdownComponent } from './components/avatar-dropdown/avatar-dropdown.component';
+import { BookmarkIconComponent } from './components/bookmark-icon/bookmark-icon.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 const COMPONENTS = [
@@ -72,7 +74,9 @@ const COMPONENTS = [
   TakeActionContentComponent,
   CoffeeConversationComponent,
   InFocusWidgetComponent,
-  SectionNavComponent
+  SectionNavComponent,
+  AvatarDropdownComponent,
+  BookmarkIconComponent
 ];
 
 @NgModule({

@@ -177,7 +177,10 @@ export const FIREBASE_COLLECTION = {
   COFFEE_CONVERSATIONS: 'CoffeeConversations',
   IN_FOCUS: 'InFocus',
   NGO_IN_FOCUS: 'NGOinFocus',
-  COURSE_IN_FOCUS: 'CourseInFocus'
+  COURSE_IN_FOCUS: 'CourseInFocus',
+  USERS: 'users',
+  ACTIVITY_LOG: 'activity_log',
+  USER_SAVED_CONTENT: 'user_saved_content'
 };
 
 export const VIDEO_PLAYER_TITLES = {

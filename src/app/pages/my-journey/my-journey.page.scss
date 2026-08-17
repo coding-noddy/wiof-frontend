@@ -1,0 +1,329 @@
+@import "../../wiof-custom-theming.scss";
+
+// ─── Design Tokens ────────────────────────────────────────────────────────────
+$card-radius: 12px;
+$glass-bg: rgba(255, 255, 255, 0.72);
+$glass-blur: 12px;
+$card-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+$heading-color: #10263c;
+$body-color: #475569;
+$accent-color: #3b82f6;
+$streak-color: #f59e0b;
+
+.my-journey-page {
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  @media (min-width: 768px) {
+    padding: 1.5rem 3vw;
+  }
+}
+
+// ─── Page Header ──────────────────────────────────────────────────────────────
+.page-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+
+  .page-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: $heading-color;
+    margin: 0 0 0.25rem;
+  }
+
+  .page-subtitle {
+    font-size: 0.92rem;
+    color: $body-color;
+    margin: 0;
+  }
+}
+
+// ─── Metrics Section ──────────────────────────────────────────────────────────
+.metrics-section {
+  margin-bottom: 2rem;
+}
+
+.metric-card {
+  background: $glass-bg;
+  backdrop-filter: blur($glass-blur);
+  -webkit-backdrop-filter: blur($glass-blur);
+  border-radius: $card-radius;
+  box-shadow: $card-shadow;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  padding: 1rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+  }
+
+  .metric-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: $heading-color;
+    line-height: 1.2;
+
+    &.muted {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: $body-color;
+    }
+  }
+
+  .metric-label {
+    font-size: 0.78rem;
+    color: $body-color;
+    margin-top: 0.25rem;
+    font-weight: 500;
+
+    .metric-date {
+      display: block;
+      font-size: 0.7rem;
+      color: lighten($body-color, 15%);
+      margin-top: 0.15rem;
+    }
+  }
+
+  .metric-icon {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    font-size: 1rem;
+    color: rgba(0, 0, 0, 0.1);
+  }
+
+  &.streak-card {
+    .metric-value {
+      color: $streak-color;
+    }
+    .metric-icon {
+      color: rgba($streak-color, 0.2);
+    }
+  }
+}
+
+// ─── Saved Content Section ────────────────────────────────────────────────────
+.saved-content-section {
+  margin-top: 1.5rem;
+
+  .section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: $heading-color;
+    margin: 0 0 1rem;
+  }
+}
+
+.saved-card {
+  display: flex;
+  align-items: center;
+  background: $glass-bg;
+  backdrop-filter: blur($glass-blur);
+  -webkit-backdrop-filter: blur($glass-blur);
+  border-radius: $card-radius;
+  box-shadow: $card-shadow;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  padding: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.saved-card-thumbnail {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+  background: #e2e8f0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .thumbnail-fallback {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    color: #94a3b8;
+  }
+}
+
+.saved-card-info {
+  flex: 1;
+  padding: 0 0.75rem;
+  min-width: 0;
+
+  .saved-card-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: $heading-color;
+    margin: 0 0 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .saved-card-type {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+
+    &.blog {
+      background: rgba(59, 130, 246, 0.1);
+      color: $accent-color;
+    }
+
+    &.video {
+      background: rgba(139, 92, 246, 0.1);
+      color: #8b5cf6;
+    }
+  }
+}
+
+.saved-card-arrow {
+  color: #94a3b8;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+// ─── Empty State ──────────────────────────────────────────────────────────────
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+
+  ion-icon {
+    font-size: 3rem;
+    color: #cbd5e1;
+    margin-bottom: 0.75rem;
+  }
+
+  .empty-message {
+    font-size: 1rem;
+    font-weight: 600;
+    color: $heading-color;
+    margin: 0 0 0.25rem;
+  }
+
+  .empty-hint {
+    font-size: 0.88rem;
+    color: $body-color;
+    margin: 0 0 1rem;
+  }
+
+  .explore-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: $accent-color;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// ─── Error State ──────────────────────────────────────────────────────────────
+.error-state {
+  text-align: center;
+  padding: 3rem 1rem;
+
+  ion-icon {
+    font-size: 3rem;
+    color: #f87171;
+    margin-bottom: 0.75rem;
+  }
+
+  .error-message {
+    font-size: 0.95rem;
+    color: $body-color;
+    margin: 0 0 1rem;
+  }
+
+  .retry-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 10px 20px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    background: $accent-color;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: darken($accent-color, 8%);
+    }
+  }
+}
+
+// ─── Loading Skeleton ─────────────────────────────────────────────────────────
+.loading-state {
+  .skeleton-metric {
+    background: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.saved-card-skeleton {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: $card-radius;
+  padding: 0.75rem;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ─── Responsive ───────────────────────────────────────────────────────────────
+@media (max-width: 767px) {
+  .my-journey-page {
+    padding: 0.75rem;
+  }
+
+  .page-header .page-title {
+    font-size: 1.4rem;
+  }
+
+  .metric-card .metric-value {
+    font-size: 1.4rem;
+  }
+}
+
+ion-content {
+  --background: #f4f7fb;
+}

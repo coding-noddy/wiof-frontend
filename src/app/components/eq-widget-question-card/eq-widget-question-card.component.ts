@@ -1,5 +1,8 @@
 import { Component, OnInit, Output, Input, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { first } from 'rxjs/operators';
+import { ActivityService } from 'src/app/services/activity.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 /**
  * TMMS-24 (Trait Meta-Mood Scale, 24 items)
@@ -77,7 +80,11 @@ export class EqWidgetQuestionCardComponent implements OnInit {
     }
   };
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private activityService: ActivityService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
     const controls: Record<string, any> = {};
@@ -116,6 +123,24 @@ export class EqWidgetQuestionCardComponent implements OnInit {
     ];
 
     this.showResult = true;
+
+    // Log EQ completion activity for authenticated users (fire-and-forget)
+    const totalScore = attentionRaw + clarityRaw + repairRaw;
+    this.logEqCompletion(totalScore);
+  }
+
+  private logEqCompletion(score: number): void {
+    this.authService.isAuthenticated$.pipe(first()).subscribe(isAuth => {
+      if (!isAuth) return;
+      this.authService.currentUser$.pipe(first()).subscribe(user => {
+        if (!user) return;
+        this.activityService.logActivity({
+          activityType: 'eq_completion',
+          score,
+          userId: user.uid
+        }).catch(err => console.warn('EQ completion activity logging failed:', err));
+      });
+    });
   }
 
   onBack() {

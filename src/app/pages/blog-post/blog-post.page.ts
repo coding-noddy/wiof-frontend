@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
+import { first } from 'rxjs/operators';
 import { Blog } from 'src/app/models/Blog';
 import { BlogService } from 'src/app/services/blog.service';
+import { ActivityService } from 'src/app/services/activity.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-blog-post',
@@ -13,7 +16,9 @@ export class BlogPostPage implements OnInit {
   public blogDetails: Observable<Blog>;
   constructor(
     private route: ActivatedRoute,
-    private blogService: BlogService
+    private blogService: BlogService,
+    private activityService: ActivityService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -27,7 +32,24 @@ export class BlogPostPage implements OnInit {
         } else {
           this.blogDetails = this.blogService.getBlogBySlug(blogParam);
         }
+
+        // Log activity for authenticated users (fire-and-forget)
+        this.logBlogRead(blogParam);
       }
+    });
+  }
+
+  private logBlogRead(contentId: string): void {
+    this.authService.isAuthenticated$.pipe(first()).subscribe(isAuth => {
+      if (!isAuth) return;
+      this.authService.currentUser$.pipe(first()).subscribe(user => {
+        if (!user) return;
+        this.activityService.logActivity({
+          activityType: 'blog_read',
+          contentId,
+          userId: user.uid
+        }).catch(err => console.warn('Blog read activity logging failed:', err));
+      });
     });
   }
 

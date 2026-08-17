@@ -1,7 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AqiWidgetService } from '../../services/aqi-widget.service';
 import { Subject } from 'rxjs';
-import { map, debounceTime, switchMap, takeUntil, filter } from 'rxjs/operators';
+import { map, debounceTime, switchMap, takeUntil, filter, first } from 'rxjs/operators';
+import { ActivityService } from 'src/app/services/activity.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 interface AQIFact {
   text: string;
@@ -61,7 +63,11 @@ export class AqiWidgetComponent implements OnInit, OnDestroy {
     return this.aqiFacts[this.currentFactIndex];
   }
 
-  constructor(private aqiService: AqiWidgetService) {}
+  constructor(
+    private aqiService: AqiWidgetService,
+    private activityService: ActivityService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
     this.startFactRotation();
@@ -111,6 +117,22 @@ export class AqiWidgetComponent implements OnInit, OnDestroy {
     this.showAqiScorecard = true;
     this.showSearch = false;
     this.searchLocation = '';
+    // Log widget usage for authenticated users (fire-and-forget)
+    this.logWidgetUsage();
+  }
+
+  private logWidgetUsage(): void {
+    this.authService.isAuthenticated$.pipe(first()).subscribe(isAuth => {
+      if (!isAuth) return;
+      this.authService.currentUser$.pipe(first()).subscribe(user => {
+        if (!user) return;
+        this.activityService.logActivity({
+          activityType: 'widget_usage',
+          widgetName: 'AQI',
+          userId: user.uid
+        }).catch(err => console.warn('AQI widget activity logging failed:', err));
+      });
+    });
   }
 
   // ── AQI color logic ────────────────────────────────────────

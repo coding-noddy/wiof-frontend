@@ -18,6 +18,12 @@
       <!-- Meta top -->
       <div class="video-meta-top">
         <app-back-button></app-back-button>
+        <app-bookmark-icon
+          [contentId]="id"
+          contentType="video"
+          [contentTitle]="videoTitle"
+          [contentThumbnail]="videoThumbnail">
+        </app-bookmark-icon>
         <app-social-share></app-social-share>
       </div>
 

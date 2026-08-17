@@ -3,8 +3,8 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 //Firestore Integration Modules
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
-// import {AngularFireAuthModule} from '@angular/fire/compat/storage';
 import { AngularFireStorageModule } from '@angular/fire/compat/storage';
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule, Meta } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
@@ -14,6 +14,7 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { OnboardingOverlayComponent } from './components/onboarding-overlay/onboarding-overlay.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
   AngularFireAnalyticsModule,
@@ -22,7 +23,7 @@ import {
 } from '@angular/fire/compat/analytics';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, OnboardingOverlayComponent],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
@@ -33,9 +34,9 @@ import {
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule,
     AngularFireStorageModule,
+    AngularFireAuthModule,
     AngularFireAnalyticsModule,
     BrowserAnimationsModule
-    // AngularFireAuthModule    //To be used later to add authentication
   ],
   providers: [
     StatusBar,
