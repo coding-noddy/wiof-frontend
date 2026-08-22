@@ -38,6 +38,7 @@ import { InFocusWidgetComponent } from './components/in-focus-widget/in-focus-wi
 import { SectionNavComponent } from './components/section-nav/section-nav.component';
 import { AvatarDropdownComponent } from './components/avatar-dropdown/avatar-dropdown.component';
 import { BookmarkIconComponent } from './components/bookmark-icon/bookmark-icon.component';
+import { BlogReadTrackerDirective } from './directives/blog-read-tracker.directive';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 const COMPONENTS = [
@@ -76,7 +77,8 @@ const COMPONENTS = [
   InFocusWidgetComponent,
   SectionNavComponent,
   AvatarDropdownComponent,
-  BookmarkIconComponent
+  BookmarkIconComponent,
+  BlogReadTrackerDirective
 ];
 
 @NgModule({

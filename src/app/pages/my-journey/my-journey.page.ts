@@ -6,6 +6,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { ActivityService, EngagementMetrics } from 'src/app/services/activity.service';
 import { SavedContentService, SavedContentDocument } from 'src/app/services/saved-content.service';
 import { UserProfileService } from 'src/app/services/user-profile.service';
+import { QualityReadEntry, EqHistoryEntry, PollHistoryEntry } from 'src/app/models/engagement-history';
 
 @Component({
   selector: 'app-my-journey',
@@ -15,7 +16,7 @@ import { UserProfileService } from 'src/app/services/user-profile.service';
 export class MyJourneyPage implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
-  // State flags
+  // State flags for existing sections
   isLoading = true;
   hasError = false;
 
@@ -27,6 +28,22 @@ export class MyJourneyPage implements OnInit, OnDestroy {
   // Saved content list
   savedContent: SavedContentDocument[] = [];
   hasSavedContent = false;
+
+  // Quality Reads section
+  qualityReads: QualityReadEntry[] = [];
+  qualityReadCount = 0;
+  qualityReadsLoading = true;
+  qualityReadsError = false;
+
+  // EQ History section
+  eqHistory: EqHistoryEntry[] = [];
+  eqHistoryLoading = true;
+  eqHistoryError = false;
+
+  // Poll History section
+  pollHistory: PollHistoryEntry[] = [];
+  pollHistoryLoading = true;
+  pollHistoryError = false;
 
   constructor(
     private authService: AuthService,
@@ -66,6 +83,10 @@ export class MyJourneyPage implements OnInit, OnDestroy {
           this.loadMetrics(user.uid);
           this.loadSavedContent(user.uid);
           this.loadProfile(user.uid);
+          // Load new sections in parallel
+          this.loadQualityReads(user.uid);
+          this.loadEqHistory(user.uid);
+          this.loadPollHistory(user.uid);
         },
         error: () => {
           this.isLoading = false;
@@ -79,6 +100,49 @@ export class MyJourneyPage implements OnInit, OnDestroy {
    */
   retry(): void {
     this.loadData();
+  }
+
+  /**
+   * Retry loading a specific section.
+   */
+  retrySection(section: 'qualityReads' | 'eqHistory' | 'pollHistory'): void {
+    this.authService.currentUser$
+      .pipe(first(user => user !== null), takeUntil(this.destroy$))
+      .subscribe(user => {
+        if (!user) return;
+        switch (section) {
+          case 'qualityReads':
+            this.loadQualityReads(user.uid);
+            break;
+          case 'eqHistory':
+            this.loadEqHistory(user.uid);
+            break;
+          case 'pollHistory':
+            this.loadPollHistory(user.uid);
+            break;
+        }
+      });
+  }
+
+  /**
+   * Checks if all new sections have failed (for global retry button).
+   */
+  get allSectionsFailed(): boolean {
+    return this.qualityReadsError && this.eqHistoryError && this.pollHistoryError;
+  }
+
+  /**
+   * Retry all failed sections.
+   */
+  retryAllSections(): void {
+    this.authService.currentUser$
+      .pipe(first(user => user !== null), takeUntil(this.destroy$))
+      .subscribe(user => {
+        if (!user) return;
+        if (this.qualityReadsError) this.loadQualityReads(user.uid);
+        if (this.eqHistoryError) this.loadEqHistory(user.uid);
+        if (this.pollHistoryError) this.loadPollHistory(user.uid);
+      });
   }
 
   /**
@@ -97,7 +161,6 @@ export class MyJourneyPage implements OnInit, OnDestroy {
         },
         error: (err) => {
           console.warn('Failed to load metrics:', err);
-          // Show zeros instead of error state if metrics fail
           this.metrics = {
             blogsRead: 0,
             videosWatched: 0,
@@ -161,6 +224,82 @@ export class MyJourneyPage implements OnInit, OnDestroy {
   }
 
   /**
+   * Loads quality read entries for the user (independent section).
+   */
+  private loadQualityReads(userId: string): void {
+    this.qualityReadsLoading = true;
+    this.qualityReadsError = false;
+
+    this.activityService.getQualityReads(userId)
+      .pipe(
+        first(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (entries) => {
+          this.qualityReads = entries;
+          this.qualityReadCount = entries.length;
+          this.qualityReadsLoading = false;
+        },
+        error: (err) => {
+          console.warn('Failed to load quality reads:', err);
+          this.qualityReadsLoading = false;
+          this.qualityReadsError = true;
+        }
+      });
+  }
+
+  /**
+   * Loads EQ history entries for the user (independent section).
+   */
+  private loadEqHistory(userId: string): void {
+    this.eqHistoryLoading = true;
+    this.eqHistoryError = false;
+
+    this.activityService.getEqHistory(userId)
+      .pipe(
+        first(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (entries) => {
+          this.eqHistory = entries;
+          this.eqHistoryLoading = false;
+        },
+        error: (err) => {
+          console.warn('Failed to load EQ history:', err);
+          this.eqHistoryLoading = false;
+          this.eqHistoryError = true;
+        }
+      });
+  }
+
+  /**
+   * Loads poll history entries for the user (independent section).
+   */
+  private loadPollHistory(userId: string): void {
+    this.pollHistoryLoading = true;
+    this.pollHistoryError = false;
+
+    this.activityService.getPollHistory(userId)
+      .pipe(
+        first(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (entries) => {
+          this.pollHistory = entries;
+          this.pollHistoryLoading = false;
+        },
+        error: (err) => {
+          console.warn('Failed to load poll history:', err);
+          this.pollHistoryLoading = false;
+          this.pollHistoryError = true;
+        }
+      });
+  }
+
+  /**
    * Checks if all data has loaded to turn off the loading state.
    */
   private checkLoadingComplete(): void {
@@ -191,6 +330,30 @@ export class MyJourneyPage implements OnInit, OnDestroy {
       day: 'numeric',
       year: 'numeric'
     });
+  }
+
+  /**
+   * Formats a Date object for display in history sections.
+   */
+  formatDate(date: Date): string {
+    if (!date) return '';
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  }
+
+  /**
+   * Formats time spent in seconds to a readable string (e.g., "5 min 30 sec").
+   */
+  formatTimeSpent(seconds: number): string {
+    if (!seconds || seconds <= 0) return '0 sec';
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    if (mins === 0) return `${secs} sec`;
+    if (secs === 0) return `${mins} min`;
+    return `${mins} min ${secs} sec`;
   }
 
   /** Cache of resolved image URLs */

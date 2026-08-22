@@ -12,6 +12,7 @@ import {
   ITEM_STATUS
 } from '../app.constants';
 import { DomSanitizer } from '@angular/platform-browser';
+import { AdminWriteGuardService } from './admin-write-guard.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,8 @@ export class InFocusService {
 
   constructor(
     private database: AngularFirestore,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private adminWriteGuard: AdminWriteGuardService
   ) {
     this.inFocusCollection = this.database.collection(
       FIREBASE_COLLECTION.IN_FOCUS
@@ -30,15 +32,17 @@ export class InFocusService {
   }
 
   saveInFocus(inFocus: InFocus) {
-    let inFocus$ = null;
-    if (inFocus.inFocusId !== null) {
-      inFocus$ = this.inFocusCollection
-        .doc(inFocus.inFocusId)
-        .update({ ...inFocus });
-    } else {
-      inFocus$ = this.inFocusCollection.add({ ...inFocus });
-    }
-    return from(inFocus$);
+    return from(
+      this.adminWriteGuard.assertAdmin().then((): any => {
+        if (inFocus.inFocusId !== null) {
+          return this.inFocusCollection
+            .doc(inFocus.inFocusId)
+            .update({ ...inFocus });
+        } else {
+          return this.inFocusCollection.add({ ...inFocus });
+        }
+      })
+    );
   }
 
   getInFocuses(category?: string): Observable<InFocus[]> {
@@ -90,25 +94,33 @@ export class InFocusService {
 
   publishInFocus(inFocusId: string) {
     return from(
-      this.inFocusCollection.doc(inFocusId).update({
-        status: ITEM_STATUS.PUBLISHED,
-        publishDate: new Date().getTime(),
-        unpublishDate: null
-      })
+      this.adminWriteGuard.assertAdmin().then(() =>
+        this.inFocusCollection.doc(inFocusId).update({
+          status: ITEM_STATUS.PUBLISHED,
+          publishDate: new Date().getTime(),
+          unpublishDate: null
+        })
+      )
     );
   }
 
   unpublishInFocus(id: string) {
     return from(
-      this.database.collection(FIREBASE_COLLECTION.IN_FOCUS).doc(id).update({
-        status: ITEM_STATUS.INACTIVE,
-        unpublishDate: new Date().getTime()
-      })
+      this.adminWriteGuard.assertAdmin().then(() =>
+        this.database.collection(FIREBASE_COLLECTION.IN_FOCUS).doc(id).update({
+          status: ITEM_STATUS.INACTIVE,
+          unpublishDate: new Date().getTime()
+        })
+      )
     );
   }
 
   deleteInFocus(inFocusId: string) {
-    return from(this.inFocusCollection.doc(inFocusId).delete());
+    return from(
+      this.adminWriteGuard.assertAdmin().then(() =>
+        this.inFocusCollection.doc(inFocusId).delete()
+      )
+    );
   }
 
   setViewEditModeInFocus(inFocus: InFocus) {

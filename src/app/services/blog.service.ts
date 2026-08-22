@@ -8,6 +8,7 @@ import { from, Observable } from 'rxjs';
 import { last, map, switchMap } from 'rxjs/operators';
 import { Blog } from '../models/Blog';
 import { FIREBASE_COLLECTION, AVG_WORD_READ_PER_MIN } from '../app.constants';
+import { AdminWriteGuardService } from './admin-write-guard.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,8 @@ export class BlogService {
 
   constructor(
     private storage: AngularFireStorage,
-    public database: AngularFirestore
+    public database: AngularFirestore,
+    private adminWriteGuard: AdminWriteGuardService
   ) {
     this.blogCollection = this.database.collection(FIREBASE_COLLECTION.BLOGS);
   }
@@ -139,19 +141,23 @@ export class BlogService {
   }
 
   saveBlog(blog: Blog) {
-    let saveBlog$ = null;
-    if (blog.id !== null) {
-      saveBlog$ = this.blogCollection.doc(blog.id.valueOf()).update({
-        ...blog
-      });
-    } else {
-      saveBlog$ = this.blogCollection.add({ ...blog });
-    }
-    return from(saveBlog$);
+    return from(
+      this.adminWriteGuard.assertAdmin().then((): any => {
+        if (blog.id !== null) {
+          return this.blogCollection.doc(blog.id.valueOf()).update({ ...blog });
+        } else {
+          return this.blogCollection.add({ ...blog });
+        }
+      })
+    );
   }
 
   deleteBlog(blogId: string) {
-    return from(this.blogCollection.doc(blogId).delete());
+    return from(
+      this.adminWriteGuard.assertAdmin().then(() =>
+        this.blogCollection.doc(blogId).delete()
+      )
+    );
   }
 
   setViewEditModeBlog(pollQuestion: Blog) {

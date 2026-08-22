@@ -4,6 +4,7 @@ import { from, Observable } from 'rxjs';
 import { map,switchMap } from 'rxjs/operators';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { throwError } from 'rxjs';
+import { AdminWriteGuardService } from './admin-write-guard.service';
 export interface AboutUsProfile {
   id?: string; // <--- ADDED: Needs to be part of the interface
   serialNo: number;
@@ -22,7 +23,8 @@ export class AboutUsService {
   private viewEditModeProfile: AboutUsProfile;
   constructor(
   private firestore: AngularFirestore,
-  private storage: AngularFireStorage
+  private storage: AngularFireStorage,
+  private adminWriteGuard: AdminWriteGuardService
 
   ) {}
 
@@ -48,7 +50,8 @@ export class AboutUsService {
   }
 
   // --- 2. Add a new profile ---
-  addAboutUsProfile(profile: AboutUsProfile): Promise<void> {
+  async addAboutUsProfile(profile: AboutUsProfile): Promise<void> {
+    await this.adminWriteGuard.assertAdmin();
     const id = this.firestore.createId();
     // We save the ID inside the document data as well for safety
     return this.firestore
@@ -58,21 +61,23 @@ export class AboutUsService {
   }
 
 saveAboutUsProfile(profile: AboutUsProfile): Observable<any> {
-  // If we have an ID, we update the existing doc; otherwise, we add a new one.
-  let saveObs$;
-  if (profile.id) {
-    saveObs$ = this.firestore
-      .collection(this.collectionName)
-      .doc(profile.id)
-      .update({ ...profile });
-  } else {
-    const id = this.firestore.createId();
-    saveObs$ = this.firestore
-      .collection(this.collectionName)
-      .doc(id)
-      .set({ ...profile, id });
-  }
-  return from(saveObs$);
+  return from(
+    this.adminWriteGuard.assertAdmin().then((): any => {
+      // If we have an ID, we update the existing doc; otherwise, we add a new one.
+      if (profile.id) {
+        return this.firestore
+          .collection(this.collectionName)
+          .doc(profile.id)
+          .update({ ...profile });
+      } else {
+        const id = this.firestore.createId();
+        return this.firestore
+          .collection(this.collectionName)
+          .doc(id)
+          .set({ ...profile, id });
+      }
+    })
+  );
 }
 
 saveProfileImage(file: File, fileName: string): Observable<string> {
@@ -117,7 +122,8 @@ saveProfileImage(file: File, fileName: string): Observable<string> {
   }
 
   // --- 4. Update an existing profile ---
-  updateAboutUsProfile(id: string, profile: Partial<AboutUsProfile>): Promise<void> {
+  async updateAboutUsProfile(id: string, profile: Partial<AboutUsProfile>): Promise<void> {
+    await this.adminWriteGuard.assertAdmin();
     return this.firestore.collection(this.collectionName).doc(id).update(profile);
   }
 
@@ -130,7 +136,7 @@ saveProfileImage(file: File, fileName: string): Observable<string> {
   } 
 
   // --- 5. Delete a profile ---
-  deleteAboutUsProfile(profileId: string): Promise<void> {
+  async deleteAboutUsProfile(profileId: string): Promise<void> {
     console.log('The Document ID being received for delete is:', profileId);
     
     // Check to ensure we don't pass undefined
@@ -139,6 +145,7 @@ saveProfileImage(file: File, fileName: string): Observable<string> {
         return Promise.reject('No Profile ID provided');
     }
 
+    await this.adminWriteGuard.assertAdmin();
     return this.firestore.collection(this.collectionName).doc(profileId).delete();
   }
 }

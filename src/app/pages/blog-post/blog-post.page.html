@@ -9,7 +9,11 @@
     </div>
 
     <!-- Article -->
-    <article class="blog-article">
+    <article class="blog-article"
+      appBlogReadTracker
+      [contentId]="blog.slug || blog.id"
+      [wordCount]="getWordCount(blog)"
+      (qualityReadComplete)="onReadComplete($event, blog.title)">
 
       <!-- Meta -->
       <div class="blog-meta-top">

@@ -309,6 +309,326 @@ $streak-color: #f59e0b;
   100% { background-position: -200% 0; }
 }
 
+// ─── History Sections (Quality Reads, EQ History, Poll History) ───────────────
+.history-section {
+  margin-top: 2rem;
+  background: $glass-bg;
+  backdrop-filter: blur($glass-blur);
+  -webkit-backdrop-filter: blur($glass-blur);
+  border-radius: $card-radius;
+  box-shadow: $card-shadow;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  padding: 1.25rem;
+
+  .section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: $heading-color;
+    margin: 0 0 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .section-icon {
+      font-size: 1.2rem;
+      color: $accent-color;
+    }
+  }
+
+  .subsection-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: $body-color;
+    margin: 1rem 0 0.5rem;
+  }
+}
+
+// ─── Section Loading Skeleton ─────────────────────────────────────────────────
+.section-skeleton {
+  .skeleton-row {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+// ─── Section Error ────────────────────────────────────────────────────────────
+.section-error {
+  text-align: center;
+  padding: 1rem;
+
+  p {
+    font-size: 0.88rem;
+    color: $body-color;
+    margin: 0 0 0.5rem;
+  }
+}
+
+.retry-button-sm {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  background: $accent-color;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: darken($accent-color, 8%);
+  }
+}
+
+// ─── Section Empty State ──────────────────────────────────────────────────────
+.section-empty {
+  text-align: center;
+  padding: 1.5rem 1rem;
+
+  ion-icon {
+    font-size: 2rem;
+    color: #cbd5e1;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    font-size: 0.88rem;
+    color: $body-color;
+    margin: 0 0 0.5rem;
+  }
+
+  .section-cta {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: $accent-color;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// ─── Global Retry (all sections failed) ──────────────────────────────────────
+.global-retry-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  margin-top: 1.5rem;
+
+  ion-icon {
+    font-size: 2.5rem;
+    color: #f87171;
+    margin-bottom: 0.5rem;
+  }
+
+  .error-message {
+    font-size: 0.92rem;
+    color: $body-color;
+    margin: 0 0 1rem;
+  }
+
+  .retry-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 10px 20px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    background: $accent-color;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    ion-icon {
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    &:hover {
+      background: darken($accent-color, 8%);
+    }
+  }
+}
+
+// ─── Quality Reads Metrics Row ────────────────────────────────────────────────
+.quality-metrics-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  .quality-metric {
+    flex: 1;
+    text-align: center;
+    padding: 0.75rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.03);
+
+    &.highlight {
+      background: rgba($accent-color, 0.08);
+
+      .quality-metric-value {
+        color: $accent-color;
+      }
+    }
+
+    .quality-metric-value {
+      display: block;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: $heading-color;
+      line-height: 1.2;
+    }
+
+    .quality-metric-label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: $body-color;
+      margin-top: 0.2rem;
+    }
+  }
+}
+
+// ─── History List Items ───────────────────────────────────────────────────────
+.history-list {
+  .history-item {
+    padding: 0.65rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .history-item-main {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+
+    .history-item-icon {
+      font-size: 1rem;
+      color: $accent-color;
+      flex-shrink: 0;
+    }
+
+    .history-item-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: $heading-color;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .history-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-left: 1.5rem;
+    flex-wrap: wrap;
+
+    .meta-tag {
+      font-size: 0.72rem;
+      font-weight: 500;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.05);
+      color: $body-color;
+
+      &.voted {
+        background: rgba($accent-color, 0.1);
+        color: $accent-color;
+        font-weight: 600;
+      }
+    }
+
+    .meta-date {
+      font-size: 0.72rem;
+      color: lighten($body-color, 15%);
+    }
+  }
+}
+
+// ─── EQ Latest Score (Prominent) ─────────────────────────────────────────────
+.eq-latest {
+  text-align: center;
+  padding: 1rem;
+  background: rgba($accent-color, 0.04);
+  border-radius: 10px;
+  margin-bottom: 0.5rem;
+
+  .eq-latest-score {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: $accent-color;
+    line-height: 1.1;
+  }
+
+  .eq-latest-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: $body-color;
+    margin-top: 0.15rem;
+  }
+
+  .eq-latest-date {
+    font-size: 0.72rem;
+    color: lighten($body-color, 15%);
+    margin-top: 0.15rem;
+  }
+
+  .eq-dimensions {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 0.75rem;
+
+    .eq-dimension {
+      text-align: center;
+
+      .eq-dimension-value {
+        display: block;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: $heading-color;
+      }
+
+      .eq-dimension-label {
+        display: block;
+        font-size: 0.68rem;
+        color: $body-color;
+        margin-top: 0.1rem;
+      }
+    }
+  }
+}
+
+// ─── EQ Previous Scores ──────────────────────────────────────────────────────
+.eq-previous {
+  .eq-score-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba($accent-color, 0.1);
+    color: $accent-color;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+}
+
 // ─── Responsive ───────────────────────────────────────────────────────────────
 @media (max-width: 767px) {
   .my-journey-page {
@@ -321,6 +641,18 @@ $streak-color: #f59e0b;
 
   .metric-card .metric-value {
     font-size: 1.4rem;
+  }
+
+  .quality-metrics-row .quality-metric .quality-metric-value {
+    font-size: 1.2rem;
+  }
+
+  .eq-latest .eq-latest-score {
+    font-size: 2rem;
+  }
+
+  .eq-latest .eq-dimensions {
+    gap: 1rem;
   }
 }
 

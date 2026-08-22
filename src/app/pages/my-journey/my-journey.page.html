@@ -106,6 +106,196 @@
         </ion-grid>
       </div>
 
+      <!-- Global Retry (all new sections failed) -->
+      <div *ngIf="allSectionsFailed" class="global-retry-state">
+        <ion-icon name="cloud-offline-outline"></ion-icon>
+        <p class="error-message">Unable to load engagement history sections.</p>
+        <button class="retry-button" (click)="retryAllSections()">
+          <ion-icon name="refresh-outline"></ion-icon>
+          Retry All Sections
+        </button>
+      </div>
+
+      <!-- Quality Reads Section -->
+      <div class="history-section" *ngIf="!allSectionsFailed">
+        <h2 class="section-title">
+          <ion-icon name="checkmark-done-outline" class="section-icon"></ion-icon>
+          Quality Reads
+        </h2>
+
+        <!-- Quality Reads Loading Skeleton -->
+        <div *ngIf="qualityReadsLoading" class="section-skeleton">
+          <div class="skeleton-row" *ngFor="let i of [1,2,3]">
+            <div class="skeleton" style="height: 14px; width: 65%; border-radius: 4px; margin-bottom: 0.4rem;"></div>
+            <div class="skeleton" style="height: 12px; width: 35%; border-radius: 4px;"></div>
+          </div>
+        </div>
+
+        <!-- Quality Reads Error -->
+        <div *ngIf="qualityReadsError && !qualityReadsLoading" class="section-error">
+          <p>Failed to load quality reads.</p>
+          <button class="retry-button-sm" (click)="retrySection('qualityReads')">
+            <ion-icon name="refresh-outline"></ion-icon> Retry
+          </button>
+        </div>
+
+        <!-- Quality Reads Content -->
+        <div *ngIf="!qualityReadsLoading && !qualityReadsError">
+          <!-- Metrics comparison row -->
+          <div class="quality-metrics-row">
+            <div class="quality-metric">
+              <span class="quality-metric-value">{{ metrics?.blogsRead ?? 0 }}</span>
+              <span class="quality-metric-label">Pages Opened</span>
+            </div>
+            <div class="quality-metric highlight">
+              <span class="quality-metric-value">{{ qualityReadCount }}</span>
+              <span class="quality-metric-label">Quality Reads</span>
+            </div>
+          </div>
+
+          <!-- Quality Reads List -->
+          <div *ngIf="qualityReads.length > 0" class="history-list">
+            <div class="history-item" *ngFor="let read of qualityReads">
+              <div class="history-item-main">
+                <ion-icon name="book-outline" class="history-item-icon"></ion-icon>
+                <span class="history-item-title">{{ read.blogTitle }}</span>
+              </div>
+              <div class="history-item-meta">
+                <span class="meta-tag">{{ read.scrollDepth }}% read</span>
+                <span class="meta-tag">{{ formatTimeSpent(read.timeSpent) }}</span>
+                <span class="meta-date">{{ formatDate(read.completedDate) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="qualityReads.length === 0" class="section-empty">
+            <ion-icon name="book-outline"></ion-icon>
+            <p>No quality reads yet — start reading to track your engagement!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- EQ History Section -->
+      <div class="history-section" *ngIf="!allSectionsFailed">
+        <h2 class="section-title">
+          <ion-icon name="heart-outline" class="section-icon"></ion-icon>
+          EQ History
+        </h2>
+
+        <!-- EQ History Loading Skeleton -->
+        <div *ngIf="eqHistoryLoading" class="section-skeleton">
+          <div class="skeleton" style="height: 64px; width: 100%; border-radius: 10px; margin-bottom: 0.75rem;"></div>
+          <div class="skeleton-row" *ngFor="let i of [1,2]">
+            <div class="skeleton" style="height: 14px; width: 50%; border-radius: 4px; margin-bottom: 0.4rem;"></div>
+            <div class="skeleton" style="height: 12px; width: 70%; border-radius: 4px;"></div>
+          </div>
+        </div>
+
+        <!-- EQ History Error -->
+        <div *ngIf="eqHistoryError && !eqHistoryLoading" class="section-error">
+          <p>Failed to load EQ history.</p>
+          <button class="retry-button-sm" (click)="retrySection('eqHistory')">
+            <ion-icon name="refresh-outline"></ion-icon> Retry
+          </button>
+        </div>
+
+        <!-- EQ History Content -->
+        <div *ngIf="!eqHistoryLoading && !eqHistoryError">
+          <!-- Most Recent Score (prominent display) -->
+          <div *ngIf="eqHistory.length > 0" class="eq-latest">
+            <div class="eq-latest-score">{{ eqHistory[0].overallScore }}</div>
+            <div class="eq-latest-label">Latest EQ Score</div>
+            <div class="eq-latest-date">{{ formatDate(eqHistory[0].date) }}</div>
+            <div class="eq-dimensions">
+              <div class="eq-dimension">
+                <span class="eq-dimension-value">{{ eqHistory[0].attentionScore }}</span>
+                <span class="eq-dimension-label">Attention</span>
+              </div>
+              <div class="eq-dimension">
+                <span class="eq-dimension-value">{{ eqHistory[0].clarityScore }}</span>
+                <span class="eq-dimension-label">Clarity</span>
+              </div>
+              <div class="eq-dimension">
+                <span class="eq-dimension-value">{{ eqHistory[0].reparationScore }}</span>
+                <span class="eq-dimension-label">Reparation</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Previous Scores -->
+          <div *ngIf="eqHistory.length > 1" class="eq-previous">
+            <h3 class="subsection-title">Previous Scores</h3>
+            <div class="history-list">
+              <div class="history-item" *ngFor="let entry of eqHistory.slice(1)">
+                <div class="history-item-main">
+                  <span class="eq-score-badge">{{ entry.overallScore }}</span>
+                  <span class="meta-date">{{ formatDate(entry.date) }}</span>
+                </div>
+                <div class="history-item-meta">
+                  <span class="meta-tag">A: {{ entry.attentionScore }}</span>
+                  <span class="meta-tag">C: {{ entry.clarityScore }}</span>
+                  <span class="meta-tag">R: {{ entry.reparationScore }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="eqHistory.length === 0" class="section-empty">
+            <ion-icon name="heart-outline"></ion-icon>
+            <p>Not yet taken</p>
+            <a routerLink="/element/water/eq-assessment" class="section-cta">Take the EQ Assessment</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Poll History Section -->
+      <div class="history-section" *ngIf="!allSectionsFailed">
+        <h2 class="section-title">
+          <ion-icon name="bar-chart-outline" class="section-icon"></ion-icon>
+          Poll History
+        </h2>
+
+        <!-- Poll History Loading Skeleton -->
+        <div *ngIf="pollHistoryLoading" class="section-skeleton">
+          <div class="skeleton-row" *ngFor="let i of [1,2,3]">
+            <div class="skeleton" style="height: 14px; width: 55%; border-radius: 4px; margin-bottom: 0.4rem;"></div>
+            <div class="skeleton" style="height: 12px; width: 40%; border-radius: 4px;"></div>
+          </div>
+        </div>
+
+        <!-- Poll History Error -->
+        <div *ngIf="pollHistoryError && !pollHistoryLoading" class="section-error">
+          <p>Failed to load poll history.</p>
+          <button class="retry-button-sm" (click)="retrySection('pollHistory')">
+            <ion-icon name="refresh-outline"></ion-icon> Retry
+          </button>
+        </div>
+
+        <!-- Poll History Content -->
+        <div *ngIf="!pollHistoryLoading && !pollHistoryError">
+          <div *ngIf="pollHistory.length > 0" class="history-list">
+            <div class="history-item" *ngFor="let poll of pollHistory">
+              <div class="history-item-main">
+                <ion-icon name="checkmark-circle-outline" class="history-item-icon"></ion-icon>
+                <span class="history-item-title">{{ poll.pollTitle }}</span>
+              </div>
+              <div class="history-item-meta">
+                <span class="meta-tag voted">{{ poll.selectedOption }}</span>
+                <span class="meta-date">{{ formatDate(poll.voteDate) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="pollHistory.length === 0" class="section-empty">
+            <ion-icon name="bar-chart-outline"></ion-icon>
+            <p>No poll votes yet — participate in polls to see your voting history!</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Saved Content Section -->
       <div class="saved-content-section">
         <h2 class="section-title">Saved Content</h2>
@@ -122,9 +312,14 @@
                       [src]="imgUrl"
                       [alt]="item.contentTitle"
                       loading="lazy"
-                      onerror="this.style.display='none'"
+                      (error)="item.imageLoadFailed = true"
+                      [hidden]="item.imageLoadFailed"
                     />
-                    <ion-icon name="image-outline" class="thumbnail-fallback"></ion-icon>
+                    <ion-icon
+                      *ngIf="item.imageLoadFailed"
+                      name="image-outline"
+                      class="thumbnail-fallback">
+                    </ion-icon>
                   </div>
                   <div class="saved-card-info">
                     <h3 class="saved-card-title">{{ item.contentTitle }}</h3>

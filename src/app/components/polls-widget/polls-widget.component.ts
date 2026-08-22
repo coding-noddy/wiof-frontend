@@ -12,6 +12,7 @@ import { Poll } from 'src/app/models/Poll';
 import { UI_MESSAGES } from 'src/app/app.constants';
 import { ActivityService } from 'src/app/services/activity.service';
 import { AuthService } from 'src/app/services/auth.service';
+import firebase from 'firebase/compat/app';
 
 @Component({
   selector: 'app-polls-widget',
@@ -31,6 +32,13 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
   // result data
   totalVotes: number = 0;
   optionData: any = {};
+
+  // Auth and vote detection state
+  isAuthenticated: boolean = false;
+  currentUser: firebase.User | null = null;
+  hasVoted: boolean = false;
+  votedOption: string = '';
+
   constructor(
     private pollsService: PollsService,
     private pollQuestionService: PollQuestionService,
@@ -44,7 +52,20 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.wiofPollsForm = new FormGroup({
       name: new FormControl(''),
-      option: new FormControl('', [Validators.required])
+      option: new FormControl('', [Validators.required]),
+      email: new FormControl('')
+    });
+
+    // Check authentication state and set up user context
+    this.authService.isAuthenticated$.pipe(first()).subscribe(isAuth => {
+      this.isAuthenticated = isAuth;
+      if (isAuth) {
+        this.authService.currentUser$.pipe(first()).subscribe(user => {
+          this.currentUser = user;
+          // Check vote status once we have the poll loaded
+          this.checkVoteStatusWhenReady();
+        });
+      }
     });
 
     combineLatest([
@@ -62,11 +83,44 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
           this.pollQuestion = pollData[0];
           // load current results (useful after vote)
           this.loadResults();
+          // Check vote status if user is already authenticated
+          this.checkVoteStatus();
         },
         (err) => {
           console.log(err);
         }
       );
+  }
+
+  /**
+   * Checks vote status once auth data is available but poll may not be loaded yet.
+   * Retries when poll data arrives via checkVoteStatus().
+   */
+  private checkVoteStatusWhenReady(): void {
+    if (this.pollQuestion && this.currentUser) {
+      this.checkVoteStatus();
+    }
+  }
+
+  /**
+   * Checks if the authenticated user has already voted on the current poll.
+   * If voted, disables the form and shows the voted option.
+   */
+  private checkVoteStatus(): void {
+    if (!this.isAuthenticated || !this.currentUser || !this.pollQuestion) {
+      return;
+    }
+
+    this.activityService.hasUserVoted(this.currentUser.uid, this.pollQuestion.pollId)
+      .then(result => {
+        if (result.voted) {
+          this.hasVoted = true;
+          this.votedOption = result.selectedOption || '';
+          this.showForm = false;
+          this.showPollResult = true;
+        }
+      })
+      .catch(err => console.warn('Vote status check failed:', err));
   }
 
   async submit() {
@@ -105,13 +159,15 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
               ),
               [UI_MESSAGES.SUCCESS_CTA_TEXT]
             );
+
+            // Log poll vote activity for authenticated users (must be before form reset)
+            this.logPollVote();
+
             this.wiofPollsForm.reset();
             this.showPollResult = true;
             this.showForm = false;
             // refresh results after successful vote
             this.loadResults();
-            // Log poll vote activity for authenticated users (fire-and-forget)
-            this.logPollVote();
           },
           (error) => {
             this.loader.dismiss();
@@ -150,17 +206,29 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
   }
 
   private logPollVote(): void {
-    this.authService.isAuthenticated$.pipe(first()).subscribe(isAuth => {
-      if (!isAuth) return;
-      this.authService.currentUser$.pipe(first()).subscribe(user => {
-        if (!user) return;
-        this.activityService.logActivity({
-          activityType: 'poll_vote',
-          contentId: this.pollQuestion?.pollId || '',
-          userId: user.uid
-        }).catch(err => console.warn('Poll vote activity logging failed:', err));
-      });
-    });
+    if (!this.isAuthenticated || !this.currentUser) return;
+
+    const selectedOptionKey = this.wiofPollsForm.get('option')?.value;
+    // Resolve the option text from the poll question options array
+    // option values are 'option1', 'option2', etc.
+    const optionIndex = selectedOptionKey ? parseInt(selectedOptionKey.replace('option', ''), 10) - 1 : -1;
+    const selectedOptionText = (optionIndex >= 0 && this.pollQuestion?.options)
+      ? this.pollQuestion.options[optionIndex] || selectedOptionKey
+      : selectedOptionKey || '';
+
+    const userEmail = this.currentUser.email || '';
+
+    this.activityService.logPollVote(
+      this.currentUser.uid,
+      this.pollQuestion?.pollId || '',
+      selectedOptionText,
+      userEmail,
+      this.pollQuestion?.question || ''
+    ).then(() => {
+      // Mark as voted locally after successful log
+      this.hasVoted = true;
+      this.votedOption = selectedOptionText;
+    }).catch(err => console.warn('Poll vote activity logging failed:', err));
   }
 
   ngOnDestroy(): void {

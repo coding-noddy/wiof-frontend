@@ -94,6 +94,7 @@ export class AuthService {
    * Signs out the current user from both auth layers.
    */
   logout() {
+    this.userProfileService.clearRoleCache();
     this.modularAuth.signOut();
     this.afAuth.signOut();
   }

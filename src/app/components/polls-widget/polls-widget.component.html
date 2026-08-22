@@ -7,7 +7,13 @@
   </ion-card-header>
 
   <ion-card-content class="wiof-polls-widget-card-background">
-    <div *ngIf="showForm" class="polls-container">
+    <!-- Already voted indicator for authenticated users -->
+    <div *ngIf="hasVoted" class="poll-voted-indicator">
+      <div class="voted-icon">✓</div>
+      <div class="voted-message">You voted for: <strong>{{ votedOption }}</strong></div>
+    </div>
+
+    <div *ngIf="showForm && !hasVoted" class="polls-container">
       <form [formGroup]="wiofPollsForm" (submit)="submit()" class="poll-form">
         <div class="poll-question">
           <div class="question-label">Poll Question</div>
@@ -45,7 +51,19 @@
         </div>
 
         <div class="poll-footer">
+          <!-- Guest users: show optional email field -->
           <input
+            *ngIf="!isAuthenticated"
+            formControlName="email"
+            id="email"
+            name="email"
+            placeholder="Email (optional)"
+            class="poll-widget-name-input"
+          />
+
+          <!-- Guest users: show name input -->
+          <input
+            *ngIf="!isAuthenticated"
             formControlName="name"
             id="name"
             name="name"

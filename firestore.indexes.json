@@ -50,6 +50,24 @@
         { "fieldPath": "contentId", "order": "ASCENDING" },
         { "fieldPath": "calendarDay", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "activity_log",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "activityType", "order": "ASCENDING" },
+        { "fieldPath": "timestamp", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "activity_log",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "activityType", "order": "ASCENDING" },
+        { "fieldPath": "contentId", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

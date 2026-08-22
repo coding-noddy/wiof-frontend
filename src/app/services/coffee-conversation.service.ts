@@ -11,6 +11,7 @@ import {
   YOUTUBE_EMBED_VIDEO_LINK
 } from '../app.constants';
 import { CoffeeConversation } from '../models/CoffeeConversation';
+import { AdminWriteGuardService } from './admin-write-guard.service';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,8 @@ export class CoffeeConversationService {
 
   constructor(
     private database: AngularFirestore,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private adminWriteGuard: AdminWriteGuardService
   ) {
     this.ccCollection = this.database.collection(
       FIREBASE_COLLECTION.COFFEE_CONVERSATIONS
@@ -29,15 +31,17 @@ export class CoffeeConversationService {
   }
 
   saveCoffeeConversation(coffeeConversation: CoffeeConversation) {
-    let coffeeConversation$ = null;
-    if (coffeeConversation.ccId !== null) {
-      coffeeConversation$ = this.ccCollection
-        .doc(coffeeConversation.ccId)
-        .update({ ...coffeeConversation });
-    } else {
-      coffeeConversation$ = this.ccCollection.add({ ...coffeeConversation });
-    }
-    return from(coffeeConversation$);
+    return from(
+      this.adminWriteGuard.assertAdmin().then((): any => {
+        if (coffeeConversation.ccId !== null) {
+          return this.ccCollection
+            .doc(coffeeConversation.ccId)
+            .update({ ...coffeeConversation });
+        } else {
+          return this.ccCollection.add({ ...coffeeConversation });
+        }
+      })
+    );
   }
 
   getCoffeeConversations(category?: string): Observable<CoffeeConversation[]> {
@@ -65,7 +69,11 @@ export class CoffeeConversationService {
   }
 
   deleteCoffeeConversation(ccId: string) {
-    return from(this.ccCollection.doc(ccId).delete());
+    return from(
+      this.adminWriteGuard.assertAdmin().then(() =>
+        this.ccCollection.doc(ccId).delete()
+      )
+    );
   }
 
   setViewEditModeCoffeeConversation(coffeeConversation: CoffeeConversation) {

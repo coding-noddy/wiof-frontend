@@ -14,6 +14,7 @@ export interface UserProfile {
   displayName: string;           // Max 100 characters
   email: string;
   photoURL: string;
+  role: 'admin' | 'public';     // User role for access control
   joinedDate: firebase.firestore.Timestamp;
   preferredElements: string[];   // Max 5 items
   lastLogin: firebase.firestore.Timestamp;
@@ -92,6 +93,8 @@ export function computeStreakUpdate(
 })
 export class UserProfileService {
 
+  private roleCache: Map<string, 'admin' | 'public'> = new Map();
+
   constructor(private firestore: AngularFirestore) {}
 
   /**
@@ -106,6 +109,48 @@ export class UserProfileService {
   }
 
   /**
+   * Returns the user's role, using session cache.
+   * Legacy profiles without a role field default to 'public'.
+   */
+  async getRole(uid: string): Promise<'admin' | 'public'> {
+    const cached = this.roleCache.get(uid);
+    if (cached) {
+      return cached;
+    }
+
+    try {
+      const snapshot = await this.firestore
+        .collection(FIREBASE_COLLECTION.USERS)
+        .doc<UserProfile>(uid)
+        .ref.get();
+
+      const data = snapshot.data();
+      const role: 'admin' | 'public' = (data?.role === 'admin') ? 'admin' : 'public';
+      this.roleCache.set(uid, role);
+      return role;
+    } catch (error) {
+      // If Firestore is unavailable, default to 'public' for safety
+      return 'public';
+    }
+  }
+
+  /**
+   * Clears the role cache (called on logout).
+   */
+  clearRoleCache(): void {
+    this.roleCache.clear();
+  }
+
+  /**
+   * Strips the `role` field from any update payload to prevent
+   * client-side role modifications.
+   */
+  sanitizeUpdate(payload: Partial<UserProfile>): Partial<UserProfile> {
+    const { role, ...sanitized } = payload;
+    return sanitized;
+  }
+
+  /**
    * Creates a new user profile document from a Firebase user object.
    * Sets initial values for engagement fields.
    */
@@ -117,6 +162,7 @@ export class UserProfileService {
       displayName: (user.displayName || '').substring(0, 100),
       email: user.email || '',
       photoURL: user.photoURL || '',
+      role: 'public' as const,
       joinedDate: now,
       preferredElements: [],
       lastLogin: now,
@@ -140,7 +186,7 @@ export class UserProfileService {
     await this.firestore
       .collection(FIREBASE_COLLECTION.USERS)
       .doc(uid)
-      .ref.update({
+      .update({
         loginCount: firebase.firestore.FieldValue.increment(1),
         lastLogin: new Date()
       });
@@ -187,7 +233,7 @@ export class UserProfileService {
       updatePayload['currentStreak'] = firebase.firestore.FieldValue.increment(streakUpdate.currentStreak);
     }
 
-    await docRef.ref.update(updatePayload);
+    await docRef.update(updatePayload);
   }
 
   /**
