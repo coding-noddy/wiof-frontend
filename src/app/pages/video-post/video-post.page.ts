@@ -7,6 +7,7 @@ import { takeUntil, first } from 'rxjs/operators';
 import { YOUTUBE_EMBED_VIDEO_LINK } from 'src/app/app.constants';
 import { ActivityService } from 'src/app/services/activity.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { VideoWatchCompleteEvent } from 'src/app/directives/youtube-watch-tracker.directive';
 
 @Component({
   selector: 'app-video-post',
@@ -59,7 +60,7 @@ export class VideoPostPage implements OnInit, OnDestroy {
             });
           });
 
-        // Log activity for authenticated users (fire-and-forget)
+        // Log video page view for authenticated users (fire-and-forget)
         this.logVideoView(this.id);
       }
     });
@@ -76,6 +77,21 @@ export class VideoPostPage implements OnInit, OnDestroy {
           userId: user.uid
         }).catch(err => console.warn('Video view activity logging failed:', err));
       });
+    });
+  }
+
+  /**
+   * Handles the watchComplete event from YoutubeWatchTrackerDirective.
+   */
+  onWatchComplete(event: VideoWatchCompleteEvent): void {
+    this.authService.currentUser$.pipe(first()).subscribe(user => {
+      if (!user) return;
+      this.activityService.logVideoWatchComplete(
+        user.uid,
+        event.contentId,
+        event.watchPercent,
+        event.videoTitle
+      ).catch(err => console.warn('Video watch complete logging failed:', err));
     });
   }
 

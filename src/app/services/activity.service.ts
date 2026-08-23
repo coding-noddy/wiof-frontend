@@ -10,7 +10,7 @@ import { QualityReadEntry, EqHistoryEntry, PollHistoryEntry } from '../models/en
 
 export interface ActivityLogInput {
   userId: string;
-  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'poll_vote' | 'eq_completion' | 'widget_usage';
+  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage';
   contentId?: string;
   widgetName?: string;
   score?: number;
@@ -28,7 +28,7 @@ export interface ActivityLogInput {
 export interface ActivityLogEntry {
   id?: string;
   userId: string;
-  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'poll_vote' | 'eq_completion' | 'widget_usage';
+  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage';
   contentId?: string;
   contentTitle?: string;      // human-readable title (poll question, blog title, etc.)
   widgetName?: string;
@@ -49,9 +49,11 @@ export interface ActivityLogEntry {
 export interface EngagementMetrics {
   blogsRead: number;
   videosWatched: number;
+  videosCompleted: number;
   pollsVoted: number;
   lastEqScore: number | null;
   lastEqDate: Date | null;
+  lastBlogReadDate: Date | null;
 }
 
 /**
@@ -215,6 +217,59 @@ export class ActivityService {
   }
 
   /**
+   * Logs a video_watch_complete activity with deduplication.
+   * Only one entry per userId+contentId is ever written (lifetime dedup).
+   * Uses RateLimiterService to throttle writes; on throttle, schedules a retry.
+   */
+  async logVideoWatchComplete(userId: string, contentId: string, watchPercent: number, videoTitle?: string): Promise<void> {
+    try {
+      const existingSnapshot = await this.firestore
+        .collection(FIREBASE_COLLECTION.ACTIVITY_LOG, ref =>
+          ref
+            .where('userId', '==', userId)
+            .where('activityType', '==', 'video_watch_complete')
+            .where('contentId', '==', contentId)
+            .limit(1)
+        )
+        .get()
+        .toPromise();
+
+      if (existingSnapshot && existingSnapshot.docs.length > 0) {
+        return;
+      }
+    } catch (error) {
+      console.warn('Video watch complete dedup check failed, allowing write:', error);
+    }
+
+    const calendarDay = toCalendarDay(new Date());
+    const logEntry: Omit<ActivityLogEntry, 'id'> = {
+      userId,
+      activityType: 'video_watch_complete',
+      contentId,
+      contentTitle: videoTitle || contentId,
+      scrollDepth: Math.floor(watchPercent), // reuse scrollDepth field for watch percentage
+      timestamp: new Date(),
+      calendarDay
+    };
+
+    const rateLimitKey = `activity_log_${userId}`;
+
+    const writeFn = async (): Promise<void> => {
+      await this.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
+    };
+
+    if (this.rateLimiter.canWrite(rateLimitKey)) {
+      try {
+        await writeFn();
+      } catch (error) {
+        console.warn('Video watch complete logging failed:', error);
+      }
+    } else {
+      this.rateLimiter.scheduleRetry(rateLimitKey, writeFn);
+    }
+  }
+
+  /**
    * Logs an EQ assessment completion with dimension breakdowns.
    * Each completion creates a new entry — no deduplication (multiple completions allowed).
    * Uses RateLimiterService to throttle writes; on throttle, schedules a retry.
@@ -365,6 +420,8 @@ export class ActivityService {
     let pollsVoted = 0;
     let lastEqScore: number | null = null;
     let lastEqDate: Date | null = null;
+    let lastBlogReadDate: Date | null = null;
+    const uniqueVideosCompleted = new Set<string>();
 
     for (const entry of entries) {
       switch (entry.activityType) {
@@ -372,10 +429,19 @@ export class ActivityService {
           if (entry.contentId) {
             uniqueBlogs.add(entry.contentId);
           }
+          // Entries are ordered by timestamp desc, so first blog_read is most recent
+          if (lastBlogReadDate === null) {
+            lastBlogReadDate = entry.timestamp?.toDate ? entry.timestamp.toDate() : (entry.timestamp ? new Date(entry.timestamp) : null);
+          }
           break;
         case 'video_view':
           if (entry.contentId) {
             uniqueVideos.add(entry.contentId);
+          }
+          break;
+        case 'video_watch_complete':
+          if (entry.contentId) {
+            uniqueVideosCompleted.add(entry.contentId);
           }
           break;
         case 'poll_vote':
@@ -394,9 +460,11 @@ export class ActivityService {
     return {
       blogsRead: uniqueBlogs.size,
       videosWatched: uniqueVideos.size,
+      videosCompleted: uniqueVideosCompleted.size,
       pollsVoted,
       lastEqScore,
-      lastEqDate
+      lastEqDate,
+      lastBlogReadDate
     };
   }
 

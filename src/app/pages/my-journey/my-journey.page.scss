@@ -51,6 +51,7 @@ $streak-color: #f59e0b;
   border-radius: $card-radius;
   box-shadow: $card-shadow;
   border: 1px solid rgba(255, 255, 255, 0.6);
+  border-top: 3px solid transparent;
   padding: 1rem;
   text-align: center;
   position: relative;
@@ -94,17 +95,45 @@ $streak-color: #f59e0b;
     position: absolute;
     top: 0.6rem;
     right: 0.6rem;
-    font-size: 1rem;
-    color: rgba(0, 0, 0, 0.1);
+    font-size: 1.1rem;
+    opacity: 0.7;
+  }
+
+  // ─── Per-card accent colors ─────────────────────────
+  &.blogs-card {
+    border-top-color: #3b82f6;
+    .metric-icon { color: #3b82f6; }
+    .metric-value { color: #2563eb; }
+  }
+
+  &.videos-card {
+    border-top-color: #8b5cf6;
+    .metric-icon { color: #8b5cf6; }
+    .metric-value { color: #7c3aed; }
+  }
+
+  &.polls-card {
+    border-top-color: #10b981;
+    .metric-icon { color: #10b981; }
+    .metric-value { color: #059669; }
+  }
+
+  &.eq-card {
+    border-top-color: #f43f5e;
+    .metric-icon { color: #f43f5e; }
+    .metric-value { color: #e11d48; }
+  }
+
+  &.saved-metric-card {
+    border-top-color: #f59e0b;
+    .metric-icon { color: #f59e0b; }
+    .metric-value { color: #d97706; }
   }
 
   &.streak-card {
-    .metric-value {
-      color: $streak-color;
-    }
-    .metric-icon {
-      color: rgba($streak-color, 0.2);
-    }
+    border-top-color: #f97316;
+    .metric-icon { color: #f97316; }
+    .metric-value { color: #ea580c; }
   }
 }
 
@@ -559,62 +588,183 @@ $streak-color: #f59e0b;
   }
 }
 
-// ─── EQ Latest Score (Prominent) ─────────────────────────────────────────────
-.eq-latest {
+// ─── EQ Top Row (Score + Chart side by side) ─────────────────────────────────
+.eq-top-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.eq-score-card {
   text-align: center;
-  padding: 1rem;
+  padding: 1.25rem 1rem;
   background: rgba($accent-color, 0.04);
   border-radius: 10px;
-  margin-bottom: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
-  .eq-latest-score {
-    font-size: 2.5rem;
+  .eq-score-big {
+    font-size: 2.8rem;
     font-weight: 800;
     color: $accent-color;
-    line-height: 1.1;
+    line-height: 1;
+
+    .eq-score-max {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: $body-color;
+    }
   }
 
-  .eq-latest-label {
+  .eq-score-label {
     font-size: 0.8rem;
     font-weight: 600;
     color: $body-color;
-    margin-top: 0.15rem;
+    margin-top: 0.3rem;
   }
 
-  .eq-latest-date {
+  .eq-score-date {
     font-size: 0.72rem;
     color: lighten($body-color, 15%);
     margin-top: 0.15rem;
   }
+}
 
-  .eq-dimensions {
+.eq-trend-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.6rem;
+  padding: 5px 12px;
+  border-radius: 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  ion-icon {
+    font-size: 0.9rem;
+  }
+
+  &.trend-up {
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+  }
+
+  &.trend-down {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+  }
+
+  &.trend-neutral {
+    background: rgba(0, 0, 0, 0.05);
+    color: $body-color;
+  }
+}
+
+.eq-chart-card {
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+
+  .eq-chart-title {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: $body-color;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.4rem;
+  }
+
+  .eq-chart-svg {
+    width: 100%;
+    flex: 1;
+    min-height: 90px;
+  }
+
+  .eq-chart-dates {
     display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    margin-top: 0.75rem;
+    justify-content: space-between;
+    padding-top: 0.3rem;
+    font-size: 0.65rem;
+    color: lighten($body-color, 20%);
+  }
+}
 
-    .eq-dimension {
-      text-align: center;
+// ─── EQ Dimensions with Progress Bars ────────────────────────────────────────
+.eq-dims-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
 
-      .eq-dimension-value {
-        display: block;
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: $heading-color;
-      }
+  @media (max-width: 480px) {
+    flex-direction: column;
+  }
+}
 
-      .eq-dimension-label {
-        display: block;
-        font-size: 0.68rem;
-        color: $body-color;
-        margin-top: 0.1rem;
-      }
-    }
+.eq-dim-item {
+  flex: 1;
+  padding: 0.6rem 0.75rem;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+
+  .eq-dim-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.35rem;
+  }
+
+  .eq-dim-name {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: $heading-color;
+  }
+
+  .eq-dim-score {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: $body-color;
+  }
+}
+
+.eq-dim-bar {
+  height: 6px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.eq-dim-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s ease;
+  background: $accent-color;
+
+  &.attention {
+    background: #8b5cf6;
+  }
+
+  &.clarity {
+    background: #06b6d4;
+  }
+
+  &.reparation {
+    background: #f59e0b;
   }
 }
 
 // ─── EQ Previous Scores ──────────────────────────────────────────────────────
 .eq-previous {
+  margin-top: 0.75rem;
+
   .eq-score-badge {
     display: inline-flex;
     align-items: center;
@@ -626,6 +776,36 @@ $streak-color: #f59e0b;
     color: $accent-color;
     font-size: 0.82rem;
     font-weight: 700;
+  }
+}
+
+// ─── Collapsible Toggle ───────────────────────────────────────────────────────
+.collapsible-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.6rem 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: $body-color;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+
+  ion-icon {
+    font-size: 1rem;
+    color: $body-color;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover {
+    color: $accent-color;
+
+    ion-icon {
+      color: $accent-color;
+    }
   }
 }
 

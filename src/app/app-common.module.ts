@@ -39,6 +39,7 @@ import { SectionNavComponent } from './components/section-nav/section-nav.compon
 import { AvatarDropdownComponent } from './components/avatar-dropdown/avatar-dropdown.component';
 import { BookmarkIconComponent } from './components/bookmark-icon/bookmark-icon.component';
 import { BlogReadTrackerDirective } from './directives/blog-read-tracker.directive';
+import { YoutubeWatchTrackerDirective } from './directives/youtube-watch-tracker.directive';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 const COMPONENTS = [
@@ -78,7 +79,8 @@ const COMPONENTS = [
   SectionNavComponent,
   AvatarDropdownComponent,
   BookmarkIconComponent,
-  BlogReadTrackerDirective
+  BlogReadTrackerDirective,
+  YoutubeWatchTrackerDirective
 ];
 
 @NgModule({

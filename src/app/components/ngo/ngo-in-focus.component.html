@@ -30,6 +30,10 @@
                   [title]="ngoInFocus.ngoName"
                   [src]="ngoInFocus.sanitizedLink"
                   allowfullscreen
+                  appYoutubeWatchTracker
+                  [contentId]="ngoInFocus.id || ngoInFocus.ngoName"
+                  [videoTitle]="ngoInFocus.ngoName"
+                  (watchComplete)="onVideoWatchComplete($event)"
                 ></iframe>
               </div>
             </div>

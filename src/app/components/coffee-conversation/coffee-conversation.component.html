@@ -28,6 +28,10 @@
                     [title]="coffeeConv.topic"
                     [src]="coffeeConv.sanitizedLink"
                     allowfullscreen
+                    appYoutubeWatchTracker
+                    [contentId]="coffeeConv.id || coffeeConv.topic"
+                    [videoTitle]="coffeeConv.topic"
+                    (watchComplete)="onVideoWatchComplete($event)"
                   ></iframe>
                 </ion-col>
                 <ion-col

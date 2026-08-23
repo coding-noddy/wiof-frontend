@@ -39,6 +39,7 @@ export class MyJourneyPage implements OnInit, OnDestroy {
   eqHistory: EqHistoryEntry[] = [];
   eqHistoryLoading = true;
   eqHistoryError = false;
+  eqPreviousExpanded = false;
 
   // Poll History section
   pollHistory: PollHistoryEntry[] = [];
@@ -54,6 +55,14 @@ export class MyJourneyPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    // Initial load handled by ionViewWillEnter
+  }
+
+  /**
+   * Ionic lifecycle hook — fires every time the page becomes visible,
+   * including back-navigation. Ensures fresh data on every visit.
+   */
+  ionViewWillEnter(): void {
     this.loadData();
   }
 
@@ -164,9 +173,11 @@ export class MyJourneyPage implements OnInit, OnDestroy {
           this.metrics = {
             blogsRead: 0,
             videosWatched: 0,
+            videosCompleted: 0,
             pollsVoted: 0,
             lastEqScore: null,
-            lastEqDate: null
+            lastEqDate: null,
+            lastBlogReadDate: null
           };
           this.checkLoadingComplete();
         }
@@ -333,6 +344,20 @@ export class MyJourneyPage implements OnInit, OnDestroy {
   }
 
   /**
+   * Formats the last blog read date for display.
+   */
+  getFormattedLastBlogDate(): string {
+    if (!this.metrics?.lastBlogReadDate) {
+      return '';
+    }
+    return this.metrics.lastBlogReadDate.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  }
+
+  /**
    * Formats a Date object for display in history sections.
    */
   formatDate(date: Date): string {
@@ -354,6 +379,96 @@ export class MyJourneyPage implements OnInit, OnDestroy {
     if (mins === 0) return `${secs} sec`;
     if (secs === 0) return `${mins} min`;
     return `${mins} min ${secs} sec`;
+  }
+
+  /**
+   * Formats a date as short (e.g., "Jan 5").
+   */
+  formatDateShort(date: Date): string {
+    if (!date) return '';
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
+  /**
+   * Returns a comparison message between latest and previous EQ score.
+   */
+  getEqComparisonMessage(): string {
+    if (this.eqHistory.length < 2) return '';
+    const current = this.eqHistory[0].overallScore;
+    const previous = this.eqHistory[1].overallScore;
+    const diff = current - previous;
+
+    if (diff > 0) return `↑ ${diff} points from last time — great progress!`;
+    if (diff < 0) return `↓ ${Math.abs(diff)} points from last time — keep practicing`;
+    return 'Same score as last time — staying steady';
+  }
+
+  /**
+   * Returns CSS class for the EQ trend indicator.
+   */
+  getEqTrendClass(): string {
+    if (this.eqHistory.length < 2) return '';
+    const diff = this.eqHistory[0].overallScore - this.eqHistory[1].overallScore;
+    if (diff > 0) return 'trend-up';
+    if (diff < 0) return 'trend-down';
+    return 'trend-neutral';
+  }
+
+  /**
+   * Returns icon name for the EQ trend indicator.
+   */
+  getEqTrendIcon(): string {
+    if (this.eqHistory.length < 2) return 'remove-outline';
+    const diff = this.eqHistory[0].overallScore - this.eqHistory[1].overallScore;
+    if (diff > 0) return 'trending-up-outline';
+    if (diff < 0) return 'trending-down-outline';
+    return 'remove-outline';
+  }
+
+  /**
+   * Generates SVG sparkline points string from EQ history (oldest to newest).
+   */
+  getEqSparklinePoints(): string {
+    if (this.eqHistory.length < 2) return '';
+    // Reverse to show oldest → newest (left to right)
+    const scores = [...this.eqHistory].reverse().map(e => e.overallScore);
+    const points = this.getEqChartPoints();
+    return points.map(p => `${p.x},${p.y}`).join(' ');
+  }
+
+  /**
+   * Returns chart point coordinates for the sparkline SVG (260x100 viewBox).
+   */
+  getEqChartPoints(): { x: number; y: number }[] {
+    if (this.eqHistory.length < 2) return [];
+    const scores = [...this.eqHistory].reverse().map(e => e.overallScore);
+    const count = scores.length;
+    const leftPadding = 22;
+    const rightPadding = 15;
+    const topPadding = 15;
+    const bottomPadding = 15;
+    const width = 260 - leftPadding - rightPadding;
+    const height = 100 - topPadding - bottomPadding;
+    const minScore = 24;
+    const maxScore = 120;
+
+    return scores.map((score, i) => ({
+      x: leftPadding + (i / (count - 1)) * width,
+      y: topPadding + height - ((score - minScore) / (maxScore - minScore)) * height
+    }));
+  }
+
+  /**
+   * Returns SVG polygon points for the area fill under the chart line.
+   */
+  getEqAreaPoints(): string {
+    const points = this.getEqChartPoints();
+    if (points.length < 2) return '';
+    const bottomY = 85; // bottom of chart area
+    const linePoints = points.map(p => `${p.x},${p.y}`).join(' ');
+    const lastX = points[points.length - 1].x;
+    const firstX = points[0].x;
+    return `${linePoints} ${lastX},${bottomY} ${firstX},${bottomY}`;
   }
 
   /** Cache of resolved image URLs */

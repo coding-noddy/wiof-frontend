@@ -115,7 +115,8 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
       .then(result => {
         if (result.voted) {
           this.hasVoted = true;
-          this.votedOption = result.selectedOption || '';
+          // Resolve option key to text if it's a legacy value like "option1"
+          this.votedOption = this.resolveOptionText(result.selectedOption || '');
           this.showForm = false;
           this.showPollResult = true;
         }
@@ -123,6 +124,23 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
       .catch(err => console.warn('Vote status check failed:', err));
   }
 
+  /**
+   * Resolves a poll option value to its display text.
+   * Handles legacy values like "option1", "option2" by looking up the poll question options array.
+   * Returns the value as-is if it's already human-readable text.
+   */
+  private resolveOptionText(value: string): string {
+    if (!value) return '';
+    // Check if it's a legacy key like "option1", "option2", etc.
+    const match = value.match(/^option(\d+)$/);
+    if (match && this.pollQuestion?.options) {
+      const index = parseInt(match[1], 10) - 1;
+      if (index >= 0 && index < this.pollQuestion.options.length) {
+        return this.pollQuestion.options[index];
+      }
+    }
+    return value;
+  }
   async submit() {
     if (this.wiofPollsForm.valid) {
       const poll = Poll.createByForm(

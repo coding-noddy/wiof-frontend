@@ -57,28 +57,31 @@
         <ion-grid>
           <ion-row>
             <ion-col size="6" size-md="4" size-lg="2">
-              <div class="metric-card">
+              <div class="metric-card blogs-card">
                 <div class="metric-value">{{ metrics?.blogsRead ?? 0 }}</div>
-                <div class="metric-label">Blogs Read</div>
+                <div class="metric-label">
+                  Blogs Read
+                  <span *ngIf="metrics?.lastBlogReadDate" class="metric-date">{{ getFormattedLastBlogDate() }}</span>
+                </div>
                 <ion-icon name="newspaper-outline" class="metric-icon"></ion-icon>
               </div>
             </ion-col>
             <ion-col size="6" size-md="4" size-lg="2">
-              <div class="metric-card">
-                <div class="metric-value">{{ metrics?.videosWatched ?? 0 }}</div>
+              <div class="metric-card videos-card">
+                <div class="metric-value">{{ metrics?.videosCompleted ?? 0 }}</div>
                 <div class="metric-label">Videos Watched</div>
                 <ion-icon name="videocam-outline" class="metric-icon"></ion-icon>
               </div>
             </ion-col>
             <ion-col size="6" size-md="4" size-lg="2">
-              <div class="metric-card">
+              <div class="metric-card polls-card">
                 <div class="metric-value">{{ metrics?.pollsVoted ?? 0 }}</div>
                 <div class="metric-label">Polls Voted</div>
                 <ion-icon name="bar-chart-outline" class="metric-icon"></ion-icon>
               </div>
             </ion-col>
             <ion-col size="6" size-md="4" size-lg="2">
-              <div class="metric-card">
+              <div class="metric-card eq-card">
                 <div class="metric-value" *ngIf="metrics?.lastEqScore !== null">{{ metrics?.lastEqScore }}</div>
                 <div class="metric-value muted" *ngIf="metrics?.lastEqScore === null">Not yet taken</div>
                 <div class="metric-label">
@@ -89,7 +92,7 @@
               </div>
             </ion-col>
             <ion-col size="6" size-md="4" size-lg="2">
-              <div class="metric-card">
+              <div class="metric-card saved-metric-card">
                 <div class="metric-value">{{ savedContentCount }}</div>
                 <div class="metric-label">Saved Content</div>
                 <ion-icon name="bookmark-outline" class="metric-icon"></ion-icon>
@@ -202,40 +205,94 @@
 
         <!-- EQ History Content -->
         <div *ngIf="!eqHistoryLoading && !eqHistoryError">
-          <!-- Most Recent Score (prominent display) -->
-          <div *ngIf="eqHistory.length > 0" class="eq-latest">
-            <div class="eq-latest-score">{{ eqHistory[0].overallScore }}</div>
-            <div class="eq-latest-label">Latest EQ Score</div>
-            <div class="eq-latest-date">{{ formatDate(eqHistory[0].date) }}</div>
-            <div class="eq-dimensions">
-              <div class="eq-dimension">
-                <span class="eq-dimension-value">{{ eqHistory[0].attentionScore }}</span>
-                <span class="eq-dimension-label">Attention</span>
+          <div *ngIf="eqHistory.length > 0">
+
+            <!-- Top Row: Score (left) + Chart (right) -->
+            <div class="eq-top-row">
+              <div class="eq-score-card">
+                <div class="eq-score-big">{{ eqHistory[0].overallScore }}<span class="eq-score-max">/120</span></div>
+                <div class="eq-score-label">Latest EQ Score</div>
+                <div class="eq-score-date">{{ formatDate(eqHistory[0].date) }}</div>
+                <div *ngIf="eqHistory.length > 1" class="eq-trend-badge" [ngClass]="getEqTrendClass()">
+                  <ion-icon [name]="getEqTrendIcon()"></ion-icon>
+                  {{ getEqComparisonMessage() }}
+                </div>
               </div>
-              <div class="eq-dimension">
-                <span class="eq-dimension-value">{{ eqHistory[0].clarityScore }}</span>
-                <span class="eq-dimension-label">Clarity</span>
-              </div>
-              <div class="eq-dimension">
-                <span class="eq-dimension-value">{{ eqHistory[0].reparationScore }}</span>
-                <span class="eq-dimension-label">Reparation</span>
+
+              <div class="eq-chart-card" *ngIf="eqHistory.length > 1">
+                <div class="eq-chart-title">Score Trend</div>
+                <svg class="eq-chart-svg" viewBox="0 0 260 100">
+                  <!-- Y-axis labels -->
+                  <text x="4" y="28" class="chart-y-label" font-size="7" fill="#94a3b8">96</text>
+                  <text x="4" y="53" class="chart-y-label" font-size="7" fill="#94a3b8">72</text>
+                  <text x="4" y="78" class="chart-y-label" font-size="7" fill="#94a3b8">48</text>
+                  <!-- Grid lines -->
+                  <line x1="22" y1="25" x2="245" y2="25" stroke="#e2e8f0" stroke-width="0.5" />
+                  <line x1="22" y1="50" x2="245" y2="50" stroke="#e2e8f0" stroke-width="0.5" />
+                  <line x1="22" y1="75" x2="245" y2="75" stroke="#e2e8f0" stroke-width="0.5" />
+                  <!-- Area fill -->
+                  <polygon [attr.points]="getEqAreaPoints()" fill="rgba(59, 130, 246, 0.08)" />
+                  <!-- Line -->
+                  <polyline
+                    [attr.points]="getEqSparklinePoints()"
+                    fill="none"
+                    stroke="#3b82f6"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <!-- Dots -->
+                  <circle *ngFor="let point of getEqChartPoints()" [attr.cx]="point.x" [attr.cy]="point.y" r="4" fill="#fff" stroke="#3b82f6" stroke-width="2" />
+                </svg>
+                <div class="eq-chart-dates">
+                  <span>{{ formatDateShort(eqHistory[eqHistory.length - 1].date) }}</span>
+                  <span>{{ formatDateShort(eqHistory[0].date) }}</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Previous Scores -->
-          <div *ngIf="eqHistory.length > 1" class="eq-previous">
-            <h3 class="subsection-title">Previous Scores</h3>
-            <div class="history-list">
-              <div class="history-item" *ngFor="let entry of eqHistory.slice(1)">
-                <div class="history-item-main">
-                  <span class="eq-score-badge">{{ entry.overallScore }}</span>
-                  <span class="meta-date">{{ formatDate(entry.date) }}</span>
+            <!-- Dimensions with progress bars -->
+            <div class="eq-dims-row">
+              <div class="eq-dim-item">
+                <div class="eq-dim-header">
+                  <span class="eq-dim-name">Attention</span>
+                  <span class="eq-dim-score">{{ eqHistory[0].attentionScore }}/40</span>
                 </div>
-                <div class="history-item-meta">
-                  <span class="meta-tag">A: {{ entry.attentionScore }}</span>
-                  <span class="meta-tag">C: {{ entry.clarityScore }}</span>
-                  <span class="meta-tag">R: {{ entry.reparationScore }}</span>
+                <div class="eq-dim-bar"><div class="eq-dim-bar-fill attention" [style.width.%]="(eqHistory[0].attentionScore / 40) * 100"></div></div>
+              </div>
+              <div class="eq-dim-item">
+                <div class="eq-dim-header">
+                  <span class="eq-dim-name">Clarity</span>
+                  <span class="eq-dim-score">{{ eqHistory[0].clarityScore }}/40</span>
+                </div>
+                <div class="eq-dim-bar"><div class="eq-dim-bar-fill clarity" [style.width.%]="(eqHistory[0].clarityScore / 40) * 100"></div></div>
+              </div>
+              <div class="eq-dim-item">
+                <div class="eq-dim-header">
+                  <span class="eq-dim-name">Reparation</span>
+                  <span class="eq-dim-score">{{ eqHistory[0].reparationScore }}/40</span>
+                </div>
+                <div class="eq-dim-bar"><div class="eq-dim-bar-fill reparation" [style.width.%]="(eqHistory[0].reparationScore / 40) * 100"></div></div>
+              </div>
+            </div>
+
+            <!-- Collapsed previous scores -->
+            <div *ngIf="eqHistory.length > 1" class="eq-previous">
+              <button class="collapsible-toggle" (click)="eqPreviousExpanded = !eqPreviousExpanded">
+                <span>Previous Scores ({{ eqHistory.length - 1 }})</span>
+                <ion-icon [name]="eqPreviousExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+              </button>
+              <div class="history-list" *ngIf="eqPreviousExpanded">
+                <div class="history-item" *ngFor="let entry of eqHistory.slice(1)">
+                  <div class="history-item-main">
+                    <span class="eq-score-badge">{{ entry.overallScore }}</span>
+                    <span class="meta-date">{{ formatDate(entry.date) }}</span>
+                  </div>
+                  <div class="history-item-meta">
+                    <span class="meta-tag">A: {{ entry.attentionScore }}/40</span>
+                    <span class="meta-tag">C: {{ entry.clarityScore }}/40</span>
+                    <span class="meta-tag">R: {{ entry.reparationScore }}/40</span>
+                  </div>
                 </div>
               </div>
             </div>

@@ -9,6 +9,10 @@
         [title]="videoTitle"
         [src]="urlSafe"
         allowfullscreen
+        appYoutubeWatchTracker
+        [contentId]="id"
+        [videoTitle]="videoTitle"
+        (watchComplete)="onWatchComplete($event)"
       ></iframe>
     </div>
 
