@@ -1,0 +1,93 @@
+<app-header></app-header>
+
+<ion-content>
+  <div class="settings-page">
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="hasError && !isLoading" class="error-state">
+      <p class="error-message">Could not load profile data.</p>
+      <ion-button fill="outline" (click)="retry()">Retry</ion-button>
+    </div>
+
+    <!-- Profile Form -->
+    <div *ngIf="!isLoading && !hasError" class="profile-content">
+      <ion-card class="glassmorphism-card">
+        <ion-card-content>
+          <form [formGroup]="profileForm" (ngSubmit)="onSave()">
+
+            <!-- Read-only Email -->
+            <ion-item lines="full">
+              <ion-label position="stacked">Email</ion-label>
+              <ion-label class="read-only-value">{{ userEmail }}</ion-label>
+            </ion-item>
+
+            <!-- Read-only Member Since -->
+            <ion-item lines="full">
+              <ion-label position="stacked">Member Since</ion-label>
+              <ion-label class="read-only-value">{{ memberSince }}</ion-label>
+            </ion-item>
+
+            <!-- Display Name -->
+            <ion-item lines="full">
+              <ion-label position="stacked">Display Name</ion-label>
+              <ion-input
+                formControlName="displayName"
+                type="text"
+                maxlength="100"
+                placeholder="Enter your display name"
+              ></ion-input>
+            </ion-item>
+
+            <!-- Preferred Elements -->
+            <ion-item lines="full">
+              <ion-label position="stacked">Preferred Elements</ion-label>
+              <ion-select
+                formControlName="preferredElements"
+                multiple="true"
+                placeholder="Select elements"
+                (ionChange)="onElementsChange($event)"
+              >
+                <ion-select-option
+                  *ngFor="let element of elementsList"
+                  [value]="element"
+                  [disabled]="isElementDisabled(element)"
+                >{{ element | titlecase }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <!-- Save Button -->
+            <ion-button
+              type="submit"
+              expand="block"
+              [disabled]="profileForm.invalid || isSaving"
+              class="save-button"
+            >
+              {{ isSaving ? 'Saving...' : 'Save' }}
+            </ion-button>
+
+          </form>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Sign Out Button (outside and below the form card) -->
+      <ion-button
+        expand="block"
+        color="medium"
+        fill="outline"
+        [disabled]="isSigningOut"
+        (click)="onSignOut()"
+        class="sign-out-button"
+      >
+        Sign Out
+      </ion-button>
+    </div>
+
+  </div>
+
+  <app-wiof-footer></app-wiof-footer>
+</ion-content>

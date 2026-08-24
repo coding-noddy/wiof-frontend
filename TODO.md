@@ -7,9 +7,34 @@
 
 ## 🔴 WIOF Fixes (Next Sprint)
 
+### Bugs
+- **[HIGH]** Poll section — shows previous user's voted option after logout/login with different account
+  - "You voted for" state is cached and not cleared on logout
+  - Should reset poll vote state on user change so current user sees their own vote (or no vote if they haven't voted)
+
+- another points is when admin sees view mode for blogs and our actual blog view page for users, both should be same as current blogs for our general public right? cause admin sees something different, public see something different that should not happend, during blog editing only admin should clearly know how it will look on actual page
+- another point is on public blogs page, some images might have text which would be too small to read, so either we can add some zoom in option or like firm in focus on home page, we can add image expand option which opens that image in new popup and take decect width height for visibility. Check what's good and recommended
+- Arent the public user activities recorded for admin users, do we need to let them use different public account for their general application use purpose?? what do you suggest, let admin  users use public account also or better they create separate account for that purpose.
+
+
+- **[HIGH]** My Journey page — shows stale data after switching users without page refresh
+  - If My Journey is already open and user logs in with a different account, the page still displays previous user's journey data
+  - Profile icon updates but page content doesn't re-fetch for the new user
+  - Should subscribe to auth state changes and reload journey data when user changes
+
+- **[MED]** Poll votes not being recorded for admin users
+  - Voting as an admin may not persist — needs investigation
+  - Could be a Firestore rules issue or activity_log rate-limiting (`timestamp == request.time`) blocking the write
+
+- some issue with analytics as well, when admin logged in first time,it recorded the visit, when as public user I logged in the chart still shows one user only, note down in TODO
+
+- One more thing is, we should have option to go back to admin dashboard home from analytics page
+- Also in admin dashboard we should be able to see users who have  registered our website, just basic info like, name, email and interested elements in table format like other pages is enough. We can add user block option in future in case some user is abusive, but that we can keep for futuer maybe
+
 ### Admin Dashboard
 - ~~**[HIGH]** Refine admin dashboard — modern card-based UI, better navigation, responsive layout~~ ✅ DONE
 - ~~**[MED]** All admin manage pages — consistent table/card designs, better mobile experience~~ ✅ DONE
+
 
 ### Pending Improvements
 - **[MED]** Environment Calendar — remove external padding, make calendar dates area bigger
@@ -87,6 +112,13 @@
   - ~~Blog service: `getBlogBySlug(slug)`~~ ✅
   - ~~One-time migration script: backfill slugs for existing blogs~~ ✅
   - ~~Route: slug lookup first, fallback to ID~~ ✅
+
+- **[HIGH]** Admin session idle timeout (security)
+  - Auto-logout after 15 min of inactivity on admin routes
+  - Track mouse, keyboard, touch events to detect idle state
+  - Show warning toast ~1 min before logout
+  - Redirect to /login on expiry
+  - Only applies to admin-guarded routes (not public users)
 
 - **[HIGH]** Rich blog content — multiple images in blog body
   - Current: Only one hero image per blog

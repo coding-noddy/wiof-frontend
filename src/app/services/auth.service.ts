@@ -46,6 +46,7 @@ export class AuthService {
    * Existing email/password login for admin access.
    */
   login(email: string, password: string) {
+    this.userProfileService.clearRoleCache();
     return new Promise((resolve, reject) => {
       this.afAuth.signInWithEmailAndPassword(email, password).then(
         (userData) => resolve(userData),
@@ -68,6 +69,7 @@ export class AuthService {
    * then bridges the credential to the compat auth layer so AngularFirestore works.
    */
   async signInWithGoogle(): Promise<any> {
+    this.userProfileService.clearRoleCache();
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(this.modularAuth, provider);
 
@@ -92,11 +94,12 @@ export class AuthService {
 
   /**
    * Signs out the current user from both auth layers.
+   * Returns a Promise that resolves when sign-out completes.
    */
-  logout() {
+  async logout(): Promise<void> {
     this.userProfileService.clearRoleCache();
-    this.modularAuth.signOut();
-    this.afAuth.signOut();
+    await this.modularAuth.signOut();
+    await this.afAuth.signOut();
   }
 
   /**

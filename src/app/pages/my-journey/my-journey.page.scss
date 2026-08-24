@@ -102,36 +102,42 @@ $streak-color: #f59e0b;
   // ─── Per-card accent colors ─────────────────────────
   &.blogs-card {
     border-top-color: #3b82f6;
+    cursor: pointer;
     .metric-icon { color: #3b82f6; }
     .metric-value { color: #2563eb; }
   }
 
   &.videos-card {
     border-top-color: #8b5cf6;
+    cursor: pointer;
     .metric-icon { color: #8b5cf6; }
     .metric-value { color: #7c3aed; }
   }
 
   &.polls-card {
     border-top-color: #10b981;
+    cursor: pointer;
     .metric-icon { color: #10b981; }
     .metric-value { color: #059669; }
   }
 
   &.eq-card {
     border-top-color: #f43f5e;
+    cursor: pointer;
     .metric-icon { color: #f43f5e; }
     .metric-value { color: #e11d48; }
   }
 
   &.saved-metric-card {
     border-top-color: #f59e0b;
+    cursor: pointer;
     .metric-icon { color: #f59e0b; }
     .metric-value { color: #d97706; }
   }
 
   &.streak-card {
     border-top-color: #f97316;
+    cursor: default;
     .metric-icon { color: #f97316; }
     .metric-value { color: #ea580c; }
   }

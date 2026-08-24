@@ -6,7 +6,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { ActivityService, EngagementMetrics } from 'src/app/services/activity.service';
 import { SavedContentService, SavedContentDocument } from 'src/app/services/saved-content.service';
 import { UserProfileService } from 'src/app/services/user-profile.service';
-import { QualityReadEntry, EqHistoryEntry, PollHistoryEntry } from 'src/app/models/engagement-history';
+import { QualityReadEntry, EqHistoryEntry, PollHistoryEntry, VideoWatchHistoryEntry } from 'src/app/models/engagement-history';
 
 @Component({
   selector: 'app-my-journey',
@@ -45,6 +45,22 @@ export class MyJourneyPage implements OnInit, OnDestroy {
   pollHistory: PollHistoryEntry[] = [];
   pollHistoryLoading = true;
   pollHistoryError = false;
+
+  // Video Watch History section
+  videoWatchHistory: VideoWatchHistoryEntry[] = [];
+  videoWatchHistoryLoading = true;
+  videoWatchHistoryError = false;
+
+  /**
+   * Mapping of metric tile identifiers to their target section element IDs.
+   */
+  private readonly sectionMap: Record<string, string> = {
+    'blogs-read': 'quality-reads-section',
+    'videos-watched': 'videos-watched-section',
+    'polls-voted': 'poll-history-section',
+    'eq-score': 'eq-history-section',
+    'saved-content': 'saved-content-section'
+  };
 
   constructor(
     private authService: AuthService,
@@ -96,6 +112,7 @@ export class MyJourneyPage implements OnInit, OnDestroy {
           this.loadQualityReads(user.uid);
           this.loadEqHistory(user.uid);
           this.loadPollHistory(user.uid);
+          this.loadVideoWatchHistory(user.uid);
         },
         error: () => {
           this.isLoading = false;
@@ -112,9 +129,31 @@ export class MyJourneyPage implements OnInit, OnDestroy {
   }
 
   /**
+   * Scrolls smoothly to the detail section corresponding to the given tile key.
+   * Does nothing if the page is loading, in error state, or the tile has no target.
+   */
+  scrollToSection(tileKey: string): void {
+    if (this.isLoading || this.hasError) {
+      return;
+    }
+
+    const sectionId = this.sectionMap[tileKey];
+    if (!sectionId) {
+      return;
+    }
+
+    const element = document.getElementById(sectionId);
+    if (!element) {
+      return;
+    }
+
+    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /**
    * Retry loading a specific section.
    */
-  retrySection(section: 'qualityReads' | 'eqHistory' | 'pollHistory'): void {
+  retrySection(section: 'qualityReads' | 'eqHistory' | 'pollHistory' | 'videoWatchHistory'): void {
     this.authService.currentUser$
       .pipe(first(user => user !== null), takeUntil(this.destroy$))
       .subscribe(user => {
@@ -128,6 +167,9 @@ export class MyJourneyPage implements OnInit, OnDestroy {
             break;
           case 'pollHistory':
             this.loadPollHistory(user.uid);
+            break;
+          case 'videoWatchHistory':
+            this.loadVideoWatchHistory(user.uid);
             break;
         }
       });
@@ -306,6 +348,31 @@ export class MyJourneyPage implements OnInit, OnDestroy {
           console.warn('Failed to load poll history:', err);
           this.pollHistoryLoading = false;
           this.pollHistoryError = true;
+        }
+      });
+  }
+
+  /**
+   * Loads video watch history entries for the user (independent section).
+   */
+  private loadVideoWatchHistory(userId: string): void {
+    this.videoWatchHistoryLoading = true;
+    this.videoWatchHistoryError = false;
+
+    this.activityService.getVideoWatchHistory(userId)
+      .pipe(
+        first(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (entries) => {
+          this.videoWatchHistory = entries;
+          this.videoWatchHistoryLoading = false;
+        },
+        error: (err) => {
+          console.warn('Failed to load video watch history:', err);
+          this.videoWatchHistoryLoading = false;
+          this.videoWatchHistoryError = true;
         }
       });
   }

@@ -184,6 +184,13 @@ const routes: Routes = [
       import('./subscribers/subscribers.module').then(
         (m) => m.SubscribersPageModule
       )
+  },
+  {
+    path: 'analytics',
+    loadChildren: () =>
+      import('./analytics/analytics.module').then(
+        (m) => m.AnalyticsPageModule
+      )
   }
 ];
 

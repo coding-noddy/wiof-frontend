@@ -4,6 +4,7 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Meta, MetaDefinition } from '@angular/platform-browser';
 import { Platform } from '@ionic/angular';
 import { filter, first } from 'rxjs/operators';
+import { ActivityService } from './services/activity.service';
 import { AuthService } from './services/auth.service';
 import { UserProfileService } from './services/user-profile.service';
 
@@ -19,7 +20,8 @@ export class AppComponent implements OnInit {
     private statusBar: StatusBar,
     private metaService: Meta,
     private authService: AuthService,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private activityService: ActivityService
   ) {
     this.initializeApp();
     // this.addMetaTags();
@@ -34,6 +36,10 @@ export class AppComponent implements OnInit {
     ).subscribe(user => {
       this.userProfileService.recordVisit(user!.uid).catch(err => {
         console.warn('Visit recording failed:', err);
+      });
+      // New daily visit activity log
+      this.activityService.logDailyVisit(user!.uid).catch(err => {
+        console.warn('Daily visit logging failed:', err);
       });
     });
   }

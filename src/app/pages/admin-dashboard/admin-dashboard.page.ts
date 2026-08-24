@@ -89,6 +89,13 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
       icon: 'mail-outline',
       color: 'linear-gradient(135deg, #fdfcfb, #e2d1c3)',
       description: 'View and export subscriber list'
+    },
+    {
+      name: 'Analytics',
+      route: 'analytics',
+      icon: 'analytics-outline',
+      color: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+      description: 'Daily visits and engagement charts'
     }
   ];
 

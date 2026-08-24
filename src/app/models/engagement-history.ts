@@ -35,3 +35,13 @@ export interface PollHistoryEntry {
   selectedOption: string;
   voteDate: Date;
 }
+
+/**
+ * Represents a completed video watch entry displayed in the Videos Watched section.
+ */
+export interface VideoWatchHistoryEntry {
+  contentId: string;
+  videoTitle: string;
+  watchPercent: number;   // 0-100 integer percentage
+  completedDate: Date;
+}

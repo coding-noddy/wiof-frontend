@@ -57,7 +57,7 @@
         <ion-grid>
           <ion-row>
             <ion-col size="6" size-md="4" size-lg="2">
-              <div class="metric-card blogs-card">
+              <div class="metric-card blogs-card" (click)="scrollToSection('blogs-read')">
                 <div class="metric-value">{{ metrics?.blogsRead ?? 0 }}</div>
                 <div class="metric-label">
                   Blogs Read
@@ -67,21 +67,21 @@
               </div>
             </ion-col>
             <ion-col size="6" size-md="4" size-lg="2">
-              <div class="metric-card videos-card">
+              <div class="metric-card videos-card" (click)="scrollToSection('videos-watched')">
                 <div class="metric-value">{{ metrics?.videosCompleted ?? 0 }}</div>
                 <div class="metric-label">Videos Watched</div>
                 <ion-icon name="videocam-outline" class="metric-icon"></ion-icon>
               </div>
             </ion-col>
             <ion-col size="6" size-md="4" size-lg="2">
-              <div class="metric-card polls-card">
+              <div class="metric-card polls-card" (click)="scrollToSection('polls-voted')">
                 <div class="metric-value">{{ metrics?.pollsVoted ?? 0 }}</div>
                 <div class="metric-label">Polls Voted</div>
                 <ion-icon name="bar-chart-outline" class="metric-icon"></ion-icon>
               </div>
             </ion-col>
             <ion-col size="6" size-md="4" size-lg="2">
-              <div class="metric-card eq-card">
+              <div class="metric-card eq-card" (click)="scrollToSection('eq-score')">
                 <div class="metric-value" *ngIf="metrics?.lastEqScore !== null">{{ metrics?.lastEqScore }}</div>
                 <div class="metric-value muted" *ngIf="metrics?.lastEqScore === null">Not yet taken</div>
                 <div class="metric-label">
@@ -92,7 +92,7 @@
               </div>
             </ion-col>
             <ion-col size="6" size-md="4" size-lg="2">
-              <div class="metric-card saved-metric-card">
+              <div class="metric-card saved-metric-card" (click)="scrollToSection('saved-content')">
                 <div class="metric-value">{{ savedContentCount }}</div>
                 <div class="metric-label">Saved Content</div>
                 <ion-icon name="bookmark-outline" class="metric-icon"></ion-icon>
@@ -120,7 +120,7 @@
       </div>
 
       <!-- Quality Reads Section -->
-      <div class="history-section" *ngIf="!allSectionsFailed">
+      <div class="history-section" id="quality-reads-section" *ngIf="!allSectionsFailed">
         <h2 class="section-title">
           <ion-icon name="checkmark-done-outline" class="section-icon"></ion-icon>
           Quality Reads
@@ -148,7 +148,7 @@
           <div class="quality-metrics-row">
             <div class="quality-metric">
               <span class="quality-metric-value">{{ metrics?.blogsRead ?? 0 }}</span>
-              <span class="quality-metric-label">Pages Opened</span>
+              <span class="quality-metric-label">Blogs Opened</span>
             </div>
             <div class="quality-metric highlight">
               <span class="quality-metric-value">{{ qualityReadCount }}</span>
@@ -179,8 +179,100 @@
         </div>
       </div>
 
+      <!-- Videos Watched Section -->
+      <div class="history-section" id="videos-watched-section" *ngIf="!allSectionsFailed">
+        <h2 class="section-title">
+          <ion-icon name="videocam-outline" class="section-icon"></ion-icon>
+          Videos Watched
+        </h2>
+
+        <!-- Videos Watched Loading Skeleton -->
+        <div *ngIf="videoWatchHistoryLoading" class="section-skeleton">
+          <div class="skeleton-row" *ngFor="let i of [1,2,3]">
+            <div class="skeleton" style="height: 14px; width: 65%; border-radius: 4px; margin-bottom: 0.4rem;"></div>
+            <div class="skeleton" style="height: 12px; width: 35%; border-radius: 4px;"></div>
+          </div>
+        </div>
+
+        <!-- Videos Watched Error -->
+        <div *ngIf="videoWatchHistoryError && !videoWatchHistoryLoading" class="section-error">
+          <p>Failed to load video watch history.</p>
+          <button class="retry-button-sm" (click)="retrySection('videoWatchHistory')">
+            <ion-icon name="refresh-outline"></ion-icon> Retry
+          </button>
+        </div>
+
+        <!-- Videos Watched Content -->
+        <div *ngIf="!videoWatchHistoryLoading && !videoWatchHistoryError">
+          <div *ngIf="videoWatchHistory.length > 0" class="history-list">
+            <div class="history-item" *ngFor="let video of videoWatchHistory">
+              <div class="history-item-main">
+                <ion-icon name="play-circle-outline" class="history-item-icon"></ion-icon>
+                <span class="history-item-title">{{ video.videoTitle }}</span>
+              </div>
+              <div class="history-item-meta">
+                <span class="meta-tag">{{ video.watchPercent }}% watched</span>
+                <span class="meta-date">{{ video.completedDate | date:'mediumDate' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="videoWatchHistory.length === 0" class="section-empty">
+            <ion-icon name="videocam-outline"></ion-icon>
+            <p>No videos completed yet — watch videos to track your engagement!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Poll History Section -->
+      <div class="history-section" id="poll-history-section" *ngIf="!allSectionsFailed">
+        <h2 class="section-title">
+          <ion-icon name="bar-chart-outline" class="section-icon"></ion-icon>
+          Poll History
+        </h2>
+
+        <!-- Poll History Loading Skeleton -->
+        <div *ngIf="pollHistoryLoading" class="section-skeleton">
+          <div class="skeleton-row" *ngFor="let i of [1,2,3]">
+            <div class="skeleton" style="height: 14px; width: 55%; border-radius: 4px; margin-bottom: 0.4rem;"></div>
+            <div class="skeleton" style="height: 12px; width: 40%; border-radius: 4px;"></div>
+          </div>
+        </div>
+
+        <!-- Poll History Error -->
+        <div *ngIf="pollHistoryError && !pollHistoryLoading" class="section-error">
+          <p>Failed to load poll history.</p>
+          <button class="retry-button-sm" (click)="retrySection('pollHistory')">
+            <ion-icon name="refresh-outline"></ion-icon> Retry
+          </button>
+        </div>
+
+        <!-- Poll History Content -->
+        <div *ngIf="!pollHistoryLoading && !pollHistoryError">
+          <div *ngIf="pollHistory.length > 0" class="history-list">
+            <div class="history-item" *ngFor="let poll of pollHistory">
+              <div class="history-item-main">
+                <ion-icon name="checkmark-circle-outline" class="history-item-icon"></ion-icon>
+                <span class="history-item-title">{{ poll.pollTitle }}</span>
+              </div>
+              <div class="history-item-meta">
+                <span class="meta-tag voted">{{ poll.selectedOption }}</span>
+                <span class="meta-date">{{ formatDate(poll.voteDate) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="pollHistory.length === 0" class="section-empty">
+            <ion-icon name="bar-chart-outline"></ion-icon>
+            <p>No poll votes yet — participate in polls to see your voting history!</p>
+          </div>
+        </div>
+      </div>
+
       <!-- EQ History Section -->
-      <div class="history-section" *ngIf="!allSectionsFailed">
+      <div class="history-section" id="eq-history-section" *ngIf="!allSectionsFailed">
         <h2 class="section-title">
           <ion-icon name="heart-outline" class="section-icon"></ion-icon>
           EQ History
@@ -307,54 +399,8 @@
         </div>
       </div>
 
-      <!-- Poll History Section -->
-      <div class="history-section" *ngIf="!allSectionsFailed">
-        <h2 class="section-title">
-          <ion-icon name="bar-chart-outline" class="section-icon"></ion-icon>
-          Poll History
-        </h2>
-
-        <!-- Poll History Loading Skeleton -->
-        <div *ngIf="pollHistoryLoading" class="section-skeleton">
-          <div class="skeleton-row" *ngFor="let i of [1,2,3]">
-            <div class="skeleton" style="height: 14px; width: 55%; border-radius: 4px; margin-bottom: 0.4rem;"></div>
-            <div class="skeleton" style="height: 12px; width: 40%; border-radius: 4px;"></div>
-          </div>
-        </div>
-
-        <!-- Poll History Error -->
-        <div *ngIf="pollHistoryError && !pollHistoryLoading" class="section-error">
-          <p>Failed to load poll history.</p>
-          <button class="retry-button-sm" (click)="retrySection('pollHistory')">
-            <ion-icon name="refresh-outline"></ion-icon> Retry
-          </button>
-        </div>
-
-        <!-- Poll History Content -->
-        <div *ngIf="!pollHistoryLoading && !pollHistoryError">
-          <div *ngIf="pollHistory.length > 0" class="history-list">
-            <div class="history-item" *ngFor="let poll of pollHistory">
-              <div class="history-item-main">
-                <ion-icon name="checkmark-circle-outline" class="history-item-icon"></ion-icon>
-                <span class="history-item-title">{{ poll.pollTitle }}</span>
-              </div>
-              <div class="history-item-meta">
-                <span class="meta-tag voted">{{ poll.selectedOption }}</span>
-                <span class="meta-date">{{ formatDate(poll.voteDate) }}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Empty State -->
-          <div *ngIf="pollHistory.length === 0" class="section-empty">
-            <ion-icon name="bar-chart-outline"></ion-icon>
-            <p>No poll votes yet — participate in polls to see your voting history!</p>
-          </div>
-        </div>
-      </div>
-
       <!-- Saved Content Section -->
-      <div class="saved-content-section">
+      <div class="saved-content-section" id="saved-content-section">
         <h2 class="section-title">Saved Content</h2>
 
         <!-- Saved Content List -->

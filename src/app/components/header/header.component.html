@@ -46,6 +46,7 @@
     <ng-container *ngIf="isAuthenticated$ | async">
       <a routerLink="/my-journey" class="mobile-link" (click)="closeMobileMenu()">My Journey</a>
       <a routerLink="/my-saved" class="mobile-link" (click)="closeMobileMenu()">Saved</a>
+      <a routerLink="/settings" class="mobile-link" (click)="closeMobileMenu()">Settings</a>
       <button class="mobile-link mobile-logout" (click)="logout(); closeMobileMenu()">Logout</button>
     </ng-container>
   </nav>

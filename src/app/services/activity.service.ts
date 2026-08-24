@@ -6,11 +6,11 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import { FIREBASE_COLLECTION } from '../app.constants';
 import { RateLimiterService } from './rate-limiter.service';
-import { QualityReadEntry, EqHistoryEntry, PollHistoryEntry } from '../models/engagement-history';
+import { QualityReadEntry, EqHistoryEntry, PollHistoryEntry, VideoWatchHistoryEntry } from '../models/engagement-history';
 
 export interface ActivityLogInput {
   userId: string;
-  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage';
+  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage' | 'daily_visit';
   contentId?: string;
   widgetName?: string;
   score?: number;
@@ -28,7 +28,7 @@ export interface ActivityLogInput {
 export interface ActivityLogEntry {
   id?: string;
   userId: string;
-  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage';
+  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage' | 'daily_visit';
   contentId?: string;
   contentTitle?: string;      // human-readable title (poll question, blog title, etc.)
   widgetName?: string;
@@ -156,6 +156,43 @@ export class ActivityService {
     } catch (error) {
       console.warn('Activity logging failed:', error);
       // Intentionally swallowed — never disrupts user experience
+    }
+  }
+
+  /**
+   * Logs a daily_visit entry for the given user.
+   * Deduplicates by userId + activityType + calendarDay — at most one entry per user per day.
+   * Failures are silently swallowed — they never disrupt the user experience.
+   */
+  async logDailyVisit(userId: string): Promise<void> {
+    try {
+      const calendarDay = toCalendarDay(new Date());
+
+      const existingSnapshot = await this.firestore
+        .collection(FIREBASE_COLLECTION.ACTIVITY_LOG, ref =>
+          ref
+            .where('userId', '==', userId)
+            .where('activityType', '==', 'daily_visit')
+            .where('calendarDay', '==', calendarDay)
+            .limit(1)
+        )
+        .get()
+        .toPromise();
+
+      if (existingSnapshot && existingSnapshot.docs.length > 0) {
+        return; // Already logged today
+      }
+
+      const logEntry: Omit<ActivityLogEntry, 'id'> = {
+        userId,
+        activityType: 'daily_visit',
+        timestamp: new Date(),
+        calendarDay
+      };
+
+      await this.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
+    } catch (error) {
+      console.warn('Daily visit logging failed:', error);
     }
   }
 
@@ -556,5 +593,48 @@ export class ActivityService {
           });
         })
       );
+  }
+
+  /**
+   * Returns all video_watch_complete entries for a user, ordered by timestamp desc.
+   * Maps Firestore documents to VideoWatchHistoryEntry instances.
+   */
+  getVideoWatchHistory(userId: string): Observable<VideoWatchHistoryEntry[]> {
+    return this.firestore
+      .collection<ActivityLogEntry>(FIREBASE_COLLECTION.ACTIVITY_LOG, ref =>
+        ref
+          .where('userId', '==', userId)
+          .where('activityType', '==', 'video_watch_complete')
+          .orderBy('timestamp', 'desc')
+      )
+      .get()
+      .pipe(
+        map(snapshot => {
+          return snapshot.docs.map(doc => {
+            const data = doc.data() as ActivityLogEntry;
+            return this.mapToVideoWatchEntry(data);
+          });
+        })
+      );
+  }
+
+  /**
+   * Pure mapping function: converts an ActivityLogEntry to a VideoWatchHistoryEntry.
+   * - videoTitle defaults to contentId when contentTitle is absent, then to 'Untitled Video'
+   * - watchPercent defaults to 0 when scrollDepth is absent
+   * - completedDate is converted from Firestore Timestamp to JS Date
+   */
+  mapToVideoWatchEntry(data: ActivityLogEntry): VideoWatchHistoryEntry {
+    const timestamp = data.timestamp;
+    const completedDate = timestamp?.toDate
+      ? timestamp.toDate()
+      : (timestamp ? new Date(timestamp) : new Date());
+
+    return {
+      contentId: data.contentId || '',
+      videoTitle: data.contentTitle || data.contentId || 'Untitled Video',
+      watchPercent: data.scrollDepth || 0,
+      completedDate
+    };
   }
 }

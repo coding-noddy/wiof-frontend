@@ -1,0 +1,150 @@
+@import "../../wiof-custom-theming.scss";
+
+// ─── Design Tokens ────────────────────────────────────────────────────────────
+$card-radius: 16px;
+$glass-bg: rgba(255, 255, 255, 0.15);
+$glass-blur: 10px;
+$card-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+$card-border: 1px solid rgba(255, 255, 255, 0.18);
+$heading-color: #10263c;
+$body-color: #475569;
+$accent-color: #3b82f6;
+
+// ─── Page Background ──────────────────────────────────────────────────────────
+ion-content {
+  --background: #f4f7fb;
+}
+
+// ─── Page Layout ──────────────────────────────────────────────────────────────
+.settings-page {
+  padding: 1rem;
+  max-width: 100%;
+  margin: 0 auto;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
+  color: var(--ion-text-color, $body-color);
+  overflow-x: hidden;
+
+  // Tablet (768px–1023px): centered card with max-width
+  @media (min-width: 768px) {
+    max-width: 680px;
+    padding: 1.5rem;
+  }
+
+  // Desktop (≥1024px): centered card with narrower max-width
+  @media (min-width: 1024px) {
+    max-width: 560px;
+    padding: 2rem;
+  }
+}
+
+// ─── Loading State ────────────────────────────────────────────────────────────
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1rem;
+
+  ion-spinner {
+    width: 36px;
+    height: 36px;
+    color: $accent-color;
+  }
+}
+
+// ─── Error State ──────────────────────────────────────────────────────────────
+.error-state {
+  text-align: center;
+  padding: 3rem 1rem;
+
+  .error-message {
+    font-size: 0.95rem;
+    color: $body-color;
+    margin: 0 0 1rem;
+  }
+
+  ion-button {
+    --color: #{$accent-color};
+    --border-color: #{$accent-color};
+    font-weight: 600;
+  }
+}
+
+// ─── Profile Content ──────────────────────────────────────────────────────────
+.profile-content {
+  width: 100%;
+}
+
+// ─── Glassmorphism Card ───────────────────────────────────────────────────────
+.glassmorphism-card {
+  background: $glass-bg;
+  backdrop-filter: blur($glass-blur);
+  -webkit-backdrop-filter: blur($glass-blur);
+  border-radius: $card-radius;
+  box-shadow: $card-shadow;
+  border: $card-border;
+  margin: 0;
+  overflow: hidden;
+
+  ion-card-content {
+    padding: 1.25rem;
+
+    @media (min-width: 768px) {
+      padding: 1.5rem;
+    }
+  }
+
+  ion-item {
+    --background: transparent;
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    --border-color: rgba(0, 0, 0, 0.06);
+    margin-bottom: 0.75rem;
+
+    ion-label[position="stacked"] {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--ion-color-medium, $body-color);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-bottom: 0.25rem;
+    }
+
+    .read-only-value {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--ion-text-color, $heading-color);
+      padding: 0.25rem 0;
+    }
+  }
+
+  ion-input {
+    --color: var(--ion-text-color, #{$heading-color});
+    font-size: 0.95rem;
+    font-family: 'Roboto', sans-serif;
+  }
+
+  ion-select {
+    --placeholder-color: var(--ion-color-medium, #{$body-color});
+    font-size: 0.95rem;
+    font-family: 'Roboto', sans-serif;
+  }
+}
+
+// ─── Save Button ──────────────────────────────────────────────────────────────
+.save-button {
+  margin-top: 1.25rem;
+  --border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  font-family: 'Roboto', sans-serif;
+}
+
+// ─── Sign-Out Button ──────────────────────────────────────────────────────────
+.sign-out-button {
+  margin-top: 1.25rem;
+  --border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  font-family: 'Roboto', sans-serif;
+}

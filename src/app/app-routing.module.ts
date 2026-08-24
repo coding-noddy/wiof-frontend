@@ -144,6 +144,14 @@ const routes: Routes = [
     canActivate: [PublicUserGuard]
   },
   {
+    path: 'settings',
+    loadChildren: () =>
+      import('./pages/settings/settings.module').then(
+        (m) => m.SettingsPageModule
+      ),
+    canActivate: [PublicUserGuard]
+  },
+  {
     path: '**',
     loadChildren: () =>
       import('./pages/not-found/not-found.module').then(

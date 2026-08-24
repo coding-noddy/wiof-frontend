@@ -118,20 +118,29 @@ export class UserProfileService {
       return cached;
     }
 
-    try {
-      const snapshot = await this.firestore
-        .collection(FIREBASE_COLLECTION.USERS)
-        .doc<UserProfile>(uid)
-        .ref.get();
+    // Retry up to 2 times with delay to handle Firestore connection not ready after login
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        if (attempt > 0) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        const snapshot = await this.firestore
+          .collection(FIREBASE_COLLECTION.USERS)
+          .doc<UserProfile>(uid)
+          .ref.get();
 
-      const data = snapshot.data();
-      const role: 'admin' | 'public' = (data?.role === 'admin') ? 'admin' : 'public';
-      this.roleCache.set(uid, role);
-      return role;
-    } catch (error) {
-      // If Firestore is unavailable, default to 'public' for safety
-      return 'public';
+        const data = snapshot.data();
+        const role: 'admin' | 'public' = (data?.role === 'admin') ? 'admin' : 'public';
+        this.roleCache.set(uid, role);
+        return role;
+      } catch (error) {
+        console.warn(`Role fetch attempt ${attempt + 1} failed:`, error);
+      }
     }
+
+    // If both attempts failed, default to 'public' for safety
+    console.error('Role fetch failed after retries');
+    return 'public';
   }
 
   /**
@@ -234,6 +243,17 @@ export class UserProfileService {
     }
 
     await docRef.update(updatePayload);
+  }
+
+  /**
+   * Updates a user profile with the given partial data.
+   * Callers should use sanitizeUpdate() first to strip protected fields.
+   */
+  async updateProfile(uid: string, data: Partial<UserProfile>): Promise<void> {
+    await this.firestore
+      .collection(FIREBASE_COLLECTION.USERS)
+      .doc(uid)
+      .update(data);
   }
 
   /**
