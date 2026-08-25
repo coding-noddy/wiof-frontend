@@ -98,7 +98,7 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host "      Build successful." -ForegroundColor Green
 
 # Step 5: Deploy
-Write-Host "[5/6] Deploying to Firebase ($firebaseProject)..." -ForegroundColor Yellow
+Write-Host "[5/6] Deploying hosting to Firebase ($firebaseProject)..." -ForegroundColor Yellow
 # Prefer the nvm-managed firebase (latest), fall back to AppData, then PATH
 $nvmFirebase = "C:\nvm4w\nodejs\firebase.cmd"
 $appDataFirebase = Join-Path $env:APPDATA "npm\firebase.cmd"

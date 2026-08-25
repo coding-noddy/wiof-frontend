@@ -20,8 +20,8 @@ service cloud.firestore {
     // ─── User Profiles ──────────────────────────────────────────────────────
 
     match /users/{userId} {
-      // Any authenticated user can read any profile
-      allow read: if isAuthenticated();
+      // Users can read their own profile; admins can read profiles for administration.
+      allow read: if isOwner(userId) || isAdmin();
 
       // Users can only create/update their own profile
       // Deny update of the 'role' field from client
@@ -55,9 +55,9 @@ service cloud.firestore {
     // ─── Activity Log ───────────────────────────────────────────────────────
 
     match /activity_log/{docId} {
-      // Read only own documents
-      allow read: if isAuthenticated()
-        && resource.data.userId == request.auth.uid;
+      // Users can read their own history; admins can read aggregate analytics.
+      allow read: if isAdmin()
+        || (isAuthenticated() && resource.data.userId == request.auth.uid);
 
       // Create only own documents with rate limiting (1 create/second)
       // Rate limit enforced by requiring timestamp == request.time (prevents backdated writes)
@@ -119,18 +119,46 @@ service cloud.firestore {
     }
 
     // ─── Public Collections ─────────────────────────────────────────────────
-    // Subscriptions and Polls remain publicly readable and writable
+    // Public users can submit these forms, but cannot alter existing records.
 
     match /Subscriptions/{id} {
-      allow read, write: if true;
+      allow read: if isAdmin();
+      allow create: if request.resource.data.keys().hasOnly([
+          'firstName', 'lastName', 'email', 'datetime'
+        ])
+        && request.resource.data.firstName is string
+        && request.resource.data.firstName.size() <= 100
+        && request.resource.data.lastName is string
+        && request.resource.data.lastName.size() <= 100
+        && request.resource.data.email is string
+        && request.resource.data.email.size() <= 254
+        && request.resource.data.datetime is string
+        && request.resource.data.datetime.size() <= 40;
+      allow update, delete: if isAdmin();
     }
 
     match /Polls/{id} {
-      allow read, write: if true;
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly([
+          'pollQuestionId', 'option', 'ip4', 'ip6', 'email'
+        ])
+        && request.resource.data.pollQuestionId is string
+        && request.resource.data.pollQuestionId.size() <= 200
+        && request.resource.data.option is string
+        && request.resource.data.option.size() <= 200
+        && (!('email' in request.resource.data)
+          || request.resource.data.email is string && request.resource.data.email.size() <= 254)
+        && (!('ip4' in request.resource.data)
+          || request.resource.data.ip4 is string && request.resource.data.ip4.size() <= 45)
+        && (!('ip6' in request.resource.data)
+          || request.resource.data.ip6 is string && request.resource.data.ip6.size() <= 45);
+      allow update, delete: if isAdmin();
     }
 
     match /Poll/{id} {
-      allow read, write: if true;
+      allow read: if true;
+      allow create: if isAdmin();
+      allow update, delete: if isAdmin();
     }
   }
 }
