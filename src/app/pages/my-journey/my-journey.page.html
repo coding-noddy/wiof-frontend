@@ -60,7 +60,7 @@
               <div class="metric-card blogs-card" (click)="scrollToSection('blogs-read')">
                 <div class="metric-value">{{ metrics?.blogsRead ?? 0 }}</div>
                 <div class="metric-label">
-                  Blogs Read
+                  Blogs Explored
                   <span *ngIf="metrics?.lastBlogReadDate" class="metric-date">{{ getFormattedLastBlogDate() }}</span>
                 </div>
                 <ion-icon name="newspaper-outline" class="metric-icon"></ion-icon>

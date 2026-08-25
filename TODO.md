@@ -114,12 +114,11 @@
   - ~~One-time migration script: backfill slugs for existing blogs~~ ✅
   - ~~Route: slug lookup first, fallback to ID~~ ✅
 
-- **[HIGH]** Admin session idle timeout (security)
-  - Auto-logout after 15 min of inactivity on admin routes
-  - Track mouse, keyboard, touch events to detect idle state
-  - Show warning toast ~1 min before logout
-  - Redirect to /login on expiry
-  - Only applies to admin-guarded routes (not public users)
+- ~~**[HIGH]** Session idle timeout (security)~~ ✅ DONE
+  - ~~Auto-logout after 10 min of inactivity for any authenticated user (not just admins)~~ ✅
+  - ~~Track mouse, keyboard, touch events to detect idle state~~ ✅
+  - ~~Show warning toast ~1 min before logout~~ ✅
+  - ~~Redirect to /home on expiry (via existing AuthService.logout())~~ ✅
 
 - **[HIGH]** Rich blog content — multiple images in blog body
   - Current: Only one hero image per blog

@@ -51,10 +51,14 @@ $element-themes: (
   // ── Layout: element pages (same horizontal card as home) ───────────────────
   &.layout-element {
     height: auto;
+    border: 1px solid rgba(16, 24, 40, 0.08);
+    box-shadow: 0 10px 28px rgba(16, 24, 40, 0.08);
+    background-color: rgba(255, 255, 255, 0.72);
 
     ::ng-deep .background {
       height: auto;
       flex: 1;
+      background-color: transparent;
     }
 
     .coffee-conv-card {
@@ -66,9 +70,20 @@ $element-themes: (
       }
 
       .media-container {
-        min-height: 280px;
-        max-height: 420px;
+        min-height: 0;
+        max-height: none;
+        aspect-ratio: 16 / 9;
       }
+    }
+
+    .wiof-slider-header {
+      padding: 0.9rem 1.25rem;
+      border-bottom: 1px solid rgba(16, 24, 40, 0.08);
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .coffee-conv-content {
+      background-color: transparent;
     }
   }
 
@@ -77,6 +92,11 @@ $element-themes: (
     border-bottom: 2px solid white;
     background-color: $home-color;
     color: $dark-color;
+
+    .title-text {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
   }
 
   // ── Background panel — default (home / blue) ─────────────────────────────
@@ -121,6 +141,14 @@ $element-themes: (
       a {
         color: $text;
       }
+    }
+  }
+
+  // Keep element pages light and let the theme colour act as an accent.
+  &.layout-element {
+    ::ng-deep .background,
+    .coffee-conv-content {
+      background-color: transparent;
     }
   }
 
@@ -240,6 +268,16 @@ $element-themes: (
 // ── Mobile responsive for coffee conversation ─────────────────────────────────
 @media (max-width: 767px) {
   .coffee-conv-container {
+    &.layout-element {
+      .wiof-slider-header {
+        padding: 0.75rem 1rem;
+      }
+
+      .coffee-conv-card .media-container {
+        aspect-ratio: 16 / 9;
+      }
+    }
+
     .coffee-conv-card {
       .media-container {
         min-height: 200px !important;
@@ -256,8 +294,8 @@ $element-themes: (
     }
 
     &.layout-element .coffee-conv-card .media-container {
-      min-height: 180px !important;
-      max-height: 200px !important;
+      min-height: 0 !important;
+      max-height: none !important;
     }
   }
 }

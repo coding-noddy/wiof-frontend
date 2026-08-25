@@ -81,6 +81,7 @@
 }
 
 .scale-key {
+  grid-column: 1 / -1;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.75rem;
@@ -92,6 +93,7 @@
   font-size: 0.72rem;
   font-weight: 700;
   text-align: center;
+  white-space: nowrap;
   background: rgba(255, 255, 255, 0.82);
   border: 1px solid rgba(0, 0, 0, 0.06);
 }
@@ -218,6 +220,37 @@
   color: $dark-color;
   text-align: center;
   line-height: 1.55;
+}
+
+// ── Responsive ──────────────────────────────────────────────────
+@media (max-width: 480px) {
+  .meter-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .meter-status-badge {
+    justify-self: start;
+  }
+
+  .scale-key {
+    gap: 0.4rem;
+  }
+
+  .scale-key-item {
+    padding: 0.35rem 0.3rem;
+    font-size: 0.62rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .scale-key {
+    gap: 0.3rem;
+  }
+
+  .scale-key-item {
+    padding: 0.3rem 0.2rem;
+    font-size: 0.56rem;
+  }
 }
 
 .text {

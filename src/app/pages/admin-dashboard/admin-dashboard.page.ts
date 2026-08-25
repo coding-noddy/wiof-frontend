@@ -201,8 +201,7 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
     }
   }
 
-  onLogout() {
-    this.afAuthService.logout();
-    this.router.navigate(['/login']);
+  async onLogout() {
+    await this.afAuthService.logout();
   }
 }

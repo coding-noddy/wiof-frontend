@@ -121,7 +121,10 @@ service cloud.firestore {
     // Public users can submit these forms, but cannot alter existing records.
 
     match /Subscriptions/{id} {
-      allow read: if isAdmin();
+      // Anyone can check "already subscribed?" via a bounded (limit<=1) email
+      // lookup; only admins can list/dump the full subscriber collection.
+      allow get: if isAdmin();
+      allow list: if isAdmin() || request.query.limit <= 1;
       allow create: if request.resource.data.keys().hasOnly([
           'firstName', 'lastName', 'email', 'datetime'
         ])

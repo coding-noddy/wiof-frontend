@@ -7,6 +7,7 @@ import { distinctUntilChanged, filter } from 'rxjs/operators';
 import { ActivityService } from './services/activity.service';
 import { AuthService } from './services/auth.service';
 import { UserProfileService } from './services/user-profile.service';
+import { IdleTimeoutService } from './services/idle-timeout.service';
 
 @Component({
   selector: 'app-root',
@@ -21,13 +22,17 @@ export class AppComponent implements OnInit {
     private metaService: Meta,
     private authService: AuthService,
     private userProfileService: UserProfileService,
-    private activityService: ActivityService
+    private activityService: ActivityService,
+    private idleTimeoutService: IdleTimeoutService
   ) {
     this.initializeApp();
     // this.addMetaTags();
   }
 
   ngOnInit(): void {
+    // Auto-logout any authenticated user after 10 minutes of inactivity.
+    this.idleTimeoutService.init();
+
     // Record a visit whenever the authenticated account changes.
     this.authService.currentUser$.pipe(
       filter(user => !!user),

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Observable } from 'rxjs';
 import { map, first } from 'rxjs/operators';
@@ -29,7 +30,8 @@ export class AuthService {
   constructor(
     private afAuth: AngularFireAuth,
     private userProfileService: UserProfileService,
-    private uiUtil: UiUtilService
+    private uiUtil: UiUtilService,
+    private router: Router
   ) {
     // Initialize observables
     this.currentUser$ = this.afAuth.authState;
@@ -100,6 +102,7 @@ export class AuthService {
     this.userProfileService.clearRoleCache();
     await this.modularAuth.signOut();
     await this.afAuth.signOut();
+    await this.router.navigate(['/home']);
   }
 
   /**
