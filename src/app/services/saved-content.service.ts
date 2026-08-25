@@ -72,7 +72,7 @@ export class SavedContentService {
       savedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
 
-    await this.firestore
+    await this.firestore.firestore
       .collection(FIREBASE_COLLECTION.USER_SAVED_CONTENT)
       .add(doc);
   }
@@ -99,6 +99,28 @@ export class SavedContentService {
         .collection(FIREBASE_COLLECTION.USER_SAVED_CONTENT)
         .doc(docId)
         .delete();
+    }
+  }
+
+  /** Deletes all saved content records owned by a user in batches. */
+  async deleteAllForUser(userId: string): Promise<void> {
+    let hasMore = true;
+
+    while (hasMore) {
+      const snapshot = await this.firestore.firestore
+        .collection(FIREBASE_COLLECTION.USER_SAVED_CONTENT)
+        .where('userId', '==', userId)
+        .limit(400)
+        .get();
+
+      if (snapshot.empty) {
+        return;
+      }
+
+      const batch = this.firestore.firestore.batch();
+      snapshot.docs.forEach(doc => batch.delete(doc.ref));
+      await batch.commit();
+      hasMore = snapshot.size === 400;
     }
   }
 

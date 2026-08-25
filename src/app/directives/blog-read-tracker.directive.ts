@@ -49,6 +49,7 @@ export class BlogReadTrackerDirective implements OnInit, OnDestroy {
   private observer: IntersectionObserver | null = null;
   private checkInterval: any = null;
   private scrollListener: (() => void) | null = null;
+  private scrollTarget: HTMLElement | Window | null = null;
   private isActive = false;
 
   /** Check interval in milliseconds */
@@ -186,6 +187,23 @@ export class BlogReadTrackerDirective implements OnInit, OnDestroy {
       }
     };
 
+    const ionContent = element.closest('ion-content') as HTMLElement & {
+      getScrollElement?: () => Promise<HTMLElement>;
+    } | null;
+
+    if (ionContent?.getScrollElement) {
+      ionContent.getScrollElement().then(scrollElement => {
+        if (!this.isActive || !this.scrollListener) {
+          return;
+        }
+        this.scrollTarget = scrollElement;
+        scrollElement.addEventListener('scroll', this.scrollListener, { passive: true });
+        this.scrollListener();
+      });
+      return;
+    }
+
+    this.scrollTarget = window;
     window.addEventListener('scroll', this.scrollListener, { passive: true });
   }
 
@@ -212,10 +230,11 @@ export class BlogReadTrackerDirective implements OnInit, OnDestroy {
       this.checkInterval = null;
     }
 
-    if (this.scrollListener) {
-      window.removeEventListener('scroll', this.scrollListener);
+    if (this.scrollListener && this.scrollTarget) {
+      this.scrollTarget.removeEventListener('scroll', this.scrollListener);
       this.scrollListener = null;
     }
+    this.scrollTarget = null;
 
     this.isActive = false;
   }

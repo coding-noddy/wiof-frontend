@@ -148,3 +148,124 @@ ion-content {
   font-size: 0.95rem;
   font-family: 'Roboto', sans-serif;
 }
+
+.reset-data-section {
+  margin-top: 2rem;
+  padding: 1rem 0.25rem 2rem;
+  border-top: 1px solid rgba(185, 28, 28, 0.2);
+
+  h2 {
+    margin: 0 0 0.5rem;
+    color: #991b1b;
+    font-size: 1rem;
+  }
+
+  p {
+    margin: 0 0 1rem;
+    color: $body-color;
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+
+  ion-button {
+    --border-radius: 8px;
+    font-weight: 600;
+  }
+}
+
+.reset-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  background: rgba(15, 23, 42, 0.42);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: resetFadeIn 200ms ease-out;
+}
+
+.reset-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9998;
+  width: 380px;
+  max-width: calc(100vw - 2rem);
+  padding: 1.75rem;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
+  text-align: center;
+  animation: resetModalIn 250ms ease-out;
+
+  h3 {
+    margin: 0 0 0.6rem;
+    color: #1e293b;
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0 0 1.25rem;
+    color: #64748b;
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+}
+
+@keyframes resetFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes resetModalIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.92); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.reset-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fef2f2;
+
+  ion-icon { color: #dc2626; font-size: 1.5rem; }
+}
+
+.reset-input {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0 0 1.25rem;
+  padding: 0.75rem 0.85rem;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  color: #1e293b;
+  font: inherit;
+  text-align: center;
+  text-transform: uppercase;
+  outline: none;
+
+  &:focus { border-color: #dc2626; box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12); }
+}
+
+.reset-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+
+  button {
+    min-width: 100px;
+    padding: 0.65rem 1rem;
+    border: 0;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+}
+
+.reset-cancel { background: #f1f5f9; color: #475569; }
+.reset-delete { background: #dc2626; color: #fff; }
+.reset-delete:disabled { background: #fecaca; color: #991b1b; cursor: not-allowed; }

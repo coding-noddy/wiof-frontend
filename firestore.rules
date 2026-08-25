@@ -64,9 +64,9 @@ service cloud.firestore {
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.timestamp == request.time;
 
-      // Deny all updates and deletes — activity log is append-only
+      // Activity logs are immutable, but owners may delete their own data reset records.
       allow update: if false;
-      allow delete: if false;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
     }
 
     // ─── Admin Collections ──────────────────────────────────────────────────

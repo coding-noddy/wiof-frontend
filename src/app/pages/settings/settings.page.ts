@@ -10,6 +10,8 @@ import { UserProfileService } from 'src/app/services/user-profile.service';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 import { noWhitespaceOnlyValidator, minArrayLength, maxArrayLength } from './settings.validators';
 import { ELEMENTS } from 'src/app/app.constants';
+import { ActivityService } from 'src/app/services/activity.service';
+import { SavedContentService } from 'src/app/services/saved-content.service';
 
 @Component({
   selector: 'app-settings',
@@ -48,6 +50,9 @@ export class SettingsPage implements OnDestroy {
   hasError = false;
   isSaving = false;
   isSigningOut = false;
+  isResettingData = false;
+  showResetModal = false;
+  resetConfirmation = '';
   userEmail = '';
   memberSince = '';
   private previousElements: string[] = [];
@@ -56,7 +61,9 @@ export class SettingsPage implements OnDestroy {
     private authService: AuthService,
     private userProfileService: UserProfileService,
     private uiUtil: UiUtilService,
-    private router: Router
+    private router: Router,
+    private activityService: ActivityService,
+    private savedContentService: SavedContentService
   ) {}
 
   /**
@@ -189,6 +196,44 @@ export class SettingsPage implements OnDestroy {
     } catch (error) {
       await this.uiUtil.presentToast('Sign-out failed. Please try again.', 'error', 5000);
       this.isSigningOut = false;
+    }
+  }
+
+  openResetModal(): void {
+    if (!this.lastUid || this.isResettingData) {
+      return;
+    }
+    this.resetConfirmation = '';
+    this.showResetModal = true;
+  }
+
+  cancelReset(): void {
+    if (this.isResettingData) {
+      return;
+    }
+    this.showResetModal = false;
+    this.resetConfirmation = '';
+  }
+
+  async confirmReset(): Promise<void> {
+    if (!this.lastUid || this.isResettingData || this.resetConfirmation.trim().toUpperCase() !== 'RESET') {
+      return;
+    }
+
+    this.showResetModal = false;
+
+    this.isResettingData = true;
+    try {
+      await this.activityService.deleteAllForUser(this.lastUid);
+      await this.savedContentService.deleteAllForUser(this.lastUid);
+      await this.userProfileService.resetEngagementData(this.lastUid);
+      await this.uiUtil.presentToast('Your engagement data was cleared. Your account remains active.', 'success', 5000);
+      await this.authService.logout();
+      await this.router.navigate(['/home']);
+    } catch (error) {
+      await this.uiUtil.presentToast('Could not clear all engagement data. Nothing was changed after the failed step.', 'error', 5000);
+    } finally {
+      this.isResettingData = false;
     }
   }
 

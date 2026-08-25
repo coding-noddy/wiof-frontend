@@ -152,10 +152,32 @@ export class ActivityService {
         (logEntry as any).userEmail = entry.userEmail;
       }
 
-      await this.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
+      await this.firestore.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
     } catch (error) {
       console.warn('Activity logging failed:', error);
       // Intentionally swallowed — never disrupts user experience
+    }
+  }
+
+  /** Deletes all activity records owned by a user in batches. */
+  async deleteAllForUser(userId: string): Promise<void> {
+    let hasMore = true;
+
+    while (hasMore) {
+      const snapshot = await this.firestore.firestore
+        .collection(FIREBASE_COLLECTION.ACTIVITY_LOG)
+        .where('userId', '==', userId)
+        .limit(400)
+        .get();
+
+      if (snapshot.empty) {
+        return;
+      }
+
+      const batch = this.firestore.firestore.batch();
+      snapshot.docs.forEach(doc => batch.delete(doc.ref));
+      await batch.commit();
+      hasMore = snapshot.size === 400;
     }
   }
 
@@ -190,7 +212,7 @@ export class ActivityService {
         calendarDay
       };
 
-      await this.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
+      await this.firestore.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
     } catch (error) {
       console.warn('Daily visit logging failed:', error);
     }
@@ -239,7 +261,7 @@ export class ActivityService {
     const rateLimitKey = `activity_log_${userId}`;
 
     const writeFn = async (): Promise<void> => {
-      await this.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
+      await this.firestore.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
     };
 
     if (this.rateLimiter.canWrite(rateLimitKey)) {
@@ -292,7 +314,7 @@ export class ActivityService {
     const rateLimitKey = `activity_log_${userId}`;
 
     const writeFn = async (): Promise<void> => {
-      await this.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
+      await this.firestore.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
     };
 
     if (this.rateLimiter.canWrite(rateLimitKey)) {
@@ -333,7 +355,7 @@ export class ActivityService {
     const rateLimitKey = `activity_log_${userId}`;
 
     const writeFn = async (): Promise<void> => {
-      await this.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
+      await this.firestore.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
     };
 
     if (this.rateLimiter.canWrite(rateLimitKey)) {
@@ -374,7 +396,7 @@ export class ActivityService {
     const rateLimitKey = `activity_log_${userId}`;
 
     const writeFn = async (): Promise<void> => {
-      await this.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
+      await this.firestore.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
     };
 
     if (this.rateLimiter.canWrite(rateLimitKey)) {

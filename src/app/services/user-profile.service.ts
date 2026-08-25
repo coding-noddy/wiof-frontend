@@ -201,7 +201,7 @@ export class UserProfileService {
    * Called when a returning user signs in.
    */
   async updateLoginMetrics(uid: string): Promise<void> {
-    await this.firestore
+    await this.firestore.firestore
       .collection(FIREBASE_COLLECTION.USERS)
       .doc(uid)
       .update({
@@ -251,7 +251,10 @@ export class UserProfileService {
       updatePayload['currentStreak'] = firebase.firestore.FieldValue.increment(streakUpdate.currentStreak);
     }
 
-    await docRef.update(updatePayload);
+    await this.firestore.firestore
+      .collection(FIREBASE_COLLECTION.USERS)
+      .doc(uid)
+      .update(updatePayload);
   }
 
   /**
@@ -275,5 +278,19 @@ export class UserProfileService {
       .collection(FIREBASE_COLLECTION.USERS)
       .doc(uid)
       .update({ preferredElements: trimmedElements });
+  }
+
+  /** Resets engagement counters while preserving the user's account and profile identity. */
+  async resetEngagementData(uid: string): Promise<void> {
+    await this.firestore.firestore
+      .collection(FIREBASE_COLLECTION.USERS)
+      .doc(uid)
+      .update({
+        loginCount: 0,
+        daysVisited: 0,
+        currentStreak: 0,
+        savedBlogsCount: 0,
+        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+      });
   }
 }
