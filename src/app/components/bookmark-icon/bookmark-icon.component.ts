@@ -1,8 +1,8 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { ToastController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
 import { SavedContentService, SaveContentInput } from 'src/app/services/saved-content.service';
+import { UiUtilService } from 'src/app/util/UiUtilService';
 
 @Component({
   selector: 'app-bookmark-icon',
@@ -38,7 +38,7 @@ export class BookmarkIconComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private savedContentService: SavedContentService,
-    private toastController: ToastController
+    private uiUtil: UiUtilService
   ) {}
 
   ngOnInit(): void {
@@ -150,13 +150,6 @@ export class BookmarkIconComponent implements OnInit, OnDestroy {
    * Show error toast when save/unsave fails.
    */
   private async showErrorToast(): Promise<void> {
-    const toast = await this.toastController.create({
-      message: 'Could not save content. Please try again.',
-      duration: 3000,
-      position: 'bottom',
-      color: 'danger',
-      buttons: [{ text: 'Dismiss', role: 'cancel' }]
-    });
-    await toast.present();
+    await this.uiUtil.presentToast('Could not save content. Please try again.', 'error');
   }
 }

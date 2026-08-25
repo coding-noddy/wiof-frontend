@@ -109,6 +109,15 @@ export class UserProfileService {
   }
 
   /**
+   * Retrieves registered user profiles for the admin users view.
+   */
+  getAllProfiles(): Observable<UserProfile[]> {
+    return this.firestore
+      .collection<UserProfile>(FIREBASE_COLLECTION.USERS, ref => ref.orderBy('joinedDate', 'desc'))
+      .valueChanges();
+  }
+
+  /**
    * Returns the user's role, using session cache.
    * Legacy profiles without a role field default to 'public'.
    */

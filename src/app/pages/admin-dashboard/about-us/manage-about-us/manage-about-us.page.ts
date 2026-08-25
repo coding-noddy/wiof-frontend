@@ -78,11 +78,11 @@ export class ManageAboutUsPage implements OnInit, OnDestroy {
         try {
           await this.aboutUsService.deleteAboutUsProfile(personId);
           loader.dismiss();
-          this.uiUtil.presentAlert(UI_MESSAGES.SUCCESS_HEADER, UI_MESSAGES.SUCCESS_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.ABOUT_US), [UI_MESSAGES.FAILURE_CTA_TEXT]);
+          this.uiUtil.presentToast(UI_MESSAGES.SUCCESS_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.ABOUT_US), 'success');
           this.loadData();
         } catch (error) {
           loader.dismiss();
-          this.uiUtil.presentAlert(UI_MESSAGES.FAILURE_HEADER, UI_MESSAGES.FAILURE_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.ABOUT_US), [UI_MESSAGES.FAILURE_CTA_TEXT]);
+          this.uiUtil.presentToast(UI_MESSAGES.FAILURE_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.ABOUT_US), 'error');
         }
       }}, { text: UI_MESSAGES.CONFIRM_DELETE_SECONDARY_CTA, role: 'cancel' }]);
   }

@@ -75,7 +75,7 @@ export class AddAboutUsPage implements OnInit, OnDestroy {
     const file = event.target.files[0];
     if (file) {
     if (file.size > 4 * 1024 * 1024) {
-      this.uiUtil.presentAlert("Error", "This file is too big!", ["OK"]);
+      this.uiUtil.presentToast('This file is too big!', 'error');
       event.target.value = '';
       return;
     }
@@ -125,7 +125,7 @@ async onSubmit() {
     ).subscribe({
       next: () => {
         this.loader.dismiss();
-        this.uiUtil.presentAlert(UI_MESSAGES.SUCCESS_HEADER, this.isEditMode ? "Profile Updated" : "Profile Added", ["OK"]);
+        this.uiUtil.presentToast(this.isEditMode ? 'Profile updated' : 'Profile added', 'success');
         
         if (this.isEditMode) {
           this.router.navigateByUrl('/admin-dashboard/manage-about-us');
@@ -138,7 +138,7 @@ async onSubmit() {
       error: (err) => {
         this.loader.dismiss();
         // Use the error message from the service validation (4MB / Format)
-        this.uiUtil.presentAlert(UI_MESSAGES.FAILURE_HEADER, err.message || "Operation failed", ["OK"]);
+        this.uiUtil.presentToast(err.message || 'Operation failed', 'error');
       }
     });
   }

@@ -46,6 +46,70 @@ html, body {
 //   background: black;
 // }
 
+/* ── Modern confirm/info alert (used for delete confirmations, drafts, etc.) ── */
+.wiof-alert {
+  --backdrop-opacity: 0.55;
+
+  .alert-wrapper {
+    border-radius: 18px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.18);
+  }
+
+  .alert-head {
+    padding-top: 20px;
+  }
+
+  .alert-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+
+  .alert-message {
+    color: #4b5563;
+    line-height: 1.5;
+  }
+
+  .alert-button-group {
+    padding: 10px 12px 14px;
+  }
+
+  .alert-button {
+    border-radius: 10px;
+    font-weight: 600;
+  }
+}
+
+/* ── Modern toast notifications (success / error / warning) ── */
+.wiof-toast {
+  --border-radius: 14px;
+  --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.16);
+  --start: 16px;
+  --end: 16px;
+  /* Clears the sticky app header / admin toolbar */
+  margin-top: max(env(safe-area-inset-top), 8px);
+
+  font-weight: 500;
+}
+
+.wiof-toast--success {
+  --background: #0f5132;
+  --color: #ecfdf5;
+  --button-color: #ecfdf5;
+}
+
+.wiof-toast--error {
+  --background: #7f1d1d;
+  --color: #fef2f2;
+  --button-color: #fef2f2;
+}
+
+.wiof-toast--warning {
+  --background: #78350f;
+  --color: #fffbeb;
+  --button-color: #fffbeb;
+}
+
+
 /* Fix for Ionic 7: allow position:fixed elements to escape ion-content */
 ion-content {
   --ion-safe-area-top: 0;

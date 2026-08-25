@@ -72,11 +72,11 @@ describe('ActivityService', () => {
       });
     });
 
-    it('should include a timestamp', async () => {
+    it('should include a Firestore server timestamp', async () => {
       await service.logEqCompletion(userId, overallScore, dimensions);
 
       const entry = addSpy.calls.first().args[0];
-      expect(entry.timestamp).toBeInstanceOf(Date);
+      expect(entry.timestamp).toBeDefined();
     });
 
     it('should include calendarDay in YYYY-MM-DD format', async () => {

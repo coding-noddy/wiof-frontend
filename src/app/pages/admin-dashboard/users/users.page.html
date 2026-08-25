@@ -1,0 +1,82 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Registered Users</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="admin-page">
+    <nav class="breadcrumb">
+      <a routerLink="/admin-dashboard">Dashboard</a>
+      <span class="separator">/</span>
+      <span class="current">Registered Users</span>
+    </nav>
+
+    <div class="admin-page-header">
+      <div>
+        <h1>Registered Users</h1>
+        <p class="header-meta">{{ users.length }} registered accounts</p>
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon blue"><ion-icon name="people-outline"></ion-icon></div>
+        <div class="summary-info">
+          <span class="summary-value">{{ users.length }}</span>
+          <span class="summary-label">Registered Users</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-panel" *ngIf="loading">
+      <ion-spinner name="crescent"></ion-spinner>
+      <span>Loading users...</span>
+    </div>
+
+    <div class="state-panel error" *ngIf="!loading && hasError">
+      Unable to load registered users.
+    </div>
+
+    <div class="state-panel" *ngIf="!loading && !hasError && users.length === 0">
+      No registered users yet.
+    </div>
+
+    <div class="admin-table-card" *ngIf="!loading && !hasError && users.length > 0">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th (click)="sortBy('displayName')" [class.sorted]="sortColumn === 'displayName'">
+              <span class="sort-header">Name <ion-icon class="sort-icon" [name]="sortColumn === 'displayName' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+            </th>
+            <th (click)="sortBy('email')" [class.sorted]="sortColumn === 'email'">
+              <span class="sort-header">Email <ion-icon class="sort-icon" [name]="sortColumn === 'email' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+            </th>
+            <th>Interested Elements</th>
+            <th (click)="sortBy('joinedDate')" [class.sorted]="sortColumn === 'joinedDate'">
+              <span class="sort-header">Registered <ion-icon class="sort-icon" [name]="sortColumn === 'joinedDate' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td><span class="cell-title">{{ user.displayName || '—' }}</span></td>
+            <td>{{ user.email || '—' }}</td>
+            <td>
+              <span class="element-list" *ngIf="user.preferredElements?.length; else noElements">
+                {{ user.preferredElements.join(', ') }}
+              </span>
+              <ng-template #noElements>—</ng-template>
+            </td>
+            <td><span class="cell-date">{{ formatJoinedDate(user.joinedDate) }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</ion-content>

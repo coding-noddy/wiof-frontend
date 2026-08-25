@@ -7,6 +7,19 @@
   padding: 24px;
 }
 
+.back-dashboard-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: $accent;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .chart-container {
   position: relative;
   width: 100%;
@@ -32,6 +45,10 @@
 // ── Responsive ──────────────────────────────────────────────────────
 
 @media (max-width: 768px) {
+  .back-dashboard-link {
+    margin-top: 0.75rem;
+  }
+
   .chart-card {
     padding: 16px;
   }

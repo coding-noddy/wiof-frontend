@@ -15,6 +15,8 @@ import { BlogReadCompleteEvent } from 'src/app/directives/blog-read-tracker.dire
 })
 export class BlogPostPage implements OnInit {
   public blogDetails: Observable<Blog>;
+  expandedImageSrc: string | null = null;
+  expandedImageAlt = '';
   constructor(
     private route: ActivatedRoute,
     private blogService: BlogService,
@@ -38,6 +40,27 @@ export class BlogPostPage implements OnInit {
         this.logBlogRead(blogParam);
       }
     });
+  }
+
+  openImage(src: string, alt: string): void {
+    this.expandedImageSrc = src;
+    this.expandedImageAlt = alt;
+  }
+
+  closeImage(): void {
+    this.expandedImageSrc = null;
+  }
+
+  /**
+   * Delegated click handler for blog body content (HTML or Quill-rendered).
+   * Opens the image modal when the clicked element is an <img>.
+   */
+  onContentClick(event: MouseEvent, blogTitle: string): void {
+    const target = event.target as HTMLElement;
+    if (target?.tagName === 'IMG') {
+      const img = target as HTMLImageElement;
+      this.openImage(img.src, img.alt || blogTitle);
+    }
   }
 
   private logBlogRead(contentId: string): void {

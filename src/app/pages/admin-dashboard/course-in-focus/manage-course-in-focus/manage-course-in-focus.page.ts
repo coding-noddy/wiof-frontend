@@ -79,15 +79,15 @@ export class ManageCourseInFocusPage implements OnInit, OnDestroy {
         this.courseInFocusService.deleteCourseInFocusImage(course.image).pipe(takeUntil(this.destroy$),
           switchMap(() => this.courseInFocusService.deleteCourseInFocus(course.id))
         ).subscribe(
-          () => { loader.dismiss(); this.loadData(); this.uiUtil.presentAlert(UI_MESSAGES.SUCCESS_HEADER, UI_MESSAGES.SUCCESS_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.COURSE_IN_FOCUS), [UI_MESSAGES.FAILURE_CTA_TEXT]); },
-          () => { loader.dismiss(); this.uiUtil.presentAlert(UI_MESSAGES.FAILURE_HEADER, UI_MESSAGES.FAILURE_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.COURSE_IN_FOCUS), [UI_MESSAGES.FAILURE_CTA_TEXT]); }
+          () => { loader.dismiss(); this.loadData(); this.uiUtil.presentToast(UI_MESSAGES.SUCCESS_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.COURSE_IN_FOCUS), 'success'); },
+          () => { loader.dismiss(); this.uiUtil.presentToast(UI_MESSAGES.FAILURE_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.COURSE_IN_FOCUS), 'error'); }
         );
       }}, { text: UI_MESSAGES.CONFIRM_DELETE_SECONDARY_CTA, role: 'cancel' }]);
   }
 
   publishCourseInFocus(id: string) {
     this.courseInFocusService.publishCourseInFocus(id).subscribe(() => {
-      this.uiUtil.presentAlert(UI_MESSAGES.SUCCESS_HEADER, UI_MESSAGES.SUCCESS_PUBLISH_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.COURSE_IN_FOCUS), [UI_MESSAGES.FAILURE_CTA_TEXT]);
+      this.uiUtil.presentToast(UI_MESSAGES.SUCCESS_PUBLISH_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.COURSE_IN_FOCUS), 'success');
       this.loadData();
     });
   }

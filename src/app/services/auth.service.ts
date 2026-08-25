@@ -6,8 +6,8 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { GoogleAuthProvider, signInWithPopup, getAuth, Auth } from 'firebase/auth';
-import { ToastController } from '@ionic/angular';
 import { UserProfileService } from './user-profile.service';
+import { UiUtilService } from '../util/UiUtilService';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -29,7 +29,7 @@ export class AuthService {
   constructor(
     private afAuth: AngularFireAuth,
     private userProfileService: UserProfileService,
-    private toastController: ToastController
+    private uiUtil: UiUtilService
   ) {
     // Initialize observables
     this.currentUser$ = this.afAuth.authState;
@@ -127,13 +127,6 @@ export class AuthService {
    * Displays a non-blocking toast notification when profile synchronization fails.
    */
   private async showProfileSyncFailureToast(): Promise<void> {
-    const toast = await this.toastController.create({
-      message: 'Profile synchronization failed. Some features may be limited.',
-      duration: 4000,
-      position: 'bottom',
-      color: 'warning',
-      buttons: [{ text: 'Dismiss', role: 'cancel' }]
-    });
-    await toast.present();
+    await this.uiUtil.presentToast('Profile synchronization failed. Some features may be limited.', 'warning', 4000);
   }
 }

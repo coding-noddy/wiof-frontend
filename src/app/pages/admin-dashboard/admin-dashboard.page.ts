@@ -91,6 +91,13 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
       description: 'View and export subscriber list'
     },
     {
+      name: 'Registered Users',
+      route: 'users',
+      icon: 'people-outline',
+      color: 'linear-gradient(135deg, #22c1c3, #2f80ed)',
+      description: 'View registered user profiles'
+    },
+    {
       name: 'Analytics',
       route: 'analytics',
       icon: 'analytics-outline',

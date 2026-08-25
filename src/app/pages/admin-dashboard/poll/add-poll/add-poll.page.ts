@@ -152,25 +152,23 @@ export class AddPollPage implements OnInit, OnDestroy {
             if (!this.isEditMode) {
               this.addPollForm.reset();
             }
-            this.uiUtil.presentAlert(
-              UI_MESSAGES.SUCCESS_HEADER,
+            this.uiUtil.presentToast(
               UI_MESSAGES.SUCCESS_ADD_ITEM_DESC.replace(
                 UI_MESSAGES.PLACEHOLDER,
                 ITEMS.POLL_QUESTION
               ),
-              [UI_MESSAGES.SUCCESS_CTA_TEXT]
+              'success'
             );
           },
           (error) => {
             console.log(error);
             this.loader.dismiss();
-            this.uiUtil.presentAlert(
-              UI_MESSAGES.FAILURE_HEADER,
+            this.uiUtil.presentToast(
               UI_MESSAGES.FAILURE_ADD_ITEM_DESC.replace(
                 UI_MESSAGES.PLACEHOLDER,
                 ITEMS.POLL_QUESTION
               ),
-              [UI_MESSAGES.FAILURE_CTA_TEXT]
+              'error'
             );
           }
         );

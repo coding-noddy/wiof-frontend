@@ -5,8 +5,29 @@
     <!-- Hero image with blurred background -->
     <div class="blog-hero" *ngIf="(blog.image$ | async) as blogImage">
       <div class="blog-hero-blur" [style.backgroundImage]="'url(' + blogImage + ')'"></div>
-      <img [src]="blogImage" [alt]="blog.title" class="blog-hero-img" />
+      <button class="blog-hero-trigger" type="button" (click)="openImage(blogImage, blog.title)" [attr.aria-label]="'Expand image: ' + blog.title">
+        <img [src]="blogImage" [alt]="blog.title" class="blog-hero-img" />
+        <span class="zoom-badge"><ion-icon name="expand-outline"></ion-icon></span>
+      </button>
     </div>
+
+    <ion-modal [isOpen]="!!expandedImageSrc" (didDismiss)="closeImage()" aria-label="Expanded blog image">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>{{ blog.title }}</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="closeImage()" aria-label="Close expanded image">
+                <ion-icon name="close-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content class="expanded-image-content">
+          <img [src]="expandedImageSrc" [alt]="expandedImageAlt" class="expanded-blog-image" />
+        </ion-content>
+      </ng-template>
+    </ion-modal>
 
     <!-- Article -->
     <article class="blog-article"
@@ -50,11 +71,11 @@
       <hr class="blog-divider" />
 
       <!-- Content -->
-      <div *ngIf="blog.contentDelta; else htmlContent">
+      <div *ngIf="blog.contentDelta; else htmlContent" class="blog-content-zoomable" (click)="onContentClick($event, blog.title)">
         <quill-view [content]="blog.contentDelta" format="object" theme="snow"></quill-view>
       </div>
       <ng-template #htmlContent>
-        <div class="blog-content" [innerHTML]="blog.content"></div>
+        <div class="blog-content blog-content-zoomable" (click)="onContentClick($event, blog.title)" [innerHTML]="blog.content"></div>
       </ng-template>
 
       <hr class="blog-divider" />

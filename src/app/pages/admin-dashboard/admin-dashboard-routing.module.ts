@@ -186,6 +186,13 @@ const routes: Routes = [
       )
   },
   {
+    path: 'users',
+    loadChildren: () =>
+      import('./users/users.module').then(
+        (m) => m.UsersPageModule
+      )
+  },
+  {
     path: 'analytics',
     loadChildren: () =>
       import('./analytics/analytics.module').then(

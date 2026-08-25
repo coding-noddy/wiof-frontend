@@ -3,7 +3,7 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Meta, MetaDefinition } from '@angular/platform-browser';
 import { Platform } from '@ionic/angular';
-import { filter, first } from 'rxjs/operators';
+import { distinctUntilChanged, filter } from 'rxjs/operators';
 import { ActivityService } from './services/activity.service';
 import { AuthService } from './services/auth.service';
 import { UserProfileService } from './services/user-profile.service';
@@ -28,11 +28,10 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Record visit once per app load when an authenticated user is detected.
-    // Uses filter + first to ensure single execution, fire-and-forget pattern for errors.
+    // Record a visit whenever the authenticated account changes.
     this.authService.currentUser$.pipe(
       filter(user => !!user),
-      first()
+      distinctUntilChanged((previous, current) => previous?.uid === current?.uid)
     ).subscribe(user => {
       this.userProfileService.recordVisit(user!.uid).catch(err => {
         console.warn('Visit recording failed:', err);

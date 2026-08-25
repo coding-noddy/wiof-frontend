@@ -123,7 +123,7 @@ export class ActivityService {
       const logEntry: Omit<ActivityLogEntry, 'id'> = {
         userId: entry.userId,
         activityType: entry.activityType,
-        timestamp: new Date(),
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         calendarDay
       };
 
@@ -186,7 +186,7 @@ export class ActivityService {
       const logEntry: Omit<ActivityLogEntry, 'id'> = {
         userId,
         activityType: 'daily_visit',
-        timestamp: new Date(),
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         calendarDay
       };
 
@@ -232,7 +232,7 @@ export class ActivityService {
       contentTitle: blogTitle || contentId,
       scrollDepth,
       timeSpent,
-      timestamp: new Date(),
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       calendarDay
     };
 
@@ -285,7 +285,7 @@ export class ActivityService {
       contentId,
       contentTitle: videoTitle || contentId,
       scrollDepth: Math.floor(watchPercent), // reuse scrollDepth field for watch percentage
-      timestamp: new Date(),
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       calendarDay
     };
 
@@ -326,7 +326,7 @@ export class ActivityService {
         clarityScore: dimensions.clarityScore,
         reparationScore: dimensions.reparationScore
       },
-      timestamp: new Date(),
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       calendarDay
     };
 
@@ -367,7 +367,7 @@ export class ActivityService {
       contentTitle: pollTitle || contentId,
       selectedOption,
       userEmail,
-      timestamp: new Date(),
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       calendarDay
     };
 

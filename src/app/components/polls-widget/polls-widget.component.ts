@@ -51,22 +51,19 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.wiofPollsForm = new FormGroup({
-      name: new FormControl(''),
       option: new FormControl('', [Validators.required]),
       email: new FormControl('')
     });
 
-    // Check authentication state and set up user context
-    this.authService.isAuthenticated$.pipe(first()).subscribe(isAuth => {
-      this.isAuthenticated = isAuth;
-      if (isAuth) {
-        this.authService.currentUser$.pipe(first()).subscribe(user => {
-          this.currentUser = user;
-          // Check vote status once we have the poll loaded
-          this.checkVoteStatusWhenReady();
-        });
-      }
-    });
+    // Keep the vote state tied to the currently authenticated account.
+    this.authService.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        this.currentUser = user;
+        this.isAuthenticated = !!user;
+        this.resetVoteState();
+        this.checkVoteStatusWhenReady();
+      });
 
     combineLatest([
       //TODO IP handling pending
@@ -111,8 +108,17 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.activityService.hasUserVoted(this.currentUser.uid, this.pollQuestion.pollId)
+    const userId = this.currentUser.uid;
+    const pollId = this.pollQuestion.pollId;
+
+    this.activityService.hasUserVoted(userId, pollId)
       .then(result => {
+        // Ignore a response belonging to an account that has since signed out
+        // or been replaced.
+        if (this.currentUser?.uid !== userId || this.pollQuestion?.pollId !== pollId) {
+          return;
+        }
+
         if (result.voted) {
           this.hasVoted = true;
           // Resolve option key to text if it's a legacy value like "option1"
@@ -122,6 +128,13 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
         }
       })
       .catch(err => console.warn('Vote status check failed:', err));
+  }
+
+  private resetVoteState(): void {
+    this.hasVoted = false;
+    this.votedOption = '';
+    this.showForm = true;
+    this.showPollResult = false;
   }
 
   /**
@@ -169,14 +182,7 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
         .subscribe(
           (subscribeRes) => {
             this.loader.dismiss();
-            this.uiUtil.presentAlert(
-              UI_MESSAGES.SUCCESS_POLL_VOTE_HEADER,
-              UI_MESSAGES.SUCCESS_POLL_VOTE_DESC.replace(
-                '$NAME',
-                this.wiofPollsForm.get('name').value
-              ),
-              [UI_MESSAGES.SUCCESS_CTA_TEXT]
-            );
+            this.uiUtil.presentToast(UI_MESSAGES.SUCCESS_POLL_VOTE_DESC, 'success');
 
             // Log poll vote activity for authenticated users (must be before form reset)
             this.logPollVote();
@@ -189,13 +195,12 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
           },
           (error) => {
             this.loader.dismiss();
-            this.uiUtil.presentAlert(
-              UI_MESSAGES.FAILURE_HEADER,
+            this.uiUtil.presentToast(
               UI_MESSAGES.FAILURE_ADD_ITEM_DESC.replace(
                 UI_MESSAGES.PLACEHOLDER,
                 'vote'
               ),
-              [UI_MESSAGES.FAILURE_CTA_TEXT]
+              'error'
             );
             console.log(error);
           }

@@ -61,16 +61,6 @@
             class="poll-widget-name-input"
           />
 
-          <!-- Guest users: show name input -->
-          <input
-            *ngIf="!isAuthenticated"
-            formControlName="name"
-            id="name"
-            name="name"
-            placeholder="Your name (optional)"
-            class="poll-widget-name-input"
-          />
-
           <div class="cta-and-error">
             <p *ngIf="errorShow" class="error">Please select an option</p>
             <button class="wiof-primary-btn" type="submit">

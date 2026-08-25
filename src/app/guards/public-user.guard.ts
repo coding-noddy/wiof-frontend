@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { CanActivate, Router, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ToastController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
+import { UiUtilService } from '../util/UiUtilService';
 
 /**
  * Guard for public user routes (e.g., /my-journey, /my-saved).
@@ -17,7 +17,7 @@ export class PublicUserGuard implements CanActivate {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private toastController: ToastController
+    private uiUtil: UiUtilService
   ) {}
 
   canActivate(): Observable<boolean | UrlTree> {
@@ -37,13 +37,6 @@ export class PublicUserGuard implements CanActivate {
    * Shows a non-blocking toast prompting the user to sign in.
    */
   private async showSignInPromptToast(): Promise<void> {
-    const toast = await this.toastController.create({
-      message: 'Please sign in to access this page.',
-      duration: 4000,
-      position: 'bottom',
-      color: 'warning',
-      buttons: [{ text: 'Dismiss', role: 'cancel' }]
-    });
-    await toast.present();
+    await this.uiUtil.presentToast('Please sign in to access this page.', 'warning', 4000);
   }
 }

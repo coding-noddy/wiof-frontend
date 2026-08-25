@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { Observable, from, of } from 'rxjs';
 import { switchMap, first } from 'rxjs/operators';
-import { ToastController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
 import { UserProfileService } from '../services/user-profile.service';
+import { UiUtilService } from '../util/UiUtilService';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +14,7 @@ export class AuthGuard implements CanActivate {
     private router: Router,
     private authService: AuthService,
     private userProfileService: UserProfileService,
-    private toastController: ToastController
+    private uiUtil: UiUtilService
   ) {}
 
   canActivate(): Observable<boolean> {
@@ -43,13 +43,6 @@ export class AuthGuard implements CanActivate {
   }
 
   private async showAccessDeniedToast(): Promise<void> {
-    const toast = await this.toastController.create({
-      message: 'Access denied: Admin privileges required',
-      duration: 4000,
-      position: 'bottom',
-      color: 'danger',
-      buttons: [{ text: 'Dismiss', role: 'cancel' }]
-    });
-    await toast.present();
+    await this.uiUtil.presentToast('Access denied: Admin privileges required', 'error', 4000);
   }
 }

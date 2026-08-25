@@ -6,8 +6,21 @@
 
 <ion-content>
   <div class="admin-page">
+    <nav class="breadcrumb">
+      <a routerLink="/admin-dashboard">Dashboard</a>
+      <span class="separator">/</span>
+      <span class="current">Analytics</span>
+    </nav>
+
     <div class="admin-page-header">
-      <h1>Daily Visitor Analytics</h1>
+      <div>
+        <h1>Daily Visitor Analytics</h1>
+        <p class="header-meta">Visitor and engagement activity over the last 30 days</p>
+      </div>
+      <a class="back-dashboard-link" routerLink="/admin-dashboard">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+        Back to Dashboard
+      </a>
     </div>
 
     <div class="chart-card">

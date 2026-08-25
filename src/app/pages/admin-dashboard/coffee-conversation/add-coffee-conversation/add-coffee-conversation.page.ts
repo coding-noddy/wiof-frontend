@@ -156,25 +156,23 @@ export class AddCoffeeConversationPage implements OnInit {
             if (!this.isEditMode) {
               this.addCoffeeConversationForm.reset();
             }
-            this.uiUtil.presentAlert(
-              UI_MESSAGES.SUCCESS_HEADER,
+            this.uiUtil.presentToast(
               UI_MESSAGES.SUCCESS_ADD_ITEM_DESC.replace(
                 UI_MESSAGES.PLACEHOLDER,
                 ITEMS.COFFEE_CONVERSATION
               ),
-              [UI_MESSAGES.SUCCESS_CTA_TEXT]
+              'success'
             );
           },
           (error) => {
             console.log(error);
             this.loader.dismiss();
-            this.uiUtil.presentAlert(
-              UI_MESSAGES.FAILURE_HEADER,
+            this.uiUtil.presentToast(
               UI_MESSAGES.FAILURE_ADD_ITEM_DESC.replace(
                 UI_MESSAGES.PLACEHOLDER,
                 ITEMS.COFFEE_CONVERSATION
               ),
-              [UI_MESSAGES.FAILURE_CTA_TEXT]
+              'error'
             );
           }
         );

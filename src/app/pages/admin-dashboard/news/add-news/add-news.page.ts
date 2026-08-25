@@ -155,25 +155,23 @@ export class AddNewsPage implements OnInit {
               this.imageToDisplay = null;
               this.imageToSave = null;
             }
-            this.uiUtil.presentAlert(
-              UI_MESSAGES.SUCCESS_HEADER,
+            this.uiUtil.presentToast(
               UI_MESSAGES.SUCCESS_ADD_ITEM_DESC.replace(
                 UI_MESSAGES.PLACEHOLDER,
                 ITEMS.NEWS
               ),
-              [UI_MESSAGES.SUCCESS_CTA_TEXT]
+              'success'
             );
           },
           (error) => {
             console.log(error);
             this.loader.dismiss();
-            this.uiUtil.presentAlert(
-              UI_MESSAGES.FAILURE_HEADER,
+            this.uiUtil.presentToast(
               UI_MESSAGES.FAILURE_ADD_ITEM_DESC.replace(
                 UI_MESSAGES.PLACEHOLDER,
                 ITEMS.NEWS
               ),
-              [UI_MESSAGES.FAILURE_CTA_TEXT]
+              'error'
             );
           }
         );

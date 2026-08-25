@@ -1,13 +1,13 @@
 import { Component, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
 import { Subject } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
 import firebase from 'firebase/compat/app';
 
 import { AuthService } from 'src/app/services/auth.service';
 import { UserProfileService } from 'src/app/services/user-profile.service';
+import { UiUtilService } from 'src/app/util/UiUtilService';
 import { noWhitespaceOnlyValidator, minArrayLength, maxArrayLength } from './settings.validators';
 import { ELEMENTS } from 'src/app/app.constants';
 
@@ -55,7 +55,7 @@ export class SettingsPage implements OnDestroy {
   constructor(
     private authService: AuthService,
     private userProfileService: UserProfileService,
-    private toastController: ToastController,
+    private uiUtil: UiUtilService,
     private router: Router
   ) {}
 
@@ -169,19 +169,9 @@ export class SettingsPage implements OnDestroy {
       await this.userProfileService.updateProfile(this.lastUid!, sanitizedPayload);
       await this.userProfileService.updatePreferredElements(this.lastUid!, selectedElements);
 
-      const toast = await this.toastController.create({
-        message: 'Settings saved successfully',
-        duration: 5000,
-        position: 'bottom'
-      });
-      await toast.present();
+      await this.uiUtil.presentToast('Settings saved successfully', 'success');
     } catch (error) {
-      const toast = await this.toastController.create({
-        message: 'Failed to save settings. Please try again.',
-        duration: 5000,
-        position: 'bottom'
-      });
-      await toast.present();
+      await this.uiUtil.presentToast('Failed to save settings. Please try again.', 'error');
     } finally {
       this.isSaving = false;
     }
@@ -197,13 +187,7 @@ export class SettingsPage implements OnDestroy {
       await this.authService.logout();
       this.router.navigate(['/home']);
     } catch (error) {
-      const toast = await this.toastController.create({
-        message: 'Sign-out failed. Please try again.',
-        duration: 5000,
-        position: 'bottom',
-        color: 'danger'
-      });
-      await toast.present();
+      await this.uiUtil.presentToast('Sign-out failed. Please try again.', 'error', 5000);
       this.isSigningOut = false;
     }
   }

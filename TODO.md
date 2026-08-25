@@ -8,28 +8,28 @@
 ## 🔴 WIOF Fixes (Next Sprint)
 
 ### Bugs
-- **[HIGH]** Poll section — shows previous user's voted option after logout/login with different account
-  - "You voted for" state is cached and not cleared on logout
-  - Should reset poll vote state on user change so current user sees their own vote (or no vote if they haven't voted)
+- ~~**[HIGH]** Poll section — shows previous user's voted option after logout/login with different account~~ ✅ FIXED
+  - ~~"You voted for" state is cached and not cleared on logout~~
+  - ~~Should reset poll vote state on user change so current user sees their own vote (or no vote if they haven't voted)~~
 
-- another points is when admin sees view mode for blogs and our actual blog view page for users, both should be same as current blogs for our general public right? cause admin sees something different, public see something different that should not happend, during blog editing only admin should clearly know how it will look on actual page
-- another point is on public blogs page, some images might have text which would be too small to read, so either we can add some zoom in option or like firm in focus on home page, we can add image expand option which opens that image in new popup and take decect width height for visibility. Check what's good and recommended
+- ~~Admin blog preview should match the public blog view~~ ✅ FIXED
+- ~~Public blog images should support expand/zoom for small text~~ ✅ FIXED (image modal)
 - Arent the public user activities recorded for admin users, do we need to let them use different public account for their general application use purpose?? what do you suggest, let admin  users use public account also or better they create separate account for that purpose.
 
 
-- **[HIGH]** My Journey page — shows stale data after switching users without page refresh
-  - If My Journey is already open and user logs in with a different account, the page still displays previous user's journey data
-  - Profile icon updates but page content doesn't re-fetch for the new user
-  - Should subscribe to auth state changes and reload journey data when user changes
+- ~~**[HIGH]** My Journey page — shows stale data after switching users without page refresh~~ ✅ FIXED
+  - ~~If My Journey is already open and user logs in with a different account, the page still displays previous user's journey data~~
+  - ~~Profile icon updates but page content doesn't re-fetch for the new user~~
+  - ~~Should subscribe to auth state changes and reload journey data when user changes~~
 
-- **[MED]** Poll votes not being recorded for admin users
-  - Voting as an admin may not persist — needs investigation
-  - Could be a Firestore rules issue or activity_log rate-limiting (`timestamp == request.time`) blocking the write
+- ~~**[MED]** Poll votes not being recorded for admin users~~ ✅ FIXED
+  - ~~Voting as an admin may not persist — needs investigation~~
+  - ~~Could be a Firestore rules issue or activity_log rate-limiting (`timestamp == request.time`) blocking the write~~
 
-- some issue with analytics as well, when admin logged in first time,it recorded the visit, when as public user I logged in the chart still shows one user only, note down in TODO
+- ~~Some issue with analytics: when admin logged in first, then a public user logs in, the chart still shows one user only~~ ✅ FIXED
 
-- One more thing is, we should have option to go back to admin dashboard home from analytics page
-- Also in admin dashboard we should be able to see users who have  registered our website, just basic info like, name, email and interested elements in table format like other pages is enough. We can add user block option in future in case some user is abusive, but that we can keep for futuer maybe
+- ~~Analytics page should provide an option to return to the admin dashboard home~~ ✅ FIXED
+- ~~Admin dashboard should show registered users with name, email, and interested elements~~ ✅ DONE (blocking deferred)
 
 ### Admin Dashboard
 - ~~**[HIGH]** Refine admin dashboard — modern card-based UI, better navigation, responsive layout~~ ✅ DONE
@@ -40,6 +40,7 @@
 - **[MED]** Environment Calendar — remove external padding, make calendar dates area bigger
 - ~~**[MED]** Polls widget — show results from previous polls, show correct answers~~ ✅ DONE
 - **[LOW]** AQI temperature — values come directly from monitoring stations via WAQI API (correct as reported)
+- **[LOW]** Admin Manage Polls — add optional "view voter emails" detail view for guest votes (not needed now)
 
 ### Responsiveness & Mobile
 - **[HIGH]** Widget responsiveness — ensure all 5 widgets display properly on mobile (proper padding, no overflow)

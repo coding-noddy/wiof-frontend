@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { AppCommonModule } from 'src/app/app-common.module';
@@ -16,6 +16,7 @@ import { CourseInFocusComponent } from '../../components/course-in-focus/course-
     HomePageRoutingModule,
     AppCommonModule
   ],
-  declarations: [HomePage, NgoInFocusComponent, CourseInFocusComponent]
+  declarations: [HomePage, NgoInFocusComponent, CourseInFocusComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class HomePageModule {}

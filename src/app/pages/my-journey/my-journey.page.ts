@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Observable, of, Subject } from 'rxjs';
-import { takeUntil, first, catchError } from 'rxjs/operators';
+import { takeUntil, first, catchError, distinctUntilChanged } from 'rxjs/operators';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { AuthService } from 'src/app/services/auth.service';
 import { ActivityService, EngagementMetrics } from 'src/app/services/activity.service';
@@ -15,6 +15,7 @@ import { QualityReadEntry, EqHistoryEntry, PollHistoryEntry, VideoWatchHistoryEn
 })
 export class MyJourneyPage implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
+  private activeUserId: string | null = null;
 
   // State flags for existing sections
   isLoading = true;
@@ -71,7 +72,21 @@ export class MyJourneyPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Initial load handled by ionViewWillEnter
+    this.authService.currentUser$
+      .pipe(
+        distinctUntilChanged((previous, current) => previous?.uid === current?.uid),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(user => {
+        this.activeUserId = user?.uid || null;
+        this.resetData();
+
+        if (this.activeUserId) {
+          this.loadData(this.activeUserId);
+        } else {
+          this.isLoading = false;
+        }
+      });
   }
 
   /**
@@ -79,7 +94,9 @@ export class MyJourneyPage implements OnInit, OnDestroy {
    * including back-navigation. Ensures fresh data on every visit.
    */
   ionViewWillEnter(): void {
-    this.loadData();
+    if (this.activeUserId) {
+      this.loadData(this.activeUserId);
+    }
   }
 
   ngOnDestroy(): void {
@@ -90,42 +107,26 @@ export class MyJourneyPage implements OnInit, OnDestroy {
   /**
    * Loads all engagement data for the current user.
    */
-  loadData(): void {
+  loadData(userId: string): void {
     this.isLoading = true;
     this.hasError = false;
-
-    this.authService.currentUser$
-      .pipe(
-        first(user => user !== null),
-        takeUntil(this.destroy$)
-      )
-      .subscribe({
-        next: user => {
-          if (!user) {
-            this.isLoading = false;
-            return;
-          }
-          this.loadMetrics(user.uid);
-          this.loadSavedContent(user.uid);
-          this.loadProfile(user.uid);
-          // Load new sections in parallel
-          this.loadQualityReads(user.uid);
-          this.loadEqHistory(user.uid);
-          this.loadPollHistory(user.uid);
-          this.loadVideoWatchHistory(user.uid);
-        },
-        error: () => {
-          this.isLoading = false;
-          this.hasError = true;
-        }
-      });
+    this.loadMetrics(userId);
+    this.loadSavedContent(userId);
+    this.loadProfile(userId);
+    // Load new sections in parallel
+    this.loadQualityReads(userId);
+    this.loadEqHistory(userId);
+    this.loadPollHistory(userId);
+    this.loadVideoWatchHistory(userId);
   }
 
   /**
    * Retry loading data after an error.
    */
   retry(): void {
-    this.loadData();
+    if (this.activeUserId) {
+      this.loadData(this.activeUserId);
+    }
   }
 
   /**
@@ -154,25 +155,21 @@ export class MyJourneyPage implements OnInit, OnDestroy {
    * Retry loading a specific section.
    */
   retrySection(section: 'qualityReads' | 'eqHistory' | 'pollHistory' | 'videoWatchHistory'): void {
-    this.authService.currentUser$
-      .pipe(first(user => user !== null), takeUntil(this.destroy$))
-      .subscribe(user => {
-        if (!user) return;
-        switch (section) {
-          case 'qualityReads':
-            this.loadQualityReads(user.uid);
-            break;
-          case 'eqHistory':
-            this.loadEqHistory(user.uid);
-            break;
-          case 'pollHistory':
-            this.loadPollHistory(user.uid);
-            break;
-          case 'videoWatchHistory':
-            this.loadVideoWatchHistory(user.uid);
-            break;
-        }
-      });
+    if (!this.activeUserId) return;
+    switch (section) {
+      case 'qualityReads':
+        this.loadQualityReads(this.activeUserId);
+        break;
+      case 'eqHistory':
+        this.loadEqHistory(this.activeUserId);
+        break;
+      case 'pollHistory':
+        this.loadPollHistory(this.activeUserId);
+        break;
+      case 'videoWatchHistory':
+        this.loadVideoWatchHistory(this.activeUserId);
+        break;
+    }
   }
 
   /**
@@ -186,14 +183,33 @@ export class MyJourneyPage implements OnInit, OnDestroy {
    * Retry all failed sections.
    */
   retryAllSections(): void {
-    this.authService.currentUser$
-      .pipe(first(user => user !== null), takeUntil(this.destroy$))
-      .subscribe(user => {
-        if (!user) return;
-        if (this.qualityReadsError) this.loadQualityReads(user.uid);
-        if (this.eqHistoryError) this.loadEqHistory(user.uid);
-        if (this.pollHistoryError) this.loadPollHistory(user.uid);
-      });
+    if (!this.activeUserId) return;
+    if (this.qualityReadsError) this.loadQualityReads(this.activeUserId);
+    if (this.eqHistoryError) this.loadEqHistory(this.activeUserId);
+    if (this.pollHistoryError) this.loadPollHistory(this.activeUserId);
+  }
+
+  private resetData(): void {
+    this.isLoading = true;
+    this.hasError = false;
+    this.metrics = null;
+    this.currentStreak = 0;
+    this.savedContentCount = 0;
+    this.savedContent = [];
+    this.hasSavedContent = false;
+    this.qualityReads = [];
+    this.qualityReadCount = 0;
+    this.eqHistory = [];
+    this.pollHistory = [];
+    this.videoWatchHistory = [];
+    this.qualityReadsLoading = true;
+    this.eqHistoryLoading = true;
+    this.pollHistoryLoading = true;
+    this.videoWatchHistoryLoading = true;
+    this.qualityReadsError = false;
+    this.eqHistoryError = false;
+    this.pollHistoryError = false;
+    this.videoWatchHistoryError = false;
   }
 
   /**
