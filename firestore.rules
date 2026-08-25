@@ -37,16 +37,15 @@ service cloud.firestore {
       allow read: if isAuthenticated()
         && resource.data.userId == request.auth.uid;
 
-      // Write only own documents with rate limiting (1 write/second)
-      // Rate limit enforced by requiring timestamp == request.time (prevents backdated writes)
+      // Write only own documents with a server timestamp (prevents backdated writes)
       allow create: if isAuthenticated()
         && request.resource.data.userId == request.auth.uid
-        && request.resource.data.timestamp == request.time;
+        && request.resource.data.savedAt == request.time;
 
       allow update: if isAuthenticated()
         && resource.data.userId == request.auth.uid
         && request.resource.data.userId == request.auth.uid
-        && request.resource.data.timestamp == request.time;
+        && request.resource.data.savedAt == request.time;
 
       allow delete: if isAuthenticated()
         && resource.data.userId == request.auth.uid;
