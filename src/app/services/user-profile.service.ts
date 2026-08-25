@@ -1,10 +1,50 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { AngularFireStorage } from '@angular/fire/compat/storage';
+import { Observable, from } from 'rxjs';
+import { last, map, switchMap } from 'rxjs/operators';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import { FIREBASE_COLLECTION } from '../app.constants';
+
+/** Storage folder that holds per-user avatar images. */
+export const USER_AVATAR_STORAGE_FOLDER = 'user-avatars';
+
+/** MIME types accepted for profile picture uploads. */
+export const ALLOWED_AVATAR_MIME_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
+
+/** Maximum accepted profile picture size, in bytes (1 MB). */
+export const MAX_AVATAR_SIZE_BYTES = 1 * 1024 * 1024;
+
+/** Fields a signed-in user is allowed to edit on their own profile document. */
+const EDITABLE_PROFILE_FIELDS: Array<keyof UserProfile> = ['displayName', 'photoURL', 'preferredElements'];
+
+export interface AvatarValidationResult {
+  valid: boolean;
+  error?: string;
+}
+
+/**
+ * Validates a candidate avatar file against the allowed type and size constraints.
+ * Pure function so it can be unit tested without touching Firebase.
+ */
+export function validateAvatarFile(file: File): AvatarValidationResult {
+  if (!file) {
+    return { valid: false, error: 'No file selected.' };
+  }
+  if (!ALLOWED_AVATAR_MIME_TYPES.includes(file.type)) {
+    return { valid: false, error: 'Please choose a JPG or PNG image.' };
+  }
+  if (file.size > MAX_AVATAR_SIZE_BYTES) {
+    return { valid: false, error: 'Image must be smaller than 1 MB.' };
+  }
+  return { valid: true };
+}
+
+/** Maps a validated image file to the storage file extension used to store it. */
+export function getAvatarExtension(file: File): 'jpg' | 'png' {
+  return file.type === 'image/png' ? 'png' : 'jpg';
+}
 
 /**
  * Represents a user profile document stored in the Firestore `users` collection.
@@ -95,7 +135,10 @@ export class UserProfileService {
 
   private roleCache: Map<string, 'admin' | 'public'> = new Map();
 
-  constructor(private firestore: AngularFirestore) {}
+  constructor(
+    private firestore: AngularFirestore,
+    private storage: AngularFireStorage
+  ) {}
 
   /**
    * Retrieves a user profile by UID.
@@ -160,11 +203,17 @@ export class UserProfileService {
   }
 
   /**
-   * Strips the `role` field from any update payload to prevent
-   * client-side role modifications.
+   * Whitelists an update payload down to the fields a user may self-edit
+   * (displayName, photoURL, preferredElements), dropping everything else
+   * (role, uid, email, counters, timestamps, etc.).
    */
   sanitizeUpdate(payload: Partial<UserProfile>): Partial<UserProfile> {
-    const { role, ...sanitized } = payload;
+    const sanitized: Partial<UserProfile> = {};
+    for (const field of EDITABLE_PROFILE_FIELDS) {
+      if (field in payload) {
+        (sanitized as any)[field] = (payload as any)[field];
+      }
+    }
     return sanitized;
   }
 
@@ -278,6 +327,71 @@ export class UserProfileService {
       .collection(FIREBASE_COLLECTION.USERS)
       .doc(uid)
       .update({ preferredElements: trimmedElements });
+  }
+
+  /**
+   * Uploads a validated avatar file to Storage at `user-avatars/{uid}/profile.{ext}`,
+   * removing any stale variant with a different extension first so a user never
+   * accumulates orphaned avatar files. Resolves with the download URL, with a
+   * cache-busting suffix appended so re-uploads to the same path (same Storage
+   * download token) are not served stale from browser/CDN cache.
+   */
+  uploadAvatar(uid: string, file: File): Observable<string> {
+    const validation = validateAvatarFile(file);
+    if (!validation.valid) {
+      throw new Error(validation.error);
+    }
+
+    const extension = getAvatarExtension(file);
+    const path = `${USER_AVATAR_STORAGE_FOLDER}/${uid}/profile.${extension}`;
+
+    return from(this.deleteOtherAvatarVariants(uid, extension)).pipe(
+      switchMap(() => {
+        const ref = this.storage.ref(path);
+        const task = this.storage.upload(path, file);
+        return task.snapshotChanges().pipe(
+          last(),
+          switchMap(() => ref.getDownloadURL()),
+          map((url: string) => `${url}${url.includes('?') ? '&' : '?'}v=${Date.now()}`)
+        );
+      })
+    );
+  }
+
+  /**
+   * Removes any stored avatar variants for the user and clears photoURL in Firestore.
+   */
+  async removeAvatar(uid: string): Promise<void> {
+    await this.deleteAllAvatarVariants(uid);
+    await this.updatePhotoURL(uid, '');
+  }
+
+  /**
+   * Persists a new photoURL value to the user's Firestore profile via the
+   * standard sanitized update path.
+   */
+  async updatePhotoURL(uid: string, photoURL: string): Promise<void> {
+    await this.updateProfile(uid, this.sanitizeUpdate({ photoURL }));
+  }
+
+  /** Deletes avatar variants other than the one currently being written, ignoring not-found errors. */
+  private async deleteOtherAvatarVariants(uid: string, keepExtension: 'jpg' | 'png'): Promise<void> {
+    const extensions: Array<'jpg' | 'png'> = ['jpg', 'png'].filter(ext => ext !== keepExtension) as Array<'jpg' | 'png'>;
+    await Promise.all(extensions.map(ext => this.deleteAvatarVariant(uid, ext)));
+  }
+
+  /** Deletes every known avatar variant for the user, ignoring not-found errors. */
+  private async deleteAllAvatarVariants(uid: string): Promise<void> {
+    await Promise.all((['jpg', 'png'] as const).map(ext => this.deleteAvatarVariant(uid, ext)));
+  }
+
+  private async deleteAvatarVariant(uid: string, extension: 'jpg' | 'png'): Promise<void> {
+    const path = `${USER_AVATAR_STORAGE_FOLDER}/${uid}/profile.${extension}`;
+    try {
+      await this.storage.ref(path).delete().toPromise();
+    } catch {
+      // No existing file for this extension — nothing to clean up.
+    }
   }
 
   /** Resets engagement counters while preserving the user's account and profile identity. */

@@ -17,17 +17,32 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
+    // Fields a signed-in user may change on their own profile document via the
+    // Settings page (display name, avatar, preferred elements). System-managed
+    // fields such as role, uid, email and joinedDate may never change, and any
+    // other write must stay within this known set of keys.
+    // Uses get(key, default) instead of direct field access because legacy
+    // profile documents may not have every field (e.g. 'role'), and reading a
+    // missing map key directly throws and denies the whole request.
+    function isValidOwnProfileUpdate() {
+      let allowedKeys = ['displayName', 'photoURL', 'preferredElements',
+        'loginCount', 'lastLogin', 'daysVisited', 'currentStreak', 'savedBlogsCount'];
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(allowedKeys)
+        && request.resource.data.get('role', null) == resource.data.get('role', null)
+        && request.resource.data.get('uid', null) == resource.data.get('uid', null)
+        && request.resource.data.get('email', null) == resource.data.get('email', null)
+        && request.resource.data.get('joinedDate', null) == resource.data.get('joinedDate', null);
+    }
+
     // ─── User Profiles ──────────────────────────────────────────────────────
 
     match /users/{userId} {
       // Users can read their own profile; admins can read profiles for administration.
       allow read: if isOwner(userId) || isAdmin();
 
-      // Users can only create/update their own profile
-      // Deny update of the 'role' field from client
+      // Users can only create/update their own profile.
       allow create: if isOwner(userId);
-      allow update: if isOwner(userId)
-        && (!('role' in request.resource.data) || request.resource.data.role == resource.data.role);
+      allow update: if isOwner(userId) && isValidOwnProfileUpdate();
     }
 
     // ─── User Saved Content ─────────────────────────────────────────────────

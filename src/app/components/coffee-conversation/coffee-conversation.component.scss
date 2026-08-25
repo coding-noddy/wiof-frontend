@@ -73,6 +73,8 @@ $element-themes: (
         min-height: 0;
         max-height: none;
         aspect-ratio: 16 / 9;
+        --ion-grid-column-padding: 0;
+        padding: 0;
       }
     }
 
@@ -169,6 +171,7 @@ $element-themes: (
         position: relative;
         overflow: hidden;
         width: 100%;
+        padding: 0;
         background: #f1f7ff;
       }
 
@@ -177,12 +180,34 @@ $element-themes: (
         display: flex;
         flex-direction: column;
         justify-content: center;
+        position: relative;
 
         h2 {
           margin-top: 0;
           font-size: 1.35rem;
           margin-bottom: 0.75rem;
           color: #10263c;
+        }
+
+        .conversation-meta {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.4rem 0.85rem;
+          margin-bottom: 0.85rem;
+          color: rgba(16, 38, 60, 0.62);
+          font-size: 0.78rem;
+          font-weight: 600;
+
+          span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+          }
+
+          ion-icon {
+            color: $home-color-dark;
+            font-size: 0.95rem;
+          }
         }
 
         p {
@@ -194,6 +219,27 @@ $element-themes: (
           margin-bottom: 1.2rem;
         }
 
+        .conversation-cta {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.35rem;
+          padding: 0.55rem 0.85rem;
+          border-radius: 999px;
+          background: rgba(16, 38, 60, 0.08);
+          color: #10263c;
+          font-size: 0.82rem;
+          font-weight: 700;
+          text-decoration: none;
+          transition: background 0.2s ease, transform 0.2s ease;
+
+          ion-icon { font-size: 0.95rem; }
+
+          &:hover {
+            background: rgba(16, 38, 60, 0.14);
+            transform: translateX(2px);
+          }
+        }
+
         // Default interviewee box (home / blue) — element overrides are above
         .interviewee-details {
           background: lighten($home-color-light, 4%);
@@ -201,13 +247,20 @@ $element-themes: (
           padding: 14px;
           margin: 1rem 0;
 
-          span {
-            font-weight: $font-weight-medium;
-          }
-
-          a {
+          .interviewee-trigger {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            cursor: pointer;
             font-weight: 700;
             color: $home-color-dark;
+
+            ion-icon { font-size: 1.05rem; }
+
+            &:hover { text-decoration: underline; }
           }
         }
       }
@@ -216,47 +269,67 @@ $element-themes: (
         z-index: 1000;
         display: block;
         position: absolute;
-        overflow: hidden;
-        background: white;
-        border: 1px solid lightgrey;
-        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.12);
-        width: 92%;
-        border-radius: 12px;
-        height: 90%;
-        top: 4%;
-        left: 4%;
+        inset: 1rem;
+        overflow: auto;
+        background: rgba(255, 255, 255, 0.98);
+        border: 1px solid rgba(16, 38, 60, 0.1);
+        box-shadow: 0 18px 50px rgba(16, 38, 60, 0.2);
+        border-radius: 18px;
 
         .header {
-          background: $dark-color;
-          text-align: center;
+          position: sticky;
+          top: 0;
+          z-index: 1;
+          background: #f4f7fb;
+          border-bottom: 1px solid rgba(16, 38, 60, 0.08);
           display: flex;
           justify-content: space-between;
           align-items: center;
           padding: 0.75rem 1rem;
 
+          .header-title {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            min-width: 0;
+          }
+
+          ion-icon {
+            color: $home-color-dark;
+            font-size: 1.15rem;
+          }
+
           h3 {
             font-weight: 600;
-            color: $light-color;
+            color: $dark-color;
             margin: 0;
             font-size: 1rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
 
           button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             border: none;
-            padding: 0.55rem;
+            padding: 0.4rem;
             border-radius: 50%;
             color: $dark-color;
-            background: $light-color;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            background: rgba(16, 38, 60, 0.08);
+            flex-shrink: 0;
+
+            &:hover { background: rgba(16, 38, 60, 0.15); }
           }
         }
 
         p {
           overflow: auto;
-          padding: 14px 1.2rem;
-          height: calc(100% - 64px);
+          padding: 1rem 1.15rem 1.25rem;
           margin: 0;
-          color: #333;
+          color: #475569;
+          line-height: 1.65;
         }
       }
     }
@@ -290,6 +363,11 @@ $element-themes: (
         h2 { font-size: 1.1rem; margin-bottom: 0.5rem; }
         p { margin-bottom: 0.5rem; }
         .interviewee-details { margin: 0.5rem 0; padding: 10px; }
+        .conversation-meta { margin-bottom: 0.6rem; font-size: 0.72rem; }
+
+        .about-interviewee {
+          inset: 0.65rem;
+        }
       }
     }
 

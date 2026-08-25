@@ -6,6 +6,23 @@ service firebase.storage {
         && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // User-uploaded profile pictures, scoped per-user.
+    // Read is public (like the rest of the app's media) because these are
+    // rendered via plain <img> tags, which never send a Firebase Auth token —
+    // an owner-only read rule would 403 every request and the photo would
+    // never actually display.
+    match /user-avatars/{userId}/{fileName} {
+      allow read: if true;
+      allow write: if isOwner(userId)
+        && request.resource.size < 1 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|jpg|png)');
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+
     // Published media is public, but uploads and mutations are admin-only.
     match /{allPaths=**} {
       allow read: if true;
@@ -16,3 +33,4 @@ service firebase.storage {
     }
   }
 }
+

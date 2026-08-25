@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -6,7 +6,7 @@ import { first, takeUntil } from 'rxjs/operators';
 import firebase from 'firebase/compat/app';
 
 import { AuthService } from 'src/app/services/auth.service';
-import { UserProfileService } from 'src/app/services/user-profile.service';
+import { UserProfileService, validateAvatarFile } from 'src/app/services/user-profile.service';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 import { noWhitespaceOnlyValidator, minArrayLength, maxArrayLength } from './settings.validators';
 import { ELEMENTS } from 'src/app/app.constants';
@@ -21,6 +21,8 @@ import { SavedContentService } from 'src/app/services/saved-content.service';
 export class SettingsPage implements OnDestroy {
   private destroy$ = new Subject<void>();
   private lastUid: string | null = null;
+
+  @ViewChild('avatarFileInput') avatarFileInputRef!: ElementRef<HTMLInputElement>;
 
   // Elements list in fixed order
   readonly elementsList: string[] = [
@@ -56,6 +58,13 @@ export class SettingsPage implements OnDestroy {
   userEmail = '';
   memberSince = '';
   private previousElements: string[] = [];
+
+  // Avatar state
+  photoURL = '';
+  avatarPreviewUrl: string | null = null;
+  selectedAvatarFile: File | null = null;
+  isUploadingPhoto = false;
+  isRemovingPhoto = false;
 
   constructor(
     private authService: AuthService,
@@ -116,6 +125,7 @@ export class SettingsPage implements OnDestroy {
 
             // Populate read-only fields
             this.userEmail = profile.email || '';
+            this.photoURL = profile.photoURL || '';
             this.memberSince = profile.joinedDate
               ? this.formatJoinedDate(profile.joinedDate)
               : '';
@@ -266,7 +276,128 @@ export class SettingsPage implements OnDestroy {
     this.previousElements = [...newValue];
   }
 
+  /**
+   * Returns the fallback initial shown when no profile photo is available.
+   */
+  get avatarInitial(): string {
+    const name = (this.profileForm.get('displayName')!.value as string) || '';
+    if (name.trim().length > 0) {
+      return name.trim().charAt(0).toUpperCase();
+    }
+    return this.userEmail ? this.userEmail.charAt(0).toUpperCase() : 'U';
+  }
+
+  /**
+   * Opens the native file picker for choosing a new avatar image.
+   */
+  triggerAvatarFilePicker(): void {
+    if (this.isUploadingPhoto || this.isRemovingPhoto) {
+      return;
+    }
+    this.avatarFileInputRef.nativeElement.click();
+  }
+
+  /**
+   * Validates the chosen file and shows a local preview.
+   * Invalid files (wrong type/too large) are rejected with a toast.
+   */
+  onAvatarFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files[0];
+    input.value = '';
+
+    if (!file) {
+      return;
+    }
+
+    const validation = validateAvatarFile(file);
+    if (!validation.valid) {
+      this.uiUtil.presentToast(validation.error || 'Invalid image file.', 'error');
+      return;
+    }
+
+    this.discardPendingAvatarPreview();
+    this.selectedAvatarFile = file;
+    this.avatarPreviewUrl = URL.createObjectURL(file);
+  }
+
+  /**
+   * Discards the currently selected (not-yet-saved) avatar preview.
+   */
+  cancelAvatarSelection(): void {
+    this.discardPendingAvatarPreview();
+  }
+
+  /**
+   * Uploads the selected avatar file to Storage, updates Firestore and
+   * Firebase Auth photoURL, and refreshes local state. Restores the
+   * previous avatar if any step fails.
+   */
+  async confirmAvatarUpload(): Promise<void> {
+    if (!this.selectedAvatarFile || !this.lastUid || this.isUploadingPhoto || this.isRemovingPhoto) {
+      return;
+    }
+
+    const uid = this.lastUid;
+    const file = this.selectedAvatarFile;
+    const previousPhotoURL = this.photoURL;
+
+    this.isUploadingPhoto = true;
+    try {
+      const downloadURL = await this.userProfileService.uploadAvatar(uid, file).toPromise();
+      await this.userProfileService.updatePhotoURL(uid, downloadURL as string);
+      await this.authService.updateAuthProfile({ photoURL: downloadURL as string });
+
+      this.photoURL = downloadURL as string;
+      this.discardPendingAvatarPreview();
+      await this.uiUtil.presentToast('Profile photo updated.', 'success');
+    } catch (error) {
+      console.error('Avatar upload failed:', error);
+      this.photoURL = previousPhotoURL;
+      this.discardPendingAvatarPreview();
+      await this.uiUtil.presentToast('Could not update your profile photo. Please try again.', 'error');
+    } finally {
+      this.isUploadingPhoto = false;
+    }
+  }
+
+  /**
+   * Removes the current avatar from Storage/Firestore/Auth. Restores the
+   * previous avatar reference locally if removal fails.
+   */
+  async removeAvatarPhoto(): Promise<void> {
+    if (!this.lastUid || !this.photoURL || this.isUploadingPhoto || this.isRemovingPhoto) {
+      return;
+    }
+
+    const uid = this.lastUid;
+    const previousPhotoURL = this.photoURL;
+
+    this.isRemovingPhoto = true;
+    try {
+      await this.userProfileService.removeAvatar(uid);
+      await this.authService.updateAuthProfile({ photoURL: '' });
+      this.photoURL = '';
+      await this.uiUtil.presentToast('Profile photo removed.', 'success');
+    } catch (error) {
+      console.error('Avatar removal failed:', error);
+      this.photoURL = previousPhotoURL;
+      await this.uiUtil.presentToast('Could not remove your profile photo. Please try again.', 'error');
+    } finally {
+      this.isRemovingPhoto = false;
+    }
+  }
+
+  private discardPendingAvatarPreview(): void {
+    if (this.avatarPreviewUrl) {
+      URL.revokeObjectURL(this.avatarPreviewUrl);
+    }
+    this.avatarPreviewUrl = null;
+    this.selectedAvatarFile = null;
+  }
+
   ngOnDestroy(): void {
+    this.discardPendingAvatarPreview();
     this.destroy$.next();
     this.destroy$.complete();
   }

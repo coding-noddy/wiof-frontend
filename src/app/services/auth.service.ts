@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { Observable } from 'rxjs';
+import { Observable, Subject, merge } from 'rxjs';
 import { map, first } from 'rxjs/operators';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
@@ -27,6 +27,10 @@ export class AuthService {
 
   private modularAuth: Auth;
 
+  /** Emits the mutated firebase.User after an in-place profile update (e.g. avatar change) so
+   *  subscribers (header/avatar) re-render immediately without waiting for a new auth state event. */
+  private userProfileRefreshed$ = new Subject<firebase.User | null>();
+
   constructor(
     private afAuth: AngularFireAuth,
     private userProfileService: UserProfileService,
@@ -34,7 +38,7 @@ export class AuthService {
     private router: Router
   ) {
     // Initialize observables
-    this.currentUser$ = this.afAuth.authState;
+    this.currentUser$ = merge(this.afAuth.authState, this.userProfileRefreshed$);
     this.isAuthenticated$ = this.currentUser$.pipe(map(user => !!user));
 
     // Get or create the modular Firebase app for auth operations
@@ -103,6 +107,20 @@ export class AuthService {
     await this.modularAuth.signOut();
     await this.afAuth.signOut();
     await this.router.navigate(['/home']);
+  }
+
+  /**
+   * Updates the currently signed-in Firebase Auth user's profile (e.g. photoURL,
+   * displayName) and notifies subscribers of currentUser$ so UI bound to the
+   * auth user (header avatar) refreshes immediately without logout/reload.
+   */
+  async updateAuthProfile(updates: { displayName?: string; photoURL?: string }): Promise<void> {
+    const user = await this.afAuth.currentUser;
+    if (!user) {
+      return;
+    }
+    await user.updateProfile(updates);
+    this.userProfileRefreshed$.next(user);
   }
 
   /**
