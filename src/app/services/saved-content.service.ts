@@ -69,7 +69,7 @@ export class SavedContentService {
       contentType: item.contentType,
       contentTitle: item.contentTitle,
       contentThumbnail: item.contentThumbnail,
-      savedAt: new Date()
+      savedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
 
     await this.firestore

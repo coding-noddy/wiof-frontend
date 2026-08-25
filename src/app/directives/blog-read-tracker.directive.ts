@@ -118,11 +118,9 @@ export class BlogReadTrackerDirective implements OnInit, OnDestroy {
    * falling back to scroll event listener otherwise.
    */
   private initScrollTracking(): void {
-    if (typeof IntersectionObserver !== 'undefined') {
-      this.initIntersectionObserver();
-    } else {
-      this.initScrollListener();
-    }
+    // Intersection ratio measures visible area, not how far the article was read.
+    // Track document scrolling so long articles can reach the completion threshold.
+    this.initScrollListener();
   }
 
   /**
