@@ -16,10 +16,9 @@
   <div *ngIf="videoList; else loading" class="slider-wrap">
     <swiper-container
       #swiperRef
-      [attr.slides-per-view]="4"
+      [attr.slides-per-view]="slidesPerView"
       [attr.space-between]="10"
       [attr.free-mode]="true"
-      breakpoints='{"0":{"slidesPerView":1},"480":{"slidesPerView":2},"767":{"slidesPerView":3},"1024":{"slidesPerView":4}}'
     >
       <swiper-slide *ngFor="let video of videoList">
         <div class="video-card" [routerLink]="['video', video.url]">

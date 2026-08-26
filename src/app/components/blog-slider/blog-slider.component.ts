@@ -13,6 +13,7 @@ export class BlogSliderComponent implements OnInit {
   blogSliderClass: string;
   slideOpts = BLOG_SLIDER_OPTIONS;
   width: number;
+  slidesPerView: number;
 
   @HostListener('window:resize', [])
   public onResize() {
@@ -25,12 +26,26 @@ export class BlogSliderComponent implements OnInit {
 
   detectScreenSize() {
     this.width = window.innerWidth;
+    this.slidesPerView = this.calcSlidesPerView(this.width);
+  }
+
+  private calcSlidesPerView(width: number): number {
+    if (width >= 1024) {
+      return 4;
+    } else if (width >= 767) {
+      return 3;
+    } else if (width >= 480) {
+      return 2;
+    }
+    return 1;
   }
 
   constructor() {}
 
   ngOnInit() {
     this.blogSliderClass = `wiof-${this.element}`;
+    // compute up-front so the initial slides-per-view attribute is already correct
+    this.detectScreenSize();
   }
   showNavigator() {
     if (this.width >= 1024) {

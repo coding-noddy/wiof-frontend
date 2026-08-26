@@ -16,10 +16,9 @@
   <div *ngIf="blogList; else loading" class="slider-wrap">
     <swiper-container
       #swiperRef
-      [attr.slides-per-view]="4"
+      [attr.slides-per-view]="slidesPerView"
       [attr.space-between]="10"
       [attr.free-mode]="true"
-        breakpoints='{"0":{"slidesPerView":1},"600":{"slidesPerView":2},"767":{"slidesPerView":3},"1024":{"slidesPerView":4}}'
     >
       <swiper-slide *ngFor="let blog of blogList">
         <app-blog-card [blog]="blog" [element]="element"></app-blog-card>
