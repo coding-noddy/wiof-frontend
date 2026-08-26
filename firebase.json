@@ -8,6 +8,12 @@
     ],
     "rewrites": [
       {
+        "source": "/element/*/blog/**",
+        "function": {
+          "functionId": "socialMetaTags"
+        }
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
