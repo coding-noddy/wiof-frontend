@@ -6,6 +6,13 @@
     <div class="play-overlay">
       <ion-icon name="play-circle"></ion-icon>
     </div>
+    <app-bookmark-icon
+      class="video-bookmark-icon"
+      [contentId]="video.url"
+      contentType="video"
+      [contentTitle]="video.title"
+      [contentThumbnail]="video.thumbnail">
+    </app-bookmark-icon>
   </div>
 
   <!-- Title -->

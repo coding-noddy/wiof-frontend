@@ -1,0 +1,847 @@
+@import "../../wiof-custom-theming.scss";
+
+// ─── Design Tokens ────────────────────────────────────────────────────────────
+$card-radius: 12px;
+$glass-bg: rgba(255, 255, 255, 0.72);
+$glass-blur: 12px;
+$card-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+$heading-color: #10263c;
+$body-color: #475569;
+$accent-color: #3b82f6;
+$streak-color: #f59e0b;
+
+.my-journey-page {
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  @media (min-width: 768px) {
+    padding: 1.5rem 3vw;
+  }
+}
+
+// ─── Page Header ──────────────────────────────────────────────────────────────
+.page-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+
+  .page-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: $heading-color;
+    margin: 0 0 0.25rem;
+  }
+
+  .page-subtitle {
+    font-size: 0.92rem;
+    color: $body-color;
+    margin: 0;
+  }
+}
+
+// ─── Metrics Section ──────────────────────────────────────────────────────────
+.metrics-section {
+  margin-bottom: 2rem;
+}
+
+.metric-card {
+  background: $glass-bg;
+  backdrop-filter: blur($glass-blur);
+  -webkit-backdrop-filter: blur($glass-blur);
+  border-radius: $card-radius;
+  box-shadow: $card-shadow;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-top: 3px solid transparent;
+  padding: 1rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+  }
+
+  .metric-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: $heading-color;
+    line-height: 1.2;
+
+    &.muted {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: $body-color;
+    }
+  }
+
+  .metric-label {
+    font-size: 0.78rem;
+    color: $body-color;
+    margin-top: 0.25rem;
+    font-weight: 500;
+
+    .metric-date {
+      display: block;
+      font-size: 0.7rem;
+      color: lighten($body-color, 15%);
+      margin-top: 0.15rem;
+    }
+  }
+
+  .metric-icon {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    font-size: 1.1rem;
+    opacity: 0.7;
+  }
+
+  // ─── Per-card accent colors ─────────────────────────
+  &.blogs-card {
+    border-top-color: #3b82f6;
+    cursor: pointer;
+    .metric-icon { color: #3b82f6; }
+    .metric-value { color: #2563eb; }
+  }
+
+  &.videos-card {
+    border-top-color: #8b5cf6;
+    cursor: pointer;
+    .metric-icon { color: #8b5cf6; }
+    .metric-value { color: #7c3aed; }
+  }
+
+  &.polls-card {
+    border-top-color: #10b981;
+    cursor: pointer;
+    .metric-icon { color: #10b981; }
+    .metric-value { color: #059669; }
+  }
+
+  &.eq-card {
+    border-top-color: #f43f5e;
+    cursor: pointer;
+    .metric-icon { color: #f43f5e; }
+    .metric-value { color: #e11d48; }
+  }
+
+  &.saved-metric-card {
+    border-top-color: #f59e0b;
+    cursor: pointer;
+    .metric-icon { color: #f59e0b; }
+    .metric-value { color: #d97706; }
+  }
+
+  &.streak-card {
+    border-top-color: #f97316;
+    cursor: default;
+    .metric-icon { color: #f97316; }
+    .metric-value { color: #ea580c; }
+  }
+}
+
+// ─── Saved Content Section ────────────────────────────────────────────────────
+.saved-content-section {
+  margin-top: 1.5rem;
+
+  .section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: $heading-color;
+    margin: 0 0 1rem;
+  }
+}
+
+.saved-card {
+  display: flex;
+  align-items: center;
+  background: $glass-bg;
+  backdrop-filter: blur($glass-blur);
+  -webkit-backdrop-filter: blur($glass-blur);
+  border-radius: $card-radius;
+  box-shadow: $card-shadow;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  padding: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.saved-card-thumbnail {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+  background: #e2e8f0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .thumbnail-fallback {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    color: #94a3b8;
+  }
+}
+
+.saved-card-info {
+  flex: 1;
+  padding: 0 0.75rem;
+  min-width: 0;
+
+  .saved-card-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: $heading-color;
+    margin: 0 0 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .saved-card-type {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+
+    &.blog {
+      background: rgba(59, 130, 246, 0.1);
+      color: $accent-color;
+    }
+
+    &.video {
+      background: rgba(139, 92, 246, 0.1);
+      color: #8b5cf6;
+    }
+  }
+}
+
+.saved-card-arrow {
+  color: #94a3b8;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+// ─── Empty State ──────────────────────────────────────────────────────────────
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+
+  ion-icon {
+    font-size: 3rem;
+    color: #cbd5e1;
+    margin-bottom: 0.75rem;
+  }
+
+  .empty-message {
+    font-size: 1rem;
+    font-weight: 600;
+    color: $heading-color;
+    margin: 0 0 0.25rem;
+  }
+
+  .empty-hint {
+    font-size: 0.88rem;
+    color: $body-color;
+    margin: 0 0 1rem;
+  }
+
+  .explore-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: $accent-color;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// ─── Error State ──────────────────────────────────────────────────────────────
+.error-state {
+  text-align: center;
+  padding: 3rem 1rem;
+
+  ion-icon {
+    font-size: 3rem;
+    color: #f87171;
+    margin-bottom: 0.75rem;
+  }
+
+  .error-message {
+    font-size: 0.95rem;
+    color: $body-color;
+    margin: 0 0 1rem;
+  }
+
+  .retry-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 10px 20px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    background: $accent-color;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: darken($accent-color, 8%);
+    }
+  }
+}
+
+// ─── Loading Skeleton ─────────────────────────────────────────────────────────
+.loading-state {
+  .skeleton-metric {
+    background: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.saved-card-skeleton {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: $card-radius;
+  padding: 0.75rem;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ─── History Sections (Quality Reads, EQ History, Poll History) ───────────────
+.history-section {
+  margin-top: 2rem;
+  background: $glass-bg;
+  backdrop-filter: blur($glass-blur);
+  -webkit-backdrop-filter: blur($glass-blur);
+  border-radius: $card-radius;
+  box-shadow: $card-shadow;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  padding: 1.25rem;
+
+  .section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: $heading-color;
+    margin: 0 0 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .section-icon {
+      font-size: 1.2rem;
+      color: $accent-color;
+    }
+  }
+
+  .subsection-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: $body-color;
+    margin: 1rem 0 0.5rem;
+  }
+}
+
+// ─── Section Loading Skeleton ─────────────────────────────────────────────────
+.section-skeleton {
+  .skeleton-row {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+// ─── Section Error ────────────────────────────────────────────────────────────
+.section-error {
+  text-align: center;
+  padding: 1rem;
+
+  p {
+    font-size: 0.88rem;
+    color: $body-color;
+    margin: 0 0 0.5rem;
+  }
+}
+
+.retry-button-sm {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  background: $accent-color;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: darken($accent-color, 8%);
+  }
+}
+
+// ─── Section Empty State ──────────────────────────────────────────────────────
+.section-empty {
+  text-align: center;
+  padding: 1.5rem 1rem;
+
+  ion-icon {
+    font-size: 2rem;
+    color: #cbd5e1;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    font-size: 0.88rem;
+    color: $body-color;
+    margin: 0 0 0.5rem;
+  }
+
+  .section-cta {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: $accent-color;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// ─── Global Retry (all sections failed) ──────────────────────────────────────
+.global-retry-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  margin-top: 1.5rem;
+
+  ion-icon {
+    font-size: 2.5rem;
+    color: #f87171;
+    margin-bottom: 0.5rem;
+  }
+
+  .error-message {
+    font-size: 0.92rem;
+    color: $body-color;
+    margin: 0 0 1rem;
+  }
+
+  .retry-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 10px 20px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    background: $accent-color;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    ion-icon {
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    &:hover {
+      background: darken($accent-color, 8%);
+    }
+  }
+}
+
+// ─── Quality Reads Metrics Row ────────────────────────────────────────────────
+.quality-metrics-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  .quality-metric {
+    flex: 1;
+    text-align: center;
+    padding: 0.75rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.03);
+
+    &.highlight {
+      background: rgba($accent-color, 0.08);
+
+      .quality-metric-value {
+        color: $accent-color;
+      }
+    }
+
+    .quality-metric-value {
+      display: block;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: $heading-color;
+      line-height: 1.2;
+    }
+
+    .quality-metric-label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: $body-color;
+      margin-top: 0.2rem;
+    }
+  }
+}
+
+// ─── History List Items ───────────────────────────────────────────────────────
+.history-list {
+  .history-item {
+    padding: 0.65rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .history-item-main {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+
+    .history-item-icon {
+      font-size: 1rem;
+      color: $accent-color;
+      flex-shrink: 0;
+    }
+
+    .history-item-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: $heading-color;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .history-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-left: 1.5rem;
+    flex-wrap: wrap;
+
+    .meta-tag {
+      font-size: 0.72rem;
+      font-weight: 500;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.05);
+      color: $body-color;
+
+      &.voted {
+        background: rgba($accent-color, 0.1);
+        color: $accent-color;
+        font-weight: 600;
+      }
+    }
+
+    .meta-date {
+      font-size: 0.72rem;
+      color: lighten($body-color, 15%);
+    }
+  }
+}
+
+// ─── EQ Top Row (Score + Chart side by side) ─────────────────────────────────
+.eq-top-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.eq-score-card {
+  text-align: center;
+  padding: 1.25rem 1rem;
+  background: rgba($accent-color, 0.04);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .eq-score-big {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: $accent-color;
+    line-height: 1;
+
+    .eq-score-max {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: $body-color;
+    }
+  }
+
+  .eq-score-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: $body-color;
+    margin-top: 0.3rem;
+  }
+
+  .eq-score-date {
+    font-size: 0.72rem;
+    color: lighten($body-color, 15%);
+    margin-top: 0.15rem;
+  }
+}
+
+.eq-trend-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.6rem;
+  padding: 5px 12px;
+  border-radius: 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  ion-icon {
+    font-size: 0.9rem;
+  }
+
+  &.trend-up {
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+  }
+
+  &.trend-down {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+  }
+
+  &.trend-neutral {
+    background: rgba(0, 0, 0, 0.05);
+    color: $body-color;
+  }
+}
+
+.eq-chart-card {
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+
+  .eq-chart-title {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: $body-color;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.4rem;
+  }
+
+  .eq-chart-svg {
+    width: 100%;
+    flex: 1;
+    min-height: 90px;
+  }
+
+  .eq-chart-dates {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 0.3rem;
+    font-size: 0.65rem;
+    color: lighten($body-color, 20%);
+  }
+}
+
+// ─── EQ Dimensions with Progress Bars ────────────────────────────────────────
+.eq-dims-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+  }
+}
+
+.eq-dim-item {
+  flex: 1;
+  padding: 0.6rem 0.75rem;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+
+  .eq-dim-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.35rem;
+  }
+
+  .eq-dim-name {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: $heading-color;
+  }
+
+  .eq-dim-score {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: $body-color;
+  }
+}
+
+.eq-dim-bar {
+  height: 6px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.eq-dim-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s ease;
+  background: $accent-color;
+
+  &.attention {
+    background: #8b5cf6;
+  }
+
+  &.clarity {
+    background: #06b6d4;
+  }
+
+  &.reparation {
+    background: #f59e0b;
+  }
+}
+
+// ─── EQ Previous Scores ──────────────────────────────────────────────────────
+.eq-previous {
+  margin-top: 0.75rem;
+
+  .eq-score-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba($accent-color, 0.1);
+    color: $accent-color;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+}
+
+// ─── Collapsible Toggle ───────────────────────────────────────────────────────
+.collapsible-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.6rem 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: $body-color;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+
+  ion-icon {
+    font-size: 1rem;
+    color: $body-color;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover {
+    color: $accent-color;
+
+    ion-icon {
+      color: $accent-color;
+    }
+  }
+}
+
+// ─── Responsive ───────────────────────────────────────────────────────────────
+@media (max-width: 767px) {
+  .my-journey-page {
+    padding: 0.75rem;
+  }
+
+  .page-header .page-title {
+    font-size: 1.4rem;
+  }
+
+  .metric-card .metric-value {
+    font-size: 1.4rem;
+  }
+
+  .quality-metrics-row .quality-metric .quality-metric-value {
+    font-size: 1.2rem;
+  }
+
+  .eq-latest .eq-latest-score {
+    font-size: 2rem;
+  }
+
+  .eq-latest .eq-dimensions {
+    gap: 1rem;
+  }
+}
+
+ion-content {
+  --background: #f4f7fb;
+}

@@ -1,4 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { first } from 'rxjs/operators';
+import { ActivityService } from 'src/app/services/activity.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 interface EnergyResult {
   kgsOfCO2: number;
@@ -78,6 +81,11 @@ export class EnergyWidgetComponent implements OnInit, OnDestroy {
     return this.energyFacts[this.currentFactIndex];
   }
 
+  constructor(
+    private activityService: ActivityService,
+    private authService: AuthService
+  ) {}
+
   ngOnInit() {
     this.startFactRotation();
   }
@@ -104,6 +112,23 @@ export class EnergyWidgetComponent implements OnInit, OnDestroy {
       kmsByCar:    (kgsOfCO2 / CO2_PER_PETROL) * KM_PER_L_CAR,
       kmsBySUV:    (kgsOfCO2 / CO2_PER_DIESEL) * KM_PER_L_SUV,
     };
+
+    // Log widget usage for authenticated users (fire-and-forget)
+    this.logWidgetUsage();
+  }
+
+  private logWidgetUsage(): void {
+    this.authService.isAuthenticated$.pipe(first()).subscribe(isAuth => {
+      if (!isAuth) return;
+      this.authService.currentUser$.pipe(first()).subscribe(user => {
+        if (!user) return;
+        this.activityService.logActivity({
+          activityType: 'widget_usage',
+          widgetName: 'Energy Calculator',
+          userId: user.uid
+        }).catch(err => console.warn('Energy widget activity logging failed:', err));
+      });
+    });
   }
 
   reset() {

@@ -75,22 +75,22 @@ export class ManageNgoInFocusPage implements OnInit, OnDestroy {
           switchMap(() => ngo.ngoLogo ? this.ngoInFocusService.deleteNgoInFocusImage(ngo.ngoLogo).pipe(catchError(() => of(true))) : of(true)),
           switchMap(() => ngo.mediaType === MEDIA_TYPE.IMAGE && ngo.mediaLink ? this.ngoInFocusService.deleteNgoInFocusImage(ngo.mediaLink).pipe(catchError(() => of(true))) : of(true))
         ).subscribe(
-          () => { loader.dismiss(); this.loadData(); this.uiUtil.presentAlert(UI_MESSAGES.SUCCESS_HEADER, UI_MESSAGES.SUCCESS_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.NGO_IN_FOCUS), [UI_MESSAGES.FAILURE_CTA_TEXT]); },
-          () => { loader.dismiss(); this.uiUtil.presentAlert(UI_MESSAGES.FAILURE_HEADER, UI_MESSAGES.FAILURE_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.NGO_IN_FOCUS), [UI_MESSAGES.FAILURE_CTA_TEXT]); }
+          () => { loader.dismiss(); this.loadData(); this.uiUtil.presentToast(UI_MESSAGES.SUCCESS_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.NGO_IN_FOCUS), 'success'); },
+          () => { loader.dismiss(); this.uiUtil.presentToast(UI_MESSAGES.FAILURE_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.NGO_IN_FOCUS), 'error'); }
         );
       }}, { text: UI_MESSAGES.CONFIRM_DELETE_SECONDARY_CTA, role: 'cancel' }]);
   }
 
   publishNgoInFocus(id: string, category: string) {
     this.ngoInFocusService.publishNgoInFocus(id, category).subscribe(() => {
-      this.uiUtil.presentAlert(UI_MESSAGES.SUCCESS_HEADER, UI_MESSAGES.SUCCESS_PUBLISH_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.NGO_IN_FOCUS), [UI_MESSAGES.FAILURE_CTA_TEXT]);
+      this.uiUtil.presentToast(UI_MESSAGES.SUCCESS_PUBLISH_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.NGO_IN_FOCUS), 'success');
       this.loadData();
     });
   }
 
   unpublishSingleNgoInFocus(ngo: NgoInFocus) {
     this.ngoInFocusService.unpublishSingleItem(ngo.id).subscribe(() => {
-      this.uiUtil.presentAlert(UI_MESSAGES.SUCCESS_HEADER, UI_MESSAGES.SUCCESS_UNPUBLISH_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.NGO_IN_FOCUS), [UI_MESSAGES.FAILURE_CTA_TEXT]);
+      this.uiUtil.presentToast(UI_MESSAGES.SUCCESS_UNPUBLISH_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.NGO_IN_FOCUS), 'success');
       this.loadData();
     });
   }

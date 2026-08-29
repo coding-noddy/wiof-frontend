@@ -9,6 +9,10 @@
         class="video-player"
         [src]="urlSafe"
         allowfullscreen
+        appYoutubeWatchTracker
+        [contentId]="videoLink"
+        [videoTitle]="videoPlayerTitle"
+        (watchComplete)="onVideoWatchComplete($event)"
       ></iframe>
     </div>
   </div>

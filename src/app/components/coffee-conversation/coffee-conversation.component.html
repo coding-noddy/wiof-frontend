@@ -28,6 +28,10 @@
                     [title]="coffeeConv.topic"
                     [src]="coffeeConv.sanitizedLink"
                     allowfullscreen
+                    appYoutubeWatchTracker
+                    [contentId]="coffeeConv.id || coffeeConv.topic"
+                    [videoTitle]="coffeeConv.topic"
+                    (watchComplete)="onVideoWatchComplete($event)"
                   ></iframe>
                 </ion-col>
                 <ion-col
@@ -38,22 +42,28 @@
                   <h2>
                     <strong>{{ coffeeConv.topic }}</strong>
                   </h2>
+                  <div class="conversation-meta">
+                    <span *ngIf="coffeeConv.intervieweeName.toUpperCase() !== 'NA'">
+                      <ion-icon name="person-outline"></ion-icon>
+                      {{ coffeeConv.intervieweeName }}
+                    </span>
+                    <span>
+                      <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+                      Community conversation
+                    </span>
+                  </div>
                   <div
                     class="interviewee-details"
                     *ngIf="coffeeConv.intervieweeName.toUpperCase() !== 'NA'"
                   >
-                    <p>
-                      <span>Name of Interviewee</span>:
-                      <span
-                        style="display: inline-block"
-                        (click)="showIntervieweeDetails($event, true)"
-                        ><a
-                          href=""
-                          title="Click to know more about interviewee"
-                          >{{ coffeeConv.intervieweeName }}</a
-                        ></span
-                      >
-                    </p>
+                    <button
+                      class="interviewee-trigger"
+                      type="button"
+                      (click)="showIntervieweeDetails($event, true)"
+                    >
+                      <ion-icon name="person-circle-outline"></ion-icon>
+                      About {{ coffeeConv.intervieweeName }}
+                    </button>
                   </div>
                   <p style="margin-bottom: 20px">
                     <span [innerHTML]="coffeeConv.topicShortDesc"></span>
@@ -62,14 +72,27 @@
                     <a
                       [href]="coffeeConv.knowMoreLink"
                       target="_blank"
-                      class="wiof-primary-link"
-                      >Know More</a
+                      class="conversation-cta"
+                      >Explore conversation <ion-icon name="arrow-forward-outline"></ion-icon></a
                     >
                   </p>
-                  <div class="about-interviewee" *ngIf="showAboutInterviewee">
+                  <div
+                    class="about-interviewee"
+                    *ngIf="showAboutInterviewee"
+                    role="dialog"
+                    aria-modal="true"
+                    [attr.aria-label]="'About ' + coffeeConv.intervieweeName"
+                  >
                     <div class="header">
-                      <h3>About Interviewee</h3>
-                      <button (click)="showIntervieweeDetails($event, false)">
+                      <div class="header-title">
+                        <ion-icon name="person-circle-outline"></ion-icon>
+                        <h3>About {{ coffeeConv.intervieweeName }}</h3>
+                      </div>
+                      <button
+                        type="button"
+                        aria-label="Close interviewee details"
+                        (click)="showIntervieweeDetails($event, false)"
+                      >
                         <ion-icon name="close" slot="icon-only"></ion-icon>
                       </button>
                     </div>

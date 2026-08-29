@@ -1,6 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgoInFocus } from 'src/app/models/NgoInFocus';
 import { COFFEE_CONV_SLIDER_OPTIONS } from 'src/app/app.constants';
+import { ActivityService } from 'src/app/services/activity.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { VideoWatchCompleteEvent } from 'src/app/directives/youtube-watch-tracker.directive';
+import { first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-ngo-in-focus',
@@ -12,7 +16,10 @@ export class NgoInFocusComponent implements OnInit {
   slideOpts = COFFEE_CONV_SLIDER_OPTIONS;
   selectedNgo: NgoInFocus | null = null;
 
-  constructor() {}
+  constructor(
+    private activityService: ActivityService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {}
 
@@ -22,5 +29,14 @@ export class NgoInFocusComponent implements OnInit {
 
   closeModal() {
     this.selectedNgo = null;
+  }
+
+  onVideoWatchComplete(event: VideoWatchCompleteEvent): void {
+    this.authService.currentUser$.pipe(first()).subscribe(user => {
+      if (!user) return;
+      this.activityService.logVideoWatchComplete(
+        user.uid, event.contentId, event.watchPercent, event.videoTitle
+      ).catch(err => console.warn('NGO in Focus video watch logging failed:', err));
+    });
   }
 }

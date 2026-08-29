@@ -177,7 +177,10 @@ export const FIREBASE_COLLECTION = {
   COFFEE_CONVERSATIONS: 'CoffeeConversations',
   IN_FOCUS: 'InFocus',
   NGO_IN_FOCUS: 'NGOinFocus',
-  COURSE_IN_FOCUS: 'CourseInFocus'
+  COURSE_IN_FOCUS: 'CourseInFocus',
+  USERS: 'users',
+  ACTIVITY_LOG: 'activity_log',
+  USER_SAVED_CONTENT: 'user_saved_content'
 };
 
 export const VIDEO_PLAYER_TITLES = {
@@ -274,7 +277,7 @@ export const UI_MESSAGES = {
   SUCCESS_UNPUBLISH_ITEM_DESC: '$ITEM successfully unpublished!',
   SUCCESS_POLL_VOTE_HEADER: 'Vote Recorded',
   SUCCESS_POLL_VOTE_DESC:
-    'Your vote has been recorded. Thanks $NAME for voting..!!',
+    'Your vote has been recorded. Thanks for voting!',
   CONFIRM_HEADER: 'Confirm',
   CONFIRM_DELETE_ITEM_DESC: 'Are you sure you want to delete this $ITEM?',
   CONFIRM_DELETE_PRIMARY_CTA: 'Yes',

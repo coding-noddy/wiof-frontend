@@ -89,6 +89,20 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
       icon: 'mail-outline',
       color: 'linear-gradient(135deg, #fdfcfb, #e2d1c3)',
       description: 'View and export subscriber list'
+    },
+    {
+      name: 'Registered Users',
+      route: 'users',
+      icon: 'people-outline',
+      color: 'linear-gradient(135deg, #22c1c3, #2f80ed)',
+      description: 'View registered user profiles'
+    },
+    {
+      name: 'Analytics',
+      route: 'analytics',
+      icon: 'analytics-outline',
+      color: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+      description: 'Daily visits and engagement charts'
     }
   ];
 
@@ -187,8 +201,7 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
     }
   }
 
-  onLogout() {
-    this.afAuthService.logout();
-    this.router.navigate(['/login']);
+  async onLogout() {
+    await this.afAuthService.logout();
   }
 }

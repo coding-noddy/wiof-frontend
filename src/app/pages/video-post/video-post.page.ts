@@ -3,8 +3,11 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { YoutubeVideoService } from '../../services/youtube-video.service';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, first } from 'rxjs/operators';
 import { YOUTUBE_EMBED_VIDEO_LINK } from 'src/app/app.constants';
+import { ActivityService } from 'src/app/services/activity.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { VideoWatchCompleteEvent } from 'src/app/directives/youtube-watch-tracker.directive';
 
 @Component({
   selector: 'app-video-post',
@@ -20,13 +23,16 @@ export class VideoPostPage implements OnInit, OnDestroy {
   videoTitle: string;
   videoChannelName: string;
   videoDescription: string;
+  videoThumbnail: string = '';
   destroy$: Subject<boolean> = new Subject();
   showFullVideoDescription: boolean = true;
 
   constructor(
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
-    private videoService: YoutubeVideoService
+    private videoService: YoutubeVideoService,
+    private activityService: ActivityService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -34,6 +40,7 @@ export class VideoPostPage implements OnInit, OnDestroy {
       if (params.has('videoId')) {
         this.id = params.get('videoId');
         this.videoUrl = YOUTUBE_EMBED_VIDEO_LINK.replace('VIDEO_ID', this.id);
+        this.videoThumbnail = `https://img.youtube.com/vi/${this.id}/hqdefault.jpg`;
         this.urlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(
           this.videoUrl
         );
@@ -52,7 +59,39 @@ export class VideoPostPage implements OnInit, OnDestroy {
               this.videoChannelName = snippet.title;
             });
           });
+
+        // Log video page view for authenticated users (fire-and-forget)
+        this.logVideoView(this.id);
       }
+    });
+  }
+
+  private logVideoView(contentId: string): void {
+    this.authService.isAuthenticated$.pipe(first()).subscribe(isAuth => {
+      if (!isAuth) return;
+      this.authService.currentUser$.pipe(first()).subscribe(user => {
+        if (!user) return;
+        this.activityService.logActivity({
+          activityType: 'video_view',
+          contentId,
+          userId: user.uid
+        }).catch(err => console.warn('Video view activity logging failed:', err));
+      });
+    });
+  }
+
+  /**
+   * Handles the watchComplete event from YoutubeWatchTrackerDirective.
+   */
+  onWatchComplete(event: VideoWatchCompleteEvent): void {
+    this.authService.currentUser$.pipe(first()).subscribe(user => {
+      if (!user) return;
+      this.activityService.logVideoWatchComplete(
+        user.uid,
+        event.contentId,
+        event.watchPercent,
+        event.videoTitle
+      ).catch(err => console.warn('Video watch complete logging failed:', err));
     });
   }
 

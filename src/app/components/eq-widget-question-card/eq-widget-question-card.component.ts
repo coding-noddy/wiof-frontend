@@ -1,5 +1,8 @@
 import { Component, OnInit, Output, Input, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { first } from 'rxjs/operators';
+import { ActivityService } from 'src/app/services/activity.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 /**
  * TMMS-24 (Trait Meta-Mood Scale, 24 items)
@@ -77,7 +80,11 @@ export class EqWidgetQuestionCardComponent implements OnInit {
     }
   };
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private activityService: ActivityService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
     const controls: Record<string, any> = {};
@@ -91,15 +98,17 @@ export class EqWidgetQuestionCardComponent implements OnInit {
     return `response${i}`;
   }
 
-  /** Count how many questions have been changed from default (3) */
+  /** Track which questions the user has interacted with */
+  private touchedQuestions = new Set<number>();
+
+  /** Called when user interacts with a slider */
+  onSliderChange(index: number): void {
+    this.touchedQuestions.add(index);
+  }
+
+  /** Count how many questions have been interacted with */
   get answeredCount(): number {
-    if (!this.userResponse) return 0;
-    let count = 0;
-    for (let i = 0; i < 24; i++) {
-      const val = this.userResponse.get(`response${i}`)?.value;
-      if (val !== 3) count++;
-    }
-    return count;
+    return this.touchedQuestions.size;
   }
 
   onSubmit() {
@@ -116,6 +125,24 @@ export class EqWidgetQuestionCardComponent implements OnInit {
     ];
 
     this.showResult = true;
+
+    // Log EQ completion activity for authenticated users (fire-and-forget)
+    const totalScore = attentionRaw + clarityRaw + repairRaw;
+    this.logEqCompletion(totalScore, attentionRaw, clarityRaw, repairRaw);
+  }
+
+  private logEqCompletion(score: number, attentionScore: number, clarityScore: number, reparationScore: number): void {
+    this.authService.isAuthenticated$.pipe(first()).subscribe(isAuth => {
+      if (!isAuth) return;
+      this.authService.currentUser$.pipe(first()).subscribe(user => {
+        if (!user) return;
+        this.activityService.logEqCompletion(
+          user.uid,
+          score,
+          { attentionScore, clarityScore, reparationScore }
+        ).catch(err => console.warn('EQ completion activity logging failed:', err));
+      });
+    });
   }
 
   onBack() {
@@ -124,6 +151,7 @@ export class EqWidgetQuestionCardComponent implements OnInit {
 
   retakeTest() {
     this.showResult = false;
+    this.touchedQuestions.clear();
     // Reset all to default 3
     for (let i = 0; i < 24; i++) {
       this.userResponse.get(`response${i}`)?.setValue(3);

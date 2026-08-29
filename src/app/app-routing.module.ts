@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { AuthGuard } from './guards/auth.guard';
+import { PublicUserGuard } from './guards/public-user.guard';
 
 const routes: Routes = [
   {
@@ -125,6 +126,30 @@ const routes: Routes = [
       import('./pages/climate-enlighten/climate-enlighten.module').then(
         (m) => m.ClimateEnlightenPageModule
       )
+  },
+  {
+    path: 'my-journey',
+    loadChildren: () =>
+      import('./pages/my-journey/my-journey.module').then(
+        (m) => m.MyJourneyPageModule
+      ),
+    canActivate: [PublicUserGuard]
+  },
+  {
+    path: 'my-saved',
+    loadChildren: () =>
+      import('./pages/my-saved/my-saved.module').then(
+        (m) => m.MySavedPageModule
+      ),
+    canActivate: [PublicUserGuard]
+  },
+  {
+    path: 'settings',
+    loadChildren: () =>
+      import('./pages/settings/settings.module').then(
+        (m) => m.SettingsPageModule
+      ),
+    canActivate: [PublicUserGuard]
   },
   {
     path: '**',

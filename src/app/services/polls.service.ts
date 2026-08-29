@@ -26,6 +26,31 @@ export class PollsService {
     return from(this.pollsCollection.add({ ...poll }));
   }
 
+  /**
+   * Checks whether a vote already exists for this poll under the given email,
+   * regardless of whether that vote was cast as a guest or an authenticated user.
+   */
+  hasEmailVoted(pollQuestionId: string, email: string): Observable<{ voted: boolean; option?: string }> {
+    const normalizedEmail = email.trim().toLowerCase();
+    return this.database
+      .collection<Poll>(FIREBASE_COLLECTION.POLLS, (ref) =>
+        ref
+          .where('pollQuestionId', '==', pollQuestionId)
+          .where('email', '==', normalizedEmail)
+          .limit(1)
+      )
+      .get()
+      .pipe(
+        map((snapshot) => {
+          if (snapshot.empty) {
+            return { voted: false };
+          }
+          const data = snapshot.docs[0].data() as Poll;
+          return { voted: true, option: data.option };
+        })
+      );
+  }
+
   getPolls(pollQuestionId: string): Observable<Poll[]> {
     // getPolls(): Observable<Polls[]>{
     const pollsCollectionById = this.database.collection(

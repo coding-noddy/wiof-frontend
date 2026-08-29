@@ -14,6 +14,7 @@ import {
 } from '../app.constants';
 import { DomSanitizer } from '@angular/platform-browser';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
+import { AdminWriteGuardService } from './admin-write-guard.service';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,8 @@ export class NgoInFocusService {
   constructor(
     private storage: AngularFireStorage,
     private database: AngularFirestore,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private adminWriteGuard: AdminWriteGuardService
   ) {
     this.ngoInFocusCollection = this.database.collection(
       FIREBASE_COLLECTION.NGO_IN_FOCUS
@@ -33,15 +35,17 @@ export class NgoInFocusService {
   }
 
   saveNgoInFocus(ngoInFocus: NgoInFocus) {
-    let ngoInFocus$ = null;
-    if (ngoInFocus.id !== null) {
-      ngoInFocus$ = this.ngoInFocusCollection
-        .doc(ngoInFocus.id)
-        .update({ ...ngoInFocus });
-    } else {
-      ngoInFocus$ = this.ngoInFocusCollection.add({ ...ngoInFocus });
-    }
-    return from(ngoInFocus$);
+    return from(
+      this.adminWriteGuard.assertAdmin().then((): any => {
+        if (ngoInFocus.id !== null) {
+          return this.ngoInFocusCollection
+            .doc(ngoInFocus.id)
+            .update({ ...ngoInFocus });
+        } else {
+          return this.ngoInFocusCollection.add({ ...ngoInFocus });
+        }
+      })
+    );
   }
 
   getNgosInFocus(category?: string): Observable<NgoInFocus[]> {
@@ -120,44 +124,52 @@ export class NgoInFocusService {
   }
 
   publishNgoInFocus(ngoInFocusId: string, category: string) {
-    // Allow multiple published items — just publish this one without unpublishing others
     return from(
-      this.ngoInFocusCollection.doc(ngoInFocusId).update({
-        status: ITEM_STATUS.PUBLISHED,
-        publishDate: new Date().getTime(),
-        unpublishDate: null
-      })
+      this.adminWriteGuard.assertAdmin().then(() =>
+        this.ngoInFocusCollection.doc(ngoInFocusId).update({
+          status: ITEM_STATUS.PUBLISHED,
+          publishDate: new Date().getTime(),
+          unpublishDate: null
+        })
+      )
     );
   }
 
   unpublishSingleItem(id: string) {
     return from(
-      this.ngoInFocusCollection.doc(id).update({
-        status: ITEM_STATUS.INACTIVE,
-        unpublishDate: new Date().getTime()
-      })
+      this.adminWriteGuard.assertAdmin().then(() =>
+        this.ngoInFocusCollection.doc(id).update({
+          status: ITEM_STATUS.INACTIVE,
+          unpublishDate: new Date().getTime()
+        })
+      )
     );
   }
 
   unpublishNgoInFocus(id: string) {
-    return this.database
-      .collection(FIREBASE_COLLECTION.NGO_IN_FOCUS, (ref) =>
-        ref.where('status', '==', ITEM_STATUS.PUBLISHED)
+    return from(
+      this.adminWriteGuard.assertAdmin().then(() =>
+        this.database
+          .collection(FIREBASE_COLLECTION.NGO_IN_FOCUS, (ref) =>
+            ref.where('status', '==', ITEM_STATUS.PUBLISHED)
+          )
+          .get()
+          .pipe(
+            map((querySnapshot) =>
+              querySnapshot.docs.map((doc) => {
+                const data = doc.data() as NgoInFocus;
+                data.id = doc.id;
+                this.ngoInFocusCollection.doc(data.id).update({
+                  status: ITEM_STATUS.INACTIVE,
+                  unpublishDate: new Date().getTime()
+                });
+                return data;
+              })
+            )
+          )
+          .toPromise()
       )
-      .get()
-      .pipe(
-        map((querySnapshot) =>
-          querySnapshot.docs.map((doc) => {
-            const data = doc.data() as NgoInFocus;
-            data.id = doc.id;
-            this.ngoInFocusCollection.doc(data.id).update({
-              status: ITEM_STATUS.INACTIVE,
-              unpublishDate: new Date().getTime()
-            });
-            return data;
-          })
-        )
-      );
+    );
   }
 
   saveNgoInFocusImage(imageData: any, imageName: string) {
@@ -175,7 +187,11 @@ export class NgoInFocusService {
   }
 
   deleteNgoInFocus(ngoInFocusId: string) {
-    return from(this.ngoInFocusCollection.doc(ngoInFocusId).delete());
+    return from(
+      this.adminWriteGuard.assertAdmin().then(() =>
+        this.ngoInFocusCollection.doc(ngoInFocusId).delete()
+      )
+    );
   }
 
   setViewEditModeNgoInFocus(ngoInFocus: NgoInFocus) {

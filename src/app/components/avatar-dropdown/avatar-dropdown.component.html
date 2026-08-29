@@ -1,0 +1,48 @@
+<div class="avatar-dropdown-container">
+  <!-- Avatar Button -->
+  <button
+    class="avatar-button"
+    (click)="toggleDropdown()"
+    [attr.aria-expanded]="isOpen"
+    aria-haspopup="true"
+    aria-label="User menu"
+    type="button">
+    <img
+      *ngIf="photoURL && !showFallback"
+      class="avatar-image"
+      [src]="photoURL"
+      [alt]="displayName + ' avatar'"
+      (error)="onImageError()" />
+    <span
+      *ngIf="!photoURL || showFallback"
+      class="avatar-fallback"
+      [attr.aria-label]="displayName + ' avatar'">
+      {{ fallbackLetter }}
+    </span>
+  </button>
+
+  <!-- Dropdown Menu -->
+  <div
+    class="dropdown-menu"
+    [class.dropdown-open]="isOpen"
+    role="menu"
+    aria-label="User navigation menu">
+    <button class="dropdown-item" role="menuitem" (click)="navigateTo('/my-journey')">
+      <ion-icon name="compass-outline" aria-hidden="true"></ion-icon>
+      <span>My Journey</span>
+    </button>
+    <button class="dropdown-item" role="menuitem" (click)="navigateTo('/my-saved')">
+      <ion-icon name="bookmark-outline" aria-hidden="true"></ion-icon>
+      <span>Saved</span>
+    </button>
+    <button class="dropdown-item" role="menuitem" (click)="navigateTo('/settings')">
+      <ion-icon name="settings-outline" aria-hidden="true"></ion-icon>
+      <span>Settings</span>
+    </button>
+    <div class="dropdown-divider"></div>
+    <button class="dropdown-item dropdown-item--logout" role="menuitem" (click)="logout()">
+      <ion-icon name="log-out-outline" aria-hidden="true"></ion-icon>
+      <span>Logout</span>
+    </button>
+  </div>
+</div>

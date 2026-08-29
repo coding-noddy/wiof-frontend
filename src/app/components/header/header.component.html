@@ -1,22 +1,53 @@
-<ion-header>
-  <ion-row>
-    <ion-col class="ion-align-self-start ion-no-padding">
-      <ion-toolbar class="toolbar-background-wrapper" style="padding-left: 5px;">
-        <ion-buttons class="menu-button-toggle" slot="start">
-        </ion-buttons>
-        <ion-title routerLink="/home" style="padding: 0;">
-          <ion-img style="height: 56px; float: left;" alt="World is one family logo" [src]="wiofLogo"></ion-img>
-        </ion-title>
-      </ion-toolbar>
-    </ion-col>
+<header class="wiof-header">
+  <div class="header-inner">
+    <!-- Logo -->
+    <a routerLink="/home" class="header-logo-link">
+      <img [src]="wiofLogo" alt="World is one family logo" class="header-logo" />
+    </a>
 
-    <ion-col class="ion-align-self-end ion-no-padding">
-      <ion-toolbar class="toolbar-background-wrapper">
-        <ion-buttons slot="end">
-          <ion-button routerLink="/discover-more"> About Us </ion-button>
-          <ion-button routerLink="/aboutus"> Our Team </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-col>
-  </ion-row>
-</ion-header>
+    <!-- Desktop Navigation -->
+    <nav class="desktop-nav">
+      <a routerLink="/discover-more" class="nav-link">About Us</a>
+      <a routerLink="/aboutus" class="nav-link">Our Team</a>
+
+      <!-- Auth-aware -->
+      <ng-container *ngIf="isAuthenticated$ | async; else guestSignIn">
+        <app-avatar-dropdown
+          *ngIf="currentUser$ | async as user"
+          [photoURL]="user.photoURL"
+          [displayName]="user.displayName || ''">
+        </app-avatar-dropdown>
+      </ng-container>
+      <ng-template #guestSignIn>
+        <button class="sign-in-btn" (click)="signIn()" [disabled]="signingIn">
+          <span *ngIf="!signingIn">Sign In</span>
+          <span *ngIf="signingIn" class="signing-in">
+            <span class="spinner"></span>
+            Signing in...
+          </span>
+        </button>
+      </ng-template>
+    </nav>
+
+    <!-- Mobile hamburger -->
+    <button class="mobile-menu-btn" (click)="toggleMobileMenu()" aria-label="Open menu">
+      <ion-icon [name]="mobileMenuOpen ? 'close-outline' : 'menu-outline'"></ion-icon>
+    </button>
+  </div>
+
+  <!-- Mobile menu -->
+  <nav class="mobile-menu" [class.mobile-menu--open]="mobileMenuOpen">
+    <a routerLink="/discover-more" class="mobile-link" (click)="closeMobileMenu()">About Us</a>
+    <a routerLink="/aboutus" class="mobile-link" (click)="closeMobileMenu()">Our Team</a>
+
+    <ng-container *ngIf="!(isAuthenticated$ | async)">
+      <button class="mobile-sign-in" (click)="signIn(); closeMobileMenu()">Sign In</button>
+    </ng-container>
+    <ng-container *ngIf="isAuthenticated$ | async">
+      <a routerLink="/my-journey" class="mobile-link" (click)="closeMobileMenu()">My Journey</a>
+      <a routerLink="/my-saved" class="mobile-link" (click)="closeMobileMenu()">Saved</a>
+      <a routerLink="/settings" class="mobile-link" (click)="closeMobileMenu()">Settings</a>
+      <button class="mobile-link mobile-logout" (click)="logout(); closeMobileMenu()">Logout</button>
+    </ng-container>
+  </nav>
+</header>

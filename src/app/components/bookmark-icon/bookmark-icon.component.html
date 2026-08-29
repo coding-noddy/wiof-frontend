@@ -1,0 +1,37 @@
+<div class="bookmark-container">
+  <!-- Bookmark/Heart Icon Button -->
+  <button
+    class="bookmark-btn"
+    [class.saved]="isSaved"
+    [class.loading]="isLoading"
+    (click)="onBookmarkClick($event)"
+    [attr.aria-label]="isSaved ? 'Remove from saved' : 'Save this content'"
+    [attr.aria-pressed]="isSaved"
+    type="button">
+    <ion-icon
+      [name]="isSaved ? 'heart' : 'heart-outline'"
+      class="bookmark-icon">
+    </ion-icon>
+  </button>
+
+  <!-- Sign-In Prompt for Guest Users -->
+  <div
+    class="sign-in-prompt"
+    *ngIf="showSignInPrompt"
+    role="tooltip"
+    aria-label="Sign in to save content">
+    <p class="prompt-text">Sign in to save this</p>
+    <button
+      class="prompt-google-btn"
+      (click)="signInWithGoogle()">
+      <ion-icon name="logo-google"></ion-icon>
+      Continue with Google
+    </button>
+    <button
+      class="prompt-dismiss-btn"
+      (click)="dismissPrompt()"
+      aria-label="Dismiss sign-in prompt">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+  </div>
+</div>

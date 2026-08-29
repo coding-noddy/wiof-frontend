@@ -121,26 +121,24 @@ export class ManageCalendarPage implements OnInit, OnDestroy {
         (response) => {
           console.log(response);
           loader.dismiss();
-          this.uiUtil.presentAlert(
-            UI_MESSAGES.SUCCESS_HEADER,
+          this.uiUtil.presentToast(
             UI_MESSAGES.SUCCESS_DELETE_ITEM_DESC.replace(
               UI_MESSAGES.PLACEHOLDER,
               ITEMS.OCCASION
             ),
-            [UI_MESSAGES.FAILURE_CTA_TEXT]
+            'success'
           );
           occasionList.splice(index, 1);
         },
         (error) => {
           console.log(error);
           loader.dismiss();
-          this.uiUtil.presentAlert(
-            UI_MESSAGES.FAILURE_HEADER,
+          this.uiUtil.presentToast(
             UI_MESSAGES.FAILURE_DELETE_ITEM_DESC.replace(
               UI_MESSAGES.PLACEHOLDER,
               ITEMS.OCCASION
             ),
-            [UI_MESSAGES.FAILURE_CTA_TEXT]
+            'error'
           );
         }
       );

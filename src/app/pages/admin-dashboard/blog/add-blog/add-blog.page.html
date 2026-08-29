@@ -59,21 +59,39 @@
 
     <!-- Preview Mode -->
     <div class="preview-panel" *ngIf="showPreview">
-      <div class="preview-card">
-        <div class="preview-header">
-          <span class="preview-category">{{ addBlogForm.get('category')?.value | uppercase }}</span>
-          <h1 class="preview-title">{{ addBlogForm.get('title')?.value || 'Untitled' }}</h1>
-          <div class="preview-meta">
-            <span>By {{ addBlogForm.get('authorName')?.value || 'Author' }}</span>
-            <span>·</span>
-            <span>{{ readTime }} min read</span>
+      <div class="blog-post-wrapper">
+        <div class="blog-hero" *ngIf="imageToDisplay">
+          <div class="blog-hero-blur" [style.backgroundImage]="'url(' + imageToDisplay + ')'" ></div>
+          <img [src]="imageToDisplay" [alt]="addBlogForm.get('title')?.value || 'Blog image'" class="blog-hero-img">
+        </div>
+
+        <article class="blog-article">
+          <div class="blog-meta-top">
+            <span class="preview-category">{{ addBlogForm.get('category')?.value | uppercase }}</span>
+            <span class="blog-read-time">
+              <ion-icon name="time-outline"></ion-icon>
+              {{ readTime }} min read
+            </span>
           </div>
-        </div>
-        <div class="preview-image" *ngIf="imageToDisplay">
-          <img [src]="imageToDisplay" alt="Blog image">
-        </div>
-        <p class="preview-desc">{{ addBlogForm.get('shortDescription')?.value }}</p>
-        <div class="preview-content" [innerHTML]="addBlogForm.get('content')?.value"></div>
+
+          <h1 class="blog-title">{{ addBlogForm.get('title')?.value || 'Untitled' }}</h1>
+
+          <div class="blog-author-row">
+            <div class="author-info">
+              <span class="author-name">By {{ addBlogForm.get('authorName')?.value || 'Author' }}</span>
+            </div>
+          </div>
+
+          <hr class="blog-divider">
+          <p class="blog-description">{{ addBlogForm.get('shortDescription')?.value }}</p>
+          <div class="blog-content" [innerHTML]="addBlogForm.get('content')?.value"></div>
+
+          <hr class="blog-divider">
+          <div class="blog-about-author" *ngIf="addBlogForm.get('aboutAuthor')?.value">
+            <h4>About {{ addBlogForm.get('authorName')?.value || 'the author' }}</h4>
+            <p>{{ addBlogForm.get('aboutAuthor')?.value }}</p>
+          </div>
+        </article>
       </div>
     </div>
 

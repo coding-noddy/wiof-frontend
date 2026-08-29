@@ -8,6 +8,7 @@ import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { map } from 'rxjs/operators';
 import { from, Observable } from 'rxjs';
 import { FIREBASE_COLLECTION } from '../app.constants';
+import { AdminWriteGuardService } from './admin-write-guard.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,20 +19,21 @@ export class NewsService {
 
   constructor(
     private storage: AngularFireStorage,
-    public database: AngularFirestore
+    public database: AngularFirestore,
+    private adminWriteGuard: AdminWriteGuardService
   ) {
     this.newsCollection = this.database.collection(FIREBASE_COLLECTION.NEWS);
   }
   saveNews(news: News) {
-    let saveNews$ = null;
-    if (news.newsId !== null) {
-      saveNews$ = this.newsCollection.doc(news.newsId).update({
-        ...news
-      });
-    } else {
-      saveNews$ = this.newsCollection.add({ ...news });
-    }
-    return from(saveNews$);
+    return from(
+      this.adminWriteGuard.assertAdmin().then((): any => {
+        if (news.newsId !== null) {
+          return this.newsCollection.doc(news.newsId).update({ ...news });
+        } else {
+          return this.newsCollection.add({ ...news });
+        }
+      })
+    );
   }
 
   saveNewsImage(imageData: any, imageName: string) {
@@ -71,7 +73,11 @@ export class NewsService {
   }
 
   deleteNews(newsId: string) {
-    return from(this.newsCollection.doc(newsId).delete());
+    return from(
+      this.adminWriteGuard.assertAdmin().then(() =>
+        this.newsCollection.doc(newsId).delete()
+      )
+    );
   }
 
   setViewEditModeNews(news: News) {

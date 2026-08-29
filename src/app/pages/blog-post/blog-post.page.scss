@@ -46,6 +46,55 @@ ion-content {
   filter: contrast(1.02) saturate(1.05);
 }
 
+.blog-hero-trigger {
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+
+// ── Zoom badge overlay (hero) ─ matches Firm in Focus expand hint ──
+.zoom-badge {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+  // Must sit above .blog-hero-img (z-index: 1)
+  z-index: 2;
+
+  ion-icon { font-size: 1rem; }
+}
+
+.blog-hero-trigger:hover .zoom-badge {
+  opacity: 1;
+}
+
+.expanded-image-content {
+  --background: #101418;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.expanded-blog-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 // ── Article ──────────────────────────────────────────────────────
 .blog-article {
   max-width: 780px;
@@ -92,6 +141,12 @@ ion-content {
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
+}
+
+.author-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .author-info {
@@ -148,20 +203,59 @@ ion-content {
   color: #2d3748;
   text-align: justify;
 
-  // Style inline HTML content from CMS
-  p { margin-bottom: 1.25rem; }
-  h2, h3, h4 { margin-top: 1.5rem; margin-bottom: 0.75rem; color: #10263c; }
-  img { max-width: 100%; border-radius: 12px; margin: 1rem 0; }
-  a { color: $home-color-dark; font-weight: 600; }
-  blockquote {
-    border-left: 4px solid $home-color;
-    padding-left: 1rem;
-    margin: 1.5rem 0;
-    color: #4a5568;
-    font-style: italic;
+  // Style inline HTML content from CMS (::ng-deep needed: content is injected via [innerHTML])
+  ::ng-deep {
+    p { margin-bottom: 1.25rem; }
+    h2, h3, h4 { margin-top: 1.5rem; margin-bottom: 0.75rem; color: #10263c; }
+    img { max-width: 100%; border-radius: 12px; margin: 1rem 0; }
+    a { color: $home-color-dark; font-weight: 600; }
+    blockquote {
+      border-left: 4px solid $home-color;
+      padding-left: 1rem;
+      margin: 1.5rem 0;
+      color: #4a5568;
+      font-style: italic;
+    }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1.25rem; }
+    li { margin-bottom: 0.5rem; }
   }
-  ul, ol { padding-left: 1.5rem; margin-bottom: 1.25rem; }
-  li { margin-bottom: 0.5rem; }
+}
+
+// ── Zoomable body images (raw HTML content + Quill-rendered content) ──
+// ::ng-deep required: images come from [innerHTML] or the quill-view child component,
+// both of which fall outside this component's view-encapsulation scope.
+.blog-content-zoomable {
+  ::ng-deep img,
+  ::ng-deep .ql-editor img {
+    position: relative;
+    cursor: zoom-in;
+    transition: opacity 0.15s ease;
+
+    &:hover { opacity: 0.9; }
+
+    // Zoom badge overlay, matching the Firm in Focus expand hint.
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: rgba(0, 0, 0, 0.45);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22white%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M9 3H3v6M15 3h6v6M9 21H3v-6M15 21h6v-6%22/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 16px 16px;
+      opacity: 0.85;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    &:hover::after {
+      opacity: 1;
+    }
+  }
 }
 
 // ── About author ─────────────────────────────────────────────────

@@ -169,7 +169,9 @@
 .wiof-calendar-wrapper {
   display: flex;
   flex-direction: column;
+  height: 100%;
   min-height: 520px;
+  margin: 0 !important;
   background-color: $home-color-light;
   border-radius: 18px;
   overflow: hidden;

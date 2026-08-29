@@ -6,12 +6,12 @@ export class Poll {
   option: string;
   ip4?: string;
   ip6?: string;
-  name: string;
+  email?: string;
 
-  constructor(pollQuestionId: string, option, name, ip4?, ip6?) {
+  constructor(pollQuestionId: string, option, email?, ip4?, ip6?) {
     this.pollQuestionId = pollQuestionId;
     this.option = option;
-    this.name = name;
+    this.email = email;
     this.ip4 = ip4;
     this.ip6 = ip6;
   }
@@ -25,7 +25,7 @@ export class Poll {
     return new Poll(
       pollQuestionId,
       wiofPollsForm.value.option,
-      wiofPollsForm.value.name,
+      wiofPollsForm.value.email,
       ip4,
       ip6
     );
@@ -34,8 +34,6 @@ export class Poll {
 
 //Read user Ip  https://api6.ipify.org?format=json  https://api.ipify.org?format=json
 //add it to the poll
-//read user name
-//add it to poll
 //read user response
 //add it to poll
 //save this data in present poll collection

@@ -227,7 +227,7 @@ export class AddBlogPage implements OnInit, OnDestroy {
   private isImageUnderSize(file: File): boolean {
     if (!file) return true;
     if (file.size <= this.MAX_IMAGE_BYTES) return true;
-    this.uiUtil.presentAlert('Image too large', `Please upload images smaller than ${this.maxImageMB} MB.`, ['OK']);
+    this.uiUtil.presentToast(`Please upload images smaller than ${this.maxImageMB} MB.`, 'error');
     return false;
   }
 
@@ -266,19 +266,17 @@ export class AddBlogPage implements OnInit, OnDestroy {
             this.readTime = 0;
             this.slugPreview = '';
           }
-          this.uiUtil.presentAlert(
-            UI_MESSAGES.SUCCESS_HEADER,
+          this.uiUtil.presentToast(
             UI_MESSAGES.SUCCESS_ADD_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.BLOG),
-            [UI_MESSAGES.SUCCESS_CTA_TEXT]
+            'success'
           );
         },
         () => {
           this.loader.dismiss();
           this.isSaving = false;
-          this.uiUtil.presentAlert(
-            UI_MESSAGES.FAILURE_HEADER,
+          this.uiUtil.presentToast(
             UI_MESSAGES.FAILURE_ADD_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.BLOG),
-            [UI_MESSAGES.FAILURE_CTA_TEXT]
+            'error'
           );
         }
       );
@@ -446,7 +444,7 @@ export class AddBlogPage implements OnInit, OnDestroy {
         async () => {
           progressSub.unsubscribe();
           if (this.loader) this.loader.dismiss();
-          await this.uiUtil.presentAlert('Image upload failed', 'Could not upload the image. Please try again.', ['OK']);
+          await this.uiUtil.presentToast('Could not upload the image. Please try again.', 'error');
         }
       );
     };

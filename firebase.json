@@ -8,13 +8,6 @@
     ],
     "rewrites": [
       {
-        "source": "/element/*/blog/**",
-        "function": {
-          "functionId": "socialMetaTags",
-          "region": "asia-south1"
-        }
-      },
-      {
         "source": "**",
         "destination": "/index.html"
       }

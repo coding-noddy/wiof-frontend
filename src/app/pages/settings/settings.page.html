@@ -1,0 +1,247 @@
+<app-header></app-header>
+
+<ion-content>
+  <div class="settings-page">
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="hasError && !isLoading" class="error-state">
+      <p class="error-message">Could not load profile data.</p>
+      <ion-button fill="outline" (click)="retry()">Retry</ion-button>
+    </div>
+
+    <!-- Profile Form -->
+    <div *ngIf="!isLoading && !hasError" class="profile-content">
+
+      <!-- Page Heading -->
+      <header class="settings-heading">
+        <h1>Settings</h1>
+        <p>Manage your profile, avatar, and preferences.</p>
+      </header>
+
+      <!-- Profile Identity Section -->
+      <section class="avatar-section glassmorphism-card" aria-labelledby="avatar-section-heading">
+        <h2 id="avatar-section-heading" class="sr-only">Profile Photo</h2>
+
+        <div class="avatar-preview-wrap">
+          <img
+            *ngIf="avatarPreviewUrl || photoURL"
+            class="avatar-preview"
+            [src]="avatarPreviewUrl || photoURL"
+            alt="Your profile photo"
+          />
+          <div *ngIf="!avatarPreviewUrl && !photoURL" class="avatar-preview avatar-preview--fallback" aria-hidden="true">
+            {{ avatarInitial }}
+          </div>
+          <ion-spinner
+            *ngIf="isUploadingPhoto || isRemovingPhoto"
+            name="crescent"
+            class="avatar-busy-spinner"
+            aria-label="Updating photo"
+          ></ion-spinner>
+        </div>
+
+        <div class="avatar-identity">
+          <p class="avatar-display-name">{{ profileForm.get('displayName')!.value || 'Your Profile' }}</p>
+          <p class="avatar-email">{{ userEmail }}</p>
+        </div>
+
+        <input
+          #avatarFileInput
+          type="file"
+          accept="image/jpeg,image/jpg,image/png"
+          class="sr-only"
+          aria-label="Choose a profile photo"
+          (change)="onAvatarFileSelected($event)"
+        />
+
+        <!-- Pending selection: confirm or cancel -->
+        <div *ngIf="avatarPreviewUrl" class="avatar-pending-actions">
+          <ion-button
+            size="small"
+            class="pill-button pill-button--primary"
+            [disabled]="isUploadingPhoto"
+            (click)="confirmAvatarUpload()"
+          >
+            {{ isUploadingPhoto ? 'Saving...' : 'Save Photo' }}
+          </ion-button>
+          <ion-button
+            size="small"
+            fill="outline"
+            color="medium"
+            class="pill-button"
+            [disabled]="isUploadingPhoto"
+            (click)="cancelAvatarSelection()"
+          >
+            Cancel
+          </ion-button>
+        </div>
+
+        <!-- Default actions: change / remove -->
+        <div *ngIf="!avatarPreviewUrl" class="avatar-default-actions">
+          <ion-button
+            size="small"
+            fill="outline"
+            class="pill-button"
+            [disabled]="isUploadingPhoto || isRemovingPhoto"
+            (click)="triggerAvatarFilePicker()"
+            aria-label="Change profile photo"
+          >
+            <ion-icon slot="start" name="camera-outline"></ion-icon>
+            Change Photo
+          </ion-button>
+          <ion-button
+            *ngIf="photoURL"
+            size="small"
+            fill="clear"
+            color="danger"
+            class="pill-button"
+            [disabled]="isUploadingPhoto || isRemovingPhoto"
+            (click)="removeAvatarPhoto()"
+            aria-label="Remove profile photo"
+          >
+            {{ isRemovingPhoto ? 'Removing...' : 'Remove Photo' }}
+          </ion-button>
+        </div>
+
+        <p class="avatar-hint">JPG or PNG, up to 1 MB.</p>
+      </section>
+
+      <ion-card class="glassmorphism-card">
+        <ion-card-content>
+          <form [formGroup]="profileForm" (ngSubmit)="onSave()">
+
+            <h3 class="section-title">
+              <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
+              Personal Information
+            </h3>
+
+            <!-- Read-only Email -->
+            <ion-item lines="full">
+              <ion-icon name="mail-outline" slot="start" aria-hidden="true"></ion-icon>
+              <ion-label position="stacked">Email</ion-label>
+              <ion-label class="read-only-value">{{ userEmail }}</ion-label>
+            </ion-item>
+
+            <!-- Read-only Member Since -->
+            <ion-item lines="full">
+              <ion-icon name="calendar-outline" slot="start" aria-hidden="true"></ion-icon>
+              <ion-label position="stacked">Member Since</ion-label>
+              <ion-label class="read-only-value">{{ memberSince }}</ion-label>
+            </ion-item>
+
+            <!-- Display Name -->
+            <ion-item lines="full">
+              <ion-icon name="create-outline" slot="start" aria-hidden="true"></ion-icon>
+              <ion-label position="stacked">Display Name</ion-label>
+              <ion-input
+                formControlName="displayName"
+                type="text"
+                maxlength="100"
+                placeholder="Enter your display name"
+              ></ion-input>
+            </ion-item>
+
+            <h3 class="section-title section-title--spaced">
+              <ion-icon name="sparkles-outline" aria-hidden="true"></ion-icon>
+              Preferences
+            </h3>
+
+            <!-- Preferred Elements -->
+            <ion-item lines="full">
+              <ion-icon name="options-outline" slot="start" aria-hidden="true"></ion-icon>
+              <ion-label position="stacked">Preferred Elements</ion-label>
+              <ion-select
+                formControlName="preferredElements"
+                multiple="true"
+                placeholder="Select elements"
+                (ionChange)="onElementsChange($event)"
+              >
+                <ion-select-option
+                  *ngFor="let element of elementsList"
+                  [value]="element"
+                  [disabled]="isElementDisabled(element)"
+                >{{ element | titlecase }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <!-- Save Button -->
+            <ion-button
+              type="submit"
+              expand="block"
+              [disabled]="profileForm.invalid || isSaving"
+              class="save-button"
+            >
+              {{ isSaving ? 'Saving...' : 'Save Changes' }}
+            </ion-button>
+
+          </form>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Sign Out Button (outside and below the form card) -->
+      <ion-button
+        expand="block"
+        color="medium"
+        fill="outline"
+        [disabled]="isSigningOut"
+        (click)="onSignOut()"
+        class="sign-out-button"
+      >
+        <ion-icon slot="start" name="log-out-outline"></ion-icon>
+        {{ isSigningOut ? 'Signing out...' : 'Sign Out' }}
+      </ion-button>
+
+      <section class="reset-data-section glassmorphism-card glassmorphism-card--danger" aria-labelledby="reset-data-heading">
+        <h2 id="reset-data-heading">
+          <ion-icon name="warning-outline" aria-hidden="true"></ion-icon>
+          Reset Engagement Data
+        </h2>
+        <p>This keeps your account active but permanently clears your saved content and app activity.</p>
+        <ion-button
+          expand="block"
+          color="danger"
+          fill="outline"
+          [disabled]="isResettingData || isSigningOut"
+          (click)="openResetModal()"
+        >
+          {{ isResettingData ? 'Clearing data...' : 'Clear My Engagement Data' }}
+        </ion-button>
+      </section>
+    </div>
+
+  </div>
+
+
+  <div *ngIf="showResetModal" class="reset-backdrop" (click)="cancelReset()"></div>
+  <div *ngIf="showResetModal" class="reset-modal" role="dialog" aria-modal="true" aria-labelledby="reset-modal-title">
+    <div class="reset-icon">
+      <ion-icon name="trash-outline"></ion-icon>
+    </div>
+    <h3 id="reset-modal-title">Reset all engagement data?</h3>
+    <p>This permanently removes your saved content, reading history, activity history, poll history, quality reads, and engagement counters. Your account remains active.</p>
+    <p>Type <strong>RESET</strong> below when you are ready to permanently clear your engagement data.</p>
+    <input
+      class="reset-input"
+      type="text"
+      [(ngModel)]="resetConfirmation"
+      placeholder="Type RESET"
+      autocomplete="off"
+      autocapitalize="characters"
+      aria-label="Type RESET to confirm"
+    />
+    <div class="reset-actions">
+      <button type="button" class="reset-cancel" (click)="cancelReset()">Cancel</button>
+      <button type="button" class="reset-delete" [disabled]="resetConfirmation.trim().toUpperCase() !== 'RESET'" (click)="confirmReset()">
+        <ion-spinner *ngIf="isResettingData" name="crescent"></ion-spinner>
+        <span *ngIf="!isResettingData">Delete my data</span>
+      </button>
+    </div>
+  </div>
+
+  <app-wiof-footer></app-wiof-footer>
+</ion-content>

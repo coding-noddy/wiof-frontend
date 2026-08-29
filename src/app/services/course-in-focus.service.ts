@@ -9,6 +9,7 @@ import { from, Observable } from 'rxjs';
 import { FIREBASE_COLLECTION, ITEM_STATUS } from '../app.constants';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { DomSanitizer } from '@angular/platform-browser';
+import { AdminWriteGuardService } from './admin-write-guard.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,8 @@ export class CourseInFocusService {
   constructor(
     private storage: AngularFireStorage,
     private database: AngularFirestore,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private adminWriteGuard: AdminWriteGuardService
   ) {
     this.courseInFocusCollection = this.database.collection(
       FIREBASE_COLLECTION.COURSE_IN_FOCUS
@@ -28,15 +30,17 @@ export class CourseInFocusService {
   }
 
   saveCourseInFocus(courseInFocus: CourseInFocus) {
-    let courseInFocus$ = null;
-    if (courseInFocus.id !== null) {
-      courseInFocus$ = this.courseInFocusCollection
-        .doc(courseInFocus.id)
-        .update({ ...courseInFocus });
-    } else {
-      courseInFocus$ = this.courseInFocusCollection.add({ ...courseInFocus });
-    }
-    return from(courseInFocus$);
+    return from(
+      this.adminWriteGuard.assertAdmin().then((): any => {
+        if (courseInFocus.id !== null) {
+          return this.courseInFocusCollection
+            .doc(courseInFocus.id)
+            .update({ ...courseInFocus });
+        } else {
+          return this.courseInFocusCollection.add({ ...courseInFocus });
+        }
+      })
+    );
   }
 
   getCoursesInFocus(category?: string): Observable<CourseInFocus[]> {
@@ -97,22 +101,28 @@ export class CourseInFocusService {
 
   publishCourseInFocus(id: string) {
     return from(
-      this.courseInFocusCollection.doc(id).update({
-        status: ITEM_STATUS.PUBLISHED,
-        publishDate: new Date().getTime(),
-        unpublishDate: null
-      })
+      this.adminWriteGuard.assertAdmin().then(() =>
+        this.courseInFocusCollection.doc(id).update({
+          status: ITEM_STATUS.PUBLISHED,
+          publishDate: new Date().getTime(),
+          unpublishDate: null
+        })
+      )
     );
   }
 
   unpublishCourseInFocus(id: string) {
-    return this.database
-      .collection(FIREBASE_COLLECTION.COURSE_IN_FOCUS)
-      .doc(id)
-      .update({
-        status: ITEM_STATUS.INACTIVE,
-        unpublishDate: new Date().getTime()
-      });
+    return from(
+      this.adminWriteGuard.assertAdmin().then(() =>
+        this.database
+          .collection(FIREBASE_COLLECTION.COURSE_IN_FOCUS)
+          .doc(id)
+          .update({
+            status: ITEM_STATUS.INACTIVE,
+            unpublishDate: new Date().getTime()
+          })
+      )
+    );
   }
 
   saveCourseInFocusImage(imageData: any, imageName: string) {
@@ -130,7 +140,11 @@ export class CourseInFocusService {
   }
 
   deleteCourseInFocus(id: string) {
-    return from(this.courseInFocusCollection.doc(id).delete());
+    return from(
+      this.adminWriteGuard.assertAdmin().then(() =>
+        this.courseInFocusCollection.doc(id).delete()
+      )
+    );
   }
 
   setViewEditModeCourseInFocus(courseInFocus: CourseInFocus) {

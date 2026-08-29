@@ -118,9 +118,9 @@ export class ManageNewsPage implements OnInit, OnDestroy {
           this.newsService.deleteNews(news.newsId).pipe(takeUntil(this.destroy$),
             switchMap(() => news.mediaType === MEDIA_TYPE.IMAGE ? this.newsService.deleteNewsImage(news.mediaLink) : of(true))
           ).subscribe(() => { loader.dismiss(); this.loadData();
-            this.uiUtil.presentAlert(UI_MESSAGES.SUCCESS_HEADER, UI_MESSAGES.SUCCESS_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.NEWS), [UI_MESSAGES.FAILURE_CTA_TEXT]);
+            this.uiUtil.presentToast(UI_MESSAGES.SUCCESS_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.NEWS), 'success');
           }, () => { loader.dismiss();
-            this.uiUtil.presentAlert(UI_MESSAGES.FAILURE_HEADER, UI_MESSAGES.FAILURE_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.NEWS), [UI_MESSAGES.FAILURE_CTA_TEXT]);
+            this.uiUtil.presentToast(UI_MESSAGES.FAILURE_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.NEWS), 'error');
           });
         }
       }, { text: UI_MESSAGES.CONFIRM_DELETE_SECONDARY_CTA, role: 'cancel' }]

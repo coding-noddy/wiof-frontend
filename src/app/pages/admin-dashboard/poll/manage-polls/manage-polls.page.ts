@@ -114,16 +114,18 @@ export class ManagePollsPage implements OnInit, OnDestroy {
             this.pollQuestionService.deletePollQuestion(pollQuestionId).subscribe(
               () => {
                 loader.dismiss();
-                this.uiUtil.presentAlert(UI_MESSAGES.SUCCESS_HEADER,
+                this.uiUtil.presentToast(
                   UI_MESSAGES.SUCCESS_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.POLL_QUESTION),
-                  [UI_MESSAGES.FAILURE_CTA_TEXT]);
+                  'success'
+                );
                 pollQuestionList.splice(index, 1);
               },
               () => {
                 loader.dismiss();
-                this.uiUtil.presentAlert(UI_MESSAGES.FAILURE_HEADER,
+                this.uiUtil.presentToast(
                   UI_MESSAGES.FAILURE_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.POLL_QUESTION),
-                  [UI_MESSAGES.FAILURE_CTA_TEXT]);
+                  'error'
+                );
               }
             );
           }
@@ -135,9 +137,10 @@ export class ManagePollsPage implements OnInit, OnDestroy {
 
   publishPollQuestion(pollQuestionId: string) {
     this.pollQuestionService.publishPollQuestion(pollQuestionId).subscribe(() => {
-      this.uiUtil.presentAlert(UI_MESSAGES.SUCCESS_HEADER,
+      this.uiUtil.presentToast(
         UI_MESSAGES.SUCCESS_PUBLISH_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.POLL_QUESTION),
-        [UI_MESSAGES.FAILURE_CTA_TEXT]);
+        'success'
+      );
       this.refreshData();
     });
   }

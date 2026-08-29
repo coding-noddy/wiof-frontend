@@ -1,23 +1,51 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Meta, MetaDefinition } from '@angular/platform-browser';
 import { Platform } from '@ionic/angular';
+import { distinctUntilChanged, filter } from 'rxjs/operators';
+import { ActivityService } from './services/activity.service';
+import { AuthService } from './services/auth.service';
+import { UserProfileService } from './services/user-profile.service';
+import { IdleTimeoutService } from './services/idle-timeout.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
-    private metaService: Meta
+    private metaService: Meta,
+    private authService: AuthService,
+    private userProfileService: UserProfileService,
+    private activityService: ActivityService,
+    private idleTimeoutService: IdleTimeoutService
   ) {
     this.initializeApp();
     // this.addMetaTags();
+  }
+
+  ngOnInit(): void {
+    // Auto-logout any authenticated user after 10 minutes of inactivity.
+    this.idleTimeoutService.init();
+
+    // Record a visit whenever the authenticated account changes.
+    this.authService.currentUser$.pipe(
+      filter(user => !!user),
+      distinctUntilChanged((previous, current) => previous?.uid === current?.uid)
+    ).subscribe(user => {
+      this.userProfileService.recordVisit(user!.uid).catch(err => {
+        console.warn('Visit recording failed:', err);
+      });
+      // New daily visit activity log
+      this.activityService.logDailyVisit(user!.uid).catch(err => {
+        console.warn('Daily visit logging failed:', err);
+      });
+    });
   }
 
   initializeApp() {

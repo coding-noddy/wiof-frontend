@@ -190,16 +190,18 @@ export class ManageBlogPage implements OnInit, OnDestroy {
             ).subscribe(
               () => {
                 loader.dismiss();
-                this.uiUtil.presentAlert(UI_MESSAGES.SUCCESS_HEADER,
+                this.uiUtil.presentToast(
                   UI_MESSAGES.SUCCESS_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.BLOG),
-                  [UI_MESSAGES.FAILURE_CTA_TEXT]);
+                  'success'
+                );
                 this.loadData();
               },
               () => {
                 loader.dismiss();
-                this.uiUtil.presentAlert(UI_MESSAGES.FAILURE_HEADER,
+                this.uiUtil.presentToast(
                   UI_MESSAGES.FAILURE_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.BLOG),
-                  [UI_MESSAGES.FAILURE_CTA_TEXT]);
+                  'error'
+                );
               }
             );
           }

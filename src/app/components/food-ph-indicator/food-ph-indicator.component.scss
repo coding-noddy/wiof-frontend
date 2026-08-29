@@ -997,9 +997,12 @@ input:focus-visible {
     justify-content: center;
   }
 
-  .food-ph-input-area,
-  .food-ph-meter-panel {
+  .food-ph-input-area {
     padding: 0.9rem;
+  }
+
+  .food-ph-meter-panel {
+    padding: 0;
   }
 
   .select-food-input {
@@ -1018,6 +1021,34 @@ input:focus-visible {
 
   .meter-header {
     margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.5rem;
+  }
+
+  .field-label {
+    grid-column: 1 / -1;
+    margin-bottom: 0;
+  }
+
+  .category-select-wrap,
+  .category-select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .category-select {
+    justify-content: center;
+  }
+
+  .random-btn {
+    margin-left: 0;
+    white-space: nowrap;
   }
 }
 

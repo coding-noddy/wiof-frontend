@@ -1,0 +1,120 @@
+<app-header></app-header>
+
+<ion-content>
+  <div class="my-saved-page">
+
+    <!-- Header -->
+    <div class="page-header">
+      <h1 class="header-title">My Saved</h1>
+      <app-back-button></app-back-button>
+    </div>
+
+    <!-- Loading State: Skeleton Cards -->
+    <div *ngIf="isLoading" class="content-grid">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12" size-sm="6" size-md="4" size-lg="3" *ngFor="let i of [1,2,3,4,5,6,7,8]">
+            <div class="skeleton-card-wrap">
+              <div class="skeleton" style="height: 140px; border-radius: 0;"></div>
+              <div style="padding: 0.75rem;">
+                <div class="skeleton" style="height: 14px; width: 40%; border-radius: 6px; margin-bottom: 0.5rem;"></div>
+                <div class="skeleton" style="height: 16px; width: 90%; border-radius: 6px; margin-bottom: 0.4rem;"></div>
+                <div class="skeleton" style="height: 12px; width: 60%; border-radius: 4px;"></div>
+              </div>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="errorMessage && !isLoading" class="error-state">
+      <ion-icon name="cloud-offline-outline"></ion-icon>
+      <p>{{ errorMessage }}</p>
+      <button class="retry-btn" (click)="retry()">
+        <ion-icon name="refresh-outline"></ion-icon>
+        Try Again
+      </button>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && !errorMessage && savedItems.length === 0" class="empty-state">
+      <ion-icon name="bookmark-outline"></ion-icon>
+      <h2>No saved content yet</h2>
+      <p>Content you bookmark will appear here. Start exploring and save what inspires you!</p>
+      <a routerLink="/home" class="explore-btn">Explore Content</a>
+    </div>
+
+    <!-- Saved Content List -->
+    <div *ngIf="!isLoading && !errorMessage && savedItems.length > 0" class="content-grid">
+      <ion-grid>
+        <ion-row>
+          <ion-col
+            size="12"
+            size-sm="6"
+            size-md="4"
+            size-lg="3"
+            *ngFor="let item of savedItems"
+          >
+            <div class="saved-card-wrap">
+              <a [routerLink]="getContentRoute(item)" class="saved-card">
+                <div class="card-thumbnail">
+                  <img
+                    *ngIf="getImageUrl(item) | async as imgUrl"
+                    [src]="imgUrl"
+                    [alt]="item.contentTitle"
+                    loading="lazy"
+                  />
+                  <span class="content-type-badge" [ngClass]="item.contentType">
+                    {{ item.contentType === 'blog' ? 'Blog' : 'Video' }}
+                  </span>
+                </div>
+                <div class="card-body">
+                  <h3 class="card-title">{{ item.contentTitle }}</h3>
+                </div>
+              </a>
+              <button class="remove-btn" (click)="confirmRemove(item)" title="Remove from saved">
+                <ion-icon name="close-circle-outline"></ion-icon>
+              </button>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <!-- Load More Button -->
+      <div *ngIf="hasMore" class="load-more-wrap">
+        <button
+          class="load-more-btn"
+          (click)="loadMore()"
+          [disabled]="isLoadingMore"
+        >
+          <ion-icon *ngIf="!isLoadingMore" name="chevron-down-outline"></ion-icon>
+          <ion-spinner *ngIf="isLoadingMore" name="crescent"></ion-spinner>
+          {{ isLoadingMore ? 'Loading...' : 'Load More' }}
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Remove Confirmation Modal -->
+  <div *ngIf="showConfirmModal" class="confirm-backdrop" (click)="cancelRemove()"></div>
+  <div *ngIf="showConfirmModal" class="confirm-modal" role="dialog" aria-label="Confirm removal">
+    <div class="confirm-icon">
+      <ion-icon name="bookmark-outline"></ion-icon>
+    </div>
+    <h3 class="confirm-title">Remove from Saved?</h3>
+    <p class="confirm-text">
+      "{{ itemToRemove?.contentTitle }}" will be removed from your saved content.
+    </p>
+    <div class="confirm-actions">
+      <button class="confirm-cancel" (click)="cancelRemove()">Keep it</button>
+      <button class="confirm-remove" (click)="removeItem()" [disabled]="isRemoving">
+        <ion-spinner *ngIf="isRemoving" name="crescent"></ion-spinner>
+        <span *ngIf="!isRemoving">Remove</span>
+      </button>
+    </div>
+  </div>
+
+  <app-wiof-footer></app-wiof-footer>
+</ion-content>

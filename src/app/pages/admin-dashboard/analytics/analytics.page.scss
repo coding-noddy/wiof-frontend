@@ -1,0 +1,59 @@
+@import '../admin-shared';
+
+.chart-card {
+  background: $card-bg;
+  border: 1px solid $border-color;
+  border-radius: $card-radius;
+  padding: 24px;
+}
+
+.back-dashboard-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: $accent;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+
+  canvas {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 300px;
+  }
+}
+
+// ── Dark Theme ──────────────────────────────────────────────────────
+
+:host-context(body.admin-dark-theme) {
+  .chart-card {
+    background: #1e293b;
+    border-color: #334155;
+  }
+}
+
+// ── Responsive ──────────────────────────────────────────────────────
+
+@media (max-width: 768px) {
+  .back-dashboard-link {
+    margin-top: 0.75rem;
+  }
+
+  .chart-card {
+    padding: 16px;
+  }
+
+  .chart-container canvas {
+    min-height: 220px;
+  }
+}

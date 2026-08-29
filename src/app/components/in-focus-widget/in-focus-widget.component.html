@@ -19,6 +19,10 @@
                 class="in-focus-player"
                 [src]="inFocus.sanitizedLink"
                 allowfullscreen
+                appYoutubeWatchTracker
+                [contentId]="inFocus.id || inFocus.title"
+                [videoTitle]="inFocus.title"
+                (watchComplete)="onVideoWatchComplete($event)"
               ></iframe>
             </div>
 

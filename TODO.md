@@ -7,14 +7,40 @@
 
 ## 🔴 WIOF Fixes (Next Sprint)
 
+### Bugs
+- ~~**[HIGH]** Poll section — shows previous user's voted option after logout/login with different account~~ ✅ FIXED
+  - ~~"You voted for" state is cached and not cleared on logout~~
+  - ~~Should reset poll vote state on user change so current user sees their own vote (or no vote if they haven't voted)~~
+
+- ~~Admin blog preview should match the public blog view~~ ✅ FIXED
+- ~~Public blog images should support expand/zoom for small text~~ ✅ FIXED (image modal)
+- Arent the public user activities recorded for admin users, do we need to let them use different public account for their general application use purpose?? what do you suggest, let admin  users use public account also or better they create separate account for that purpose.
+
+
+- ~~**[HIGH]** My Journey page — shows stale data after switching users without page refresh~~ ✅ FIXED
+  - ~~If My Journey is already open and user logs in with a different account, the page still displays previous user's journey data~~
+  - ~~Profile icon updates but page content doesn't re-fetch for the new user~~
+  - ~~Should subscribe to auth state changes and reload journey data when user changes~~
+
+- ~~**[MED]** Poll votes not being recorded for admin users~~ ✅ FIXED
+  - ~~Voting as an admin may not persist — needs investigation~~
+  - ~~Could be a Firestore rules issue or activity_log rate-limiting (`timestamp == request.time`) blocking the write~~
+
+- ~~Some issue with analytics: when admin logged in first, then a public user logs in, the chart still shows one user only~~ ✅ FIXED
+
+- ~~Analytics page should provide an option to return to the admin dashboard home~~ ✅ FIXED
+- ~~Admin dashboard should show registered users with name, email, and interested elements~~ ✅ DONE (blocking deferred)
+
 ### Admin Dashboard
 - ~~**[HIGH]** Refine admin dashboard — modern card-based UI, better navigation, responsive layout~~ ✅ DONE
 - ~~**[MED]** All admin manage pages — consistent table/card designs, better mobile experience~~ ✅ DONE
+
 
 ### Pending Improvements
 - **[MED]** Environment Calendar — remove external padding, make calendar dates area bigger
 - ~~**[MED]** Polls widget — show results from previous polls, show correct answers~~ ✅ DONE
 - **[LOW]** AQI temperature — values come directly from monitoring stations via WAQI API (correct as reported)
+- **[LOW]** Admin Manage Polls — add optional "view voter emails" detail view for guest votes (not needed now)
 
 ### Responsiveness & Mobile
 - **[HIGH]** Widget responsiveness — ensure all 5 widgets display properly on mobile (proper padding, no overflow)
@@ -87,6 +113,12 @@
   - ~~Blog service: `getBlogBySlug(slug)`~~ ✅
   - ~~One-time migration script: backfill slugs for existing blogs~~ ✅
   - ~~Route: slug lookup first, fallback to ID~~ ✅
+
+- ~~**[HIGH]** Session idle timeout (security)~~ ✅ DONE
+  - ~~Auto-logout after 10 min of inactivity for any authenticated user (not just admins)~~ ✅
+  - ~~Track mouse, keyboard, touch events to detect idle state~~ ✅
+  - ~~Show warning toast ~1 min before logout~~ ✅
+  - ~~Redirect to /home on expiry (via existing AuthService.logout())~~ ✅
 
 - **[HIGH]** Rich blog content — multiple images in blog body
   - Current: Only one hero image per blog

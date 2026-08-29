@@ -29,6 +29,7 @@
         max="5"
         step="1"
         [formControlName]="getFormControlName(i)"
+        (ionChange)="onSliderChange(i)"
         snaps
         color="home"
         class="ion-no-padding"

@@ -78,22 +78,22 @@ export class ManageInFocusPage implements OnInit, OnDestroy {
       [{ text: UI_MESSAGES.CONFIRM_DELETE_PRIMARY_CTA, handler: async () => {
         const loader = await this.uiUtil.showLoader(UI_MESSAGES.DELETE_IN_PROGRESS.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.IN_FOCUS));
         this.inFocusService.deleteInFocus(inFocusId).pipe(takeUntil(this.destroy$)).subscribe(
-          () => { loader.dismiss(); this.loadData(); this.uiUtil.presentAlert(UI_MESSAGES.SUCCESS_HEADER, UI_MESSAGES.SUCCESS_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.IN_FOCUS), [UI_MESSAGES.FAILURE_CTA_TEXT]); },
-          () => { loader.dismiss(); this.uiUtil.presentAlert(UI_MESSAGES.FAILURE_HEADER, UI_MESSAGES.FAILURE_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.IN_FOCUS), [UI_MESSAGES.FAILURE_CTA_TEXT]); }
+          () => { loader.dismiss(); this.loadData(); this.uiUtil.presentToast(UI_MESSAGES.SUCCESS_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.IN_FOCUS), 'success'); },
+          () => { loader.dismiss(); this.uiUtil.presentToast(UI_MESSAGES.FAILURE_DELETE_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.IN_FOCUS), 'error'); }
         );
       }}, { text: UI_MESSAGES.CONFIRM_DELETE_SECONDARY_CTA, role: 'cancel' }]);
   }
 
   publishInFocus(inFocusId: string) {
     this.inFocusService.publishInFocus(inFocusId).subscribe(() => {
-      this.uiUtil.presentAlert(UI_MESSAGES.SUCCESS_HEADER, UI_MESSAGES.SUCCESS_PUBLISH_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.IN_FOCUS), [UI_MESSAGES.FAILURE_CTA_TEXT]);
+      this.uiUtil.presentToast(UI_MESSAGES.SUCCESS_PUBLISH_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.IN_FOCUS), 'success');
       this.loadData();
     });
   }
 
   unpublishInFocus(inFocusId: string) {
     this.inFocusService.unpublishInFocus(inFocusId).subscribe(() => {
-      this.uiUtil.presentAlert(UI_MESSAGES.SUCCESS_HEADER, UI_MESSAGES.SUCCESS_UNPUBLISH_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.IN_FOCUS), [UI_MESSAGES.FAILURE_CTA_TEXT]);
+      this.uiUtil.presentToast(UI_MESSAGES.SUCCESS_UNPUBLISH_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.IN_FOCUS), 'success');
       this.loadData();
     });
   }

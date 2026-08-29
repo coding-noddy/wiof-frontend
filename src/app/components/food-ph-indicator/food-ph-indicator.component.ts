@@ -1,10 +1,12 @@
 import { Component, ElementRef, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
-import { map, startWith, takeUntil, switchMap } from 'rxjs/operators';
+import { map, startWith, takeUntil, switchMap, first } from 'rxjs/operators';
 
 import { Food, FoodDataService } from '../../services/food-data.service';
 import { NutritionService, NutritionData } from '../../services/nutrition.service';
+import { ActivityService } from 'src/app/services/activity.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 interface CategoryChip {
   key: string;
@@ -147,7 +149,9 @@ export class FoodPhIndicatorComponent implements OnInit, OnDestroy {
 
   constructor(
     private foodDataService: FoodDataService,
-    private nutritionService: NutritionService
+    private nutritionService: NutritionService,
+    private activityService: ActivityService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -267,6 +271,22 @@ export class FoodPhIndicatorComponent implements OnInit, OnDestroy {
     this.showDetails = false;
     this.foodInputCtrl.setValue(food.name);
     this.fetchNutrition(food.name);
+    // Log widget usage for authenticated users (fire-and-forget)
+    this.logWidgetUsage();
+  }
+
+  private logWidgetUsage(): void {
+    this.authService.isAuthenticated$.pipe(first()).subscribe(isAuth => {
+      if (!isAuth) return;
+      this.authService.currentUser$.pipe(first()).subscribe(user => {
+        if (!user) return;
+        this.activityService.logActivity({
+          activityType: 'widget_usage',
+          widgetName: 'Food pH',
+          userId: user.uid
+        }).catch(err => console.warn('Food pH widget activity logging failed:', err));
+      });
+    });
   }
 
   clearSelection(): void {

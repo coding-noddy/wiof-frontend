@@ -59,11 +59,7 @@ export class SubscribeComponent implements OnInit, OnDestroy {
         .subscribe(async (data) => {
           if (data) {
             this.loader.dismiss();
-            this.uiUtil.presentAlert(
-              UI_MESSAGES.SUCCESS_HEADER,
-              UI_MESSAGES.ALREADY_SUBSCRIBED,
-              [UI_MESSAGES.SUCCESS_CTA_TEXT]
-            );
+            this.uiUtil.presentToast(UI_MESSAGES.ALREADY_SUBSCRIBED, 'warning');
           } else {
             const subscriber = Subscriber.createByForm(this.addSubscriberForm);
             this.subscribeService
@@ -81,21 +77,16 @@ export class SubscribeComponent implements OnInit, OnDestroy {
 
                   this.loader.dismiss();
                   this.addSubscriberForm.reset();
-                  this.uiUtil.presentAlert(
-                    UI_MESSAGES.SUCCESS_HEADER,
-                    UI_MESSAGES.SUCCESS_SUBSCRIPTION,
-                    [UI_MESSAGES.SUCCESS_CTA_TEXT]
-                  );
+                  this.uiUtil.presentToast(UI_MESSAGES.SUCCESS_SUBSCRIPTION, 'success');
                 },
                 (error) => {
                   this.loader.dismiss();
-                  this.uiUtil.presentAlert(
-                    UI_MESSAGES.FAILURE_HEADER,
+                  this.uiUtil.presentToast(
                     UI_MESSAGES.FAILURE_ADD_ITEM_DESC.replace(
                       UI_MESSAGES.PLACEHOLDER,
                       'subscription'
                     ),
-                    [UI_MESSAGES.FAILURE_CTA_TEXT]
+                    'error'
                   );
                 }
               );

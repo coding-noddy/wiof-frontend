@@ -9,6 +9,13 @@
     <button class="blog-share-icon" (click)="shareBlog($event)" title="Share this blog">
       <ion-icon name="share-social-outline"></ion-icon>
     </button>
+    <app-bookmark-icon
+      class="blog-bookmark-icon"
+      [contentId]="blog.slug || blog.id"
+      contentType="blog"
+      [contentTitle]="blog.title"
+      [contentThumbnail]="blog.imageName">
+    </app-bookmark-icon>
   </div>
 
   <div class="blog-body">

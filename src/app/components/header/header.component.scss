@@ -1,58 +1,224 @@
-@media (max-width: 800px) {
-  .menu-lg-toggle {
-    display: none;
-  }
+// ── Custom Header ─────────────────────────────────────────────────────────────
+$mobile-breakpoint: 768px;
+
+.wiof-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #fffaf0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
-@media (min-width: 800px) {
-  .menu-button-toggle {
-    display: none;
-  }
-}
-.ios {
-  padding-top: 7px;
-  background-color: white;
-  .wiof-logo {
-    top: -10px;
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  height: 64px;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  @media (max-width: $mobile-breakpoint - 1) {
+    padding: 0 1rem;
+    height: 56px;
   }
 }
 
-.wiof-logo {
+// ── Logo ──────────────────────────────────────────────────────────────────────
+.header-logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+.header-logo {
+  height: 56px;
+  width: auto;
+  object-fit: contain;
+
+  @media (max-width: $mobile-breakpoint - 1) {
+    height: 46px;
+  }
+}
+
+// ── Desktop Nav ───────────────────────────────────────────────────────────────
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
+  @media (max-width: $mobile-breakpoint - 1) {
+    display: none;
+  }
+}
+
+.nav-link {
+  padding: 8px 16px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #334155;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background 0.15s ease, color 0.15s ease;
+  letter-spacing: -0.01em;
+
+  &:hover {
+    background: rgba(101, 175, 222, 0.1);
+    color: #1a6fb5;
+  }
+}
+
+// ── Sign In Button ────────────────────────────────────────────────────────────
+.sign-in-btn {
+  padding: 9px 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: #1a6fb5;
+  border: none;
+  border-radius: 999px;
   cursor: pointer;
-  position: absolute;
-  top: -30px;
-  left: 0px;
-  outline: none;
-}
+  margin-left: 12px;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-shadow: 0 2px 8px rgba(26, 111, 181, 0.25);
 
-.header-padding {
-  padding: 5px;
-}
-
-.toolbar-background-wrapper {
-  --background: #fffaf0; // floral white
-}
-
-// ── Modern nav links ─────────────────────────────────────────────
-ion-buttons[slot="end"] {
-  ion-button {
-    --color: #10263c;
-    font-size: 0.88rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    text-transform: none;
-    --padding-start: 14px;
-    --padding-end: 14px;
-    --border-radius: 999px;
-    margin-left: 4px;
-    transition: background 0.15s ease, color 0.15s ease;
-
-    &:hover {
-      --background: rgba(101, 175, 222, 0.1);
-      --color: #1a6fb5;
-    }
-
-    &::part(native) {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    }
+  &:hover:not(:disabled) {
+    background: #145c99;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(26, 111, 181, 0.35);
   }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 1px 4px rgba(26, 111, 181, 0.2);
+  }
+
+  &:disabled {
+    opacity: 0.8;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.signing-in {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.spinner {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ── Mobile Menu Button ────────────────────────────────────────────────────────
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  align-items: center;
+  justify-content: center;
+  color: #334155;
+  transition: background 0.15s ease;
+
+  ion-icon {
+    font-size: 1.5rem;
+  }
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  @media (max-width: $mobile-breakpoint - 1) {
+    display: flex;
+  }
+}
+
+// ── Mobile Menu ───────────────────────────────────────────────────────────────
+.mobile-menu {
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  max-height: 0;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  transition: max-height 0.3s ease, padding 0.3s ease;
+
+  @media (max-width: $mobile-breakpoint - 1) {
+    display: flex;
+  }
+
+  &--open {
+    max-height: 400px;
+    padding: 0.5rem 0;
+  }
+}
+
+.mobile-link {
+  display: block;
+  padding: 13px 1.5rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #334155;
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  letter-spacing: -0.01em;
+
+  &:hover {
+    background: rgba(59, 130, 246, 0.05);
+  }
+}
+
+.mobile-sign-in {
+  display: block;
+  padding: 13px 1.5rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #2563eb;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(59, 130, 246, 0.05);
+  }
+}
+
+.mobile-logout {
+  color: #dc2626;
+}
+
+// ── Avatar dropdown alignment ─────────────────────────────────────────────────
+app-avatar-dropdown {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 10px;
 }

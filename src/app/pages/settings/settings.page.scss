@@ -1,0 +1,456 @@
+@import "../../wiof-custom-theming.scss";
+
+// ─── Design Tokens ────────────────────────────────────────────────────────────
+$card-radius: 18px;
+$glass-bg: rgba(255, 255, 255, 0.55);
+$glass-blur: 14px;
+$card-shadow: 0 8px 28px rgba(16, 38, 60, 0.08);
+$card-border: 1px solid rgba(255, 255, 255, 0.6);
+$heading-color: #10263c;
+$body-color: #475569;
+$accent-color: #3b82f6;
+$accent-color-dark: #2563eb;
+
+// ─── Page Background ──────────────────────────────────────────────────────────
+ion-content {
+  --background: linear-gradient(180deg, #eef3fb 0%, #f4f7fb 260px, #f4f7fb 100%);
+}
+
+// ─── Page Heading ─────────────────────────────────────────────────────────────
+.settings-heading {
+  margin: 0.25rem 0 1.25rem;
+  padding: 0 0.25rem;
+  text-align: center;
+
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ion-text-color, $heading-color);
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    margin: 0.25rem 0 0;
+    font-size: 0.9rem;
+    color: $body-color;
+  }
+}
+
+// ─── Page Layout ──────────────────────────────────────────────────────────────
+.settings-page {
+  padding: 1rem;
+  max-width: 100%;
+  margin: 0 auto;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
+  color: var(--ion-text-color, $body-color);
+  overflow-x: hidden;
+
+  // Tablet (768px–1023px): centered card with max-width
+  @media (min-width: 768px) {
+    max-width: 680px;
+    padding: 1.5rem;
+  }
+
+  // Desktop (≥1024px): centered card with narrower max-width
+  @media (min-width: 1024px) {
+    max-width: 560px;
+    padding: 2rem;
+  }
+}
+
+// ─── Loading State ────────────────────────────────────────────────────────────
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1rem;
+
+  ion-spinner {
+    width: 36px;
+    height: 36px;
+    color: $accent-color;
+  }
+}
+
+// ─── Error State ──────────────────────────────────────────────────────────────
+.error-state {
+  text-align: center;
+  padding: 3rem 1rem;
+
+  .error-message {
+    font-size: 0.95rem;
+    color: $body-color;
+    margin: 0 0 1rem;
+  }
+
+  ion-button {
+    --color: #{$accent-color};
+    --border-color: #{$accent-color};
+    font-weight: 600;
+  }
+}
+
+// ─── Profile Content ──────────────────────────────────────────────────────────
+.profile-content {
+  width: 100%;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// ─── Avatar / Profile Identity Section ────────────────────────────────────────
+.avatar-section.glassmorphism-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.75rem 1.25rem;
+  margin: 0 0 1.5rem;
+
+  @media (min-width: 768px) {
+    padding: 2rem;
+  }
+}
+
+.avatar-preview-wrap {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  margin-bottom: 1rem;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, #60a5fa, #3b82f6 55%, #6366f1);
+}
+
+.avatar-preview {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.15);
+  border: 3px solid #fff;
+
+  &--fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #60a5fa, #3b82f6);
+    color: #fff;
+    font-size: 2.1rem;
+    font-weight: 700;
+  }
+}
+
+.avatar-busy-spinner {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 32px;
+  height: 32px;
+  color: #fff;
+  background: rgba(15, 23, 42, 0.35);
+  border-radius: 50%;
+  padding: 8px;
+}
+
+.avatar-identity {
+  margin-bottom: 1rem;
+
+  .avatar-display-name {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ion-text-color, $heading-color);
+  }
+
+  .avatar-email {
+    margin: 0.15rem 0 0;
+    font-size: 0.85rem;
+    color: $body-color;
+  }
+}
+
+.avatar-pending-actions,
+.avatar-default-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.avatar-hint {
+  margin: 0.4rem 0 0;
+  font-size: 0.78rem;
+  color: var(--ion-color-medium, $body-color);
+}
+
+.pill-button {
+  --border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: none;
+
+  &--primary {
+    --background: #{$accent-color};
+    --background-hover: #{$accent-color-dark};
+    --box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+  }
+
+  ion-icon {
+    margin-right: 0.15rem;
+  }
+}
+
+
+// ─── Glassmorphism Card ───────────────────────────────────────────────────────
+.glassmorphism-card {
+  background: $glass-bg;
+  backdrop-filter: blur($glass-blur);
+  -webkit-backdrop-filter: blur($glass-blur);
+  border-radius: $card-radius;
+  box-shadow: $card-shadow;
+  border: $card-border;
+  margin: 0;
+  overflow: hidden;
+
+  ion-card-content {
+    padding: 1.25rem;
+
+    @media (min-width: 768px) {
+      padding: 1.5rem;
+    }
+  }
+
+  ion-item {
+    --background: transparent;
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    --border-color: rgba(0, 0, 0, 0.06);
+    margin-bottom: 0.75rem;
+
+    ion-icon[slot="start"] {
+      color: $accent-color;
+      font-size: 1.15rem;
+      margin-inline-end: 0.75rem;
+    }
+
+    ion-label[position="stacked"] {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--ion-color-medium, $body-color);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-bottom: 0.25rem;
+    }
+
+    .read-only-value {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--ion-text-color, $heading-color);
+      padding: 0.25rem 0;
+    }
+  }
+
+  ion-input {
+    --color: var(--ion-text-color, #{$heading-color});
+    font-size: 0.95rem;
+    font-family: 'Roboto', sans-serif;
+  }
+
+  ion-select {
+    --placeholder-color: var(--ion-color-medium, #{$body-color});
+    font-size: 0.95rem;
+    font-family: 'Roboto', sans-serif;
+  }
+}
+
+// ─── Section Titles (within form card) ────────────────────────────────────────
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ion-text-color, $heading-color);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+
+  ion-icon {
+    color: $accent-color;
+    font-size: 1rem;
+  }
+
+  &--spaced {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(16, 38, 60, 0.08);
+  }
+}
+
+// ─── Save Button ──────────────────────────────────────────────────────────────
+.save-button {
+  margin-top: 1.25rem;
+  --border-radius: 10px;
+  --background: linear-gradient(135deg, #{$accent-color}, #{$accent-color-dark});
+  --box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
+  font-weight: 600;
+  font-size: 0.95rem;
+  font-family: 'Roboto', sans-serif;
+}
+
+// ─── Sign-Out Button ──────────────────────────────────────────────────────────
+.sign-out-button {
+  margin-top: 1.25rem;
+  --border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  font-family: 'Roboto', sans-serif;
+}
+
+.glassmorphism-card--danger {
+  background: rgba(254, 242, 242, 0.65);
+  border: 1px solid rgba(220, 38, 38, 0.15);
+}
+
+.reset-data-section {
+  margin-top: 1.25rem;
+  padding: 1.25rem 1.25rem 1.5rem;
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0 0 0.5rem;
+    color: #991b1b;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+
+    ion-icon {
+      font-size: 1.05rem;
+    }
+  }
+
+  p {
+    margin: 0 0 1rem;
+    color: $body-color;
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+
+  ion-button {
+    --border-radius: 10px;
+    font-weight: 600;
+  }
+}
+
+.reset-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  background: rgba(15, 23, 42, 0.42);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: resetFadeIn 200ms ease-out;
+}
+
+.reset-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9998;
+  width: 380px;
+  max-width: calc(100vw - 2rem);
+  padding: 1.75rem;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
+  text-align: center;
+  animation: resetModalIn 250ms ease-out;
+
+  h3 {
+    margin: 0 0 0.6rem;
+    color: #1e293b;
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0 0 1.25rem;
+    color: #64748b;
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+}
+
+@keyframes resetFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes resetModalIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.92); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.reset-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fef2f2;
+
+  ion-icon { color: #dc2626; font-size: 1.5rem; }
+}
+
+.reset-input {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0 0 1.25rem;
+  padding: 0.75rem 0.85rem;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  color: #1e293b;
+  font: inherit;
+  text-align: center;
+  text-transform: uppercase;
+  outline: none;
+
+  &:focus { border-color: #dc2626; box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12); }
+}
+
+.reset-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+
+  button {
+    min-width: 100px;
+    padding: 0.65rem 1rem;
+    border: 0;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+}
+
+.reset-cancel { background: #f1f5f9; color: #475569; }
+.reset-delete { background: #dc2626; color: #fff; }
+.reset-delete:disabled { background: #fecaca; color: #991b1b; cursor: not-allowed; }

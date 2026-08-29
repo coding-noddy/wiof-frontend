@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
@@ -36,6 +36,10 @@ import { TakeActionContentComponent } from './components/take-action-content/tak
 import { CoffeeConversationComponent } from './components/coffee-conversation/coffee-conversation.component';
 import { InFocusWidgetComponent } from './components/in-focus-widget/in-focus-widget.component';
 import { SectionNavComponent } from './components/section-nav/section-nav.component';
+import { AvatarDropdownComponent } from './components/avatar-dropdown/avatar-dropdown.component';
+import { BookmarkIconComponent } from './components/bookmark-icon/bookmark-icon.component';
+import { BlogReadTrackerDirective } from './directives/blog-read-tracker.directive';
+import { YoutubeWatchTrackerDirective } from './directives/youtube-watch-tracker.directive';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 const COMPONENTS = [
@@ -72,7 +76,11 @@ const COMPONENTS = [
   TakeActionContentComponent,
   CoffeeConversationComponent,
   InFocusWidgetComponent,
-  SectionNavComponent
+  SectionNavComponent,
+  AvatarDropdownComponent,
+  BookmarkIconComponent,
+  BlogReadTrackerDirective,
+  YoutubeWatchTrackerDirective
 ];
 
 @NgModule({
@@ -92,6 +100,7 @@ const COMPONENTS = [
     ...COMPONENTS
   ],
   declarations: [...COMPONENTS],
-  providers: []
+  providers: [],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppCommonModule {}

@@ -6,6 +6,10 @@ import {
 } from '../../app.constants';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { AppUtilService } from 'src/app/util/AppUtilService';
+import { ActivityService } from 'src/app/services/activity.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { VideoWatchCompleteEvent } from 'src/app/directives/youtube-watch-tracker.directive';
+import { first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-video-widget',
@@ -21,7 +25,9 @@ export class VideoWidgetComponent implements OnInit {
 
   constructor(
     private sanitizer: DomSanitizer,
-    private appUtilService: AppUtilService
+    private appUtilService: AppUtilService,
+    private activityService: ActivityService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -40,5 +46,14 @@ export class VideoWidgetComponent implements OnInit {
 
   setVideoLink() {
     this.videoLink = VIDEO_PLAYER_VIDEOS[this.element.toUpperCase()];
+  }
+
+  onVideoWatchComplete(event: VideoWatchCompleteEvent): void {
+    this.authService.currentUser$.pipe(first()).subscribe(user => {
+      if (!user) return;
+      this.activityService.logVideoWatchComplete(
+        user.uid, event.contentId, event.watchPercent, event.videoTitle
+      ).catch(err => console.warn('Video widget watch logging failed:', err));
+    });
   }
 }

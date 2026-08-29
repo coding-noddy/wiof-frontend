@@ -9,6 +9,7 @@ import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { map } from 'rxjs/operators';
 import { from, Observable } from 'rxjs';
 import { FIREBASE_COLLECTION } from '../app.constants';
+import { AdminWriteGuardService } from './admin-write-guard.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,8 @@ export class EnvcalService {
 
   constructor(
     private storage: AngularFireStorage,
-    public database: AngularFirestore
+    public database: AngularFirestore,
+    private adminWriteGuard: AdminWriteGuardService
   ) {
     this.envcalCollection = this.database.collection(
       FIREBASE_COLLECTION.ENVCAL
@@ -87,19 +89,25 @@ export class EnvcalService {
   }
 
   saveOccasion(occasion: EnvDay) {
-    let saveOccasion$ = null;
-    if (occasion.id !== null) {
-      saveOccasion$ = this.envcalCollection.doc(occasion.id.valueOf()).update({
-        ...occasion
-      });
-    } else {
-      saveOccasion$ = this.envcalCollection.add({ ...occasion });
-    }
-    return from(saveOccasion$);
+    return from(
+      this.adminWriteGuard.assertAdmin().then((): any => {
+        if (occasion.id !== null) {
+          return this.envcalCollection.doc(occasion.id.valueOf()).update({
+            ...occasion
+          });
+        } else {
+          return this.envcalCollection.add({ ...occasion });
+        }
+      })
+    );
   }
 
   deleteOccasion(occasionId: string) {
-    return from(this.envcalCollection.doc(occasionId).delete());
+    return from(
+      this.adminWriteGuard.assertAdmin().then(() =>
+        this.envcalCollection.doc(occasionId).delete()
+      )
+    );
   }
 
   setViewEditModeOccasion(occasion: EnvDay) {
