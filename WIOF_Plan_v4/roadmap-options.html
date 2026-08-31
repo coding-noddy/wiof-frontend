@@ -1,0 +1,531 @@
+<!doctype html>
+<title>WIOF Roadmap Options</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Aleo:ital,wght@0,400;0,600;0,700;1,400&family=Noto+Sans:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg:#FAF5EC;
+    --surface:#FFFCF6;
+    --surface-2:#FFFFFF;
+    --text:#2B2420;
+    --text-muted:#6E6154;
+    --border:rgba(43,36,32,0.14);
+    --border-strong:rgba(43,36,32,0.24);
+    --brown:#A6875D;
+    --brown-strong:#8A6D45;
+    --teal:#178086;
+    --teal-soft:rgba(23,128,134,0.10);
+    --marigold:#D9932F;
+    --marigold-soft:rgba(217,147,47,0.14);
+
+    --status-done:#3F7A55;
+    --status-done-bg:rgba(63,122,85,0.12);
+    --status-partial:#B8791E;
+    --status-partial-bg:rgba(184,121,30,0.14);
+    --status-todo:#8A7C6C;
+    --status-todo-bg:rgba(138,124,108,0.14);
+
+    --shadow: 0 1px 2px rgba(43,36,32,0.06), 0 8px 24px -12px rgba(43,36,32,0.18);
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#211B16;
+      --surface:#2A2319;
+      --surface-2:#302820;
+      --text:#F6EEE1;
+      --text-muted:#C2B3A0;
+      --border:rgba(246,238,225,0.14);
+      --border-strong:rgba(246,238,225,0.26);
+      --brown:#C7A16C;
+      --brown-strong:#DDB783;
+      --teal:#4DBFC4;
+      --teal-soft:rgba(77,191,196,0.14);
+      --marigold:#F0AE55;
+      --marigold-soft:rgba(240,174,85,0.16);
+
+      --status-done:#7FBF93;
+      --status-done-bg:rgba(127,191,147,0.16);
+      --status-partial:#E0A54B;
+      --status-partial-bg:rgba(224,165,75,0.18);
+      --status-todo:#A99B89;
+      --status-todo-bg:rgba(169,155,137,0.18);
+
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#211B16;
+    --surface:#2A2319;
+    --surface-2:#302820;
+    --text:#F6EEE1;
+    --text-muted:#C2B3A0;
+    --border:rgba(246,238,225,0.14);
+    --border-strong:rgba(246,238,225,0.26);
+    --brown:#C7A16C;
+    --brown-strong:#DDB783;
+    --teal:#4DBFC4;
+    --teal-soft:rgba(77,191,196,0.14);
+    --marigold:#F0AE55;
+    --marigold-soft:rgba(240,174,85,0.16);
+
+    --status-done:#7FBF93;
+    --status-done-bg:rgba(127,191,147,0.16);
+    --status-partial:#E0A54B;
+    --status-partial-bg:rgba(224,165,75,0.18);
+    --status-todo:#A99B89;
+    --status-todo-bg:rgba(169,155,137,0.18);
+
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Noto Sans', system-ui, -apple-system, sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--marigold-soft); }
+
+  .wrap{ max-width:920px; margin:0 auto; padding:56px 24px 96px; }
+
+  header.doc-head{
+    padding-bottom:32px;
+    margin-bottom:40px;
+    border-bottom:1px solid var(--border);
+  }
+  .eyebrow{
+    font-family:'Noto Sans',sans-serif;
+    font-weight:600;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--teal);
+    margin:0 0 14px;
+  }
+  h1{
+    font-family:'Aleo', Georgia, serif;
+    font-weight:700;
+    font-size:clamp(2rem, 4vw, 2.75rem);
+    line-height:1.12;
+    margin:0 0 14px;
+    text-wrap:balance;
+    color:var(--text);
+  }
+  .dek{
+    font-size:1.05rem;
+    color:var(--text-muted);
+    max-width:62ch;
+    margin:0;
+  }
+  .meta-row{
+    display:flex; gap:20px; flex-wrap:wrap;
+    margin-top:20px;
+    font-size:0.82rem;
+    color:var(--text-muted);
+  }
+  .meta-row span b{ color:var(--text); font-weight:600; }
+
+  h2{
+    font-family:'Aleo', Georgia, serif;
+    font-weight:700;
+    font-size:1.5rem;
+    margin:0 0 6px;
+    text-wrap:balance;
+  }
+  .section-intro{
+    color:var(--text-muted);
+    max-width:66ch;
+    margin:0 0 22px;
+    font-size:0.98rem;
+  }
+  section{ margin-bottom:56px; }
+  section.numbered{ position:relative; padding-left:0; }
+
+  .phase-num{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:26px;height:26px;
+    border-radius:50%;
+    background:var(--teal-soft);
+    color:var(--teal);
+    font-family:'Noto Sans',sans-serif;
+    font-weight:700;
+    font-size:0.78rem;
+    margin-right:10px;
+    flex:none;
+  }
+
+  /* Phase status strip */
+  .phase-grid{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:10px;
+    margin-bottom:4px;
+  }
+  @media (max-width:760px){
+    .phase-grid{ grid-template-columns:repeat(2,1fr); }
+  }
+  .phase-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:14px 12px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    min-height:118px;
+  }
+  .phase-card .num-label{
+    display:flex; align-items:center;
+    font-size:0.72rem; color:var(--text-muted); font-weight:600;
+  }
+  .phase-card .title{
+    font-weight:700;
+    font-size:0.86rem;
+    line-height:1.3;
+  }
+  .status-pill{
+    align-self:flex-start;
+    font-size:0.68rem;
+    font-weight:700;
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    padding:3px 9px;
+    border-radius:999px;
+    margin-top:auto;
+  }
+  .status-pill.done{ background:var(--status-done-bg); color:var(--status-done); }
+  .status-pill.partial{ background:var(--status-partial-bg); color:var(--status-partial); }
+  .status-pill.todo{ background:var(--status-todo-bg); color:var(--status-todo); }
+
+  /* Findings */
+  .finding{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-left:3px solid var(--marigold);
+    border-radius:10px;
+    padding:18px 20px;
+    margin-bottom:14px;
+    box-shadow:var(--shadow);
+  }
+  .finding h3{
+    font-family:'Aleo',Georgia,serif;
+    font-size:1.05rem;
+    margin:0 0 6px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .finding p{ margin:0 0 8px; color:var(--text-muted); font-size:0.94rem; }
+  .finding p:last-child{ margin-bottom:0; }
+  .finding code{
+    font-family:ui-monospace,'SF Mono',Consolas,monospace;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    padding:1px 6px;
+    border-radius:5px;
+    font-size:0.85em;
+    color:var(--brown-strong);
+  }
+  .tag{
+    display:inline-block;
+    font-size:0.66rem;
+    font-weight:700;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    padding:2px 8px;
+    border-radius:999px;
+    background:var(--marigold-soft);
+    color:var(--marigold);
+  }
+
+  /* Options grid */
+  .options-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
+  @media (max-width:760px){ .options-grid{ grid-template-columns:1fr; } }
+
+  .option-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:22px;
+    box-shadow:var(--shadow);
+    display:flex;
+    flex-direction:column;
+  }
+  .option-card .opt-head{
+    display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
+    margin-bottom:10px;
+  }
+  .option-card h3{
+    font-family:'Aleo',Georgia,serif;
+    font-size:1.15rem;
+    margin:0;
+    text-wrap:balance;
+  }
+  .effort{
+    flex:none;
+    font-size:0.7rem;
+    font-weight:700;
+    color:var(--brown-strong);
+    background:rgba(166,135,93,0.14);
+    border-radius:999px;
+    padding:4px 10px;
+    white-space:nowrap;
+  }
+  .option-card .scope{ font-size:0.92rem; color:var(--text-muted); margin:0 0 14px; }
+  .option-card .why{
+    font-size:0.88rem;
+    border-top:1px dashed var(--border-strong);
+    padding-top:12px;
+    margin-top:auto;
+  }
+  .option-card .why b{ color:var(--teal); font-weight:700; }
+  .option-card .risk{
+    font-size:0.85rem;
+    color:var(--text-muted);
+    margin-top:8px;
+  }
+  .option-card .risk b{ color:var(--marigold); font-weight:700; }
+
+  /* Sequencing timeline */
+  .timeline{
+    border:1px solid var(--border);
+    background:var(--surface);
+    border-radius:14px;
+    padding:24px 26px;
+    box-shadow:var(--shadow);
+  }
+  .tl-row{
+    display:grid;
+    grid-template-columns:120px 1fr;
+    gap:16px;
+    padding:12px 0;
+    border-bottom:1px solid var(--border);
+    align-items:start;
+  }
+  .tl-row:last-child{ border-bottom:none; padding-bottom:0; }
+  .tl-row:first-child{ padding-top:0; }
+  .tl-when{
+    font-family:'Aleo',Georgia,serif;
+    font-weight:700;
+    font-size:0.92rem;
+    color:var(--teal);
+    padding-top:2px;
+  }
+  .tl-what b{ display:block; margin-bottom:3px; }
+  .tl-what span{ color:var(--text-muted); font-size:0.9rem; }
+  .tl-note{
+    margin-top:16px;
+    font-size:0.85rem;
+    color:var(--text-muted);
+    font-style:italic;
+  }
+
+  /* Checklist */
+  .checklist{
+    list-style:none;
+    margin:0; padding:0;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .checklist li{
+    display:flex; gap:12px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:14px 16px;
+    font-size:0.94rem;
+  }
+  .checklist li::before{
+    content:"";
+    flex:none;
+    width:16px; height:16px;
+    margin-top:3px;
+    border-radius:4px;
+    border:2px solid var(--border-strong);
+  }
+  .checklist b{ display:block; margin-bottom:2px; }
+  .checklist span{ color:var(--text-muted); font-size:0.88rem; }
+
+  footer{
+    border-top:1px solid var(--border);
+    padding-top:24px;
+    margin-top:24px;
+    color:var(--text-muted);
+    font-size:0.82rem;
+  }
+
+  @media (prefers-reduced-motion:no-preference){
+    section{ animation:rise 0.5s ease both; }
+    section:nth-of-type(2){ animation-delay:0.05s; }
+    section:nth-of-type(3){ animation-delay:0.1s; }
+    section:nth-of-type(4){ animation-delay:0.15s; }
+    section:nth-of-type(5){ animation-delay:0.2s; }
+  }
+  @keyframes rise{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:none; } }
+</style>
+
+<div class="wrap">
+
+  <header class="doc-head">
+    <p class="eyebrow">WIOF &middot; Platform Planning</p>
+    <h1>Roadmap options, mapped for a decision</h1>
+    <p class="dek">Where the platform actually stands against the v4 planning docs, two issues worth resolving regardless of what comes next, and four paths forward with their real trade-offs &mdash; so you can pick the sequence rather than have it picked for you.</p>
+    <div class="meta-row">
+      <span>Prepared <b>29 Aug 2026</b></span>
+      <span>Source docs: <b>WIOF Product Master Plan</b>, <b>Vision &amp; Product Roadmap</b>, <b>Foundation Hardening Plan v4</b>, <b>Future Enhancements v4</b></span>
+    </div>
+  </header>
+
+  <section aria-labelledby="status-h">
+    <h2 id="status-h">Where things stand</h2>
+    <p class="section-intro">The v4 docs lay out six phases in sequence. Here's the honest status of each, checked against the actual code and specs rather than the plan's assumptions.</p>
+    <div class="phase-grid">
+      <div class="phase-card">
+        <div class="num-label"><span class="phase-num">0</span>Foundation</div>
+        <div class="title">Security, privacy, event architecture</div>
+        <span class="status-pill partial">Partial</span>
+      </div>
+      <div class="phase-card">
+        <div class="num-label"><span class="phase-num">1</span>Brand Alignment</div>
+        <div class="title">Design tokens, IA, visual system</div>
+        <span class="status-pill todo">Not started</span>
+      </div>
+      <div class="phase-card">
+        <div class="num-label"><span class="phase-num">2</span>Journey &amp; Engagement</div>
+        <div class="title">Accounts, bookmarks, My Journey, onboarding</div>
+        <span class="status-pill done">Mostly built</span>
+      </div>
+      <div class="phase-card">
+        <div class="num-label"><span class="phase-num">3</span>Planet Passport</div>
+        <div class="title">Stamps, badges, achievement rules</div>
+        <span class="status-pill todo">Not started</span>
+      </div>
+      <div class="phase-card">
+        <div class="num-label"><span class="phase-num">4</span>Impact Engine</div>
+        <div class="title">Personal &amp; collective impact</div>
+        <span class="status-pill todo">Not started</span>
+      </div>
+      <div class="phase-card">
+        <div class="num-label"><span class="phase-num">5</span>Personalization</div>
+        <div class="title">Recommendations, ClimatEnlighten hand-off</div>
+        <span class="status-pill todo">Not started</span>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="findings-h">
+    <h2 id="findings-h">Two things worth resolving regardless of path</h2>
+    <p class="section-intro">Neither is a reason to stop and fix everything before deciding direction &mdash; but any path you choose will run cleaner once these are settled.</p>
+
+    <div class="finding">
+      <h3>Admin role can self-escalate on profile creation <span class="tag">Security</span></h3>
+      <p><code>firestore.rules</code> line 44 allows <code>create</code> on <code>users/{userId}</code> with only an ownership check &mdash; no restriction on which fields the document may contain. A user creating their own profile document for the first time could set <code>role: 'admin'</code> directly, since the field-restriction logic (<code>isValidOwnProfileUpdate</code>) only applies to <em>updates</em>, not <em>creates</em>.</p>
+      <p>This is the exact scenario the Foundation Hardening Plan's &sect;3.1 describes. Fix is contained: extend the create rule with the same field allow-list, or move admin authority off the user document entirely (see the spec-conflict note below).</p>
+    </div>
+
+    <div class="finding">
+      <h3>Poll responses expose email/IP to any reader <span class="tag">Privacy</span></h3>
+      <p><code>firestore.rules</code> lines 157&ndash;171: the <code>Polls</code> collection is publicly readable (<code>allow read: if true</code>) and stores <code>email</code>, <code>ip4</code>, and <code>ip6</code> in the same document as the vote itself. Any visitor can read every respondent's email and IP alongside their answer.</p>
+      <p>Plan v4 &sect;3.3 calls for splitting public aggregate results from private raw responses. That split hasn't happened yet.</p>
+    </div>
+
+    <div class="finding">
+      <h3>Two competing specs for the same phase of work <span class="tag">Process</span></h3>
+      <p><code>user-engagement-layer</code> and <code>user-engagement-foundation</code> both describe a full accounts/bookmarks/activity system for the same phase, with incompatible data models &mdash; different collection names (<code>user_saved_content</code> vs <code>saved_content</code>), different activity log names, and different admin-authority designs (a <code>role</code> field vs a separate <code>admins</code> collection).</p>
+      <p>The deployed rules and every newer spec (daily-visit-tracking, journey-section-navigation, video-watch-tracking, user-settings-page) match <code>user-engagement-layer</code>, so <code>user-engagement-foundation</code> looks like a stale duplicate. One nuance: its <code>admins</code>-collection idea is the more defensible design and worth reusing when the role-escalation fix above gets built, even though the rest of that spec should be retired.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="options-h">
+    <h2 id="options-h">Four paths forward</h2>
+    <p class="section-intro">Not mutually exclusive in the long run &mdash; the question is what leads.</p>
+    <div class="options-grid">
+
+      <div class="option-card">
+        <div class="opt-head">
+          <h3>Finish the Foundation</h3>
+          <span class="effort">~2&ndash;3 wks</span>
+        </div>
+        <p class="scope">Close the two findings above, move admin authority onto a trusted source (custom claims or the <code>admins</code>-collection pattern), split public poll results from raw responses, roll out App Check in monitoring mode, add Firestore-emulator rules tests to CI, retire the duplicate spec.</p>
+        <p class="why"><b>Why now &mdash;</b> everything built after this inherits whatever trust model exists today. It's a rules change now; it becomes a migration later.</p>
+        <p class="risk"><b>Trade-off &mdash;</b> no visible new capability for the effort spent.</p>
+      </div>
+
+      <div class="option-card">
+        <div class="opt-head">
+          <h3>Start the Action Engine</h3>
+          <span class="effort">~5 wks</span>
+        </div>
+        <p class="scope">Structured daily actions (<code>daily_actions</code> + completion records), admin authoring, streak-linked completion UI, first honest impact estimates with a documented methodology.</p>
+        <p class="why"><b>Why now &mdash;</b> both vision docs name this as WIOF's identity feature ("One Small Step"), and the plumbing it needs &mdash; <code>activity_log</code>, streaks, My Journey &mdash; already exists.</p>
+        <p class="risk"><b>Trade-off &mdash;</b> action completions and impact numbers would sit on an auth model with a known escalation hole until it's patched.</p>
+      </div>
+
+      <div class="option-card">
+        <div class="opt-head">
+          <h3>Brand &amp; Experience Alignment</h3>
+          <span class="effort">~4&ndash;6 wks</span>
+        </div>
+        <p class="scope">Design tokens from the approved brand guide (the palette this very document uses), Aleo/Noto Sans typography rollout across nav, cards and buttons, IA cleanup, accessibility pass across public/authenticated/admin surfaces.</p>
+        <p class="why"><b>Why now &mdash;</b> v4 explicitly sequences this before major new features, and engagement work has already outpaced it &mdash; it's the largest process debt on the board.</p>
+        <p class="risk"><b>Trade-off &mdash;</b> delays the visible new capability (Actions, Passport) stakeholders may be expecting next.</p>
+      </div>
+
+      <div class="option-card">
+        <div class="opt-head">
+          <h3>Map it, decide later</h3>
+          <span class="effort">This doc</span>
+        </div>
+        <p class="scope">What you asked for today: lay out the honest status, the open findings, and the options with trade-offs &mdash; without committing to one.</p>
+        <p class="why"><b>Why now &mdash;</b> the three paths above aren't a strict either/or; a workable sequence combines them. See below.</p>
+        <p class="risk"><b>Trade-off &mdash;</b> none &mdash; this is the path already taken for this round.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section aria-labelledby="sequence-h">
+    <h2 id="sequence-h">One way to combine them</h2>
+    <p class="section-intro">A possible ordering if you want a single thread to follow &mdash; not the only valid one.</p>
+    <div class="timeline">
+      <div class="tl-row">
+        <div class="tl-when">Weeks 1&ndash;3</div>
+        <div class="tl-what"><b>Foundation close-out</b><span>Both findings, custom-claims or admins-collection migration, spec cleanup. Small and contained &mdash; worth doing before anything else touches auth or impact data.</span></div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-when">Weeks 4&ndash;9</div>
+        <div class="tl-what"><b>Brand alignment, in parallel with early Action Engine design</b><span>Design tokens and IA work don't block backend/data-model work on the Action Engine &mdash; they can run side by side if you have (or bring on) design capacity, per the master plan's "part-time designer" assumption.</span></div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-when">Weeks 10&ndash;15</div>
+        <div class="tl-what"><b>Action Engine ships</b><span>Structured actions, completion, first impact numbers &mdash; now sitting on a hardened auth model and an aligned visual system.</span></div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-when">Week 16+</div>
+        <div class="tl-what"><b>Planet Passport</b><span>Only once the Action Engine is producing trustworthy events to derive achievements from &mdash; per v4's explicit dependency chain.</span></div>
+      </div>
+    </div>
+    <p class="tl-note">If you don't have parallel design capacity, Brand Alignment and the Action Engine become sequential, not parallel &mdash; worth naming explicitly rather than assuming.</p>
+  </section>
+
+  <section aria-labelledby="decide-h">
+    <h2 id="decide-h">Questions this doc doesn't answer for you</h2>
+    <ul class="checklist">
+      <li><div><b>Retire <code>user-engagement-foundation</code>?</b><span>Confirms which data model (collection names, admin design) every future spec should build against.</span></div></li>
+      <li><div><b>Custom claims, or an <code>admins</code> collection?</b><span>Both satisfy "trusted authorization source" &mdash; the choice affects migration steps and how Cloud Functions check admin status.</span></div></li>
+      <li><div><b>Brand alignment before, during, or after the Action Engine?</b><span>Depends on whether design capacity exists in parallel with backend work.</span></div></li>
+      <li><div><b>Who owns the design pass?</b><span>The master plan assumes a part-time designer alongside a single developer &mdash; worth confirming that's still the resourcing.</span></div></li>
+    </ul>
+  </section>
+
+  <footer>
+    Built from a read of the current codebase (<code>firestore.rules</code>, <code>.kiro/specs/*</code>, <code>TODO.md</code>) against the four planning documents in this repository. Re-check before acting if significant time has passed.
+  </footer>
+
+</div>

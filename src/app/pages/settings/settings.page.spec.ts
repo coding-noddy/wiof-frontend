@@ -7,8 +7,6 @@ describe('SettingsPage - Avatar', () => {
   let userProfileServiceMock: any;
   let uiUtilMock: any;
   let routerMock: any;
-  let activityServiceMock: any;
-  let savedContentServiceMock: any;
 
   function makeFile(type: string, name = 'avatar'): File {
     return new File([new Blob(['data'])], name, { type });
@@ -42,16 +40,12 @@ describe('SettingsPage - Avatar', () => {
     };
 
     routerMock = { navigate: jasmine.createSpy('navigate').and.returnValue(Promise.resolve(true)) };
-    activityServiceMock = {};
-    savedContentServiceMock = {};
 
     page = new SettingsPage(
       authServiceMock,
       userProfileServiceMock,
       uiUtilMock,
-      routerMock,
-      activityServiceMock,
-      savedContentServiceMock
+      routerMock
     );
 
     (page as any).lastUid = 'user1';

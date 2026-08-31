@@ -1,23 +1,60 @@
 // Ionic Variables and Theming. For more info, please see:
 // http://ionicframework.com/docs/theming/
 
-/** Ionic CSS Variables **/
+/**
+ * Brand design tokens
+ * ===================
+ * Source of truth: WIOF_Plan_v4/ClimatEnlighten brand system (Identity,
+ * Brand, and the Brand Usage Guide). Three core colors, each with one job —
+ * do not introduce colors outside this set or its approved tints/shades.
+ *
+ * --wiof-marigold is an accent only (primary CTA button) — never a
+ * background field for large areas or for the logo. Keep it to one
+ * prominent use per screen; if everything is marigold, nothing stands out.
+ */
 :root {
-  /** primary **/
-  --ion-color-primary: #3880ff;
-  --ion-color-primary-rgb: 56, 128, 255;
+  /* Primary — grounds the system */
+  --wiof-brown: #A6875D;
+  --wiof-brown-tint-40: #CAB79E;
+  --wiof-brown-tint-20: #B89F7D;
+  --wiof-brown-shade-20: #856C4A;
+  --wiof-brown-shade-40: #645138;
+
+  /* Secondary — carries the identity */
+  --wiof-teal: #21999F;
+  --wiof-teal-tint-40: #7AC2C5;
+  --wiof-teal-tint-20: #4DADB2;
+  --wiof-teal-shade-20: #1A7A7F;
+  --wiof-teal-shade-40: #145C5F;
+
+  /* Accent — small doses only, primary CTA */
+  --wiof-marigold: #FFC26F;
+  --wiof-marigold-tint-40: #FFDAA9;
+  --wiof-marigold-tint-20: #FFCE8C;
+  --wiof-marigold-shade-20: #CC9B59;
+  --wiof-marigold-shade-40: #997443;
+
+  /* Neutrals */
+  --wiof-ivory: #FAF5EC;        /* page background — room to breathe */
+  --wiof-warm-white: #FFFCF6;   /* card/box surfaces — lifts off the page without going flat white */
+  --wiof-warm-grey: #A69C8E;    /* secondary text, borders */
+  --wiof-ink: #2B2420;          /* primary text — not flat black */
+
+  /** primary — mapped to Ocean Teal, the identity color **/
+  --ion-color-primary: #21999F;
+  --ion-color-primary-rgb: 33, 153, 159;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #3171e0;
-  --ion-color-primary-tint: #4c8dff;
+  --ion-color-primary-shade: #1A7A7F;
+  --ion-color-primary-tint: #4DADB2;
 
-  /** secondary **/
-  --ion-color-secondary: #3dc2ff;
-  --ion-color-secondary-rgb: 61, 194, 255;
+  /** secondary — mapped to Earthy Brown, which grounds the system **/
+  --ion-color-secondary: #A6875D;
+  --ion-color-secondary-rgb: 166, 135, 93;
   --ion-color-secondary-contrast: #ffffff;
   --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #36abe0;
-  --ion-color-secondary-tint: #50c8ff;
+  --ion-color-secondary-shade: #856C4A;
+  --ion-color-secondary-tint: #B89F7D;
 
   /** tertiary **/
   --ion-color-tertiary: #5260ff;

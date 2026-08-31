@@ -3,7 +3,7 @@ import {
   AngularFirestore,
   DocumentSnapshot
 } from '@angular/fire/compat/firestore';
-import { Observable, firstValueFrom } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
@@ -42,24 +42,29 @@ export class SavedContentService {
   constructor(private firestore: AngularFirestore) {}
 
   /**
-   * Save a content item for the user.
-   * Enforces one document per userId + contentId pair by checking for existing docs first.
+   * Deterministic document ID for a user's saved-content record. Using
+   * `{userId}_{contentId}` instead of a random auto-ID means a concurrent
+   * double-click can't create two documents for the same save, and lookups/
+   * deletes are a direct doc reference instead of a query — see Foundation
+   * Hardening Plan v4 §9. Existing docs created under the old random-ID
+   * scheme are migrated by the migrateSavedContentIds Cloud Function
+   * (scripts/migrate-saved-content-ids.js runs it once per environment).
+   */
+  private docId(userId: string, contentId: string): string {
+    return `${userId}_${contentId}`;
+  }
+
+  /**
+   * Save a content item for the user. Idempotent: saving already-saved
+   * content is a no-op rather than creating a duplicate document.
    */
   async saveContent(item: SaveContentInput): Promise<void> {
-    // Check if already saved (enforce unique constraint: one doc per userId + contentId)
-    const existing = await firstValueFrom(
-      this.firestore
-        .collection<SavedContentDocument>(FIREBASE_COLLECTION.USER_SAVED_CONTENT, ref =>
-          ref
-            .where('userId', '==', item.userId)
-            .where('contentId', '==', item.contentId)
-            .limit(1)
-        )
-        .get()
-    );
+    const ref = this.firestore.firestore
+      .collection(FIREBASE_COLLECTION.USER_SAVED_CONTENT)
+      .doc(this.docId(item.userId, item.contentId));
 
-    if (existing && !existing.empty) {
-      // Already saved — no-op to enforce uniqueness
+    const existing = await ref.get();
+    if (existing.exists) {
       return;
     }
 
@@ -72,56 +77,18 @@ export class SavedContentService {
       savedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
 
-    await this.firestore.firestore
-      .collection(FIREBASE_COLLECTION.USER_SAVED_CONTENT)
-      .add(doc);
+    await ref.set(doc);
   }
 
   /**
-   * Remove a saved content item for the user.
-   * Deletes the matching document by userId + contentId.
+   * Remove a saved content item for the user — a direct doc delete by the
+   * deterministic ID rather than a query-then-delete.
    */
   async unsaveContent(userId: string, contentId: string): Promise<void> {
-    const snapshot = await firstValueFrom(
-      this.firestore
-        .collection<SavedContentDocument>(FIREBASE_COLLECTION.USER_SAVED_CONTENT, ref =>
-          ref
-            .where('userId', '==', userId)
-            .where('contentId', '==', contentId)
-            .limit(1)
-        )
-        .get()
-    );
-
-    if (snapshot && !snapshot.empty) {
-      const docId = snapshot.docs[0].id;
-      await this.firestore
-        .collection(FIREBASE_COLLECTION.USER_SAVED_CONTENT)
-        .doc(docId)
-        .delete();
-    }
-  }
-
-  /** Deletes all saved content records owned by a user in batches. */
-  async deleteAllForUser(userId: string): Promise<void> {
-    let hasMore = true;
-
-    while (hasMore) {
-      const snapshot = await this.firestore.firestore
-        .collection(FIREBASE_COLLECTION.USER_SAVED_CONTENT)
-        .where('userId', '==', userId)
-        .limit(400)
-        .get();
-
-      if (snapshot.empty) {
-        return;
-      }
-
-      const batch = this.firestore.firestore.batch();
-      snapshot.docs.forEach(doc => batch.delete(doc.ref));
-      await batch.commit();
-      hasMore = snapshot.size === 400;
-    }
+    await this.firestore.firestore
+      .collection(FIREBASE_COLLECTION.USER_SAVED_CONTENT)
+      .doc(this.docId(userId, contentId))
+      .delete();
   }
 
   /**
@@ -130,14 +97,10 @@ export class SavedContentService {
    */
   isContentSaved(userId: string, contentId: string): Observable<boolean> {
     return this.firestore
-      .collection<SavedContentDocument>(FIREBASE_COLLECTION.USER_SAVED_CONTENT, ref =>
-        ref
-          .where('userId', '==', userId)
-          .where('contentId', '==', contentId)
-          .limit(1)
-      )
+      .collection(FIREBASE_COLLECTION.USER_SAVED_CONTENT)
+      .doc<SavedContentDocument>(this.docId(userId, contentId))
       .valueChanges()
-      .pipe(map(docs => docs.length > 0));
+      .pipe(map(doc => !!doc));
   }
 
   /**

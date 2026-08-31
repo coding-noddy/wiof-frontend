@@ -23,6 +23,28 @@ export class AppUtilService {
     }
   }
 
+  /**
+   * Same output shape as calculatePollResult, but built from the sanitized
+   * `poll_results` aggregate (option -> vote count) instead of the raw,
+   * admin-only vote documents. Used by public-facing poll displays.
+   */
+  public applyPollResultCounts(
+    pollQuestion,
+    totalVotes: number,
+    optionCounts: Record<string, number>,
+    optionData
+  ) {
+    pollQuestion.options.forEach((option, index) => {
+      const key = 'option' + (index + 1);
+      const votes = optionCounts?.[key] || 0;
+      optionData[key] = {
+        option,
+        votes,
+        percent: totalVotes > 0 ? (votes / totalVotes) * 100 : 0
+      };
+    });
+  }
+
   onFileSelected(
     event,
     component,

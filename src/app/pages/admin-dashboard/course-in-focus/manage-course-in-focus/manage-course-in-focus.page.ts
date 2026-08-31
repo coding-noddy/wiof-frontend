@@ -5,7 +5,7 @@ import { CourseInFocusService } from 'src/app/services/course-in-focus.service';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 import { Router, ActivatedRoute } from '@angular/router';
 import { takeUntil, switchMap } from 'rxjs/operators';
-import { UI_MESSAGES, ITEMS } from 'src/app/app.constants';
+import { UI_MESSAGES, ITEMS, normalizeElementCategory } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-manage-course-in-focus',
@@ -41,7 +41,7 @@ export class ManageCourseInFocusPage implements OnInit, OnDestroy {
 
   applySort() {
     let filtered = [...this.allItems];
-    if (this.filterCategory) filtered = filtered.filter(c => (c.category || '').toLowerCase() === this.filterCategory);
+    if (this.filterCategory) filtered = filtered.filter(c => normalizeElementCategory(c.category) === this.filterCategory);
     if (this.filterPlatform) filtered = filtered.filter(c => c.platform === this.filterPlatform);
     if (this.filterStatus) filtered = filtered.filter(c => c.status === this.filterStatus);
     const sorted = filtered.sort((a, b) => {

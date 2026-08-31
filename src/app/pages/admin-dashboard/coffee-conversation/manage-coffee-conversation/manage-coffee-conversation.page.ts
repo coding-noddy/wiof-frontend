@@ -5,7 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 import { CoffeeConversation } from 'src/app/models/CoffeeConversation';
 import { CoffeeConversationService } from 'src/app/services/coffee-conversation.service';
 import { UiUtilService } from 'src/app/util/UiUtilService';
-import { UI_MESSAGES, ITEMS } from 'src/app/app.constants';
+import { UI_MESSAGES, ITEMS, normalizeElementCategory } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-manage-coffee-conversation',
@@ -49,7 +49,7 @@ export class ManageCoffeeConversationPage implements OnInit, OnDestroy {
       filtered = filtered.filter(cc => cc.interviewDate && new Date(cc.interviewDate).getFullYear().toString() === this.filterYear);
     }
     if (this.filterCategory) {
-      filtered = filtered.filter(cc => (cc.category || '').toLowerCase() === this.filterCategory);
+      filtered = filtered.filter(cc => normalizeElementCategory(cc.category) === this.filterCategory);
     }
     const sorted = filtered.sort((a, b) => {
       let valA = a[this.sortColumn]; let valB = b[this.sortColumn];

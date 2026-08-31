@@ -25,12 +25,18 @@
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
 
-//importing roboto font
-
-@import url("https://fonts.googleapis.com/css2?family=Roboto");
+// Brand typography (see WIOF_Plan_v4/ClimatEnlighten brand system):
+// Aleo for anything meant to be seen (headlines, titles), Noto Sans for
+// anything meant to be read (body copy, captions). Loaded in index.html.
 
 *:not(ion-icon) {
-  font-family: "Roboto", sans-serif !important;
+  font-family: "Noto Sans", sans-serif !important;
+}
+
+h1, h2, h3, h4, h5, h6,
+ion-title,
+ion-card-title {
+  font-family: "Aleo", serif !important;
 }
 
 html, body {

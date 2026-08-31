@@ -1,9 +1,11 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
+    // Mirrors firestore.rules isAdmin(): authority is the separate `admins`
+    // collection (doc ID == uid), not a field on the user's own profile.
     function isAdmin() {
       return request.auth != null
-        && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin';
+        && firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid));
     }
 
     function isOwner(userId) {

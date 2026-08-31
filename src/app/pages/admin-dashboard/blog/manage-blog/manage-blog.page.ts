@@ -5,7 +5,7 @@ import { catchError, map, takeUntil, switchMap } from 'rxjs/operators';
 import { Blog } from 'src/app/models/Blog';
 import { BlogService } from 'src/app/services/blog.service';
 import { UiUtilService } from 'src/app/util/UiUtilService';
-import { UI_MESSAGES, ITEMS } from 'src/app/app.constants';
+import { UI_MESSAGES, ITEMS, normalizeElementCategory } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-manage-blog',
@@ -35,7 +35,7 @@ export class ManageBlogPage implements OnInit, OnDestroy {
   totalPages = 1;
 
   // Summary
-  summary = { total: 0, earth: 0, water: 0, air: 0, fire: 0, spirit: 0 };
+  summary = { total: 0, earth: 0, water: 0, air: 0, energy: 0, spirit: 0 };
 
   constructor(
     private blogService: BlogService,
@@ -61,9 +61,9 @@ export class ManageBlogPage implements OnInit, OnDestroy {
   }
 
   private computeSummary(list: Blog[]) {
-    this.summary = { total: list.length, earth: 0, water: 0, air: 0, fire: 0, spirit: 0 };
+    this.summary = { total: list.length, earth: 0, water: 0, air: 0, energy: 0, spirit: 0 };
     list.forEach(b => {
-      const cat = (b.category || '').toLowerCase();
+      const cat = normalizeElementCategory(b.category);
       if (this.summary.hasOwnProperty(cat)) this.summary[cat]++;
     });
   }
@@ -73,7 +73,7 @@ export class ManageBlogPage implements OnInit, OnDestroy {
 
     // Filters
     if (this.filterCategory) {
-      filtered = filtered.filter(b => (b.category || '').toLowerCase() === this.filterCategory);
+      filtered = filtered.filter(b => normalizeElementCategory(b.category) === this.filterCategory);
     }
     if (this.filterAuthor) {
       filtered = filtered.filter(b => b.author === this.filterAuthor);
@@ -159,7 +159,7 @@ export class ManageBlogPage implements OnInit, OnDestroy {
   get filteredCount(): number {
     let filtered = this.allBlogs;
     if (this.filterCategory) {
-      filtered = filtered.filter(b => (b.category || '').toLowerCase() === this.filterCategory);
+      filtered = filtered.filter(b => normalizeElementCategory(b.category) === this.filterCategory);
     }
     return filtered.length;
   }

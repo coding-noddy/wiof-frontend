@@ -5,7 +5,7 @@ import { Subject, of } from 'rxjs';
 import { takeUntil, switchMap } from 'rxjs/operators';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 import { Router, ActivatedRoute } from '@angular/router';
-import { MEDIA_TYPE, UI_MESSAGES, ITEMS } from 'src/app/app.constants';
+import { MEDIA_TYPE, UI_MESSAGES, ITEMS, normalizeElementCategory } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-manage-news',
@@ -53,7 +53,7 @@ export class ManageNewsPage implements OnInit, OnDestroy {
   applyFilterSortPaginate() {
     let filtered = [...this.allNews];
     if (this.filterCategory) {
-      filtered = filtered.filter(n => (n.category || '').toLowerCase() === this.filterCategory);
+      filtered = filtered.filter(n => normalizeElementCategory(n.category) === this.filterCategory);
     }
     if (this.filterMediaType) {
       filtered = filtered.filter(n => n.mediaType === this.filterMediaType);
@@ -74,7 +74,7 @@ export class ManageNewsPage implements OnInit, OnDestroy {
 
   get filteredCount(): number {
     if (!this.filterCategory) return this.allNews.length;
-    return this.allNews.filter(n => (n.category || '').toLowerCase() === this.filterCategory).length;
+    return this.allNews.filter(n => normalizeElementCategory(n.category) === this.filterCategory).length;
   }
 
   get pageNumbers(): number[] {

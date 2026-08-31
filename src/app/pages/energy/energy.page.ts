@@ -17,23 +17,23 @@ import { InFocusService } from 'src/app/services/in-focus.service';
 import { SectionNavItem } from 'src/app/components/section-nav/section-nav.component';
 
 @Component({
-  selector: 'app-fire',
-  templateUrl: './fire.page.html',
-  styleUrls: ['./fire.page.scss']
+  selector: 'app-energy',
+  templateUrl: './energy.page.html',
+  styleUrls: ['./energy.page.scss']
 })
-export class FirePage implements OnInit {
+export class EnergyPage implements OnInit {
   blogs$: Observable<Blog[]>;
   videos$: Observable<Video[]>;
   inFocuses$: Observable<InFocus[]>;
   coffeeConversations$: Observable<CoffeeConversation[]>;
-  elementName: string = ELEMENT_SELECT.FIRE;
+  elementName: string = ELEMENT_SELECT.ENERGY;
 
   pageSections: SectionNavItem[] = [
-    { label: 'Featured', sectionId: 'fire-featured-video' },
-    { label: 'In Focus', sectionId: 'fire-in-focus' },
-    { label: 'Conversations', sectionId: 'fire-conversations' },
-    { label: 'Blogs', sectionId: 'fire-blogs' },
-    { label: 'Videos', sectionId: 'fire-videos' }
+    { label: 'Featured', sectionId: 'energy-featured-video' },
+    { label: 'In Focus', sectionId: 'energy-in-focus' },
+    { label: 'Conversations', sectionId: 'energy-conversations' },
+    { label: 'Blogs', sectionId: 'energy-blogs' },
+    { label: 'Videos', sectionId: 'energy-videos' }
   ];
 
   constructor(
@@ -46,7 +46,7 @@ export class FirePage implements OnInit {
   ngOnInit() {
     this.blogs$ = this.blogService.getBlogs(ELEMENT_BLOG_CATEGORY.ENERGY);
     this.videos$ = this.videoService.getYoutubePlaylist(
-      ELEMENT_VIDEOS_PLAYLIST_ID.FIRE
+      ELEMENT_VIDEOS_PLAYLIST_ID.ENERGY
     );
     this.coffeeConversations$ = this.coffeeConvService.getCoffeeConversations(
       ELEMENT_BLOG_CATEGORY.ENERGY
@@ -56,11 +56,11 @@ export class FirePage implements OnInit {
     );
 
     this.blogs$.subscribe(blogs => {
-      const item = this.pageSections.find(s => s.sectionId === 'fire-blogs');
+      const item = this.pageSections.find(s => s.sectionId === 'energy-blogs');
       if (item) item.disabled = !blogs || blogs.length === 0;
     });
     this.videos$.subscribe(videos => {
-      const item = this.pageSections.find(s => s.sectionId === 'fire-videos');
+      const item = this.pageSections.find(s => s.sectionId === 'energy-videos');
       if (item) item.disabled = !videos || videos.length === 0;
     });
   }

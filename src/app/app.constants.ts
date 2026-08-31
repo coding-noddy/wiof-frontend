@@ -8,7 +8,7 @@ export const ELEMENT_VIDEOS_PLAYLIST_ID = {
   AIR: 'PLitAAO2FhPTECrRbhFyIllj6TSobTGiJI',
   WATER: 'PLitAAO2FhPTHZRcarOENNjYcdPlzwpZEn',
   EARTH: 'PLitAAO2FhPTHdtNVNkcm3JIX6jmhPZjyN',
-  FIRE: 'PLitAAO2FhPTFw5EoLsuua6Ang60PGBH0d',
+  ENERGY: 'PLitAAO2FhPTFw5EoLsuua6Ang60PGBH0d',
   SPIRIT: 'PLitAAO2FhPTFjxy3EsgDR_XPtgiX8Ez-q',
 
   air: 'PLitAAO2FhPTECrRbhFyIllj6TSobTGiJI',
@@ -38,7 +38,7 @@ export const ELEMENT_SELECT = {
   AIR: 'air',
   WATER: 'water',
   EARTH: 'earth',
-  FIRE: 'fire',
+  ENERGY: 'energy',
   SPIRIT: 'spirit',
   CONFIG: 'config'
 };
@@ -179,15 +179,18 @@ export const FIREBASE_COLLECTION = {
   NGO_IN_FOCUS: 'NGOinFocus',
   COURSE_IN_FOCUS: 'CourseInFocus',
   USERS: 'users',
+  ADMINS: 'admins',
   ACTIVITY_LOG: 'activity_log',
-  USER_SAVED_CONTENT: 'user_saved_content'
+  USER_SAVED_CONTENT: 'user_saved_content',
+  POLL_RESULTS: 'poll_results',
+  USER_METRICS: 'user_metrics'
 };
 
 export const VIDEO_PLAYER_TITLES = {
   AIR: 'The Current Deadly Killer in the Air',
   WATER: 'Water : The most precious resource',
   EARTH: 'Rediscover our Planet Earth',
-  FIRE: 'The Rise of Solar and Wind Energy',
+  ENERGY: 'The Rise of Solar and Wind Energy',
   SPIRIT: 'Handling Depression with Self Love',
   CONFIG: 'About WorldIsOneFamily.com'
 };
@@ -196,7 +199,7 @@ export const VIDEO_PLAYER_VIDEOS = {
   AIR: 'Xs70ewSdEjE',
   WATER: 'RkdIIfArWqo',
   EARTH: 'ghkQoJoipbM',
-  FIRE: 'mmyrbKBZ6SU',
+  ENERGY: 'mmyrbKBZ6SU',
   SPIRIT: 'CEqoCcacR3Y',
   CONFIG: 'SYWb9hNX-1s'
 };
@@ -209,6 +212,19 @@ export const PAGE_CATEGORY_MAP = {
   energy: 'Energy',
   spirit: 'Spirit'
 };
+
+/**
+ * Normalizes a stored category/element value for lowercase comparison,
+ * mapping the legacy 'fire' identifier (used before the Energy rename) to
+ * 'energy'. Content created before the rename may still have 'Fire' stored
+ * as its category — apply this to any such value read from Firestore
+ * before comparing it against 'energy'/ELEMENT_SELECT.ENERGY, rather than
+ * requiring a data migration.
+ */
+export function normalizeElementCategory(value: string | null | undefined): string {
+  const normalized = (value || '').toLowerCase();
+  return normalized === 'fire' ? ELEMENTS.ENERGY : normalized;
+}
 
 export const ITEM_STATUS = {
   SUBMITTED: 'submitted',
@@ -291,7 +307,7 @@ export const AVG_WORD_READ_PER_MIN = 250;
 export const IN_FOCUS_TITLE = {
   [ELEMENT_SELECT.EARTH]: 'Animal Rescue in Focus',
   [ELEMENT_SELECT.AIR]: 'City in Focus',
-  [ELEMENT_SELECT.FIRE]: 'Innovation in Focus',
+  [ELEMENT_SELECT.ENERGY]: 'Innovation in Focus',
   [ELEMENT_SELECT.WATER]: 'River in Focus',
   [ELEMENT_SELECT.SPIRIT]: 'Asana in Focus'
 };

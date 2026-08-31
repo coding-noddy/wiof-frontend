@@ -12,21 +12,31 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
+    // Admin authority lives in the separate `admins` collection (doc ID == uid),
+    // never in a field on the user's own profile document — a field a user can
+    // write themselves can never be the thing that grants them privilege.
+    // exists() here is a trusted rules-engine read and is not itself subject to
+    // the `admins` collection's own read rule below, so this has no circular
+    // dependency.
     function isAdmin() {
       return isAuthenticated()
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
     // Fields a signed-in user may change on their own profile document via the
-    // Settings page (display name, avatar, preferred elements). System-managed
-    // fields such as role, uid, email and joinedDate may never change, and any
-    // other write must stay within this known set of keys.
+    // Settings page (display name, avatar, preferred elements) — nothing else.
+    // loginCount/lastLogin/daysVisited/currentStreak/savedBlogsCount are
+    // system-managed engagement counters: a client that could set them
+    // directly could forge its own login/streak history, so they are written
+    // only by createUserProfile/recordLoginMetrics/recordUserVisit/
+    // resetEngagementCounters (Cloud Functions, Admin SDK, bypasses these
+    // rules) — never by this update path. role/uid/email/joinedDate may never
+    // change at all.
     // Uses get(key, default) instead of direct field access because legacy
     // profile documents may not have every field (e.g. 'role'), and reading a
     // missing map key directly throws and denies the whole request.
     function isValidOwnProfileUpdate() {
-      let allowedKeys = ['displayName', 'photoURL', 'preferredElements',
-        'loginCount', 'lastLogin', 'daysVisited', 'currentStreak', 'savedBlogsCount'];
+      let allowedKeys = ['displayName', 'photoURL', 'preferredElements'];
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(allowedKeys)
         && request.resource.data.get('role', null) == resource.data.get('role', null)
         && request.resource.data.get('uid', null) == resource.data.get('uid', null)
@@ -40,9 +50,24 @@ service cloud.firestore {
       // Users can read their own profile; admins can read profiles for administration.
       allow read: if isOwner(userId) || isAdmin();
 
-      // Users can only create/update their own profile.
-      allow create: if isOwner(userId);
+      // Profile documents are created only by the createUserProfile Cloud
+      // Function (from verified ID token claims, not client-supplied data) —
+      // no client create path exists at all, closing off both role
+      // self-escalation and forged initial counter values in one rule.
+      allow create: if false;
       allow update: if isOwner(userId) && isValidOwnProfileUpdate();
+    }
+
+    // ─── Admin Directory ────────────────────────────────────────────────────
+    // Source of truth for admin authority (see isAdmin() above). Doc ID == uid.
+    // No client write path exists by design: an admin is granted only via the
+    // Firebase Console or a trusted server-side process, never by any request
+    // this ruleset would accept. A signed-in user may only check their own
+    // entry (no `list`), so the admin roster itself cannot be enumerated.
+    match /admins/{uid} {
+      allow get: if isOwner(uid);
+      allow list: if false;
+      allow write: if false;
     }
 
     // ─── User Saved Content ─────────────────────────────────────────────────
@@ -79,9 +104,20 @@ service cloud.firestore {
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.timestamp == request.time;
 
-      // Activity logs are immutable, but owners may delete their own data reset records.
+      // Fully immutable and append-only from the client: no update, no delete.
+      // "Clear My Engagement Data" deletes these via the resetEngagementData
+      // Cloud Function (Admin SDK, bypasses these rules) — the client never
+      // needs a delete path of its own, so none exists.
       allow update: if false;
-      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow delete: if false;
+    }
+
+    match /user_metrics/{uid} {
+      // Materialized dashboard summary derived from activity_log (see
+      // onActivityLogCreated / backfillUserMetrics in functions/index.js) —
+      // owner can read their own; no client write path, Admin SDK only.
+      allow read: if isOwner(uid) || isAdmin();
+      allow write: if false;
     }
 
     // ─── Admin Collections ──────────────────────────────────────────────────
@@ -136,10 +172,11 @@ service cloud.firestore {
     // Public users can submit these forms, but cannot alter existing records.
 
     match /Subscriptions/{id} {
-      // Anyone can check "already subscribed?" via a bounded (limit<=1) email
-      // lookup; only admins can list/dump the full subscriber collection.
-      allow get: if isAdmin();
-      allow list: if isAdmin() || request.query.limit <= 1;
+      // "Already subscribed?" checks go through the checkSubscriberExists
+      // Cloud Function (Admin SDK, bypasses these rules) instead of a public
+      // query — even a bounded (limit<=1) query lets a caller enumerate
+      // individual known emails one at a time, so no public read path exists.
+      allow get, list: if isAdmin();
       allow create: if request.resource.data.keys().hasOnly([
           'firstName', 'lastName', 'email', 'datetime'
         ])
@@ -155,7 +192,11 @@ service cloud.firestore {
     }
 
     match /Polls/{id} {
-      allow read: if true;
+      // Raw vote documents carry email/IP alongside the selected option, so
+      // they are admin-only to read — never publicly listable or gettable.
+      // Public results are served from the aggregate `poll_results` collection
+      // below, kept in sync by a trusted Cloud Function.
+      allow read: if isAdmin();
       allow create: if request.resource.data.keys().hasOnly([
           'pollQuestionId', 'option', 'ip4', 'ip6', 'email'
         ])
@@ -170,6 +211,14 @@ service cloud.firestore {
         && (!('ip6' in request.resource.data)
           || request.resource.data.ip6 is string && request.resource.data.ip6.size() <= 45);
       allow update, delete: if isAdmin();
+    }
+
+    match /poll_results/{pollQuestionId} {
+      // Sanitized aggregate (option -> vote counts, total) only — no email/IP.
+      // Written only by the onPollVoteCreated Cloud Function via the Admin SDK,
+      // which bypasses these rules, so the client write path is closed entirely.
+      allow read: if true;
+      allow write: if false;
     }
 
     match /Poll/{id} {
