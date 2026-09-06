@@ -8,6 +8,7 @@ import { map } from 'rxjs/operators';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import { FIREBASE_COLLECTION } from '../app.constants';
+import { AnalyticsService } from './analytics.service';
 
 export interface SavedContentDocument {
   id?: string;
@@ -39,7 +40,10 @@ export interface PaginatedResult<T> {
 export class SavedContentService {
   private readonly MAX_PAGE_SIZE = 20;
 
-  constructor(private firestore: AngularFirestore) {}
+  constructor(
+    private firestore: AngularFirestore,
+    private analyticsService: AnalyticsService
+  ) {}
 
   /**
    * Deterministic document ID for a user's saved-content record. Using
@@ -78,6 +82,7 @@ export class SavedContentService {
     };
 
     await ref.set(doc);
+    this.analyticsService.logBookmarkAdded(item.contentType, item.contentId);
   }
 
   /**
@@ -85,10 +90,15 @@ export class SavedContentService {
    * deterministic ID rather than a query-then-delete.
    */
   async unsaveContent(userId: string, contentId: string): Promise<void> {
-    await this.firestore.firestore
+    const ref = this.firestore.firestore
       .collection(FIREBASE_COLLECTION.USER_SAVED_CONTENT)
-      .doc(this.docId(userId, contentId))
-      .delete();
+      .doc(this.docId(userId, contentId));
+
+    const existing = await ref.get();
+    const contentType = (existing.data() as SavedContentDocument | undefined)?.contentType || 'unknown';
+
+    await ref.delete();
+    this.analyticsService.logBookmarkRemoved(contentType, contentId);
   }
 
   /**

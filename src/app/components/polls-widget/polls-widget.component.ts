@@ -244,7 +244,14 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
       this.IP4.ip,
       this.IP6.ip
     );
-    poll.email = normalizedEmail || undefined;
+    // Omit the field entirely rather than assigning `undefined` — the
+    // Firestore SDK throws client-side on an explicit `undefined` field
+    // value, which was breaking every guest vote submitted without an email.
+    if (normalizedEmail) {
+      poll.email = normalizedEmail;
+    } else {
+      delete poll.email;
+    }
     this.loader = await this.uiUtil.showLoader(
       UI_MESSAGES.SAVE_IN_PROGRESS.replace(
         UI_MESSAGES.PLACEHOLDER,

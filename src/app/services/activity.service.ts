@@ -6,6 +6,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import { FIREBASE_COLLECTION } from '../app.constants';
 import { RateLimiterService } from './rate-limiter.service';
+import { AnalyticsService } from './analytics.service';
 import { QualityReadEntry, EqHistoryEntry, PollHistoryEntry, VideoWatchHistoryEntry } from '../models/engagement-history';
 
 export interface ActivityLogInput {
@@ -90,7 +91,8 @@ export class ActivityService {
 
   constructor(
     private firestore: AngularFirestore,
-    private rateLimiter: RateLimiterService
+    private rateLimiter: RateLimiterService,
+    private analyticsService: AnalyticsService
   ) {}
 
   /**
@@ -121,6 +123,12 @@ export class ActivityService {
    * Deduplicates blog_read and video_view: max one per userId + contentId, lifetime.
    */
   async logActivity(entry: ActivityLogInput): Promise<void> {
+    if (entry.activityType === 'blog_read' && entry.contentId) {
+      this.analyticsService.logContentOpened('blog', entry.contentId);
+    } else if (entry.activityType === 'video_view' && entry.contentId) {
+      this.analyticsService.logContentOpened('video', entry.contentId);
+    }
+
     try {
       const calendarDay = toCalendarDay(new Date());
       const logEntry: Omit<ActivityLogEntry, 'id'> = {
@@ -175,6 +183,8 @@ export class ActivityService {
    * Failures are silently swallowed — they never disrupt the user experience.
    */
   async logDailyVisit(userId: string): Promise<void> {
+    this.analyticsService.logDailyVisit();
+
     try {
       const calendarDay = toCalendarDay(new Date());
       const logEntry: Omit<ActivityLogEntry, 'id'> = {
@@ -198,6 +208,8 @@ export class ActivityService {
    * Uses RateLimiterService to throttle writes; on throttle, schedules a retry.
    */
   async logBlogReadComplete(userId: string, contentId: string, scrollDepth: number, timeSpent: number, blogTitle?: string): Promise<void> {
+    this.analyticsService.logContentCompleted('blog', contentId);
+
     const calendarDay = toCalendarDay(new Date());
     const logEntry: Omit<ActivityLogEntry, 'id'> = {
       userId,
@@ -233,6 +245,8 @@ export class ActivityService {
    * Uses RateLimiterService to throttle writes; on throttle, schedules a retry.
    */
   async logVideoWatchComplete(userId: string, contentId: string, watchPercent: number, videoTitle?: string): Promise<void> {
+    this.analyticsService.logContentCompleted('video', contentId);
+
     const calendarDay = toCalendarDay(new Date());
     const logEntry: Omit<ActivityLogEntry, 'id'> = {
       userId,
@@ -270,6 +284,8 @@ export class ActivityService {
     overallScore: number,
     dimensions: { attentionScore: number; clarityScore: number; reparationScore: number }
   ): Promise<void> {
+    this.analyticsService.logEqCompleted(overallScore);
+
     const calendarDay = toCalendarDay(new Date());
     const logEntry: Omit<ActivityLogEntry, 'id'> = {
       userId,
@@ -317,6 +333,8 @@ export class ActivityService {
     userEmail: string,
     pollTitle?: string
   ): Promise<void> {
+    this.analyticsService.logPollVoted(contentId);
+
     const calendarDay = toCalendarDay(new Date());
     const logEntry: Omit<ActivityLogEntry, 'id'> = {
       userId,

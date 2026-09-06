@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { ActivityService, toCalendarDay } from './activity.service';
 import { RateLimiterService } from './rate-limiter.service';
+import { AnalyticsService } from './analytics.service';
 
 describe('ActivityService', () => {
   let service: ActivityService;
@@ -23,11 +24,16 @@ describe('ActivityService', () => {
     rateLimiterMock = jasmine.createSpyObj('RateLimiterService', ['canWrite', 'scheduleRetry']);
     rateLimiterMock.canWrite.and.returnValue(true);
 
+    const analyticsMock = jasmine.createSpyObj('AnalyticsService', [
+      'logContentOpened', 'logContentCompleted', 'logEqCompleted', 'logPollVoted', 'logDailyVisit'
+    ]);
+
     TestBed.configureTestingModule({
       providers: [
         ActivityService,
         { provide: AngularFirestore, useValue: firestoreMock },
-        { provide: RateLimiterService, useValue: rateLimiterMock }
+        { provide: RateLimiterService, useValue: rateLimiterMock },
+        { provide: AnalyticsService, useValue: analyticsMock }
       ]
     });
 

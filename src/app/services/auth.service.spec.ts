@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import { AuthService } from './auth.service';
 import { UserProfileService } from './user-profile.service';
 import { UiUtilService } from '../util/UiUtilService';
+import { AnalyticsService } from './analytics.service';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -39,6 +40,7 @@ describe('AuthService', () => {
           { provide: AngularFireAuth, useValue: afAuthMock },
           { provide: UserProfileService, useValue: { clearRoleCache: () => {} } },
           { provide: UiUtilService, useValue: { presentToast: () => Promise.resolve() } },
+          { provide: AnalyticsService, useValue: jasmine.createSpyObj('AnalyticsService', ['logSignUp', 'logLogin']) },
           { provide: Router, useValue: { navigate: () => Promise.resolve(true) } }
         ]
       });

@@ -9,6 +9,7 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { GoogleAuthProvider, signInWithPopup, getAuth, Auth } from 'firebase/auth';
 import { UserProfileService } from './user-profile.service';
 import { UiUtilService } from '../util/UiUtilService';
+import { AnalyticsService } from './analytics.service';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -35,6 +36,7 @@ export class AuthService {
     private afAuth: AngularFireAuth,
     private userProfileService: UserProfileService,
     private uiUtil: UiUtilService,
+    private analyticsService: AnalyticsService,
     private router: Router
   ) {
     // Initialize observables
@@ -135,8 +137,10 @@ export class AuthService {
 
       if (!profile) {
         await this.userProfileService.createProfile(user);
+        this.analyticsService.logSignUp('google');
       } else {
         await this.userProfileService.updateLoginMetrics(user.uid);
+        this.analyticsService.logLogin('google');
       }
     } catch (error) {
       console.warn('Profile sync failed:', error);
