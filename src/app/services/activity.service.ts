@@ -29,6 +29,10 @@ export interface ActivityLogEntry {
   id?: string;
   userId: string;
   activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage' | 'daily_visit';
+  /** Schema version of this entry's shape — see ActivityService.SCHEMA_VERSION.
+   *  Lets a future change to the event shape tell old and new entries apart
+   *  instead of guessing from which optional fields happen to be present. */
+  schemaVersion: number;
   contentId?: string;
   contentTitle?: string;      // human-readable title (poll question, blog title, etc.)
   widgetName?: string;
@@ -78,6 +82,12 @@ export class ActivityService {
    *  how many past items are shown, not any count. */
   private static readonly MAX_HISTORY_ITEMS = 50;
 
+  /** Current activity_log entry shape version — stamped on every write (see
+   *  ActivityLogEntry.schemaVersion). Bump this and update readers when the
+   *  event shape changes in a way old entries won't have. Foundation
+   *  Hardening Plan v4 §6.2. */
+  private static readonly SCHEMA_VERSION = 1;
+
   constructor(
     private firestore: AngularFirestore,
     private rateLimiter: RateLimiterService
@@ -116,6 +126,7 @@ export class ActivityService {
       const logEntry: Omit<ActivityLogEntry, 'id'> = {
         userId: entry.userId,
         activityType: entry.activityType,
+        schemaVersion: ActivityService.SCHEMA_VERSION,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         calendarDay
       };
@@ -169,6 +180,7 @@ export class ActivityService {
       const logEntry: Omit<ActivityLogEntry, 'id'> = {
         userId,
         activityType: 'daily_visit',
+        schemaVersion: ActivityService.SCHEMA_VERSION,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         calendarDay
       };
@@ -190,6 +202,7 @@ export class ActivityService {
     const logEntry: Omit<ActivityLogEntry, 'id'> = {
       userId,
       activityType: 'blog_read_complete',
+      schemaVersion: ActivityService.SCHEMA_VERSION,
       contentId,
       contentTitle: blogTitle || contentId,
       scrollDepth,
@@ -224,6 +237,7 @@ export class ActivityService {
     const logEntry: Omit<ActivityLogEntry, 'id'> = {
       userId,
       activityType: 'video_watch_complete',
+      schemaVersion: ActivityService.SCHEMA_VERSION,
       contentId,
       contentTitle: videoTitle || contentId,
       scrollDepth: Math.floor(watchPercent), // reuse scrollDepth field for watch percentage
@@ -260,6 +274,7 @@ export class ActivityService {
     const logEntry: Omit<ActivityLogEntry, 'id'> = {
       userId,
       activityType: 'eq_completion',
+      schemaVersion: ActivityService.SCHEMA_VERSION,
       score: overallScore,
       eqDimensions: {
         attentionScore: dimensions.attentionScore,
@@ -306,6 +321,7 @@ export class ActivityService {
     const logEntry: Omit<ActivityLogEntry, 'id'> = {
       userId,
       activityType: 'poll_vote',
+      schemaVersion: ActivityService.SCHEMA_VERSION,
       contentId,
       contentTitle: pollTitle || contentId,
       selectedOption,

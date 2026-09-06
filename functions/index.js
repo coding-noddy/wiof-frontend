@@ -136,6 +136,68 @@ function generateMetaHtml(blog, imageUrl, originalUrl) {
 const REGION = process.env.GCLOUD_PROJECT === 'wiof-staging' ? 'asia-south1' : 'us-central1';
 
 /**
+ * Structured error logging for Cloud Functions — Foundation Hardening Plan
+ * v4 §11 ("operational analytics": function failures, failed writes, auth
+ * errors). Firebase already ships uncaught exceptions to Cloud Logging, but
+ * a consistent JSON shape makes them actually findable there: Cloud Console
+ * → Logging → filter `jsonPayload.fn="<functionName>"`, or `severity>=ERROR`
+ * scoped to this project, to see every failure across every function in one
+ * place instead of hunting through unstructured stack traces one at a time.
+ */
+function logFunctionError(functionName, uid, error) {
+  // Defaults to enabled — only an explicit "false" in functions/.env turns
+  // it off, so a missing/misconfigured .env doesn't silently go dark.
+  if (process.env.LOGGING_ENABLED === 'false') {
+    return;
+  }
+  console.error(JSON.stringify({
+    fn: functionName,
+    uid: uid || null,
+    message: error && error.message,
+    stack: error && error.stack
+  }));
+}
+
+/**
+ * Wraps a callable handler with the structured logging above. An
+ * HttpsError the handler throws on purpose (unauthenticated,
+ * permission-denied, etc.) passes straight through unchanged — those are
+ * expected outcomes, not operational failures. Anything else is an
+ * unexpected failure: logged once here with full detail, then replaced
+ * with a generic client-facing message so internals never leak out.
+ */
+function withErrorLogging(functionName, handler) {
+  return async (data, context) => {
+    try {
+      return await handler(data, context);
+    } catch (error) {
+      if (error instanceof functions.https.HttpsError) {
+        throw error;
+      }
+      logFunctionError(functionName, context && context.auth && context.auth.uid, error);
+      throw new functions.https.HttpsError('internal', 'Something went wrong. Please try again.');
+    }
+  };
+}
+
+/**
+ * Same idea for Firestore trigger handlers, which can't report failure to
+ * any caller — logs with the same structured shape, then swallows (a
+ * trigger returning a rejected promise just gets silently retried/dropped
+ * by the platform with a much less useful log entry otherwise).
+ */
+function withTriggerErrorLogging(functionName, handler) {
+  return async (snap, context) => {
+    try {
+      return await handler(snap, context);
+    } catch (error) {
+      logFunctionError(functionName, null, error);
+      return null;
+    }
+  };
+}
+
+/**
  * User profile system-managed fields
  * ===================================
  * loginCount, lastLogin, daysVisited, currentStreak and savedBlogsCount are
@@ -175,7 +237,7 @@ function diffCalendarDays(today, lastDay) {
  */
 exports.createUserProfile = functions
   .region(REGION)
-  .https.onCall(async (data, context) => {
+  .https.onCall(withErrorLogging('createUserProfile', async (data, context) => {
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
     }
@@ -205,7 +267,7 @@ exports.createUserProfile = functions
     });
 
     return { created: true };
-  });
+  }));
 
 /**
  * Increments loginCount and refreshes lastLogin for a returning user signing
@@ -214,7 +276,7 @@ exports.createUserProfile = functions
  */
 exports.recordLoginMetrics = functions
   .region(REGION)
-  .https.onCall(async (data, context) => {
+  .https.onCall(withErrorLogging('recordLoginMetrics', async (data, context) => {
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
     }
@@ -225,7 +287,7 @@ exports.recordLoginMetrics = functions
     });
 
     return { ok: true };
-  });
+  }));
 
 /**
  * Records a visit with the same streak semantics user-profile.service.ts's
@@ -239,7 +301,7 @@ exports.recordLoginMetrics = functions
  */
 exports.recordUserVisit = functions
   .region(REGION)
-  .https.onCall(async (data, context) => {
+  .https.onCall(withErrorLogging('recordUserVisit', async (data, context) => {
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
     }
@@ -274,7 +336,7 @@ exports.recordUserVisit = functions
     });
 
     return { ok: true };
-  });
+  }));
 
 /**
  * Deletes every document matching `collection.where('userId','==',uid)` in
@@ -330,7 +392,7 @@ async function deleteAllOwnedBy(collectionName, uid) {
 exports.resetEngagementData = functions
   .region(REGION)
   .runWith({ timeoutSeconds: 120 })
-  .https.onCall(async (data, context) => {
+  .https.onCall(withErrorLogging('resetEngagementData', async (data, context) => {
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
     }
@@ -360,7 +422,7 @@ exports.resetEngagementData = functions
     });
 
     return { ok: true, deletedActivityCount, deletedSavedContentCount };
-  });
+  }));
 
 /**
  * One-time admin-triggered migration: moves existing `user_saved_content`
@@ -375,7 +437,7 @@ exports.resetEngagementData = functions
 exports.migrateSavedContentIds = functions
   .region(REGION)
   .runWith({ timeoutSeconds: 120 })
-  .https.onCall(async (data, context) => {
+  .https.onCall(withErrorLogging('migrateSavedContentIds', async (data, context) => {
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
     }
@@ -414,7 +476,7 @@ exports.migrateSavedContentIds = functions
     }
 
     return { migrated, skipped };
-  });
+  }));
 
 /**
  * Maintains `user_metrics/{uid}` — a materialized summary of activity_log,
@@ -432,7 +494,7 @@ exports.migrateSavedContentIds = functions
 exports.onActivityLogCreated = functions
   .region(REGION)
   .firestore.document('activity_log/{docId}')
-  .onCreate(async (snap) => {
+  .onCreate(withTriggerErrorLogging('onActivityLogCreated', async (snap) => {
     const entry = snap.data() || {};
     const uid = entry.userId;
     if (!uid) {
@@ -465,7 +527,7 @@ exports.onActivityLogCreated = functions
 
     await db.collection('user_metrics').doc(uid).set(update, { merge: true });
     return null;
-  });
+  }));
 
 /**
  * One-time admin-triggered backfill: recomputes user_metrics for every user
@@ -480,7 +542,7 @@ exports.onActivityLogCreated = functions
 exports.backfillUserMetrics = functions
   .region(REGION)
   .runWith({ timeoutSeconds: 300 })
-  .https.onCall(async (data, context) => {
+  .https.onCall(withErrorLogging('backfillUserMetrics', async (data, context) => {
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
     }
@@ -568,7 +630,7 @@ exports.backfillUserMetrics = functions
     }
 
     return { usersProcessed: uids.length };
-  });
+  }));
 
 /**
  * Maintains the public, sanitized `poll_results/{pollQuestionId}` aggregate
@@ -580,7 +642,7 @@ exports.backfillUserMetrics = functions
 exports.onPollVoteCreated = functions
   .region(REGION)
   .firestore.document('Polls/{voteId}')
-  .onCreate(async (snap) => {
+  .onCreate(withTriggerErrorLogging('onPollVoteCreated', async (snap) => {
     const vote = snap.data() || {};
     const pollQuestionId = vote.pollQuestionId;
     const option = vote.option;
@@ -605,7 +667,7 @@ exports.onPollVoteCreated = functions
     });
 
     return null;
-  });
+  }));
 
 /**
  * Checks whether a given email has already voted on a poll, without exposing
@@ -617,7 +679,7 @@ exports.onPollVoteCreated = functions
  */
 exports.checkPollEmailVoted = functions
   .region(REGION)
-  .https.onCall(async (data) => {
+  .https.onCall(withErrorLogging('checkPollEmailVoted', async (data) => {
     const pollQuestionId = (data && data.pollQuestionId ? String(data.pollQuestionId) : '').trim();
     const email = (data && data.email ? String(data.email) : '').trim().toLowerCase();
 
@@ -636,7 +698,7 @@ exports.checkPollEmailVoted = functions
     }
 
     return { voted: true, option: snapshot.docs[0].data().option || null };
-  });
+  }));
 
 /**
  * One-time admin-triggered backfill: recomputes `poll_results` for every
@@ -649,7 +711,7 @@ exports.checkPollEmailVoted = functions
  */
 exports.backfillPollResults = functions
   .region(REGION)
-  .https.onCall(async (data, context) => {
+  .https.onCall(withErrorLogging('backfillPollResults', async (data, context) => {
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
     }
@@ -689,7 +751,7 @@ exports.backfillPollResults = functions
     await batch.commit();
 
     return { pollsBackfilled: pollQuestionIds.length };
-  });
+  }));
 
 /**
  * Checks whether an email is already subscribed, without exposing the
@@ -699,7 +761,7 @@ exports.backfillPollResults = functions
  */
 exports.checkSubscriberExists = functions
   .region(REGION)
-  .https.onCall(async (data) => {
+  .https.onCall(withErrorLogging('checkSubscriberExists', async (data) => {
     const email = (data && data.email ? String(data.email) : '').trim().toLowerCase();
     if (!email) {
       return { exists: false };
@@ -711,7 +773,7 @@ exports.checkSubscriberExists = functions
       .get();
 
     return { exists: !snapshot.empty };
-  });
+  }));
 
 exports.socialMetaTags = functions
   .region(REGION)
