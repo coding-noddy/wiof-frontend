@@ -73,9 +73,17 @@ service cloud.firestore {
     // ─── User Saved Content ─────────────────────────────────────────────────
 
     match /user_saved_content/{docId} {
-      // Read only own documents
+      // Read only own documents. `resource == null` handles a `get` on a
+      // doc that doesn't exist yet (e.g. checking "is this saved?" or
+      // "already saved?" before the first save) — resource is null for a
+      // nonexistent document, and resource.data.userId on null throws,
+      // which Firestore denies as permission-denied rather than returning
+      // a clean "not found". Without this guard, the very first bookmark
+      // of anything is unreachable. Safe: a nonexistent doc has no data to
+      // protect, and an existing doc still only reads back true for its
+      // actual owner.
       allow read: if isAuthenticated()
-        && resource.data.userId == request.auth.uid;
+        && (resource == null || resource.data.userId == request.auth.uid);
 
       // Write only own documents with a server timestamp (prevents backdated writes)
       allow create: if isAuthenticated()
@@ -87,8 +95,12 @@ service cloud.firestore {
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.savedAt == request.time;
 
+      // Same nonexistent-document guard as read: unsaveContent() deletes
+      // unconditionally without checking existence first, so unsaving
+      // something already unsaved (double-click, stale UI state) must not
+      // throw either.
       allow delete: if isAuthenticated()
-        && resource.data.userId == request.auth.uid;
+        && (resource == null || resource.data.userId == request.auth.uid);
     }
 
     // ─── Activity Log ───────────────────────────────────────────────────────
