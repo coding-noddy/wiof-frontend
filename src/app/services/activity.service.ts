@@ -29,6 +29,10 @@ export interface ActivityLogEntry {
   id?: string;
   userId: string;
   activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage' | 'daily_visit';
+  /** Schema version of this entry's shape — see ActivityService.SCHEMA_VERSION.
+   *  Lets a future change to the event shape tell old and new entries apart
+   *  instead of guessing from which optional fields happen to be present. */
+  schemaVersion: number;
   contentId?: string;
   contentTitle?: string;      // human-readable title (poll question, blog title, etc.)
   widgetName?: string;
@@ -67,25 +71,22 @@ export function toCalendarDay(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-/**
- * Determines whether an activity should be recorded based on deduplication rules.
- * Only blog_read and video_view are deduplicated (max one per userId + contentId, lifetime).
- */
-export function shouldRecordActivity(entry: ActivityLogInput, existingEntries: ActivityLogEntry[]): boolean {
-  // Only deduplicate blog_read and video_view
-  if (entry.activityType !== 'blog_read' && entry.activityType !== 'video_view') {
-    return true;
-  }
-
-  return !existingEntries.some(
-    e => e.contentId === entry.contentId
-  );
-}
-
 @Injectable({
   providedIn: 'root'
 })
 export class ActivityService {
+  /** Bound on the My Journey history-list queries (Quality Reads, EQ/Poll/Video
+   *  history) — Foundation Hardening Plan v4 §12.1 ("every new query must have
+   *  a bounded result size"). The dashboard tallies themselves come from the
+   *  materialized user_metrics summary, not these lists, so this only caps
+   *  how many past items are shown, not any count. */
+  private static readonly MAX_HISTORY_ITEMS = 50;
+
+  /** Current activity_log entry shape version — stamped on every write (see
+   *  ActivityLogEntry.schemaVersion). Bump this and update readers when the
+   *  event shape changes in a way old entries won't have. Foundation
+   *  Hardening Plan v4 §6.2. */
+  private static readonly SCHEMA_VERSION = 1;
 
   constructor(
     private firestore: AngularFirestore,
@@ -93,36 +94,39 @@ export class ActivityService {
   ) {}
 
   /**
+   * Writes an activity_log entry at a deterministic ID so a duplicate attempt
+   * for the same dedup key is rejected atomically by Firestore itself instead
+   * of relying on a racy client-side read-then-write: activity_log's rules
+   * allow `create` but deny all `update`, so writing to an ID that already
+   * exists is evaluated as an unauthorized update and rejected — caught here
+   * and treated as "already recorded," not a failure. This closes the race
+   * window a concurrent double-write (double-click, duplicate tab) could hit
+   * under the old query-before-write pattern. See Foundation Hardening Plan
+   * v4 §7.
+   */
+  private async writeDedupedEntry(docId: string, logEntry: Omit<ActivityLogEntry, 'id'>): Promise<void> {
+    try {
+      await this.firestore.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).doc(docId).set(logEntry);
+    } catch (error: any) {
+      if (error?.code === 'permission-denied') {
+        return; // already recorded for this dedup key
+      }
+      throw error;
+    }
+  }
+
+  /**
    * Logs a user activity with fire-and-forget error handling.
    * Failures are silently swallowed — they never disrupt the user experience.
-   * Deduplicates blog_read and video_view: max one per userId + contentId + calendar day.
+   * Deduplicates blog_read and video_view: max one per userId + contentId, lifetime.
    */
   async logActivity(entry: ActivityLogInput): Promise<void> {
     try {
-      // Deduplication check for blog_read and video_view
-      // Lifetime dedup: max one entry per userId + contentId (regardless of day)
-      if (entry.activityType === 'blog_read' || entry.activityType === 'video_view') {
-        const existingSnapshot = await this.firestore
-          .collection(FIREBASE_COLLECTION.ACTIVITY_LOG, ref =>
-            ref
-              .where('userId', '==', entry.userId)
-              .where('activityType', '==', entry.activityType)
-              .where('contentId', '==', entry.contentId)
-              .limit(1)
-          )
-          .get()
-          .toPromise();
-
-        if (existingSnapshot && existingSnapshot.docs.length > 0) {
-          // Already recorded for this content — skip
-          return;
-        }
-      }
-
       const calendarDay = toCalendarDay(new Date());
       const logEntry: Omit<ActivityLogEntry, 'id'> = {
         userId: entry.userId,
         activityType: entry.activityType,
+        schemaVersion: ActivityService.SCHEMA_VERSION,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         calendarDay
       };
@@ -152,32 +156,16 @@ export class ActivityService {
         (logEntry as any).userEmail = entry.userEmail;
       }
 
-      await this.firestore.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
+      const isDeduped = entry.activityType === 'blog_read' || entry.activityType === 'video_view';
+      if (isDeduped) {
+        const docId = `${entry.userId}_${entry.activityType}_${entry.contentId}`;
+        await this.writeDedupedEntry(docId, logEntry);
+      } else {
+        await this.firestore.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
+      }
     } catch (error) {
       console.warn('Activity logging failed:', error);
       // Intentionally swallowed — never disrupts user experience
-    }
-  }
-
-  /** Deletes all activity records owned by a user in batches. */
-  async deleteAllForUser(userId: string): Promise<void> {
-    let hasMore = true;
-
-    while (hasMore) {
-      const snapshot = await this.firestore.firestore
-        .collection(FIREBASE_COLLECTION.ACTIVITY_LOG)
-        .where('userId', '==', userId)
-        .limit(400)
-        .get();
-
-      if (snapshot.empty) {
-        return;
-      }
-
-      const batch = this.firestore.firestore.batch();
-      snapshot.docs.forEach(doc => batch.delete(doc.ref));
-      await batch.commit();
-      hasMore = snapshot.size === 400;
     }
   }
 
@@ -189,30 +177,15 @@ export class ActivityService {
   async logDailyVisit(userId: string): Promise<void> {
     try {
       const calendarDay = toCalendarDay(new Date());
-
-      const existingSnapshot = await this.firestore
-        .collection(FIREBASE_COLLECTION.ACTIVITY_LOG, ref =>
-          ref
-            .where('userId', '==', userId)
-            .where('activityType', '==', 'daily_visit')
-            .where('calendarDay', '==', calendarDay)
-            .limit(1)
-        )
-        .get()
-        .toPromise();
-
-      if (existingSnapshot && existingSnapshot.docs.length > 0) {
-        return; // Already logged today
-      }
-
       const logEntry: Omit<ActivityLogEntry, 'id'> = {
         userId,
         activityType: 'daily_visit',
+        schemaVersion: ActivityService.SCHEMA_VERSION,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         calendarDay
       };
 
-      await this.firestore.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
+      await this.writeDedupedEntry(`${userId}_daily_visit_${calendarDay}`, logEntry);
     } catch (error) {
       console.warn('Daily visit logging failed:', error);
     }
@@ -220,36 +193,16 @@ export class ActivityService {
 
   /**
    * Logs a blog_read_complete activity with deduplication.
-   * Only one entry per userId+contentId is ever written (lifetime dedup).
+   * Only one entry per userId+contentId is ever written (lifetime dedup,
+   * enforced atomically at the deterministic doc ID — see writeDedupedEntry).
    * Uses RateLimiterService to throttle writes; on throttle, schedules a retry.
-   * On dedup check failure (query error), skips dedup and allows the write.
    */
   async logBlogReadComplete(userId: string, contentId: string, scrollDepth: number, timeSpent: number, blogTitle?: string): Promise<void> {
-    try {
-      const existingSnapshot = await this.firestore
-        .collection(FIREBASE_COLLECTION.ACTIVITY_LOG, ref =>
-          ref
-            .where('userId', '==', userId)
-            .where('activityType', '==', 'blog_read_complete')
-            .where('contentId', '==', contentId)
-            .limit(1)
-        )
-        .get()
-        .toPromise();
-
-      if (existingSnapshot && existingSnapshot.docs.length > 0) {
-        // Already recorded for this userId+contentId — skip
-        return;
-      }
-    } catch (error) {
-      // Dedup check failed — allow the write (worst case: a duplicate entry)
-      console.warn('Blog read complete dedup check failed, allowing write:', error);
-    }
-
     const calendarDay = toCalendarDay(new Date());
     const logEntry: Omit<ActivityLogEntry, 'id'> = {
       userId,
       activityType: 'blog_read_complete',
+      schemaVersion: ActivityService.SCHEMA_VERSION,
       contentId,
       contentTitle: blogTitle || contentId,
       scrollDepth,
@@ -259,10 +212,8 @@ export class ActivityService {
     };
 
     const rateLimitKey = `activity_log_${userId}`;
-
-    const writeFn = async (): Promise<void> => {
-      await this.firestore.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
-    };
+    const docId = `${userId}_blog_read_complete_${contentId}`;
+    const writeFn = () => this.writeDedupedEntry(docId, logEntry);
 
     if (this.rateLimiter.canWrite(rateLimitKey)) {
       try {
@@ -277,33 +228,16 @@ export class ActivityService {
 
   /**
    * Logs a video_watch_complete activity with deduplication.
-   * Only one entry per userId+contentId is ever written (lifetime dedup).
+   * Only one entry per userId+contentId is ever written (lifetime dedup,
+   * enforced atomically at the deterministic doc ID — see writeDedupedEntry).
    * Uses RateLimiterService to throttle writes; on throttle, schedules a retry.
    */
   async logVideoWatchComplete(userId: string, contentId: string, watchPercent: number, videoTitle?: string): Promise<void> {
-    try {
-      const existingSnapshot = await this.firestore
-        .collection(FIREBASE_COLLECTION.ACTIVITY_LOG, ref =>
-          ref
-            .where('userId', '==', userId)
-            .where('activityType', '==', 'video_watch_complete')
-            .where('contentId', '==', contentId)
-            .limit(1)
-        )
-        .get()
-        .toPromise();
-
-      if (existingSnapshot && existingSnapshot.docs.length > 0) {
-        return;
-      }
-    } catch (error) {
-      console.warn('Video watch complete dedup check failed, allowing write:', error);
-    }
-
     const calendarDay = toCalendarDay(new Date());
     const logEntry: Omit<ActivityLogEntry, 'id'> = {
       userId,
       activityType: 'video_watch_complete',
+      schemaVersion: ActivityService.SCHEMA_VERSION,
       contentId,
       contentTitle: videoTitle || contentId,
       scrollDepth: Math.floor(watchPercent), // reuse scrollDepth field for watch percentage
@@ -312,10 +246,8 @@ export class ActivityService {
     };
 
     const rateLimitKey = `activity_log_${userId}`;
-
-    const writeFn = async (): Promise<void> => {
-      await this.firestore.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
-    };
+    const docId = `${userId}_video_watch_complete_${contentId}`;
+    const writeFn = () => this.writeDedupedEntry(docId, logEntry);
 
     if (this.rateLimiter.canWrite(rateLimitKey)) {
       try {
@@ -342,6 +274,7 @@ export class ActivityService {
     const logEntry: Omit<ActivityLogEntry, 'id'> = {
       userId,
       activityType: 'eq_completion',
+      schemaVersion: ActivityService.SCHEMA_VERSION,
       score: overallScore,
       eqDimensions: {
         attentionScore: dimensions.attentionScore,
@@ -370,8 +303,11 @@ export class ActivityService {
   }
 
   /**
-   * Logs a poll_vote activity for an authenticated user.
-   * No deduplication needed at this level — poll UI prevents double-voting.
+   * Logs a poll_vote activity for an authenticated user. Deduplicated at the
+   * deterministic doc ID (max one per userId+contentId, lifetime) — the poll
+   * UI's own hasUserVoted check already tries to prevent double-voting, but
+   * that check is itself query-based and racy, so this is the actual
+   * backstop against a double-click producing two poll_vote entries.
    * Uses RateLimiterService to throttle writes; on throttle, schedules a retry.
    */
   async logPollVote(
@@ -385,6 +321,7 @@ export class ActivityService {
     const logEntry: Omit<ActivityLogEntry, 'id'> = {
       userId,
       activityType: 'poll_vote',
+      schemaVersion: ActivityService.SCHEMA_VERSION,
       contentId,
       contentTitle: pollTitle || contentId,
       selectedOption,
@@ -394,10 +331,8 @@ export class ActivityService {
     };
 
     const rateLimitKey = `activity_log_${userId}`;
-
-    const writeFn = async (): Promise<void> => {
-      await this.firestore.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
-    };
+    const docId = `${userId}_poll_vote_${contentId}`;
+    const writeFn = () => this.writeDedupedEntry(docId, logEntry);
 
     if (this.rateLimiter.canWrite(rateLimitKey)) {
       try {
@@ -441,90 +376,29 @@ export class ActivityService {
   }
 
   /**
-   * Returns all activity log entries for a given user, ordered by timestamp descending.
-   */
-  getActivitiesForUser(userId: string): Observable<ActivityLogEntry[]> {
-    return this.firestore
-      .collection<ActivityLogEntry>(FIREBASE_COLLECTION.ACTIVITY_LOG, ref =>
-        ref.where('userId', '==', userId).orderBy('timestamp', 'desc')
-      )
-      .snapshotChanges()
-      .pipe(
-        map(actions =>
-          actions.map(a => {
-            const data = a.payload.doc.data() as ActivityLogEntry;
-            const id = a.payload.doc.id;
-            return { ...data, id };
-          })
-        )
-      );
-  }
-
-  /**
-   * Returns aggregated engagement metrics for a given user.
-   * Computes counts from activity_log entries.
+   * Returns aggregated engagement metrics for a given user, read from the
+   * materialized `user_metrics/{uid}` summary (see onActivityLogCreated /
+   * backfillUserMetrics in functions/index.js) instead of scanning the
+   * user's entire activity_log on every dashboard load — Foundation
+   * Hardening Plan v4 §8/§12.1. Defaults to all-zero/null for a user with no
+   * recorded activity yet (the doc won't exist until their first event).
    */
   getActivityCounts(userId: string): Observable<EngagementMetrics> {
-    return this.getActivitiesForUser(userId).pipe(
-      map(entries => this.computeMetrics(entries))
-    );
-  }
-
-  /**
-   * Pure function to compute engagement metrics from a list of activity entries.
-   */
-  computeMetrics(entries: ActivityLogEntry[]): EngagementMetrics {
-    const uniqueBlogs = new Set<string>();
-    const uniqueVideos = new Set<string>();
-    let pollsVoted = 0;
-    let lastEqScore: number | null = null;
-    let lastEqDate: Date | null = null;
-    let lastBlogReadDate: Date | null = null;
-    const uniqueVideosCompleted = new Set<string>();
-
-    for (const entry of entries) {
-      switch (entry.activityType) {
-        case 'blog_read':
-          if (entry.contentId) {
-            uniqueBlogs.add(entry.contentId);
-          }
-          // Entries are ordered by timestamp desc, so first blog_read is most recent
-          if (lastBlogReadDate === null) {
-            lastBlogReadDate = entry.timestamp?.toDate ? entry.timestamp.toDate() : (entry.timestamp ? new Date(entry.timestamp) : null);
-          }
-          break;
-        case 'video_view':
-          if (entry.contentId) {
-            uniqueVideos.add(entry.contentId);
-          }
-          break;
-        case 'video_watch_complete':
-          if (entry.contentId) {
-            uniqueVideosCompleted.add(entry.contentId);
-          }
-          break;
-        case 'poll_vote':
-          pollsVoted++;
-          break;
-        case 'eq_completion':
-          // Entries are ordered by timestamp desc, so the first eq_completion is the most recent
-          if (lastEqScore === null && entry.score !== undefined) {
-            lastEqScore = entry.score;
-            lastEqDate = entry.timestamp?.toDate ? entry.timestamp.toDate() : (entry.timestamp ? new Date(entry.timestamp) : null);
-          }
-          break;
-      }
-    }
-
-    return {
-      blogsRead: uniqueBlogs.size,
-      videosWatched: uniqueVideos.size,
-      videosCompleted: uniqueVideosCompleted.size,
-      pollsVoted,
-      lastEqScore,
-      lastEqDate,
-      lastBlogReadDate
-    };
+    return this.firestore
+      .collection(FIREBASE_COLLECTION.USER_METRICS)
+      .doc<any>(userId)
+      .valueChanges()
+      .pipe(
+        map(doc => ({
+          blogsRead: doc?.blogsRead || 0,
+          videosWatched: doc?.videosWatched || 0,
+          videosCompleted: doc?.videosCompleted || 0,
+          pollsVoted: doc?.pollsVoted || 0,
+          lastEqScore: doc?.lastEqScore ?? null,
+          lastEqDate: doc?.lastEqDate?.toDate ? doc.lastEqDate.toDate() : null,
+          lastBlogReadDate: doc?.lastBlogReadDate?.toDate ? doc.lastBlogReadDate.toDate() : null
+        } as EngagementMetrics))
+      );
   }
 
   /**
@@ -538,6 +412,7 @@ export class ActivityService {
           .where('userId', '==', userId)
           .where('activityType', '==', 'blog_read_complete')
           .orderBy('timestamp', 'desc')
+          .limit(ActivityService.MAX_HISTORY_ITEMS)
       )
       .get()
       .pipe(
@@ -568,6 +443,7 @@ export class ActivityService {
           .where('userId', '==', userId)
           .where('activityType', '==', 'eq_completion')
           .orderBy('timestamp', 'desc')
+          .limit(ActivityService.MAX_HISTORY_ITEMS)
       )
       .get()
       .pipe(
@@ -598,6 +474,7 @@ export class ActivityService {
           .where('userId', '==', userId)
           .where('activityType', '==', 'poll_vote')
           .orderBy('timestamp', 'desc')
+          .limit(ActivityService.MAX_HISTORY_ITEMS)
       )
       .get()
       .pipe(
@@ -628,6 +505,7 @@ export class ActivityService {
           .where('userId', '==', userId)
           .where('activityType', '==', 'video_watch_complete')
           .orderBy('timestamp', 'desc')
+          .limit(ActivityService.MAX_HISTORY_ITEMS)
       )
       .get()
       .pipe(

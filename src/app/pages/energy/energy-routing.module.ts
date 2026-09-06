@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { FirePage } from './fire.page';
+import { EnergyPage } from './energy.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: FirePage
+    component: EnergyPage
   },
   {
     path: 'blog',
@@ -32,4 +32,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class FirePageRoutingModule {}
+export class EnergyPageRoutingModule {}

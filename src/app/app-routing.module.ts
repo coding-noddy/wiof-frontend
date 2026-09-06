@@ -48,7 +48,7 @@ const routes: Routes = [
   {
     path: 'element/energy',
     loadChildren: () =>
-      import('./pages/fire/fire.module').then((m) => m.FirePageModule)
+      import('./pages/energy/energy.module').then((m) => m.EnergyPageModule)
   },
   {
     path: 'element/spirit',

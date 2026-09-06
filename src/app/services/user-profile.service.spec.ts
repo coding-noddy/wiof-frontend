@@ -53,12 +53,13 @@ describe('UserProfileService', () => {
   });
 
   describe('getRole', () => {
+    // Admin authority comes from a document's existence in the separate
+    // `admins` collection (doc ID == uid), not a field value — see
+    // firestore.rules isAdmin() for the matching security-rule authority.
     it('should return cached role on subsequent calls', async () => {
-      // First call - set up Firestore to return admin
+      // First call - set up Firestore to return an admins/{uid} doc that exists
       const mockDoc = firestoreMock.collection().doc();
-      mockDoc.ref.get.and.returnValue(Promise.resolve({
-        data: () => ({ role: 'admin' })
-      }));
+      mockDoc.ref.get.and.returnValue(Promise.resolve({ exists: true }));
 
       const role1 = await service.getRole('user1');
       expect(role1).toBe('admin');
@@ -70,33 +71,19 @@ describe('UserProfileService', () => {
       expect(mockDoc.ref.get).not.toHaveBeenCalled();
     });
 
-    it('should return "admin" for user with admin role', async () => {
+    it('should return "admin" when an admins/{uid} document exists', async () => {
       const mockDoc = firestoreMock.collection().doc();
-      mockDoc.ref.get.and.returnValue(Promise.resolve({
-        data: () => ({ role: 'admin' })
-      }));
+      mockDoc.ref.get.and.returnValue(Promise.resolve({ exists: true }));
 
       const role = await service.getRole('admin-user');
       expect(role).toBe('admin');
     });
 
-    it('should return "public" for user with public role', async () => {
+    it('should return "public" when no admins/{uid} document exists', async () => {
       const mockDoc = firestoreMock.collection().doc();
-      mockDoc.ref.get.and.returnValue(Promise.resolve({
-        data: () => ({ role: 'public' })
-      }));
+      mockDoc.ref.get.and.returnValue(Promise.resolve({ exists: false }));
 
       const role = await service.getRole('public-user');
-      expect(role).toBe('public');
-    });
-
-    it('should default to "public" for legacy documents without role field', async () => {
-      const mockDoc = firestoreMock.collection().doc();
-      mockDoc.ref.get.and.returnValue(Promise.resolve({
-        data: () => ({ uid: 'legacy-user', displayName: 'Legacy' })
-      }));
-
-      const role = await service.getRole('legacy-user');
       expect(role).toBe('public');
     });
 
@@ -107,24 +94,12 @@ describe('UserProfileService', () => {
       const role = await service.getRole('offline-user');
       expect(role).toBe('public');
     });
-
-    it('should default to "public" for document with null data', async () => {
-      const mockDoc = firestoreMock.collection().doc();
-      mockDoc.ref.get.and.returnValue(Promise.resolve({
-        data: () => null
-      }));
-
-      const role = await service.getRole('null-user');
-      expect(role).toBe('public');
-    });
   });
 
   describe('clearRoleCache', () => {
     it('should clear cached roles so next getRole fetches from Firestore', async () => {
       const mockDoc = firestoreMock.collection().doc();
-      mockDoc.ref.get.and.returnValue(Promise.resolve({
-        data: () => ({ role: 'admin' })
-      }));
+      mockDoc.ref.get.and.returnValue(Promise.resolve({ exists: true }));
 
       // Populate cache
       await service.getRole('user1');
@@ -133,9 +108,7 @@ describe('UserProfileService', () => {
       service.clearRoleCache();
 
       // Next call should hit Firestore again
-      mockDoc.ref.get.and.returnValue(Promise.resolve({
-        data: () => ({ role: 'public' })
-      }));
+      mockDoc.ref.get.and.returnValue(Promise.resolve({ exists: false }));
 
       const role = await service.getRole('user1');
       expect(role).toBe('public');
@@ -193,32 +166,14 @@ describe('UserProfileService', () => {
     });
   });
 
-  describe('createProfile', () => {
-    it('should set role to "public" for Google OAuth users', async () => {
-      const mockUser = {
-        uid: 'google-user-123',
-        displayName: 'Test User',
-        email: 'test@gmail.com',
-        photoURL: 'https://photo.url/pic.jpg'
-      } as any;
-
-      const mockDoc = firestoreMock.collection().doc();
-      mockDoc.set = jasmine.createSpy('set').and.returnValue(Promise.resolve());
-
-      // Re-setup the mock to capture the set call
-      firestoreMock.collection.and.returnValue({
-        doc: jasmine.createSpy('doc').and.returnValue({
-          set: mockDoc.set
-        })
-      });
-
-      await service.createProfile(mockUser);
-
-      expect(mockDoc.set).toHaveBeenCalledWith(
-        jasmine.objectContaining({ role: 'public' })
-      );
-    });
-  });
+  // createProfile/updateLoginMetrics/recordVisit/resetEngagementData now delegate
+  // to Cloud Functions (createUserProfile/recordLoginMetrics/recordUserVisit/
+  // resetEngagementCounters — see firestore.rules isValidOwnProfileUpdate and
+  // functions/index.js) instead of writing Firestore directly, since those
+  // fields are system-managed and no longer client-writable. Covered by the
+  // emulator rules tests (tests/rules/firestore.rules.test.js) rather than
+  // here — unit-testing them meaningfully needs a callable-function mocking
+  // strategy this suite doesn't have yet.
 
   describe('validateAvatarFile', () => {
     function makeFile(type: string, sizeBytes: number): File {

@@ -7,7 +7,7 @@
   <div class="page-container">
 
     <!-- ── Banner ──────────────────────────────────────────────── -->
-    <div class="element-hero fire">
+    <div class="element-hero energy">
       <!-- <div class="hero-text">
         <h1>Energy</h1>
         <p>Fuel the future — explore solar, wind, and the rise of clean energy.</p>
@@ -16,7 +16,7 @@
 
     <app-life-elements [element]="elementName"></app-life-elements>
 <!-- ── Video + Widget ──────────────────────────────────────── -->
-        <section class="section-block" id="fire-featured-video">
+        <section class="section-block" id="energy-featured-video">
       <div class="video-widget-row">
         <div class="video-col">
           <app-video-widget [element]="elementName"></app-video-widget>
@@ -28,7 +28,7 @@
     </section>
 
     <!-- ── In Focus ─────────────────────────────────────────── -->
-    <section class="section-block" id="fire-in-focus">
+    <section class="section-block" id="energy-in-focus">
       <app-in-focus-widget
         [inFocuses]="this.inFocuses$ | async"
         [element]="elementName"
@@ -38,7 +38,7 @@
     <!-- ── Coffee Conversation ─────────────────────────────────── -->
     <section
       class="section-block"
-      id="fire-conversations"
+      id="energy-conversations"
       *ngIf="this.coffeeConversations$ | async as coffeeConversations"
     >
       <app-coffee-conversation
@@ -48,7 +48,7 @@
     </section>
 
     <!-- ── Blogs ───────────────────────────────────────────────── -->
-    <section class="section-block" id="fire-blogs">
+    <section class="section-block" id="energy-blogs">
       <div class="section-header">
         <h2>Blogs</h2>
       </div>
@@ -59,7 +59,7 @@
     </section>
 
     <!-- ── Videos ──────────────────────────────────────────────── -->
-    <section class="section-block" id="fire-videos" *ngIf="videos$ | async as videos">
+    <section class="section-block" id="energy-videos" *ngIf="videos$ | async as videos">
       <div class="section-header" *ngIf="videos.length > 0">
         <h2>Videos</h2>
       </div>

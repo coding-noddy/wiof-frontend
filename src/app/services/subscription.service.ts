@@ -5,7 +5,9 @@ import {
   AngularFirestoreCollection
 } from '@angular/fire/compat/firestore';
 import { from } from 'rxjs';
+import { httpsCallable } from 'firebase/functions';
 import { FIREBASE_COLLECTION } from '../app.constants';
+import { getWiofFunctions } from '../util/cloud-functions.util';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -33,14 +35,19 @@ export class SubscriptionService {
     );
   }
 
+  /**
+   * Checks whether an email is already subscribed via the checkSubscriberExists
+   * Cloud Function rather than a direct client query — the Subscriptions
+   * collection is admin-only to read (see firestore.rules), so this is the
+   * only path that can answer "already subscribed?" for a public visitor.
+   */
   findSubscriber(email: string): Observable<Boolean> {
-    const subscriberCollection = this.database.collection(
-      FIREBASE_COLLECTION.SUBSCRIPTIONS,
-      (ref) => ref.where('email', '==', email).limit(1)
+    const normalizedEmail = email.trim().toLowerCase();
+    const checkExists = httpsCallable<{ email: string }, { exists: boolean }>(
+      getWiofFunctions(),
+      'checkSubscriberExists'
     );
-    return subscriberCollection
-      .get()
-      .pipe(map((querySnapshot) => querySnapshot.docs.length > 0));
+    return from(checkExists({ email: normalizedEmail }).then((result) => result.data.exists));
   }
 
   saveSubscriber(subscriber: Subscriber) {

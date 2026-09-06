@@ -10,8 +10,6 @@ import { UserProfileService, validateAvatarFile } from 'src/app/services/user-pr
 import { UiUtilService } from 'src/app/util/UiUtilService';
 import { noWhitespaceOnlyValidator, minArrayLength, maxArrayLength } from './settings.validators';
 import { ELEMENTS } from 'src/app/app.constants';
-import { ActivityService } from 'src/app/services/activity.service';
-import { SavedContentService } from 'src/app/services/saved-content.service';
 
 @Component({
   selector: 'app-settings',
@@ -70,9 +68,7 @@ export class SettingsPage implements OnDestroy {
     private authService: AuthService,
     private userProfileService: UserProfileService,
     private uiUtil: UiUtilService,
-    private router: Router,
-    private activityService: ActivityService,
-    private savedContentService: SavedContentService
+    private router: Router
   ) {}
 
   /**
@@ -234,14 +230,19 @@ export class SettingsPage implements OnDestroy {
 
     this.isResettingData = true;
     try {
-      await this.activityService.deleteAllForUser(this.lastUid);
-      await this.savedContentService.deleteAllForUser(this.lastUid);
-      await this.userProfileService.resetEngagementData(this.lastUid);
-      await this.uiUtil.presentToast('Your engagement data was cleared. Your account remains active.', 'success', 5000);
+      const result = await this.userProfileService.resetEngagementData(this.lastUid);
+      const clearedCount = result.deletedActivityCount + result.deletedSavedContentCount;
+      const message = clearedCount > 0
+        ? 'Your engagement data was cleared. Your account remains active.'
+        : 'You had no engagement data to clear. Your account remains active.';
+      await this.uiUtil.presentToast(message, 'success', 5000);
       await this.authService.logout();
       await this.router.navigate(['/home']);
     } catch (error) {
-      await this.uiUtil.presentToast('Could not clear all engagement data. Nothing was changed after the failed step.', 'error', 5000);
+      // resetEngagementData is idempotent — safe to retry, and a retry will
+      // only touch whatever's actually left, never double-clear or error on
+      // already-clean data.
+      await this.uiUtil.presentToast('Could not clear your engagement data. Please try again — retrying is safe.', 'error', 5000);
     } finally {
       this.isResettingData = false;
     }

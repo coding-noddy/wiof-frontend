@@ -41,11 +41,11 @@
     }
   }
 
-  &.fire {
+  &.energy {
     background-image: url('/assets/icons/icon_energy.svg');
-    box-shadow: 1px 1px 5px 1px $energy-color; //energy and fire represent same element
+    box-shadow: 1px 1px 5px 1px $energy-color;
     &.active {
-      box-shadow: 1px 1px 12px 10px $energy-color; //energy and fire represent same element
+      box-shadow: 1px 1px 12px 10px $energy-color;
       background-image: url('/assets/icons/icon_energy_selected.svg');
     }
     &:hover {

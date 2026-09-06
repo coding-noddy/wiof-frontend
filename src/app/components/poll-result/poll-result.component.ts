@@ -30,15 +30,16 @@ export class PollResultComponent implements OnInit, OnDestroy {
   }
 
   countVotes() {
-    // read all votes
+    // read the sanitized public aggregate (no email/IP) rather than raw votes
     this.pollsService
-      .getPolls(this.pollQuestion.pollId)
+      .getPollResults(this.pollQuestion.pollId)
       .pipe(takeUntil(this.destroy$))
-      .subscribe((data) => {
-        this.totalVotes = data.length;
-        this.appUtil.calculatePollResult(
+      .subscribe((results) => {
+        this.totalVotes = results.totalVotes;
+        this.appUtil.applyPollResultCounts(
           this.pollQuestion,
-          data,
+          results.totalVotes,
+          results.optionCounts,
           this.optionData
         );
       });

@@ -296,12 +296,13 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
     if (!this.pollQuestion || !this.pollQuestion.pollId) {
       return;
     }
+    // Sanitized public aggregate (no email/IP) — raw vote documents are admin-only.
     this.pollsService
-      .getPolls(this.pollQuestion.pollId)
+      .getPollResults(this.pollQuestion.pollId)
       .pipe(takeUntil(this.destroy$))
-      .subscribe((data) => {
-        this.totalVotes = data.length;
-        this.appUtil.calculatePollResult(this.pollQuestion, data, this.optionData);
+      .subscribe((results) => {
+        this.totalVotes = results.totalVotes;
+        this.appUtil.applyPollResultCounts(this.pollQuestion, results.totalVotes, results.optionCounts, this.optionData);
       });
   }
 

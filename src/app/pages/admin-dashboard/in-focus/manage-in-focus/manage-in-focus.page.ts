@@ -5,7 +5,7 @@ import { InFocusService } from 'src/app/services/in-focus.service';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 import { Router, ActivatedRoute } from '@angular/router';
 import { takeUntil } from 'rxjs/operators';
-import { UI_MESSAGES, ITEMS } from 'src/app/app.constants';
+import { UI_MESSAGES, ITEMS, normalizeElementCategory } from 'src/app/app.constants';
 
 @Component({
   selector: 'app-manage-in-focus',
@@ -38,7 +38,7 @@ export class ManageInFocusPage implements OnInit, OnDestroy {
 
   applySort() {
     let filtered = [...this.allItems];
-    if (this.filterCategory) filtered = filtered.filter(item => (item.category || '').toLowerCase() === this.filterCategory);
+    if (this.filterCategory) filtered = filtered.filter(item => normalizeElementCategory(item.category) === this.filterCategory);
     if (this.filterStatus) filtered = filtered.filter(item => item.status === this.filterStatus);
     const sorted = filtered.sort((a, b) => {
       let valA = a[this.sortColumn]; let valB = b[this.sortColumn];
