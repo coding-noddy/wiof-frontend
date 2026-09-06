@@ -251,6 +251,24 @@ describe('user_saved_content/{docId}', () => {
     const db = testEnv.unauthenticatedContext().firestore();
     await assertFails(db.collection('user_saved_content').doc(docId).get());
   });
+
+  // Regression coverage for a real bug: SavedContentService.saveContent()
+  // and isContentSaved() both `.get()`/`.valueChanges()` a *specific*
+  // deterministic-ID document before it necessarily exists — e.g. checking
+  // "is this already saved?" for content never saved before. A `get` on a
+  // nonexistent document evaluates `resource` as null, and without an
+  // explicit null guard, `resource.data.userId` throws and Firestore denies
+  // the read as permission-denied instead of returning "not found" — which
+  // broke the very first bookmark of anything.
+  it('lets the owner get() a not-yet-saved deterministic-ID doc (no throw on nonexistent resource)', async () => {
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertSucceeds(db.collection('user_saved_content').doc('alice_blog-never-saved').get());
+  });
+
+  it('lets the owner delete() a not-yet-saved doc — unsaveContent() has no existence pre-check', async () => {
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertSucceeds(db.collection('user_saved_content').doc('alice_blog-never-saved').delete());
+  });
 });
 
 describe('activity_log/{docId}', () => {
