@@ -1,0 +1,63 @@
+@import '../../wiof-custom-theming.scss';
+
+ion-content {
+  --background: var(--wiof-ivory);
+}
+
+.privacy-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+app-back-button {
+  display: inline-block;
+  margin-bottom: 1.25rem;
+}
+
+.privacy-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--wiof-ink);
+  margin: 0 0 0.5rem;
+}
+
+.privacy-effective-date {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(43, 36, 32, 0.55);
+  margin: 0 0 1.75rem;
+}
+
+.privacy-page {
+  p {
+    font-size: 0.98rem;
+    line-height: 1.7;
+    color: rgba(43, 36, 32, 0.85);
+    margin: 0 0 1.35rem;
+  }
+
+  h4 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-family: 'Aleo', serif;
+    color: var(--wiof-ink);
+    margin: 2rem 0 0.75rem;
+  }
+
+  ul {
+    margin: 0 0 1.35rem;
+    padding-left: 1.35rem;
+
+    li {
+      font-size: 0.98rem;
+      line-height: 1.7;
+      color: rgba(43, 36, 32, 0.85);
+      margin-bottom: 0.6rem;
+    }
+  }
+
+  strong {
+    color: var(--wiof-ink);
+  }
+}

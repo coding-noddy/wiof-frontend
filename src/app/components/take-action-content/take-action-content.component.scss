@@ -9,25 +9,7 @@
   }
 
   ion-card-header {
-    &.air {
-      background-color: $air-color;
-    }
-
-    &.earth {
-      background-color: $earth-color;
-    }
-
-    &.water {
-      background-color: $water-color;
-    }
-
-    &.energy {
-      background-color: $energy-color;
-    }
-
-    &.spirit {
-      background-color: $spirit-color;
-    }
+    background-color: var(--wiof-teal);
   }
 
   .action-sub-heading {
@@ -45,50 +27,21 @@
   .action-card {
     height: 100%;
     margin: 5px;
-    box-shadow: 1px 2px 4px lightgrey;
+    border: 1.5px solid var(--wiof-brown-tint-40);
+    box-shadow: 0 8px 20px rgba(43, 36, 32, 0.08);
 
-    &.air {
-      .action-card-title,
-      .action-media-container {
-        background-color: darken($air-color, 15%);
-      }
-    }
-
-    &.earth {
-      .action-card-title,
-      .action-media-container {
-        background-color: darken($earth-color, 15%);
-      }
-    }
-
-    &.water {
-      .action-card-title,
-      .action-media-container {
-        background-color: darken($water-color, 15%);
-      }
-    }
-
-    &.energy {
-      .action-card-title,
-      .action-media-container {
-        background-color: darken($energy-color, 25%);
-      }
-    }
-
-    &.spirit {
-      .action-card-title,
-      .action-media-container {
-        background-color: darken($spirit-color, 15%);
-      }
+    .action-card-title,
+    .action-media-container {
+      background-color: var(--wiof-teal-shade-20);
     }
 
     &:hover {
       font-size: 18px !important;
-      box-shadow: 5px 5px 20px lightgrey;
+      box-shadow: 0 14px 32px rgba(43, 36, 32, 0.14);
     }
 
     .action-card-title {
-      color: white;
+      color: var(--wiof-warm-white);
       padding: 10px 1rem 1rem;
       font-weight: bold;
       margin-top: 0;

@@ -6,6 +6,7 @@ import { catchError, map, takeUntil } from 'rxjs/operators';
 import { SubscriptionService } from '../../services/subscription.service';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 import { UI_MESSAGES } from 'src/app/app.constants';
+import { SubscribePanelService } from 'src/app/services/subscribe-panel.service';
 
 @Component({
   selector: 'app-subscribe',
@@ -22,7 +23,8 @@ export class SubscribeComponent implements OnInit, OnDestroy {
 
   constructor(
     private subscribeService: SubscriptionService,
-    private uiUtil: UiUtilService
+    private uiUtil: UiUtilService,
+    private subscribePanel: SubscribePanelService
   ) {}
 
   ngOnInit() {
@@ -36,6 +38,9 @@ export class SubscribeComponent implements OnInit, OnDestroy {
       ])
     });
     this.openSubscriptionForm();
+    this.subscribePanel.open$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.onSubscribeButtonClick());
   }
 
   getElement(element) {

@@ -1,11 +1,11 @@
 @import '../../wiof-custom-theming.scss';
 
 ion-content {
-  --background: #f8fafb;
+  --background: var(--wiof-ivory);
 }
 
 .discover-page {
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -26,10 +26,19 @@ ion-content {
   }
 }
 
+.discover-eyebrow {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--wiof-teal);
+  margin: 0 0 0.5rem;
+}
+
 .discover-title {
   font-size: 2.2rem;
   font-weight: 800;
-  color: #10263c;
+  color: var(--wiof-ink);
   margin: 0 0 0.5rem;
 
   @media (max-width: 600px) { font-size: 1.6rem; }
@@ -37,7 +46,7 @@ ion-content {
 
 .discover-subtitle {
   font-size: 1rem;
-  color: rgba(0, 0, 0, 0.55);
+  color: rgba(43, 36, 32, 0.6);
   font-style: italic;
   margin: 0;
 }
@@ -47,28 +56,32 @@ ion-content {
   margin-bottom: 2rem;
   border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 14px 36px rgba(43, 36, 32, 0.12);
 }
 
 // ── Content cards ────────────────────────────────────────────────
 .discover-content {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.25rem;
   padding-bottom: 2rem;
+
+  @media (max-width: 700px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .content-card {
-  background: #fff;
+  background: var(--wiof-warm-white);
   border-radius: 18px;
   padding: 1.5rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 14px 36px rgba(43, 36, 32, 0.12);
+  border: 1.5px solid var(--wiof-brown-tint-40);
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 18px 40px rgba(43, 36, 32, 0.16);
   }
 
   @media (max-width: 600px) {
@@ -77,20 +90,21 @@ ion-content {
 }
 
 .card-icon {
-  font-size: 2rem;
+  font-size: 1.75rem;
   margin-bottom: 0.5rem;
+  color: var(--wiof-teal);
 }
 
 .content-card h2 {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #10263c;
+  color: var(--wiof-ink);
   margin: 0 0 0.75rem;
 }
 
 .content-card p {
   font-size: 0.95rem;
-  color: #475569;
+  color: rgba(43, 36, 32, 0.75);
   line-height: 1.8;
   margin: 0 0 0.75rem;
   text-align: justify;
@@ -101,7 +115,7 @@ ion-content {
 .welcome-text {
   font-size: 1.1rem !important;
   font-weight: 700;
-  color: $home-color-dark !important;
+  color: var(--wiof-teal) !important;
   font-style: italic;
   margin-top: 0.5rem !important;
 }

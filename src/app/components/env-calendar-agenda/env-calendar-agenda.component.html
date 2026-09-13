@@ -1,0 +1,43 @@
+<ion-card class="agenda-wrapper">
+  <ion-card-header class="agenda-header">
+    <ion-card-title class="agenda-title">Coming Up</ion-card-title>
+  </ion-card-header>
+  <ion-card-content class="agenda-content">
+    <div class="skeleton skeleton-card" *ngIf="isLoading"></div>
+    <div class="skeleton skeleton-card" *ngIf="isLoading"></div>
+
+    <ng-container *ngIf="!isLoading">
+      <div class="agenda-day">
+        <div class="agenda-day-heading">
+          <span class="agenda-day-label">Today</span>
+          <span class="agenda-day-date">{{ todayLabel }}</span>
+        </div>
+        <ul class="agenda-list" *ngIf="today.length; else noToday">
+          <li class="agenda-item" *ngFor="let day of today">
+            <span class="agenda-dot"></span>
+            <span class="agenda-item-text">{{ day.occasion }}</span>
+          </li>
+        </ul>
+        <ng-template #noToday>
+          <p class="agenda-empty">Nothing on the calendar today.</p>
+        </ng-template>
+      </div>
+
+      <div class="agenda-day">
+        <div class="agenda-day-heading">
+          <span class="agenda-day-label">Tomorrow</span>
+          <span class="agenda-day-date">{{ tomorrowLabel }}</span>
+        </div>
+        <ul class="agenda-list" *ngIf="tomorrow.length; else noTomorrow">
+          <li class="agenda-item" *ngFor="let day of tomorrow">
+            <span class="agenda-dot"></span>
+            <span class="agenda-item-text">{{ day.occasion }}</span>
+          </li>
+        </ul>
+        <ng-template #noTomorrow>
+          <p class="agenda-empty">Nothing scheduled yet.</p>
+        </ng-template>
+      </div>
+    </ng-container>
+  </ion-card-content>
+</ion-card>

@@ -1,0 +1,66 @@
+@import '../../wiof-custom-theming.scss';
+
+.journey-banner {
+  background: var(--wiof-marigold);
+  border-radius: 18px;
+  padding: 1.75rem 2rem;
+  margin: 1rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.eyebrow {
+  margin: 0 0 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--wiof-ink);
+  opacity: 0.75;
+}
+
+h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var(--wiof-ink);
+}
+
+.tagline {
+  margin: 0.4rem 0 0;
+  font-size: 0.92rem;
+  color: var(--wiof-ink);
+}
+
+.journey-cta {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.85rem 1.4rem;
+  background: var(--wiof-warm-white);
+  border-radius: 999px;
+  font-weight: 700;
+  color: var(--wiof-ink);
+  text-decoration: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(43, 36, 32, 0.18);
+  }
+}
+
+@media (max-width: 575px) {
+  .journey-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .journey-cta {
+    align-self: stretch;
+    justify-content: center;
+  }
+}

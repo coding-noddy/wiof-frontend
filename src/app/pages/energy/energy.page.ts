@@ -30,6 +30,7 @@ export class EnergyPage implements OnInit {
 
   pageSections: SectionNavItem[] = [
     { label: 'Featured', sectionId: 'energy-featured-video' },
+    { label: 'Take Action', sectionId: 'energy-take-action' },
     { label: 'In Focus', sectionId: 'energy-in-focus' },
     { label: 'Conversations', sectionId: 'energy-conversations' },
     { label: 'Blogs', sectionId: 'energy-blogs' },

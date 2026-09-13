@@ -1,0 +1,15 @@
+<div class="take-action-teaser" *ngIf="links.length">
+  <p class="eyebrow">Take action</p>
+  <h2>Small shifts, real impact</h2>
+  <div class="teaser-grid">
+    <a
+      *ngFor="let item of links"
+      [routerLink]="['/element', element, 'take-action']"
+      class="teaser-card"
+    >
+      <ion-icon [name]="item.icon"></ion-icon>
+      <span class="teaser-heading">{{ item.heading }}</span>
+      <span class="teaser-desc">{{ item.desc }}</span>
+    </a>
+  </div>
+</div>

@@ -1,36 +1,52 @@
-<ion-row class="ion-padding wiof-footer">
-  <ion-col>
-    <!-- <ion-label class="ion-margin-bottom">
-      <button class="wiof-primary-btn ion-margin-top" [routerLink]="['/sitemap']" routerLinkActive="router-link-active" >
-        Sitemap
-      </button>
-    </ion-label><br /> -->
-    <!-- <div class="social-media-block">
-      <ion-button fill="clear" class="ion-no-padding"
-        ><ion-icon slot="icon-only" name="logo-facebook"></ion-icon
-      ></ion-button>
-      <ion-button fill="clear" class="ion-no-padding"
-        ><ion-icon slot="icon-only" name="logo-instagram"></ion-icon
-      ></ion-button>
-      <ion-button fill="clear" class="ion-no-padding"
-        ><ion-icon slot="icon-only" name="logo-twitter"></ion-icon
-      ></ion-button>
-      <ion-button fill="clear" class="ion-no-padding"
-        ><ion-icon slot="icon-only" name="logo-youtube"></ion-icon
-      ></ion-button>
-    </div> -->
-    <!-- </ion-col>
-  <ion-col class="ion-text-center"> -->
-    <a
-      class="wiof-primary-link ion-margin-top ion-margin-end"
-      href="/privacy-policy"
-    >
-      Privacy Policy
-    </a>
-    <!-- <button class="wiof-primary-btn ion-margin-top" [routerLink]="['/copyright']" routerLinkActive="router-link-active" >
-      Copyright
-    </button> -->
-    <p>World is One Family © 2020 - {{ currentYear }}. All Rights Reserved.</p>
-    <p class="app-version">v{{ appVersion }}</p>
-  </ion-col>
-</ion-row>
+<footer class="wiof-footer">
+  <div class="footer-columns">
+    <div class="footer-brand">
+      <div class="footer-logo-row">
+        <img [src]="wiofLogo" alt="World is one family logo" class="footer-logo" />
+        <div class="footer-wordmark">
+          <span class="footer-title">WIOF</span>
+          <span class="footer-subtitle">World Is One Family</span>
+        </div>
+      </div>
+      <p class="footer-blurb">
+        One Earth. One Family. One Future. Climate education is how we carry that out,
+        through <a routerLink="/climatenlighten">ClimatEnlighten</a>.
+      </p>
+    </div>
+
+    <div class="footer-links">
+      <h4>Elements</h4>
+      <a routerLink="/element/air">Air</a>
+      <a routerLink="/element/energy">Energy</a>
+      <a routerLink="/element/water">Water</a>
+      <a routerLink="/element/earth">Earth</a>
+      <a routerLink="/element/spirit">Spirit</a>
+    </div>
+
+    <div class="footer-links">
+      <h4>Explore</h4>
+      <a routerLink="/element/earth/blogs">Blog</a>
+      <a routerLink="/element/earth/videos">Videos</a>
+      <a routerLink="/my-journey">My Journey</a>
+      <a routerLink="/climatenlighten">ClimatEnlighten</a>
+    </div>
+
+    <div class="footer-links">
+      <h4>About</h4>
+      <a routerLink="/discover-more">About Us</a>
+      <a routerLink="/aboutus">Our Team</a>
+      <a routerLink="/privacy-policy">Privacy Policy</a>
+    </div>
+
+    <div class="footer-newsletter">
+      <h4>Stay in the loop</h4>
+      <p class="footer-newsletter-copy">Occasional updates on new content — no spam.</p>
+      <button class="wiof-primary-btn" (click)="openNewsletter()">Join our newsletter</button>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <span>World is One Family © 2020 - {{ currentYear }}. All Rights Reserved.</span>
+    <span class="app-version">v{{ appVersion }}</span>
+  </div>
+</footer>

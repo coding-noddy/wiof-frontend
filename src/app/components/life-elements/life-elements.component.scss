@@ -1,117 +1,161 @@
 @import '../../wiof-custom-theming.scss';
 
-.landing-circle-img {
-  border-radius: 50%;
-
+// ── Shared icon badge ────────────────────────────────────────────────────────
+// The icon_*.svg assets already draw their own full badge (circle + border +
+// element lines, with a filled `_selected` variant for the active state) —
+// this must render at 100%, not sit inside another bordered/filled circle,
+// or you get a circle nested inside a circle with an odd ring of padding.
+%element-icon-base {
+  display: inline-block;
   background-repeat: no-repeat;
-  background-size: contain;
-  height: 110px;
-  width: 110px;
-  margin: auto;
-  transition: 0.8s;
-  outline: none;
-  // transition-delay: 0.2s;
-  cursor: pointer;
+  background-position: center;
+  background-size: 100%;
+  flex-shrink: 0;
 
-  &.earth {
-    background-image: url('/assets/icons/icon_earth.svg');
-    box-shadow: 1px 1px 5px 1px $earth-color;
-    &.active {
-      box-shadow: 1px 1px 12px 10px $earth-color;
-      background-image: url('/assets/icons/icon_earth_selected.svg');
-    }
-    &:hover {
-      box-shadow: 1px 1px 12px 10px $earth-color;
-    }
-  }
+  &.icon-air    { background-image: url('/assets/icons/icon_air.svg'); }
+  &.icon-energy { background-image: url('/assets/icons/icon_energy.svg'); }
+  &.icon-water  { background-image: url('/assets/icons/icon_water.svg'); }
+  &.icon-earth  { background-image: url('/assets/icons/icon_earth.svg'); }
+  &.icon-spirit { background-image: url('/assets/icons/icon_spirit.svg'); }
 
-  &.water {
-    background-image: url('/assets/icons/icon_water.svg');
-
-    box-shadow: 1px 1px 5px 1px $water-color;
-    &.active {
-      box-shadow: 1px 1px 12px 10px $water-color;
-      background-image: url('/assets/icons/icon_water_selected.svg');
-    }
-    &:hover {
-      box-shadow: 1px 1px 12px 10px $water-color;
-    }
-    &.clicked {
-      background-image: url('/assets/icons/icon_water_selected.svg');
-    }
-  }
-
-  &.energy {
-    background-image: url('/assets/icons/icon_energy.svg');
-    box-shadow: 1px 1px 5px 1px $energy-color;
-    &.active {
-      box-shadow: 1px 1px 12px 10px $energy-color;
-      background-image: url('/assets/icons/icon_energy_selected.svg');
-    }
-    &:hover {
-      box-shadow: 1px 1px 12px 10px $energy-color;
-    }
-  }
-
-  &.air {
-    background-image: url('/assets/icons/icon_air.svg');
-    box-shadow: 1px 1px 5px 1px $air-color;
-    &.active {
-      box-shadow: 1px 1px 12px 10px $air-color;
-      background-image: url('/assets/icons/icon_air_selected.svg');
-    }
-    &:hover {
-      box-shadow: 1px 1px 12px 10px $air-color;
-    }
-  }
-
-  &.spirit {
-    background-image: url('/assets/icons/icon_spirit.svg');
-    box-shadow: 1px 1px 5px 1px $spirit-color;
-    &.active {
-      box-shadow: 1px 1px 12px 10px $spirit-color;
-      background-image: url('/assets/icons/icon_spirit_selected.svg');
-    }
-    &:hover {
-      box-shadow: 1px 1px 12px 10px $spirit-color;
-    }
-  }
-
-  &:hover {
-    opacity: 0.8;
-    cursor: pointer;
+  &.active {
+    &.icon-air    { background-image: url('/assets/icons/icon_air_selected.svg'); }
+    &.icon-energy { background-image: url('/assets/icons/icon_energy_selected.svg'); }
+    &.icon-water  { background-image: url('/assets/icons/icon_water_selected.svg'); }
+    &.icon-earth  { background-image: url('/assets/icons/icon_earth_selected.svg'); }
+    &.icon-spirit { background-image: url('/assets/icons/icon_spirit_selected.svg'); }
   }
 }
 
-.landing-circle-label {
-  margin-top: 10px;
-  color: #505050;
+// Per-element border/accent colors — teal at start/middle/end, brown for
+// Earth, marigold for Energy (matches life-elements' brand ordering rule).
+@mixin element-color($property, $alpha: 1) {
+  &.color-teal     { #{$property}: rgba($water-color, $alpha); }
+  &.color-marigold { #{$property}: rgba($energy-color, $alpha); }
+  &.color-brown    { #{$property}: rgba($earth-color, $alpha); }
+}
+
+// ── Cards variant (home page) ───────────────────────────────────────────────
+.elements-intro {
   text-align: center;
-  cursor: pointer;
-  //transition: 0.8s;
+  margin: 0 0 1.75rem;
+  font-size: 0.95rem;
+  color: $dark-color;
+}
+
+.elements-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 20px;
+
+  @media (max-width: 991px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: 575px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.element-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  padding: 32px 16px;
+  border-radius: 20px;
+  background: $light-color;
+  border: 1.5px solid;
+  text-decoration: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  @include element-color(border-color, 0.55);
+
   &:hover {
-    color: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(43, 36, 32, 0.12);
+  }
+
+  &.active {
+    @include element-color(border-color, 1);
+    @include element-color(box-shadow, 0.22);
+    box-shadow: 0 12px 26px;
+  }
+
+  .element-icon {
+    @extend %element-icon-base;
+    width: 64px;
+    height: 64px;
+  }
+
+  .element-name {
+    font-family: 'Aleo', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: $dark-color;
+  }
+
+  .element-desc {
+    font-size: 14px;
+    line-height: 1.5;
+    color: $dark-color;
+    opacity: 0.68;
+  }
+}
+
+// ── Pills variant (element pages — compact switcher) ────────────────────────
+.elements-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  padding: 1rem 0 1.5rem;
+}
+
+.element-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px 8px 10px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  color: $dark-color;
+  text-decoration: none;
+  background: $light-color;
+  border: 1.5px solid;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  @include element-color(border-color, 1);
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &.active {
+    @include element-color(background-color, 1);
+    border-color: transparent;
+  }
+
+  .pill-icon {
+    @extend %element-icon-base;
+    width: 20px;
+    height: 20px;
   }
 }
 
 /* Using SCSS variables to store breakpoints */
-$breakpoint-desktop: 1024px;
 $breakpoint-tablet: 767px;
 
-@media (max-width: $breakpoint-desktop) {
-  .landing-circle-img {
-    height: 100px;
-    width: 100px;
-  }
-}
 @media (max-width: $breakpoint-tablet) {
-  .landing-circle-img {
-    height: 80px;
-    width: 80px;
+  .element-card {
+    padding: 24px 12px;
+
+    .element-icon {
+      width: 52px;
+      height: 52px;
+    }
   }
-  .landing-circle-label {
-    font-size: 100%;
-  }
+
   .wiof-read-more {
     display: none;
   }

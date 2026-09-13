@@ -7,7 +7,7 @@ import {
 } from '@angular/fire/compat/firestore';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { map } from 'rxjs/operators';
-import { from, Observable } from 'rxjs';
+import { forkJoin, from, Observable } from 'rxjs';
 import { FIREBASE_COLLECTION } from '../app.constants';
 import { AdminWriteGuardService } from './admin-write-guard.service';
 
@@ -44,6 +44,41 @@ export class EnvcalService {
           return data;
         })
       )
+    );
+  }
+
+  /**
+   * Returns the fixed-date occasions (annual observance days) that fall on
+   * `fromDate` and the day after it, for the home page's "Today's Events" /
+   * "Tomorrow's Events" agenda. EnvDay has no `year`, so this is inherently
+   * annual/fixed-date only — recurring (weekly/monthly) or one-time dated
+   * events aren't representable in this collection yet.
+   */
+  getUpcomingOccasions(
+    fromDate: Date = new Date()
+  ): Observable<{ today: EnvDay[]; tomorrow: EnvDay[] }> {
+    const tomorrowDate = new Date(fromDate);
+    tomorrowDate.setDate(fromDate.getDate() + 1);
+
+    const months = Array.from(
+      new Set([fromDate.getMonth(), tomorrowDate.getMonth()])
+    );
+
+    return forkJoin(months.map((month) => this.getEnvCal(month))).pipe(
+      map((monthResults) => {
+        const allDays = monthResults.reduce(
+          (acc, days) => acc.concat(days),
+          [] as EnvDay[]
+        );
+        const matching = (date: Date) =>
+          allDays.filter(
+            (d) => Number(d.day) === date.getDate() && d.month === date.getMonth()
+          );
+        return {
+          today: matching(fromDate),
+          tomorrow: matching(tomorrowDate)
+        };
+      })
     );
   }
 

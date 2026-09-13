@@ -8,12 +8,14 @@ import { Component, OnInit, HostListener } from '@angular/core';
 export class OnboardingOverlayComponent implements OnInit {
   visible = false;
 
+  // Same order, colors and taglines as life-elements.component.html and
+  // continue-journey-banner's ELEMENT_TAGLINES — one voice across the app.
   readonly elements = [
-    { name: 'Earth', description: 'Grounding practices for physical wellness', icon: 'leaf-outline', color: '#4caf50' },
-    { name: 'Water', description: 'Emotional balance and mental clarity', icon: 'water-outline', color: '#2196f3' },
-    { name: 'Air', description: 'Breathwork and mindfulness', icon: 'cloud-outline', color: '#90a4ae' },
-    { name: 'Energy', description: 'Vitality and sustainable living', icon: 'flash-outline', color: '#ff9800' },
-    { name: 'Spirit', description: 'Purpose, connection, and inner wisdom', icon: 'sparkles-outline', color: '#9c27b0' }
+    { name: 'Air', description: 'Moves. Connects. Carries change.', icon: 'cloud-outline', color: '#21999F' },
+    { name: 'Energy', description: 'Illuminates. Reveals. Activates action.', icon: 'flash-outline', color: '#FFC26F' },
+    { name: 'Water', description: 'Flows. Adapts. Sustains life.', icon: 'water-outline', color: '#21999F' },
+    { name: 'Earth', description: 'Grounds us. Connects us to place.', icon: 'leaf-outline', color: '#A6875D' },
+    { name: 'Spirit', description: 'Reflects. Expands. Deepens understanding.', icon: 'sparkles-outline', color: '#21999F' }
   ];
 
   readonly features = [

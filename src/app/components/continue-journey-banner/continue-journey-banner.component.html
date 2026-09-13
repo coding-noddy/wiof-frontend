@@ -1,0 +1,10 @@
+<div class="journey-banner">
+  <div class="journey-copy">
+    <p class="eyebrow">Continue the journey</p>
+    <h2>Next up: {{ nextElementLabel }}</h2>
+    <p class="tagline">{{ nextElementTagline }}</p>
+  </div>
+  <a [routerLink]="['/element', nextElement]" class="journey-cta">
+    <span>Explore {{ nextElementLabel }} →</span>
+  </a>
+</div>

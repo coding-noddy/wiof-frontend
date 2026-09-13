@@ -1,0 +1,88 @@
+<div class="journey-panel" *ngIf="isAuthenticated; else guestPanel">
+  <div class="journey-heading">
+    <div>
+      <p class="eyebrow">Welcome back</p>
+      <h2>Continue Your Journey</h2>
+    </div>
+    <a routerLink="/my-journey" class="journey-link">View My Journey →</a>
+  </div>
+
+  <div class="journey-cards" *ngIf="!isLoading; else journeyLoading">
+    <a
+      *ngIf="lastActivity as activity; else noActivity"
+      [routerLink]="activity.link"
+      class="journey-card"
+    >
+      <span class="eyebrow">{{ activity.type === 'blog' ? 'Pick up where you left off' : 'Keep exploring' }}</span>
+      <span class="card-title">{{ activity.title }}</span>
+      <span class="card-meta">{{ activity.type === 'blog' ? 'Last blog you read' : 'Last video you watched' }}</span>
+    </a>
+    <ng-template #noActivity>
+      <button class="journey-card journey-card-button" (click)="scrollToElements()">
+        <span class="eyebrow">New here</span>
+        <span class="card-title">Start with an element</span>
+        <span class="card-meta">Pick Air, Energy, Water, Earth or Spirit to begin</span>
+      </button>
+    </ng-template>
+
+    <a *ngIf="lastEqScore !== null; else noEq" routerLink="/my-journey" class="journey-card">
+      <span class="eyebrow">Your EQ Score</span>
+      <span class="card-title">{{ lastEqScore }}</span>
+      <span class="card-meta">See your trend on My Journey</span>
+    </a>
+    <ng-template #noEq>
+      <a routerLink="/element/water/eq-assessment" class="journey-card">
+        <span class="eyebrow">Your EQ Score</span>
+        <span class="card-title">Take the assessment</span>
+        <span class="card-meta">Find out where you stand today</span>
+      </a>
+    </ng-template>
+
+    <a routerLink="/my-saved" class="journey-card">
+      <span class="eyebrow">Your library</span>
+      <span class="card-title">{{ savedContentCount }} saved</span>
+      <span class="card-meta">Blogs and videos you've bookmarked to revisit</span>
+    </a>
+  </div>
+
+  <ng-template #journeyLoading>
+    <div class="journey-cards">
+      <div class="journey-card skeleton skeleton-card"></div>
+      <div class="journey-card skeleton skeleton-card"></div>
+      <div class="journey-card skeleton skeleton-card"></div>
+    </div>
+  </ng-template>
+</div>
+
+<ng-template #guestPanel>
+  <div class="guest-panel">
+    <div class="guest-copy">
+      <p class="eyebrow">Browsing as a guest</p>
+      <h2>Let WIOF remember your journey</h2>
+      <p class="guest-text">
+        Everything on this site is open to explore right now — no account needed. Sign in
+        whenever you're ready, and WIOF starts saving your progress: bookmarks, your EQ
+        history, and your streak.
+      </p>
+      <p class="guest-error" *ngIf="signInError">Sign-in failed. Please try again.</p>
+    </div>
+    <div class="guest-features">
+      <div class="guest-feature">
+        <ion-icon name="bookmark-outline"></ion-icon>
+        <span>Saved content</span>
+      </div>
+      <div class="guest-feature">
+        <ion-icon name="heart-outline"></ion-icon>
+        <span>EQ history</span>
+      </div>
+      <div class="guest-feature">
+        <ion-icon name="flash-outline"></ion-icon>
+        <span>Your streak</span>
+      </div>
+    </div>
+    <button class="wiof-primary-btn guest-signin" (click)="signIn()" [disabled]="signingIn">
+      <ion-spinner name="crescent" *ngIf="signingIn"></ion-spinner>
+      <span *ngIf="!signingIn">Sign In</span>
+    </button>
+  </div>
+</ng-template>

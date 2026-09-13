@@ -4,71 +4,123 @@
 
 <app-section-nav [sections]="pageSections" [element]="elementName"></app-section-nav>
 <ion-content>
-  <div class="page-container">
-
-    <!-- ── Banner ──────────────────────────────────────────────── -->
-    <div class="element-hero spirit">
-      <!-- <div class="hero-text">
-        <h1>Spirit</h1>
-        <p>Nurture your inner self — mindfulness, emotional intelligence, and self-love.</p>
-      </div> -->
+  <!-- ── Element switcher — breadcrumb + pills, above the hero ───────── -->
+  <div class="element-switcher-bar">
+    <div class="breadcrumb">
+      <a routerLink="/home">Five Elements</a>
+      <span class="sep">/</span>
+      <span class="current">Spirit</span>
     </div>
+    <app-life-elements [element]="elementName" variant="pills"></app-life-elements>
+  </div>
 
-    <app-life-elements [element]="elementName"></app-life-elements>
-<!-- ── Video + Widget ──────────────────────────────────────── -->
-        <section class="section-block" id="spirit-featured-video">
+  <!-- ── Banner — full-bleed, outside .page-container ───────────────── -->
+  <div class="element-hero spirit">
+    <svg class="hero-rays" viewBox="0 0 1440 360" preserveAspectRatio="none" aria-hidden="true">
+      <circle cx="1180" cy="120" r="40" stroke="var(--wiof-warm-white)" stroke-width="4" fill="none" opacity="0.22"/>
+      <circle cx="1180" cy="120" r="75" stroke="var(--wiof-warm-white)" stroke-width="4" fill="none" opacity="0.16"/>
+      <circle cx="1180" cy="120" r="115" stroke="var(--wiof-warm-white)" stroke-width="4" fill="none" opacity="0.1"/>
+      <circle cx="160" cy="300" r="30" stroke="var(--wiof-warm-white)" stroke-width="4" fill="none" opacity="0.14"/>
+      <circle cx="160" cy="300" r="58" stroke="var(--wiof-warm-white)" stroke-width="4" fill="none" opacity="0.08"/>
+    </svg>
+    <div class="hero-main">
+      <div class="hero-heading-row">
+        <span class="hero-icon icon-spirit"></span>
+        <div>
+          <h1>Spirit</h1>
+          <div class="hero-tagline">Reflects. Expands. Deepens understanding.</div>
+        </div>
+      </div>
+      <p class="hero-body">
+        Every other element asks what's around you. Spirit asks what's within you — the
+        attention, clarity, and steadiness that decide whether concern turns into lasting action.
+      </p>
+    </div>
+  </div>
+
+  <div class="page-container">
+    <!-- ── Learn + Explore: Video + Widget ──────────────────────── -->
+    <section class="section-block" id="spirit-featured-video">
       <div class="video-widget-row">
         <div class="video-col">
+          <p class="col-label">Learn — start here</p>
           <app-video-widget [element]="elementName"></app-video-widget>
         </div>
         <div class="widget-col">
+          <p class="col-label">Explore — see it in your world</p>
           <app-eq-widget></app-eq-widget>
         </div>
       </div>
     </section>
 
-    <!-- ── In Focus ─────────────────────────────────────────── -->
+    <!-- ── Take Action ──────────────────────────────────────── -->
+    <section class="section-block" id="spirit-take-action">
+      <app-element-take-action-teaser [element]="elementName"></app-element-take-action-teaser>
+    </section>
+
+    <!-- ── Go Deeper: In Focus ─────────────────────────────────── -->
     <section class="section-block" id="spirit-in-focus">
       <app-in-focus-widget
         [inFocuses]="this.inFocuses$ | async"
         [element]="elementName"
       ></app-in-focus-widget>
     </section>
-
-    <!-- ── Coffee Conversation ─────────────────────────────────── -->
-    <section
-      class="section-block"
-      id="spirit-conversations"
-      *ngIf="this.coffeeConversations$ | async as coffeeConversations"
-    >
-      <app-coffee-conversation
-        [element]="elementName"
-        [coffeeConvList]="coffeeConversations"
-      ></app-coffee-conversation>
-    </section>
-
-    <!-- ── Blogs ───────────────────────────────────────────────── -->
-    <section class="section-block" id="spirit-blogs">
-      <div class="section-header">
-        <h2>Blogs</h2>
-      </div>
-      <app-blog-slider
-        [blogList]="blogs$ | async"
-        [element]="elementName"
-      ></app-blog-slider>
-    </section>
-
-    <!-- ── Videos ──────────────────────────────────────────────── -->
-    <section class="section-block" id="spirit-videos" *ngIf="videos$ | async as videos">
-      <div class="section-header" *ngIf="videos.length > 0">
-        <h2>Videos</h2>
-      </div>
-      <app-video-slider
-        [videoList]="videos"
-        [element]="elementName"
-      ></app-video-slider>
-    </section>
-
   </div>
+
+  <!-- ── Reflect: Coffee Conversation. No EQ-assessment tie-in here — the
+       EQ assessment IS this page's own Explore widget, not a bridge to it. ── -->
+  <div
+    class="reflect-band"
+    id="spirit-conversations"
+    *ngIf="this.coffeeConversations$ | async as coffeeConversations"
+  >
+    <div class="section-header">
+      <p class="eyebrow">Reflect</p>
+      <h2>Coffee Conversations: Spirit</h2>
+    </div>
+    <div class="reflect-row">
+      <div class="reflect-conversation">
+        <app-coffee-conversation
+          [element]="elementName"
+          [coffeeConvList]="coffeeConversations"
+        ></app-coffee-conversation>
+      </div>
+      <div class="eq-tie-in">
+        <ion-icon name="trending-up-outline"></ion-icon>
+        <p>Already taken the assessment?</p>
+        <a routerLink="/my-journey">See your EQ trend in My Journey →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-container">
+    <!-- ── Keep Exploring: Blogs + Videos ──────────────────────── -->
+    <section class="section-block">
+      <div class="section-header">
+        <p class="eyebrow">Keep exploring</p>
+        <h2>More on Spirit</h2>
+      </div>
+      <div id="spirit-blogs">
+        <p class="keep-exploring-sub-label">Blogs</p>
+        <app-blog-slider
+          [blogList]="blogs$ | async"
+          [element]="elementName"
+        ></app-blog-slider>
+      </div>
+      <div id="spirit-videos" *ngIf="videos$ | async as videos">
+        <ng-container *ngIf="videos.length > 0">
+          <p class="keep-exploring-sub-label">Videos</p>
+          <app-video-slider
+            [videoList]="videos"
+            [element]="elementName"
+          ></app-video-slider>
+        </ng-container>
+      </div>
+    </section>
+
+    <!-- ── Continue The Journey ────────────────────────────────── -->
+    <app-continue-journey-banner [element]="elementName"></app-continue-journey-banner>
+  </div>
+
   <app-wiof-footer></app-wiof-footer>
 </ion-content>

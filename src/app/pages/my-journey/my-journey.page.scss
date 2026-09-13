@@ -1,14 +1,15 @@
 @import "../../wiof-custom-theming.scss";
 
 // ─── Design Tokens ────────────────────────────────────────────────────────────
-$card-radius: 12px;
-$glass-bg: rgba(255, 255, 255, 0.72);
+$card-radius: 18px;
+$glass-bg: var(--wiof-warm-white);
 $glass-blur: 12px;
-$card-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-$heading-color: #10263c;
-$body-color: #475569;
-$accent-color: #3b82f6;
-$streak-color: #f59e0b;
+$card-shadow: 0 14px 36px rgba(43, 36, 32, 0.12);
+$heading-color: var(--wiof-ink);
+$body-color: rgba(43, 36, 32, 0.68);
+$body-color-light: rgba(43, 36, 32, 0.48);
+$accent-color: var(--wiof-teal);
+$streak-color: var(--wiof-marigold);
 
 .my-journey-page {
   padding: 1rem;
@@ -25,11 +26,41 @@ $streak-color: #f59e0b;
   text-align: center;
   margin-bottom: 1.5rem;
 
+  .page-eyebrow {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--wiof-teal);
+    margin: 0 0 0.3rem;
+  }
+
   .page-title {
     font-size: 1.75rem;
     font-weight: 800;
     color: $heading-color;
     margin: 0 0 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .streak-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--wiof-marigold-shade-20);
+    background: rgba(255, 194, 111, 0.16);
+    border-radius: 999px;
+    padding: 4px 12px;
+
+    ion-icon {
+      font-size: 0.9rem;
+    }
   }
 
   .page-subtitle {
@@ -50,7 +81,7 @@ $streak-color: #f59e0b;
   -webkit-backdrop-filter: blur($glass-blur);
   border-radius: $card-radius;
   box-shadow: $card-shadow;
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1.5px solid var(--wiof-brown-tint-40);
   border-top: 3px solid transparent;
   padding: 1rem;
   text-align: center;
@@ -86,7 +117,7 @@ $streak-color: #f59e0b;
     .metric-date {
       display: block;
       font-size: 0.7rem;
-      color: lighten($body-color, 15%);
+      color: $body-color-light;
       margin-top: 0.15rem;
     }
   }
@@ -99,47 +130,24 @@ $streak-color: #f59e0b;
     opacity: 0.7;
   }
 
-  // ─── Per-card accent colors ─────────────────────────
-  &.blogs-card {
-    border-top-color: #3b82f6;
-    cursor: pointer;
-    .metric-icon { color: #3b82f6; }
-    .metric-value { color: #2563eb; }
-  }
-
-  &.videos-card {
-    border-top-color: #8b5cf6;
-    cursor: pointer;
-    .metric-icon { color: #8b5cf6; }
-    .metric-value { color: #7c3aed; }
-  }
-
-  &.polls-card {
-    border-top-color: #10b981;
-    cursor: pointer;
-    .metric-icon { color: #10b981; }
-    .metric-value { color: #059669; }
-  }
-
-  &.eq-card {
-    border-top-color: #f43f5e;
-    cursor: pointer;
-    .metric-icon { color: #f43f5e; }
-    .metric-value { color: #e11d48; }
-  }
-
+  // ─── Per-card accent — one brand teal accent for every metric, not a
+  // different off-brand hue per card ──────────────────────────────────
+  &.blogs-card,
+  &.videos-card,
+  &.polls-card,
+  &.eq-card,
   &.saved-metric-card {
-    border-top-color: #f59e0b;
+    border-top-color: var(--wiof-teal);
     cursor: pointer;
-    .metric-icon { color: #f59e0b; }
-    .metric-value { color: #d97706; }
+    .metric-icon { color: var(--wiof-teal); }
+    .metric-value { color: var(--wiof-teal-shade-20); }
   }
 
   &.streak-card {
-    border-top-color: #f97316;
+    border-top-color: var(--wiof-marigold);
     cursor: default;
-    .metric-icon { color: #f97316; }
-    .metric-value { color: #ea580c; }
+    .metric-icon { color: var(--wiof-marigold); }
+    .metric-value { color: var(--wiof-marigold-shade-20); }
   }
 }
 
@@ -163,7 +171,7 @@ $streak-color: #f59e0b;
   -webkit-backdrop-filter: blur($glass-blur);
   border-radius: $card-radius;
   box-shadow: $card-shadow;
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1.5px solid var(--wiof-brown-tint-40);
   padding: 0.75rem;
   text-decoration: none;
   color: inherit;
@@ -182,7 +190,7 @@ $streak-color: #f59e0b;
   overflow: hidden;
   flex-shrink: 0;
   position: relative;
-  background: #e2e8f0;
+  background: var(--wiof-ivory);
 
   img {
     width: 100%;
@@ -196,7 +204,7 @@ $streak-color: #f59e0b;
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 1.5rem;
-    color: #94a3b8;
+    color: var(--wiof-warm-grey);
   }
 }
 
@@ -224,20 +232,16 @@ $streak-color: #f59e0b;
     border-radius: 4px;
     display: inline-block;
 
-    &.blog {
-      background: rgba(59, 130, 246, 0.1);
-      color: $accent-color;
-    }
-
+    &.blog,
     &.video {
-      background: rgba(139, 92, 246, 0.1);
-      color: #8b5cf6;
+      background: rgba(33, 153, 159, 0.1);
+      color: $accent-color;
     }
   }
 }
 
 .saved-card-arrow {
-  color: #94a3b8;
+  color: var(--wiof-warm-grey);
   font-size: 1.1rem;
   flex-shrink: 0;
 }
@@ -249,7 +253,7 @@ $streak-color: #f59e0b;
 
   ion-icon {
     font-size: 3rem;
-    color: #cbd5e1;
+    color: var(--wiof-warm-grey);
     margin-bottom: 0.75rem;
   }
 
@@ -288,7 +292,7 @@ $streak-color: #f59e0b;
 
   ion-icon {
     font-size: 3rem;
-    color: #f87171;
+    color: var(--ion-color-danger);
     margin-bottom: 0.75rem;
   }
 
@@ -313,7 +317,7 @@ $streak-color: #f59e0b;
     transition: background 0.2s ease;
 
     &:hover {
-      background: darken($accent-color, 8%);
+      background: var(--wiof-teal-shade-20);
     }
   }
 }
@@ -352,7 +356,7 @@ $streak-color: #f59e0b;
   -webkit-backdrop-filter: blur($glass-blur);
   border-radius: $card-radius;
   box-shadow: $card-shadow;
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1.5px solid var(--wiof-brown-tint-40);
   padding: 1.25rem;
 
   .section-title {
@@ -417,7 +421,7 @@ $streak-color: #f59e0b;
   transition: background 0.2s ease;
 
   &:hover {
-    background: darken($accent-color, 8%);
+    background: var(--wiof-teal-shade-20);
   }
 }
 
@@ -428,7 +432,7 @@ $streak-color: #f59e0b;
 
   ion-icon {
     font-size: 2rem;
-    color: #cbd5e1;
+    color: var(--wiof-warm-grey);
     margin-bottom: 0.5rem;
   }
 
@@ -458,7 +462,7 @@ $streak-color: #f59e0b;
 
   ion-icon {
     font-size: 2.5rem;
-    color: #f87171;
+    color: var(--ion-color-danger);
     margin-bottom: 0.5rem;
   }
 
@@ -488,7 +492,7 @@ $streak-color: #f59e0b;
     }
 
     &:hover {
-      background: darken($accent-color, 8%);
+      background: var(--wiof-teal-shade-20);
     }
   }
 }
@@ -507,7 +511,7 @@ $streak-color: #f59e0b;
     background: rgba(0, 0, 0, 0.03);
 
     &.highlight {
-      background: rgba($accent-color, 0.08);
+      background: rgba(33, 153, 159, 0.08);
 
       .quality-metric-value {
         color: $accent-color;
@@ -581,7 +585,7 @@ $streak-color: #f59e0b;
       color: $body-color;
 
       &.voted {
-        background: rgba($accent-color, 0.1);
+        background: rgba(33, 153, 159, 0.1);
         color: $accent-color;
         font-weight: 600;
       }
@@ -589,7 +593,7 @@ $streak-color: #f59e0b;
 
     .meta-date {
       font-size: 0.72rem;
-      color: lighten($body-color, 15%);
+      color: $body-color-light;
     }
   }
 }
@@ -609,7 +613,7 @@ $streak-color: #f59e0b;
 .eq-score-card {
   text-align: center;
   padding: 1.25rem 1rem;
-  background: rgba($accent-color, 0.04);
+  background: rgba(33, 153, 159, 0.04);
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -638,7 +642,7 @@ $streak-color: #f59e0b;
 
   .eq-score-date {
     font-size: 0.72rem;
-    color: lighten($body-color, 15%);
+    color: $body-color-light;
     margin-top: 0.15rem;
   }
 }
@@ -658,13 +662,13 @@ $streak-color: #f59e0b;
   }
 
   &.trend-up {
-    background: rgba(34, 197, 94, 0.1);
-    color: #16a34a;
+    background: rgba(45, 211, 111, 0.12);
+    color: var(--ion-color-success);
   }
 
   &.trend-down {
-    background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
+    background: rgba(235, 68, 90, 0.1);
+    color: var(--ion-color-danger);
   }
 
   &.trend-neutral {
@@ -700,7 +704,7 @@ $streak-color: #f59e0b;
     justify-content: space-between;
     padding-top: 0.3rem;
     font-size: 0.65rem;
-    color: lighten($body-color, 20%);
+    color: $body-color-light;
   }
 }
 
@@ -755,15 +759,15 @@ $streak-color: #f59e0b;
   background: $accent-color;
 
   &.attention {
-    background: #8b5cf6;
+    background: var(--wiof-teal);
   }
 
   &.clarity {
-    background: #06b6d4;
+    background: var(--wiof-brown);
   }
 
   &.reparation {
-    background: #f59e0b;
+    background: var(--wiof-marigold);
   }
 }
 
@@ -778,7 +782,7 @@ $streak-color: #f59e0b;
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: rgba($accent-color, 0.1);
+    background: rgba(33, 153, 159, 0.1);
     color: $accent-color;
     font-size: 0.82rem;
     font-weight: 700;
@@ -843,5 +847,5 @@ $streak-color: #f59e0b;
 }
 
 ion-content {
-  --background: #f4f7fb;
+  --background: var(--wiof-ivory);
 }

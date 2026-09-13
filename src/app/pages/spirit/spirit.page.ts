@@ -30,6 +30,7 @@ export class SpiritPage implements OnInit {
 
   pageSections: SectionNavItem[] = [
     { label: 'Featured', sectionId: 'spirit-featured-video' },
+    { label: 'Take Action', sectionId: 'spirit-take-action' },
     { label: 'In Focus', sectionId: 'spirit-in-focus' },
     { label: 'Conversations', sectionId: 'spirit-conversations' },
     { label: 'Blogs', sectionId: 'spirit-blogs' },

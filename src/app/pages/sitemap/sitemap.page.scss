@@ -1,0 +1,12 @@
+@import '../../wiof-custom-theming.scss';
+
+ion-content {
+  --background: var(--wiof-ivory);
+}
+
+.sitemap-title {
+  padding: 0 1.25rem;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--wiof-ink);
+}

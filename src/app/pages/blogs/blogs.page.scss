@@ -1,36 +1,38 @@
 @import '../../wiof-custom-theming.scss';
+@import '../_element-page-shared.scss';
 
 ion-content {
-  --background: #f4f7fb;
+  --background: var(--wiof-ivory);
 }
 
 .blogs-page {
   min-height: 100vh;
 }
 
-// ── Header ───────────────────────────────────────────────────────
+// ── Header — plain, non-sticky, no per-element color block ───────
 .blogs-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+  background: var(--wiof-warm-white);
+  border-bottom: 1.5px solid #EDE4D3;
 
-  &.air    { background-color: $air-color; }
-  &.earth  { background-color: $earth-color; }
-  &.water  { background-color: $water-color; }
-  &.energy { background-color: $energy-color; }
-  &.spirit { background-color: $spirit-color; }
+  @media (min-width: 768px) {
+    padding: 2rem 6vw;
+  }
 }
 
 .header-title {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: $dark-color;
+  font-size: 1.5rem;
+  font-weight: 800;
+  font-family: 'Aleo', serif;
+  color: var(--wiof-ink);
   margin: 0;
+
+  @media (min-width: 768px) {
+    font-size: 2rem;
+  }
 }
 
 .header-actions {
@@ -46,17 +48,17 @@ ion-content {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  background: rgba(255, 255, 255, 0.6);
-  color: $dark-color;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  background: var(--wiof-ivory);
+  color: var(--wiof-ink);
   text-decoration: none;
   transition: background 0.15s ease, box-shadow 0.15s ease;
 
   ion-icon { font-size: 1.1rem; }
 
   &:hover {
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    background: var(--wiof-warm-white);
+    box-shadow: 0 2px 6px rgba(43, 36, 32, 0.08);
   }
 }
 
@@ -93,7 +95,7 @@ ion-content {
   justify-content: center;
   gap: 0.5rem;
   padding: 3rem 1rem;
-  color: rgba(0, 0, 0, 0.4);
+  color: rgba(43, 36, 32, 0.45);
 
   ion-icon {
     font-size: 2.5rem;

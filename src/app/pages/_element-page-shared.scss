@@ -8,7 +8,7 @@ $page-padding-mobile:  16px;
 
 // ── Page background ───────────────────────────────────────────────────────────
 ion-content {
-  --background: #f4f7fb;
+  --background: var(--wiof-ivory);
 }
 
 // ── Content wrapper ───────────────────────────────────────────────────────────
@@ -20,97 +20,167 @@ ion-content {
   }
 }
 
-// ── Element banner / hero ─────────────────────────────────────────────────────
-.element-hero {
-  border-radius: 18px;
-  overflow: hidden;
-  position: relative;
-  min-height: 260px;
+// ── Element switcher bar — breadcrumb + pills, above the hero ────────────────
+.element-switcher-bar {
+  width: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 1.2rem;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.1rem 1.25rem;
+  background: var(--wiof-warm-white);
+  border-top: 1.5px solid #EDE4D3;
+  border-bottom: 1.5px solid #EDE4D3;
 
-  // Overlay
-  &::before {
-    content: '';
+  @media (min-width: 768px) {
+    padding: 1.1rem 6vw;
+  }
+
+  .breadcrumb {
+    font-size: 0.9rem;
+    color: var(--wiof-ink);
+
+    a {
+      color: var(--wiof-ink);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .sep {
+      margin: 0 0.5rem;
+      opacity: 0.5;
+    }
+
+    .current {
+      font-weight: 700;
+    }
+  }
+
+  .elements-pills {
+    padding: 0;
+    justify-content: flex-end;
+  }
+}
+
+// ── Element banner / hero ─────────────────────────────────────────────────────
+// Full-bleed flat brand-color band (no photo, no card/border) — matches the
+// mockup exactly: solid element color, ink text throughout, icon badge next
+// to the heading, decorative low-opacity line/circle motif behind.
+.element-hero {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding: 2.5rem 1.25rem;
+  margin-bottom: 1.5rem;
+  color: var(--wiof-ink);
+
+  @media (min-width: 768px) {
+    padding: 4rem 6vw 3.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  &.air, &.water, &.spirit { background: var(--wiof-teal); }
+  &.energy                 { background: var(--wiof-marigold); }
+  &.earth                  { background: var(--wiof-brown); }
+
+  .hero-rays {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      180deg,
-      rgba(0, 0, 0, 0.38) 0%,
-      rgba(0, 0, 0, 0.12) 50%,
-      rgba(0, 0, 0, 0.42) 100%
-    );
-    border-radius: 18px;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
   }
 
-  .hero-text {
+  .hero-main {
     position: relative;
     z-index: 1;
-    text-align: center;
-    color: #fff;
-    padding: 1.5rem 1rem;
+    max-width: 760px;
+  }
 
-    h1 {
-      font-size: 2rem;
-      font-weight: 800;
-      text-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-      margin: 0 0 0.4rem;
-      line-height: 1.15;
+  .hero-heading-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
 
-      @media (min-width: 768px) {
-        font-size: 2.6rem;
-      }
-    }
+  .hero-icon {
+    flex-shrink: 0;
+    width: 72px;
+    height: 72px;
+    background-repeat: no-repeat;
+    background-size: 100%;
 
-    p {
-      margin: 0;
-      font-size: 0.95rem;
-      color: rgba(255, 255, 255, 0.9);
-      max-width: 600px;
-      margin: 0 auto;
-      line-height: 1.6;
+    &.icon-air    { background-image: url('/assets/icons/icon_air.svg'); }
+    &.icon-energy { background-image: url('/assets/icons/icon_energy.svg'); }
+    &.icon-water  { background-image: url('/assets/icons/icon_water.svg'); }
+    &.icon-earth  { background-image: url('/assets/icons/icon_earth.svg'); }
+    &.icon-spirit { background-image: url('/assets/icons/icon_spirit.svg'); }
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: var(--wiof-ink);
+    line-height: 1.1;
+
+    @media (min-width: 768px) {
+      font-size: 2.6rem;
     }
   }
 
-  // Per-element backgrounds
-  &.earth { background-image: url('/assets/banners/Earth_Banner.jpg'); }
-  &.water { background-image: url('/assets/banners/water_banner.jpg'); }
-  &.air   { background-image: url('/assets/banners/air_banner.jpg'); }
-  &.energy { background-image: url('/assets/banners/Energy_Banner.jpg'); }
-  &.spirit { background-image: url('/assets/banners/spirit_banner.jpg'); }
+  .hero-tagline {
+    margin-top: 4px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--wiof-ink);
+  }
+
+  .hero-body {
+    margin: 1.1rem 0 0;
+    max-width: 560px;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--wiof-ink);
+  }
 }
 
 // ── Section blocks ────────────────────────────────────────────────────────────
 .section-block {
-  margin-top: 1rem;
-  padding: 0.9rem 0;
+  margin-top: 3rem;
+  padding: 0.8rem 0 0.2rem;
 }
 
 .section-header {
-  margin-bottom: 0.8rem;
+  margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 0.15rem;
+  gap: 0.4rem;
+  padding: 0.25rem 0;
 
   h2 {
     margin: 0;
-    font-size: 1.6rem;
+    font-size: 1.75rem;
     font-weight: 800;
-    color: #102f58;
-    letter-spacing: -0.02em;
+    color: var(--wiof-ink);
+    letter-spacing: -0.03em;
+    font-family: "Aleo", serif;
+
+    @media (min-width: 768px) {
+      font-size: 2rem;
+    }
   }
 
   p {
     margin: 0;
-    color: #4a5975;
+    color: var(--wiof-ink);
+    opacity: 0.75;
     font-size: 0.9rem;
   }
 }
@@ -180,6 +250,112 @@ ion-row + ion-row {
   }
 }
 
+// ── "Learn / Explore" column labels above the video+widget row ───────────────
+.col-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wiof-teal);
+  margin-bottom: 0.6rem;
+}
+
+// ── Reflect band — full-bleed teal wrapper around Coffee Conversation ────────
+.reflect-band {
+  width: 100%;
+  background: var(--wiof-teal);
+  padding: 2.5rem 1.25rem;
+
+  @media (min-width: 768px) {
+    padding: 3.5rem 6vw;
+  }
+
+  .section-header {
+    align-items: flex-start;
+    text-align: left;
+    margin-bottom: 1.5rem;
+
+    h2, p.eyebrow {
+      color: var(--wiof-ink);
+    }
+
+    p.eyebrow {
+      opacity: 0.75;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin: 0 0 0.4rem;
+    }
+  }
+
+  .reflect-row {
+    display: flex;
+    gap: 2rem;
+    align-items: stretch;
+    flex-wrap: wrap;
+
+    > .reflect-conversation {
+      flex: 1 1 480px;
+      min-width: 0;
+    }
+  }
+
+  .eq-tie-in {
+    flex: 0 0 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    align-items: flex-start;
+    justify-content: center;
+    padding-left: 2rem;
+    border-left: 1.5px solid rgba(43, 36, 32, 0.2);
+    color: var(--wiof-ink);
+
+    ion-icon {
+      font-size: 1.9rem;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    a {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--wiof-ink);
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  @media (max-width: 767px) {
+    .eq-tie-in {
+      padding-left: 0;
+      border-left: none;
+      padding-top: 1.25rem;
+      border-top: 1.5px solid rgba(43, 36, 32, 0.2);
+    }
+  }
+}
+
+// ── Keep Exploring — shared wrapper around Blogs + Videos ────────────────────
+.keep-exploring-sub-label {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--wiof-ink);
+  margin: 0 0 0.75rem;
+
+  &:not(:first-child) {
+    margin-top: 1.75rem;
+  }
+}
+
 // ── Footer spacing ───────────────────────────────────────────────────────────
 app-wiof-footer {
   margin-top: 2.5rem;
@@ -199,6 +375,7 @@ app-wiof-footer {
 
   // Consistent section spacing on mobile
   .section-block {
+    margin-top: 2rem;
     margin-bottom: 1rem;
   }
 

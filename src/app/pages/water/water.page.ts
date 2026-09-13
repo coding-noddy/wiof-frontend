@@ -30,6 +30,7 @@ export class WaterPage implements OnInit {
 
   pageSections: SectionNavItem[] = [
     { label: 'Featured', sectionId: 'water-featured-video' },
+    { label: 'Take Action', sectionId: 'water-take-action' },
     { label: 'In Focus', sectionId: 'water-in-focus' },
     { label: 'Conversations', sectionId: 'water-conversations' },
     { label: 'Blogs', sectionId: 'water-blogs' },

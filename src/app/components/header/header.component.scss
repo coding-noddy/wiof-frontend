@@ -5,9 +5,9 @@ $mobile-breakpoint: 768px;
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: #fffaf0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  background: var(--wiof-warm-white);
+  border-bottom: 1.5px solid var(--wiof-brown-tint-40);
+  box-shadow: 0 2px 12px rgba(43, 36, 32, 0.06);
 }
 
 .header-inner {
@@ -62,15 +62,15 @@ $mobile-breakpoint: 768px;
   padding: 8px 16px;
   font-size: 0.88rem;
   font-weight: 600;
-  color: #334155;
+  color: var(--wiof-ink);
   text-decoration: none;
   border-radius: 8px;
   transition: background 0.15s ease, color 0.15s ease;
   letter-spacing: -0.01em;
 
   &:hover {
-    background: rgba(101, 175, 222, 0.1);
-    color: #1a6fb5;
+    background: var(--wiof-ivory);
+    color: var(--wiof-teal);
   }
 }
 
@@ -79,24 +79,24 @@ $mobile-breakpoint: 768px;
   padding: 9px 20px;
   font-size: 0.85rem;
   font-weight: 700;
-  color: #ffffff;
-  background: #1a6fb5;
+  color: var(--wiof-ink);
+  background: var(--wiof-marigold);
   border: none;
   border-radius: 999px;
   cursor: pointer;
   margin-left: 12px;
   transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
-  box-shadow: 0 2px 8px rgba(26, 111, 181, 0.25);
+  box-shadow: 0 2px 8px rgba(166, 135, 93, 0.25);
 
   &:hover:not(:disabled) {
-    background: #145c99;
+    background: var(--wiof-marigold-shade-20);
     transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(26, 111, 181, 0.35);
+    box-shadow: 0 4px 14px rgba(166, 135, 93, 0.35);
   }
 
   &:active:not(:disabled) {
     transform: translateY(0);
-    box-shadow: 0 1px 4px rgba(26, 111, 181, 0.2);
+    box-shadow: 0 1px 4px rgba(166, 135, 93, 0.2);
   }
 
   &:disabled {
@@ -116,8 +116,8 @@ $mobile-breakpoint: 768px;
   display: inline-block;
   width: 13px;
   height: 13px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: #ffffff;
+  border: 2px solid rgba(43, 36, 32, 0.3);
+  border-top-color: var(--wiof-ink);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
@@ -137,7 +137,7 @@ $mobile-breakpoint: 768px;
   border-radius: 10px;
   align-items: center;
   justify-content: center;
-  color: #334155;
+  color: var(--wiof-ink);
   transition: background 0.15s ease;
 
   ion-icon {
@@ -145,7 +145,7 @@ $mobile-breakpoint: 768px;
   }
 
   &:hover {
-    background: rgba(0, 0, 0, 0.04);
+    background: var(--wiof-ivory);
   }
 
   @media (max-width: $mobile-breakpoint - 1) {
@@ -180,7 +180,7 @@ $mobile-breakpoint: 768px;
   padding: 13px 1.5rem;
   font-size: 0.92rem;
   font-weight: 600;
-  color: #334155;
+  color: var(--wiof-ink);
   text-decoration: none;
   border: none;
   background: transparent;
@@ -191,7 +191,7 @@ $mobile-breakpoint: 768px;
   letter-spacing: -0.01em;
 
   &:hover {
-    background: rgba(59, 130, 246, 0.05);
+    background: var(--wiof-ivory);
   }
 }
 
@@ -200,7 +200,7 @@ $mobile-breakpoint: 768px;
   padding: 13px 1.5rem;
   font-size: 0.92rem;
   font-weight: 700;
-  color: #2563eb;
+  color: var(--wiof-teal);
   background: transparent;
   border: none;
   width: 100%;
@@ -208,12 +208,12 @@ $mobile-breakpoint: 768px;
   cursor: pointer;
 
   &:hover {
-    background: rgba(59, 130, 246, 0.05);
+    background: var(--wiof-ivory);
   }
 }
 
 .mobile-logout {
-  color: #dc2626;
+  color: var(--ion-color-danger);
 }
 
 // ── Avatar dropdown alignment ─────────────────────────────────────────────────

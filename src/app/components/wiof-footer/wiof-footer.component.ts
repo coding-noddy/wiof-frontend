@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { SubscribePanelService } from 'src/app/services/subscribe-panel.service';
 
 declare const require: any;
 
@@ -12,9 +13,14 @@ export class WiofFooterComponent implements OnInit {
   currentYear = new Date().getFullYear();
   appVersion: string = require('../../../../package.json').version;
   envLabel = environment.production ? 'prod' : 'staging';
+  wiofLogo = '../../../assets/logo.png';
 
-  constructor() {}
+  constructor(private subscribePanel: SubscribePanelService) {}
 
   ngOnInit() {}
+
+  openNewsletter(): void {
+    this.subscribePanel.open();
+  }
 }
 

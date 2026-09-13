@@ -30,6 +30,7 @@ export class EarthPage implements OnInit {
 
   pageSections: SectionNavItem[] = [
     { label: 'Featured', sectionId: 'earth-featured-video' },
+    { label: 'Take Action', sectionId: 'earth-take-action' },
     { label: 'In Focus', sectionId: 'earth-in-focus' },
     { label: 'Conversations', sectionId: 'earth-conversations' },
     { label: 'Blogs', sectionId: 'earth-blogs' },

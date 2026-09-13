@@ -1,0 +1,74 @@
+@import '../../wiof-custom-theming.scss';
+
+.take-action-teaser {
+  padding: 1.75rem 0;
+}
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--wiof-brown);
+}
+
+h2 {
+  margin: 0 0 1.4rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--wiof-ink);
+}
+
+.teaser-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.1rem;
+}
+
+.teaser-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.3rem;
+  background: var(--wiof-warm-white);
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  border-radius: 16px;
+  text-decoration: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+
+  ion-icon {
+    font-size: 1.6rem;
+    color: var(--wiof-teal);
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(43, 36, 32, 0.1);
+  }
+}
+
+.teaser-heading {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--wiof-ink);
+}
+
+.teaser-desc {
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--wiof-ink);
+  opacity: 0.72;
+}
+
+@media (max-width: 991px) {
+  .teaser-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 575px) {
+  .teaser-grid {
+    grid-template-columns: 1fr;
+  }
+}

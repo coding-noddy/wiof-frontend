@@ -2,18 +2,18 @@
 
 // ─── Design Tokens ────────────────────────────────────────────────────────────
 $card-radius: 18px;
-$glass-bg: rgba(255, 255, 255, 0.55);
+$glass-bg: var(--wiof-warm-white);
 $glass-blur: 14px;
-$card-shadow: 0 8px 28px rgba(16, 38, 60, 0.08);
-$card-border: 1px solid rgba(255, 255, 255, 0.6);
-$heading-color: #10263c;
-$body-color: #475569;
-$accent-color: #3b82f6;
-$accent-color-dark: #2563eb;
+$card-shadow: 0 14px 36px rgba(43, 36, 32, 0.12);
+$card-border: 1.5px solid var(--wiof-brown-tint-40);
+$heading-color: var(--wiof-ink);
+$body-color: rgba(43, 36, 32, 0.68);
+$accent-color: var(--wiof-teal);
+$accent-color-dark: var(--wiof-teal-shade-20);
 
 // ─── Page Background ──────────────────────────────────────────────────────────
 ion-content {
-  --background: linear-gradient(180deg, #eef3fb 0%, #f4f7fb 260px, #f4f7fb 100%);
+  --background: var(--wiof-ivory);
 }
 
 // ─── Page Heading ─────────────────────────────────────────────────────────────
@@ -21,6 +21,15 @@ ion-content {
   margin: 0.25rem 0 1.25rem;
   padding: 0 0.25rem;
   text-align: center;
+
+  .settings-eyebrow {
+    margin: 0 0 0.35rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--wiof-teal);
+  }
 
   h1 {
     margin: 0;
@@ -42,20 +51,13 @@ ion-content {
   padding: 1rem;
   max-width: 100%;
   margin: 0 auto;
-  font-family: 'Roboto', sans-serif;
   font-size: 1rem;
   color: var(--ion-text-color, $body-color);
   overflow-x: hidden;
 
-  // Tablet (768px–1023px): centered card with max-width
+  // Tablet and up: centered card, consistent 680px cap per brand spec
   @media (min-width: 768px) {
     max-width: 680px;
-    padding: 1.5rem;
-  }
-
-  // Desktop (≥1024px): centered card with narrower max-width
-  @media (min-width: 1024px) {
-    max-width: 560px;
     padding: 2rem;
   }
 }
@@ -130,7 +132,7 @@ ion-content {
   margin-bottom: 1rem;
   border-radius: 50%;
   padding: 3px;
-  background: linear-gradient(135deg, #60a5fa, #3b82f6 55%, #6366f1);
+  background: var(--wiof-teal);
 }
 
 .avatar-preview {
@@ -145,7 +147,7 @@ ion-content {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #60a5fa, #3b82f6);
+    background: var(--wiof-teal);
     color: #fff;
     font-size: 2.1rem;
     font-weight: 700;
@@ -205,7 +207,7 @@ ion-content {
   &--primary {
     --background: #{$accent-color};
     --background-hover: #{$accent-color-dark};
-    --box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+    --box-shadow: 0 4px 12px rgba(33, 153, 159, 0.35);
   }
 
   ion-icon {
@@ -276,6 +278,67 @@ ion-content {
   }
 }
 
+// ─── Preferred Elements (pill toggles) ────────────────────────────────────────
+.preferred-elements-field {
+  margin-bottom: 0.75rem;
+}
+
+.preferred-elements-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ion-color-medium, $body-color);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.6rem;
+
+  ion-icon {
+    color: $accent-color;
+    font-size: 1.15rem;
+  }
+}
+
+.element-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.element-toggle-pill {
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--wiof-ink);
+  background: var(--wiof-warm-white);
+  border: 1.5px solid;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+
+  &.color-teal     { border-color: var(--wiof-teal); }
+  &.color-marigold { border-color: var(--wiof-marigold); }
+  &.color-brown    { border-color: var(--wiof-brown); }
+
+  &.active {
+    color: var(--wiof-ink);
+
+    &.color-teal     { background: var(--wiof-teal); }
+    &.color-marigold { background: var(--wiof-marigold); }
+    &.color-brown    { background: var(--wiof-brown); color: var(--wiof-warm-white); }
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
 // ─── Section Titles (within form card) ────────────────────────────────────────
 .section-title {
   display: flex;
@@ -303,26 +366,30 @@ ion-content {
 // ─── Save Button ──────────────────────────────────────────────────────────────
 .save-button {
   margin-top: 1.25rem;
-  --border-radius: 10px;
-  --background: linear-gradient(135deg, #{$accent-color}, #{$accent-color-dark});
-  --box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
-  font-weight: 600;
+  --border-radius: 999px;
+  --background: var(--wiof-marigold);
+  --background-hover: var(--wiof-marigold-shade-20);
+  --color: var(--wiof-ink);
+  --box-shadow: 0 6px 16px rgba(166, 135, 93, 0.3);
+  font-weight: 700;
   font-size: 0.95rem;
-  font-family: 'Roboto', sans-serif;
 }
 
 // ─── Sign-Out Button ──────────────────────────────────────────────────────────
 .sign-out-button {
   margin-top: 1.25rem;
-  --border-radius: 10px;
+  --border-radius: 999px;
+  --border-color: var(--wiof-teal);
+  --color: var(--wiof-teal);
   font-weight: 600;
   font-size: 0.95rem;
-  font-family: 'Roboto', sans-serif;
 }
 
+// A deliberately calm brown-bordered card, not an alarming red one — the
+// action here needs a confirmation modal, not a permanently "hot" card.
 .glassmorphism-card--danger {
-  background: rgba(254, 242, 242, 0.65);
-  border: 1px solid rgba(220, 38, 38, 0.15);
+  background: var(--wiof-warm-white);
+  border: 2px solid var(--wiof-brown);
 }
 
 .reset-data-section {
@@ -334,7 +401,7 @@ ion-content {
     align-items: center;
     gap: 0.4rem;
     margin: 0 0 0.5rem;
-    color: #991b1b;
+    color: var(--wiof-brown);
     font-size: 0.95rem;
     font-weight: 700;
     text-transform: uppercase;

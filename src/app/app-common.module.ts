@@ -20,6 +20,7 @@ import { FoodPhIndicatorComponent } from './components/food-ph-indicator/food-ph
 import { HeaderComponent } from './components/header/header.component';
 import { LifeElementsComponent } from './components/life-elements/life-elements.component';
 import { EnvCalenderComponent } from './components/env-calender/env-calender.component';
+import { EnvCalendarAgendaComponent } from './components/env-calendar-agenda/env-calendar-agenda.component';
 import { PollResultComponent } from './components/poll-result/poll-result.component';
 import { PollsWidgetComponent } from './components/polls-widget/polls-widget.component';
 import { SubscribeComponent } from './components/subscribe/subscribe.component';
@@ -38,6 +39,9 @@ import { InFocusWidgetComponent } from './components/in-focus-widget/in-focus-wi
 import { SectionNavComponent } from './components/section-nav/section-nav.component';
 import { AvatarDropdownComponent } from './components/avatar-dropdown/avatar-dropdown.component';
 import { BookmarkIconComponent } from './components/bookmark-icon/bookmark-icon.component';
+import { HomeJourneyPanelComponent } from './components/home-journey-panel/home-journey-panel.component';
+import { ElementTakeActionTeaserComponent } from './components/element-take-action-teaser/element-take-action-teaser.component';
+import { ContinueJourneyBannerComponent } from './components/continue-journey-banner/continue-journey-banner.component';
 import { BlogReadTrackerDirective } from './directives/blog-read-tracker.directive';
 import { YoutubeWatchTrackerDirective } from './directives/youtube-watch-tracker.directive';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -52,6 +56,7 @@ const COMPONENTS = [
   ConcentPopupComponent,
   ElementWelcomeImageComponent,
   EnvCalenderComponent,
+  EnvCalendarAgendaComponent,
   AqiWidgetComponent,
   SubscribeComponent,
   WaterWidgetComponent,
@@ -79,6 +84,9 @@ const COMPONENTS = [
   SectionNavComponent,
   AvatarDropdownComponent,
   BookmarkIconComponent,
+  HomeJourneyPanelComponent,
+  ElementTakeActionTeaserComponent,
+  ContinueJourneyBannerComponent,
   BlogReadTrackerDirective,
   YoutubeWatchTrackerDirective
 ];

@@ -7,6 +7,9 @@
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
   margin: 0 !important;
   width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 
   .wiof-slider-header {
     border-bottom: white 2px solid;
@@ -17,12 +20,20 @@
   .breaking-news-content {
     padding: 0 !important;
     background: $home-color-light;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
     --padding-top: 0;
     --padding-bottom: 0;
     --padding-start: 0;
     --padding-end: 0;
   }
 
+  // Swiper measures its own container's height on init and sizes its
+  // slides to match — fighting that with a dynamic flex-fill chain (rather
+  // than a fixed height) made it mis-measure and render blank. Keep this
+  // `auto` and give `.news-card` below a real fixed height instead.
   :host ::ng-deep .breaking-news-slides ion-slide,
   :host ::ng-deep .breaking-news-slides .swiper-wrapper,
   :host ::ng-deep .breaking-news-slides .swiper-slide {
@@ -51,7 +62,9 @@
     background: transparent;
     box-shadow: none;
     transition: transform 0.2s ease;
-    height: 260px;
+    // Sized to roughly fill the shared 460px row (see home.page.scss)
+    // once the header and ticker are accounted for.
+    height: 420px;
     width: 100%;
     min-width: 100%;
     margin: 0;
@@ -68,7 +81,7 @@
     min-width: 33.3333%;
     position: relative;
     overflow: hidden;
-    background: #eef4fb;
+    background: var(--wiof-ivory);
     height: 100%;
   }
 
@@ -96,21 +109,22 @@
 
   .news-date {
     margin: 0 0 0.75rem 0;
-    color: #5a7188;
+    color: var(--wiof-brown);
     font-size: 0.92rem;
     letter-spacing: 0.02em;
     text-transform: uppercase;
+    font-weight: 700;
   }
 
   .news-headline {
     margin: 0 0 1rem 0;
     font-size: 1.35rem;
     line-height: 1.15;
-    color: #10263c;
+    color: var(--wiof-ink);
   }
 
   .news-content {
-    color: #475569;
+    color: rgba(43, 36, 32, 0.75);
     line-height: 1.7;
     overflow-y: auto;
     flex: 1 1 auto;
@@ -122,12 +136,12 @@
 
   .news-marquee {
     min-height: 52px;
-    background: #eef6ff;
+    background: var(--wiof-ivory);
     padding: 0 1rem;
     display: flex;
     align-items: center;
     font-weight: 600;
-    color: #134b7a;
+    color: var(--wiof-ink);
     font-size: 0.95rem;
     white-space: nowrap;
   }

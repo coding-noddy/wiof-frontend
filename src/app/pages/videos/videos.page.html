@@ -4,7 +4,7 @@
   <div class="videos-page" [ngClass]="element">
 
     <!-- Header -->
-    <div class="videos-header" [ngClass]="element">
+    <div class="videos-header">
       <h1 class="header-title">{{ category }} Videos</h1>
       <div class="header-actions">
         <a
@@ -17,6 +17,10 @@
         </a>
         <app-back-button></app-back-button>
       </div>
+    </div>
+
+    <div class="element-switcher-bar">
+      <app-life-elements [element]="element" variant="pills"></app-life-elements>
     </div>
 
     <!-- Video grid -->

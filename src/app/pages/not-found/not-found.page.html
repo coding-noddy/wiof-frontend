@@ -1,5 +1,11 @@
 <ion-content class="ion-text-center">
-  <h1 class="wiof-not-found">404 Not Found</h1>
-  <p>Oops..!! We think you lost your way here .. 😅</p>
-  <app-back-button></app-back-button>
+  <div class="not-found-page">
+    <ion-icon class="not-found-icon" name="compass-outline"></ion-icon>
+    <h1 class="not-found-title">Looks like the wind carried this page away</h1>
+    <p class="not-found-subtitle">The page you're looking for doesn't exist, or has moved.</p>
+    <a routerLink="/home" class="not-found-cta">
+      Back to Home
+      <ion-icon name="arrow-forward-outline"></ion-icon>
+    </a>
+  </div>
 </ion-content>

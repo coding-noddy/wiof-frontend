@@ -1,69 +1,37 @@
-<ion-row class="ion-align-items-center">
-  <ion-col class="ion-padding" size-xs="12">
-    <p style="text-align: center">
-      Choose any of the elements
-      <span class="wiof-read-more"
-        >to get to know more about how our actions are impacting the environment
-        and what can we do to help</span
-      >
-    </p>
-  </ion-col>
-  <ion-col class="ion-padding" size-xs="4" size-sm="2" offset-sm="1">
-    <div
-      class="ion-text-center landing-circle-img earth"
-      [ngClass]="{ active: isSelectedElement('earth') }"
-      [routerLink]="['/element', 'earth']"
-    ></div>
-    <h4 class="landing-circle-label" [routerLink]="['/element', 'earth']">
-      Earth
-    </h4>
-  </ion-col>
+<!-- Home page: spacious card grid -->
+<div class="elements-cards" *ngIf="variant === 'cards'">
+  <p class="elements-intro">
+    Choose any of the elements
+    <span class="wiof-read-more"
+      >to get to know more about how our actions are impacting the environment
+      and what can we do to help</span
+    >
+  </p>
+  <div class="elements-grid">
+    <a
+      *ngFor="let el of elements"
+      class="element-card"
+      [ngClass]="'color-' + el.colorClass"
+      [class.active]="isSelectedElement(el.slug)"
+      [routerLink]="['/element', el.slug]"
+    >
+      <span class="element-icon" [ngClass]="'icon-' + el.slug" [class.active]="isSelectedElement(el.slug)"></span>
+      <span class="element-name">{{ el.name }}</span>
+      <span class="element-desc">{{ el.description }}</span>
+    </a>
+  </div>
+</div>
 
-  <ion-col class="ion-padding" size-xs="4" size-sm="2">
-    <div
-      class="ion-text-center landing-circle-img energy"
-      [ngClass]="{ active: isSelectedElement('energy') }"
-      [routerLink]="['/element', 'energy']"
-    ></div>
-    <h4 class="landing-circle-label" [routerLink]="['/element', 'energy']">
-      Energy
-    </h4>
-  </ion-col>
-
-  <ion-col class="ion-padding" size-xs="4" size-sm="2">
-    <div
-      class="ion-text-center landing-circle-img air"
-      [ngClass]="{ active: isSelectedElement('air') }"
-      [routerLink]="['/element', 'air']"
-    ></div>
-    <h4 class="landing-circle-label" [routerLink]="['/element', 'air']">Air</h4>
-  </ion-col>
-
-  <ion-col
-    class="ion-padding"
-    size-xs="5"
-    size-sm="2"
-    offset-xs="1"
-    offset-sm="0"
+<!-- Element pages: compact switcher pills -->
+<div class="elements-pills" *ngIf="variant === 'pills'">
+  <a
+    *ngFor="let el of elements"
+    class="element-pill"
+    [ngClass]="'color-' + el.colorClass"
+    [class.active]="isSelectedElement(el.slug)"
+    [routerLink]="['/element', el.slug]"
   >
-    <div
-      class="ion-text-center landing-circle-img water"
-      [ngClass]="{ active: isSelectedElement('water') }"
-      [routerLink]="['/element', 'water']"
-    ></div>
-    <h4 class="landing-circle-label" [routerLink]="['/element', 'water']">
-      Water
-    </h4>
-  </ion-col>
-
-  <ion-col class="ion-padding" size-xs="5" size-sm="2">
-    <div
-      class="ion-text-center landing-circle-img spirit"
-      [ngClass]="{ active: isSelectedElement('spirit') }"
-      [routerLink]="['/element', 'spirit']"
-    ></div>
-    <h4 class="landing-circle-label" [routerLink]="['/element', 'spirit']">
-      Spirit
-    </h4>
-  </ion-col>
-</ion-row>
+    <span class="pill-icon" [ngClass]="'icon-' + el.slug"></span>
+    {{ el.name }}
+  </a>
+</div>

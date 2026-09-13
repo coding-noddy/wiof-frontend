@@ -4,30 +4,60 @@
 
 <app-section-nav [sections]="pageSections" [element]="elementName"></app-section-nav>
 <ion-content>
-  <div class="page-container">
-
-    <!-- ── Banner ──────────────────────────────────────────────── -->
-    <div class="element-hero air">
-      <!-- <div class="hero-text">
-        <h1>Air</h1>
-        <p>Breathe clean — monitor air quality and take action for cleaner skies.</p>
-      </div> -->
+  <!-- ── Element switcher — breadcrumb + pills, above the hero ───────── -->
+  <div class="element-switcher-bar">
+    <div class="breadcrumb">
+      <a routerLink="/home">Five Elements</a>
+      <span class="sep">/</span>
+      <span class="current">Air</span>
     </div>
+    <app-life-elements [element]="elementName" variant="pills"></app-life-elements>
+  </div>
 
-    <app-life-elements [element]="elementName"></app-life-elements>
-<!-- ── Video + Widget ──────────────────────────────────────── -->
-        <section class="section-block" id="air-featured-video">
+  <!-- ── Banner — full-bleed, outside .page-container ───────────────── -->
+  <div class="element-hero air">
+    <svg class="hero-rays" viewBox="0 0 1440 360" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M100,80 C180,60 260,60 320,90 C360,110 340,140 300,130" stroke="var(--wiof-warm-white)" stroke-width="6" fill="none" opacity="0.22" stroke-linecap="round"/>
+      <path d="M900,140 C1000,115 1100,115 1180,150" stroke="var(--wiof-warm-white)" stroke-width="6" fill="none" opacity="0.18" stroke-linecap="round"/>
+      <path d="M200,220 C300,195 400,195 480,225 C520,240 505,265 470,258" stroke="var(--wiof-warm-white)" stroke-width="6" fill="none" opacity="0.16" stroke-linecap="round"/>
+      <path d="M1000,280 C1120,255 1240,255 1340,285" stroke="var(--wiof-warm-white)" stroke-width="6" fill="none" opacity="0.14" stroke-linecap="round"/>
+    </svg>
+    <div class="hero-main">
+      <div class="hero-heading-row">
+        <span class="hero-icon icon-air"></span>
+        <div>
+          <h1>Air</h1>
+          <div class="hero-tagline">Moves. Connects. Carries change.</div>
+        </div>
+      </div>
+      <p class="hero-body">
+        Air is the one element none of us can opt out of breathing. Start here to see what's
+        actually in the sky above you today.
+      </p>
+    </div>
+  </div>
+
+  <div class="page-container">
+    <!-- ── Learn + Explore: Video + Widget ──────────────────────── -->
+    <section class="section-block" id="air-featured-video">
       <div class="video-widget-row">
         <div class="video-col">
+          <p class="col-label">Learn — start here</p>
           <app-video-widget [element]="elementName"></app-video-widget>
         </div>
         <div class="widget-col">
+          <p class="col-label">Explore — see it in your world</p>
           <app-aqi-widget></app-aqi-widget>
         </div>
       </div>
     </section>
 
-    <!-- ── In Focus ─────────────────────────────────────────── -->
+    <!-- ── Take Action ──────────────────────────────────────── -->
+    <section class="section-block" id="air-take-action">
+      <app-element-take-action-teaser [element]="elementName"></app-element-take-action-teaser>
+    </section>
+
+    <!-- ── Go Deeper: In Focus ─────────────────────────────────── -->
     <section class="section-block" id="air-in-focus">
       <app-in-focus-widget
         [inFocuses]="this.inFocuses$ | async"
@@ -35,40 +65,61 @@
       ></app-in-focus-widget>
     </section>
 
-    <!-- ── Coffee Conversation ─────────────────────────────────── -->
-    <section
-      class="section-block"
-      id="air-conversations"
-      *ngIf="this.coffeeConversations$ | async as coffeeConversations"
-    >
-      <app-coffee-conversation
-        [element]="elementName"
-        [coffeeConvList]="coffeeConversations"
-      ></app-coffee-conversation>
-    </section>
-
-    <!-- ── Blogs ───────────────────────────────────────────────── -->
-    <section class="section-block" id="air-blogs">
-      <div class="section-header">
-        <h2>Blogs</h2>
-      </div>
-      <app-blog-slider
-        [blogList]="blogs$ | async"
-        [element]="elementName"
-      ></app-blog-slider>
-    </section>
-
-    <!-- ── Videos ──────────────────────────────────────────────── -->
-    <section class="section-block" id="air-videos" *ngIf="videos$ | async as videos">
-      <div class="section-header" *ngIf="videos.length > 0">
-        <h2>Videos</h2>
-      </div>
-      <app-video-slider
-        [videoList]="videos"
-        [element]="elementName"
-      ></app-video-slider>
-    </section>
-
   </div>
+
+  <!-- ── Reflect: Coffee Conversation + EQ tie-in ────────────────── -->
+  <div
+    class="reflect-band"
+    id="air-conversations"
+    *ngIf="this.coffeeConversations$ | async as coffeeConversations"
+  >
+    <div class="section-header">
+      <p class="eyebrow">Reflect</p>
+      <h2>Coffee Conversations: Air</h2>
+    </div>
+    <div class="reflect-row">
+      <div class="reflect-conversation">
+        <app-coffee-conversation
+          [element]="elementName"
+          [coffeeConvList]="coffeeConversations"
+        ></app-coffee-conversation>
+      </div>
+      <div class="eq-tie-in">
+        <ion-icon name="radio-button-on-outline"></ion-icon>
+        <p>Prefer a quieter kind of reflection?</p>
+        <a routerLink="/element/water/eq-assessment">Take the EQ Reflection →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-container">
+    <!-- ── Keep Exploring: Blogs + Videos ──────────────────────── -->
+    <section class="section-block">
+      <div class="section-header">
+        <p class="eyebrow">Keep exploring</p>
+        <h2>More on Air</h2>
+      </div>
+      <div id="air-blogs">
+        <p class="keep-exploring-sub-label">Blogs</p>
+        <app-blog-slider
+          [blogList]="blogs$ | async"
+          [element]="elementName"
+        ></app-blog-slider>
+      </div>
+      <div id="air-videos" *ngIf="videos$ | async as videos">
+        <ng-container *ngIf="videos.length > 0">
+          <p class="keep-exploring-sub-label">Videos</p>
+          <app-video-slider
+            [videoList]="videos"
+            [element]="elementName"
+          ></app-video-slider>
+        </ng-container>
+      </div>
+    </section>
+
+    <!-- ── Continue The Journey ────────────────────────────────── -->
+    <app-continue-journey-banner [element]="elementName"></app-continue-journey-banner>
+  </div>
+
   <app-wiof-footer></app-wiof-footer>
 </ion-content>

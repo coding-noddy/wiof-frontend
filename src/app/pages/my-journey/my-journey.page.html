@@ -5,7 +5,14 @@
 
     <!-- Page Header -->
     <div class="page-header">
-      <h1 class="page-title">My Journey</h1>
+      <p class="page-eyebrow">Your journey</p>
+      <h1 class="page-title">
+        My Journey
+        <span class="streak-badge" *ngIf="currentStreak > 0">
+          <ion-icon name="flame-outline"></ion-icon>
+          {{ currentStreak }}-day streak
+        </span>
+      </h1>
       <p class="page-subtitle">Track your engagement and progress</p>
     </div>
 
@@ -315,26 +322,26 @@
                 <div class="eq-chart-title">Score Trend</div>
                 <svg class="eq-chart-svg" viewBox="0 0 260 100">
                   <!-- Y-axis labels -->
-                  <text x="4" y="28" class="chart-y-label" font-size="7" fill="#94a3b8">96</text>
-                  <text x="4" y="53" class="chart-y-label" font-size="7" fill="#94a3b8">72</text>
-                  <text x="4" y="78" class="chart-y-label" font-size="7" fill="#94a3b8">48</text>
+                  <text x="4" y="28" class="chart-y-label" font-size="7" fill="var(--wiof-warm-grey)">96</text>
+                  <text x="4" y="53" class="chart-y-label" font-size="7" fill="var(--wiof-warm-grey)">72</text>
+                  <text x="4" y="78" class="chart-y-label" font-size="7" fill="var(--wiof-warm-grey)">48</text>
                   <!-- Grid lines -->
-                  <line x1="22" y1="25" x2="245" y2="25" stroke="#e2e8f0" stroke-width="0.5" />
-                  <line x1="22" y1="50" x2="245" y2="50" stroke="#e2e8f0" stroke-width="0.5" />
-                  <line x1="22" y1="75" x2="245" y2="75" stroke="#e2e8f0" stroke-width="0.5" />
+                  <line x1="22" y1="25" x2="245" y2="25" stroke="#EDE4D3" stroke-width="0.5" />
+                  <line x1="22" y1="50" x2="245" y2="50" stroke="#EDE4D3" stroke-width="0.5" />
+                  <line x1="22" y1="75" x2="245" y2="75" stroke="#EDE4D3" stroke-width="0.5" />
                   <!-- Area fill -->
-                  <polygon [attr.points]="getEqAreaPoints()" fill="rgba(59, 130, 246, 0.08)" />
+                  <polygon [attr.points]="getEqAreaPoints()" fill="rgba(33, 153, 159, 0.1)" />
                   <!-- Line -->
                   <polyline
                     [attr.points]="getEqSparklinePoints()"
                     fill="none"
-                    stroke="#3b82f6"
+                    stroke="#21999F"
                     stroke-width="2.5"
                     stroke-linecap="round"
                     stroke-linejoin="round"
                   />
                   <!-- Dots -->
-                  <circle *ngFor="let point of getEqChartPoints()" [attr.cx]="point.x" [attr.cy]="point.y" r="4" fill="#fff" stroke="#3b82f6" stroke-width="2" />
+                  <circle *ngFor="let point of getEqChartPoints()" [attr.cx]="point.x" [attr.cy]="point.y" r="4" fill="#fff" stroke="#21999F" stroke-width="2" />
                 </svg>
                 <div class="eq-chart-dates">
                   <span>{{ formatDateShort(eqHistory[eqHistory.length - 1].date) }}</span>

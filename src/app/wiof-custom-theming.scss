@@ -1,24 +1,27 @@
-$earth-color: rgb(189, 237, 129);
-$water-color: rgb(223, 243, 255);
-$energy-color: rgb(
-  255,
-  235,
-  184
-); //energy and fire are to be considered same element
-$air-color: rgb(224, 202, 245);
-$spirit-color: rgb(241, 222, 198);
-$home-color: #65afde;
-$home-color-light: lighten($home-color, 30%);
-$home-text-color: #2d2d2d;
-$home-color-dark: darken($home-color, 6%);
-$header-color: #fffaf0; // floral white
+// Element colors — tonal steps of the 3 approved brand hues (Earthy Brown /
+// Ocean Teal / Sunny Marigold), not unrelated colors per element. Distinction
+// between elements is primarily carried by icon (see life-elements.component
+// and assets/icons/), these are a secondary, on-brand supporting wash.
+$earth-color: #A6875D;      // Earthy Brown — brand primary grounding tone
+$earth-color-tint: #CAB79E; // approved tint for soft backgrounds
+$water-color: #21999F;      // Ocean Teal — core identity color
+$water-color-tint: #7AC2C5; // approved tint for soft surfaces
+$air-color: #4DADB2;        // Ocean Teal tint 20%
+$spirit-color: #1A7A7F;     // Ocean Teal shade 20%
+$energy-color: #FFC26F;      // Sunny Marigold — primary CTA + accent
+$energy-color-tint: #FFDAA9;
+$home-color: #FFC26F;
+$home-color-light: #FFDAA9;
+$home-text-color: #2B2420;
+$home-color-dark: #CC9B59;
+$header-color: #FFFCF6;
 
 //add tint to various slider backgrounds
 $tint-fraction: 0.5;
 
 // font color
-$dark-color: #2d2d2d;
-$light-color: #fff;
+$dark-color: #2B2420;
+$light-color: #FFFCF6;
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -273,8 +276,9 @@ p {
 
 .wiof-primary-btn {
   @include wiof-button();
-  background: $dark-color;
-  color: $light-color;
+  background: $energy-color;
+  color: $dark-color;
+  border: 1px solid $energy-color;
 }
 
 .wiof-secondary-btn {
@@ -308,16 +312,16 @@ p {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: linear-gradient(135deg, $home-color 0%, $home-color-dark 100%);
-  color: $light-color;
+  background: $energy-color;
+  color: $dark-color;
   margin: 0 auto;
-  font-weight: $font-weight-medium;
+  font-weight: 700;
   padding: 0.55rem 1rem;
   text-decoration: none;
   font-size: 0.94rem;
   min-height: 36px;
   min-width: 120px;
-  box-shadow: 0 8px 20px rgba(15, 41, 73, 0.14);
+  box-shadow: 0 8px 18px rgba(204, 155, 89, 0.18);
   transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
 }
 

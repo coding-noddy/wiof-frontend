@@ -9,29 +9,33 @@
 .blog-slider-actions {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.75rem;
 }
 
 .action-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: $home-color-dark;
+  gap: 0.38rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: $dark-color;
   text-decoration: none;
-  padding: 0.35rem 0.75rem;
+  padding: 0.5rem 0.9rem;
   border-radius: 999px;
-  background: rgba($home-color, 0.1);
-  transition: background 0.2s ease, transform 0.15s ease;
+  background: rgba($home-color, 0.18);
+  border: 1px solid rgba(255, 194, 111, 0.28);
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
 
   ion-icon {
     font-size: 0.9rem;
   }
 
   &:hover {
-    background: rgba($home-color, 0.2);
+    background: rgba($home-color, 0.28);
     transform: translateX(2px);
+    box-shadow: 0 8px 18px rgba(255, 194, 111, 0.14);
   }
 }
 

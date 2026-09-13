@@ -33,6 +33,7 @@ export class AirPage implements OnInit {
 
   pageSections: SectionNavItem[] = [
     { label: 'Featured', sectionId: 'air-featured-video' },
+    { label: 'Take Action', sectionId: 'air-take-action' },
     { label: 'In Focus', sectionId: 'air-in-focus' },
     { label: 'Conversations', sectionId: 'air-conversations' },
     { label: 'Blogs', sectionId: 'air-blogs' },

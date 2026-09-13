@@ -19,6 +19,7 @@
 
       <!-- Page Heading -->
       <header class="settings-heading">
+        <p class="settings-eyebrow">Your account</p>
         <h1>Settings</h1>
         <p>Manage your profile, avatar, and preferences.</p>
       </header>
@@ -152,22 +153,23 @@
             </h3>
 
             <!-- Preferred Elements -->
-            <ion-item lines="full">
-              <ion-icon name="options-outline" slot="start" aria-hidden="true"></ion-icon>
-              <ion-label position="stacked">Preferred Elements</ion-label>
-              <ion-select
-                formControlName="preferredElements"
-                multiple="true"
-                placeholder="Select elements"
-                (ionChange)="onElementsChange($event)"
-              >
-                <ion-select-option
+            <div class="preferred-elements-field">
+              <label class="preferred-elements-label">
+                <ion-icon name="options-outline" aria-hidden="true"></ion-icon>
+                Preferred Elements
+              </label>
+              <div class="element-pill-row">
+                <button
+                  type="button"
                   *ngFor="let element of elementsList"
-                  [value]="element"
-                  [disabled]="isElementDisabled(element)"
-                >{{ element | titlecase }}</ion-select-option>
-              </ion-select>
-            </ion-item>
+                  class="element-toggle-pill"
+                  [ngClass]="elementColorClass(element)"
+                  [class.active]="isElementSelected(element)"
+                  [disabled]="isElementDisabled(element) && !isElementSelected(element)"
+                  (click)="toggleElement(element)"
+                >{{ element | titlecase }}</button>
+              </div>
+            </div>
 
             <!-- Save Button -->
             <ion-button

@@ -31,6 +31,20 @@ export class SettingsPage implements OnDestroy {
     ELEMENTS.SPIRIT
   ];
 
+  // Brand color per element — teal at start/middle/end, marigold for Energy,
+  // brown for Earth (same rule used by life-elements/onboarding-overlay).
+  private readonly elementColorClasses: { [element: string]: string } = {
+    [ELEMENTS.EARTH]: 'color-brown',
+    [ELEMENTS.ENERGY]: 'color-marigold',
+    [ELEMENTS.AIR]: 'color-teal',
+    [ELEMENTS.WATER]: 'color-teal',
+    [ELEMENTS.SPIRIT]: 'color-teal'
+  };
+
+  elementColorClass(element: string): string {
+    return this.elementColorClasses[element] || 'color-teal';
+  }
+
   // Reactive form
   profileForm: FormGroup = new FormGroup({
     displayName: new FormControl('', [
@@ -275,6 +289,39 @@ export class SettingsPage implements OnDestroy {
 
     // Store current value as previous for next change
     this.previousElements = [...newValue];
+  }
+
+  /** Returns true if `element` is currently one of the selected preferences. */
+  isElementSelected(element: string): boolean {
+    const selected: string[] = this.profileForm.get('preferredElements')!.value || [];
+    return selected.includes(element);
+  }
+
+  /**
+   * Pill-toggle equivalent of onElementsChange: adds/removes one element,
+   * enforcing the same min-1/max-5 rules the select used to enforce via
+   * isElementDisabled + the empty-selection revert above.
+   */
+  toggleElement(element: string): void {
+    const control = this.profileForm.get('preferredElements')!;
+    const current: string[] = control.value || [];
+    const isSelected = current.includes(element);
+
+    if (isSelected) {
+      if (current.length <= 1) {
+        return;
+      }
+      const next = current.filter((e) => e !== element);
+      control.setValue(next);
+      this.previousElements = [...next];
+    } else {
+      if (current.length >= 5) {
+        return;
+      }
+      const next = [...current, element];
+      control.setValue(next);
+      this.previousElements = [...next];
+    }
   }
 
   /**

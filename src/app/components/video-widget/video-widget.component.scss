@@ -8,10 +8,11 @@
 }
 
 .video-widget-card {
-  border-radius: 18px;
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
-  background: #000;
+  box-shadow: 0 14px 32px rgba(43, 36, 32, 0.10);
+  background: #fff;
+  border: 1px solid rgba(166, 135, 93, 0.16);
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -19,22 +20,23 @@
 
 // ── Header bar — element colored, like coffee conversation & in-focus ─────────
 .video-widget-header {
-  padding: 0.65rem 1rem;
-  border-bottom: 2px solid white;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid rgba(43, 36, 32, 0.10);
   background-color: $home-color;
   color: $dark-color;
 
-  &.wiof-earth  { background-color: $earth-color; }
-  &.wiof-water  { background-color: $water-color; }
-  &.wiof-fire   { background-color: $energy-color; }
-  &.wiof-air    { background-color: $air-color; }
-  &.wiof-spirit { background-color: $spirit-color; }
+  &.wiof-earth  { background-color: rgba($earth-color, 0.9); }
+  &.wiof-water  { background-color: rgba($water-color, 0.92); }
+  &.wiof-fire   { background-color: rgba($energy-color, 0.95); }
+  &.wiof-air    { background-color: rgba($air-color, 0.92); }
+  &.wiof-spirit { background-color: rgba($spirit-color, 0.92); }
   &.wiof-config { background-color: $dark-color; color: $light-color; }
 }
 
 .video-widget-title {
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   color: $dark-color;
 
   .wiof-config & {
@@ -46,6 +48,7 @@
   width: 100%;
   flex: 1;
   min-height: 280px;
+  background: linear-gradient(180deg, #f3efe8 0%, #f8f4ee 100%);
 }
 
 .video-player {
@@ -54,4 +57,5 @@
   min-height: 280px;
   border: none;
   display: block;
+  background: #000;
 }

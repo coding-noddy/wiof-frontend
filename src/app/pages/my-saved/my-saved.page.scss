@@ -1,13 +1,13 @@
 @import "../../wiof-custom-theming.scss";
 
 // ─── Design Tokens ────────────────────────────────────────────────────────────
-$card-radius: 12px;
-$glass-bg: rgba(255, 255, 255, 0.72);
+$card-radius: 18px;
+$glass-bg: var(--wiof-warm-white);
 $glass-blur: 12px;
-$card-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-$heading-color: #10263c;
-$body-color: #475569;
-$accent-color: #3b82f6;
+$card-shadow: 0 14px 36px rgba(43, 36, 32, 0.12);
+$heading-color: var(--wiof-ink);
+$body-color: var(--wiof-ink);
+$accent-color: var(--wiof-teal);
 
 .my-saved-page {
   padding: 1rem;
@@ -25,6 +25,21 @@ $accent-color: #3b82f6;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.5rem;
+
+  .header-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .header-eyebrow {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--wiof-teal);
+    margin: 0;
+  }
 
   .header-title {
     font-size: 1.75rem;
@@ -48,7 +63,7 @@ $accent-color: #3b82f6;
   -webkit-backdrop-filter: blur($glass-blur);
   border-radius: $card-radius;
   box-shadow: $card-shadow;
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1.5px solid var(--wiof-brown-tint-40);
   overflow: hidden;
   text-decoration: none;
   color: inherit;
@@ -57,7 +72,7 @@ $accent-color: #3b82f6;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 18px 40px rgba(43, 36, 32, 0.16);
   }
 }
 
@@ -85,13 +100,9 @@ $accent-color: #3b82f6;
     padding: 3px 8px;
     border-radius: 4px;
 
-    &.blog {
-      background: rgba(59, 130, 246, 0.9);
-      color: #fff;
-    }
-
+    &.blog,
     &.video {
-      background: rgba(139, 92, 246, 0.9);
+      background: rgba(33, 153, 159, 0.85);
       color: #fff;
     }
   }
@@ -126,8 +137,8 @@ $accent-color: #3b82f6;
   padding: 10px 24px;
   font-size: 0.88rem;
   font-weight: 600;
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  border-radius: 999px;
   background: $glass-bg;
   backdrop-filter: blur($glass-blur);
   color: $heading-color;
@@ -136,7 +147,7 @@ $accent-color: #3b82f6;
 
   &:hover:not(:disabled) {
     border-color: $accent-color;
-    background: rgba($accent-color, 0.04);
+    background: var(--wiof-ivory);
   }
 
   &:disabled {
@@ -181,15 +192,15 @@ $accent-color: #3b82f6;
     display: inline-block;
     padding: 10px 24px;
     font-size: 0.88rem;
-    font-weight: 600;
-    border-radius: 8px;
-    background: $accent-color;
-    color: #fff;
+    font-weight: 700;
+    border-radius: 999px;
+    background: var(--wiof-marigold);
+    color: var(--wiof-ink);
     text-decoration: none;
     transition: background 0.2s ease;
 
     &:hover {
-      background: darken($accent-color, 8%);
+      background: var(--wiof-marigold-shade-20);
     }
   }
 }
@@ -201,7 +212,7 @@ $accent-color: #3b82f6;
 
   ion-icon {
     font-size: 3rem;
-    color: #f87171;
+    color: var(--ion-color-danger);
     margin-bottom: 0.75rem;
   }
 
@@ -226,7 +237,7 @@ $accent-color: #3b82f6;
     transition: background 0.2s ease;
 
     &:hover {
-      background: darken($accent-color, 8%);
+      background: var(--wiof-teal-shade-20);
     }
   }
 }
@@ -265,7 +276,7 @@ $accent-color: #3b82f6;
 }
 
 ion-content {
-  --background: #f4f7fb;
+  --background: var(--wiof-ivory);
 }
 
 // ─── Card Wrapper with Remove Button ──────────────────────────────────────────
