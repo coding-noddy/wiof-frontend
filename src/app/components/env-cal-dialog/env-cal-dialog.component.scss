@@ -20,8 +20,11 @@
 }
 
 // ── Header ────────────────────────────────────────────────────────────────────
+// Earthy Brown, not Marigold — matches the Environment Calendar section's
+// agenda card, and brand guidelines reserve Marigold for the one primary
+// CTA per page, never a background fill.
 .occasion-card-header {
-  background-color: $home-color;
+  background-color: $earth-color;
   padding: 0.85rem 1rem 0.75rem;
   position: relative;
 }
@@ -51,7 +54,7 @@
   margin: 0;
   font-size: 1rem;
   font-weight: 700;
-  color: $dark-color;
+  color: $light-color;
   line-height: 1.3;
   word-break: break-word;
 }

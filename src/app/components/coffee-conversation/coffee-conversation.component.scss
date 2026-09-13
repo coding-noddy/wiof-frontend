@@ -104,11 +104,13 @@ $element-themes: (
     }
   }
 
-  // ── Header — default (home / blue) ───────────────────────────────────────
+  // ── Header — default (home) ───────────────────────────────────────────────
+  // Teal, not Marigold: brand guidelines reserve Marigold for the one
+  // primary CTA per page, never a background fill.
   .wiof-slider-header {
     border-bottom: 1px solid rgba(43, 36, 32, 0.10);
-    background-color: $home-color;
-    color: $dark-color;
+    background-color: $water-color;
+    color: $light-color;
 
     .title-text {
       font-size: 1.08rem;
@@ -117,11 +119,11 @@ $element-themes: (
     }
   }
 
-  // ── Background panel — default (home / blue) ─────────────────────────────
+  // ── Background panel — default (home) ────────────────────────────────────
   ::ng-deep .background {
     padding: 0;
     width: 100%;
-    background-color: $home-color-light;
+    background-color: var(--wiof-teal-tint-40);
 
     ion-slides {
       height: 100%;
@@ -235,31 +237,33 @@ $element-themes: (
           margin-bottom: 1.2rem;
         }
 
+        // Teal, not Marigold: the hero already carries the page's one
+        // primary (marigold) CTA — this is a repeated, secondary action.
         .conversation-cta {
           display: inline-flex;
           align-items: center;
           gap: 0.35rem;
           padding: 0.6rem 0.9rem;
           border-radius: 999px;
-          background: $home-color;
-          color: $dark-color;
+          background: $water-color;
+          color: $light-color;
           font-size: 0.82rem;
           font-weight: 800;
           text-decoration: none;
-          box-shadow: 0 8px 16px rgba(255, 194, 111, 0.18);
+          box-shadow: 0 8px 16px rgba(33, 153, 159, 0.22);
           transition: transform 0.2s ease, box-shadow 0.2s ease;
 
           ion-icon { font-size: 0.95rem; }
 
           &:hover {
             transform: translateX(2px);
-            box-shadow: 0 10px 18px rgba(255, 194, 111, 0.22);
+            box-shadow: 0 10px 18px rgba(33, 153, 159, 0.28);
           }
         }
 
-        // Default interviewee box (home / blue) — element overrides are above
+        // Default interviewee box (home)
         .interviewee-details {
-          background: lighten($home-color-light, 4%);
+          background: var(--wiof-teal-tint-40);
           border-radius: 12px;
           padding: 14px;
           margin: 1rem 0;
@@ -273,7 +277,7 @@ $element-themes: (
             background: transparent;
             cursor: pointer;
             font-weight: 700;
-            color: $home-color-dark;
+            color: $water-color;
 
             ion-icon { font-size: 1.05rem; }
 

@@ -15,11 +15,17 @@
         >
           <ion-icon name="trail-sign-outline"></ion-icon>
         </a>
-        <app-back-button></app-back-button>
       </div>
     </div>
 
     <div class="element-switcher-bar">
+      <div class="breadcrumb">
+        <a routerLink="/home">Five Elements</a>
+        <span class="sep">/</span>
+        <a [routerLink]="['/element', element]">{{ category }}</a>
+        <span class="sep">/</span>
+        <span class="current">Blogs</span>
+      </div>
       <app-life-elements [element]="element" variant="pills"></app-life-elements>
     </div>
 

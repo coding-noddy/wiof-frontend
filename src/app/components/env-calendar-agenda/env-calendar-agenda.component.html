@@ -13,7 +13,7 @@
           <span class="agenda-day-date">{{ todayLabel }}</span>
         </div>
         <ul class="agenda-list" *ngIf="today.length; else noToday">
-          <li class="agenda-item" *ngFor="let day of today">
+          <li class="agenda-item" *ngFor="let day of today" (click)="openOccasion(today)">
             <span class="agenda-dot"></span>
             <span class="agenda-item-text">{{ day.occasion }}</span>
           </li>
@@ -23,21 +23,22 @@
         </ng-template>
       </div>
 
-      <div class="agenda-day">
+      <div class="agenda-section-label" *ngIf="upcomingDays.length">Upcoming this week</div>
+
+      <div class="agenda-day" *ngFor="let day of upcomingDays">
         <div class="agenda-day-heading">
-          <span class="agenda-day-label">Tomorrow</span>
-          <span class="agenda-day-date">{{ tomorrowLabel }}</span>
+          <span class="agenda-day-label">{{ day.label }}</span>
+          <span class="agenda-day-date">{{ day.date }}</span>
         </div>
-        <ul class="agenda-list" *ngIf="tomorrow.length; else noTomorrow">
-          <li class="agenda-item" *ngFor="let day of tomorrow">
+        <ul class="agenda-list">
+          <li class="agenda-item" *ngFor="let occasion of day.occasions" (click)="openOccasion(day.occasions)">
             <span class="agenda-dot"></span>
-            <span class="agenda-item-text">{{ day.occasion }}</span>
+            <span class="agenda-item-text">{{ occasion.occasion }}</span>
           </li>
         </ul>
-        <ng-template #noTomorrow>
-          <p class="agenda-empty">Nothing scheduled yet.</p>
-        </ng-template>
       </div>
+
+      <p class="agenda-empty" *ngIf="!upcomingDays.length">Nothing else scheduled this week.</p>
     </ng-container>
   </ion-card-content>
 </ion-card>

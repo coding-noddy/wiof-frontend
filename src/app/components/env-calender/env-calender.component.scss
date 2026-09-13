@@ -197,10 +197,13 @@
   max-width: 420px;
 }
 
+// Earthy Brown, not Marigold — matches the agenda card beside it, and
+// brand guidelines reserve Marigold for the one primary CTA per page,
+// never a background fill.
 .wiof-env-calender-header {
-  background-color: $home-color;
+  background-color: $earth-color;
   border-bottom: 2px solid white;
-  color: $dark-color;
+  color: $light-color;
 }
 
 .month-header {

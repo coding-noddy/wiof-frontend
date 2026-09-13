@@ -49,20 +49,22 @@ export class EnvcalService {
 
   /**
    * Returns the fixed-date occasions (annual observance days) that fall on
-   * `fromDate` and the day after it, for the home page's "Today's Events" /
-   * "Tomorrow's Events" agenda. EnvDay has no `year`, so this is inherently
+   * `fromDate` (today) plus the following `upcomingDays` days, for the home
+   * page's agenda widget. EnvDay has no `year`, so this is inherently
    * annual/fixed-date only — recurring (weekly/monthly) or one-time dated
    * events aren't representable in this collection yet.
    */
   getUpcomingOccasions(
-    fromDate: Date = new Date()
-  ): Observable<{ today: EnvDay[]; tomorrow: EnvDay[] }> {
-    const tomorrowDate = new Date(fromDate);
-    tomorrowDate.setDate(fromDate.getDate() + 1);
+    fromDate: Date = new Date(),
+    upcomingDays: number = 7
+  ): Observable<{ today: EnvDay[]; upcoming: { date: Date; days: EnvDay[] }[] }> {
+    const dates = Array.from({ length: upcomingDays }, (_, i) => {
+      const d = new Date(fromDate);
+      d.setDate(fromDate.getDate() + i);
+      return d;
+    });
 
-    const months = Array.from(
-      new Set([fromDate.getMonth(), tomorrowDate.getMonth()])
-    );
+    const months = Array.from(new Set(dates.map((d) => d.getMonth())));
 
     return forkJoin(months.map((month) => this.getEnvCal(month))).pipe(
       map((monthResults) => {
@@ -74,9 +76,10 @@ export class EnvcalService {
           allDays.filter(
             (d) => Number(d.day) === date.getDate() && d.month === date.getMonth()
           );
+        const [todayDate, ...restDates] = dates;
         return {
-          today: matching(fromDate),
-          tomorrow: matching(tomorrowDate)
+          today: matching(todayDate),
+          upcoming: restDates.map((date) => ({ date, days: matching(date) }))
         };
       })
     );

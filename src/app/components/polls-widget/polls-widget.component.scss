@@ -18,10 +18,30 @@
   box-shadow: 0 14px 36px rgba(43, 36, 32, 0.1);
 }
 
-.wiof-polls-widget-card-header {
-  background-color: $home-color;
-  border-bottom: white 2px solid;
-  color: $dark-color;
+// ── Header — identity badge on warm-white, matching Breaking News'
+// header treatment instead of a solid marigold bar (marigold is an accent
+// colour only per brand guidelines, never a background fill).
+.poll-header {
+  display: flex;
+  align-items: center;
+  padding: 0.9rem 1.25rem;
+  background: var(--wiof-warm-white);
+  border-bottom: 1.5px solid #EDE4D3;
+}
+
+.poll-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--wiof-teal);
+
+  ion-icon {
+    font-size: 1.05rem;
+  }
 }
 
 // ion-card-content is a plain block by default, so it sizes to its
@@ -40,8 +60,7 @@ ion-card-content.wiof-polls-widget-card-background {
 
 .polls-container {
   background-color: transparent;
-  padding: 12px;
-  border-radius: 8px;
+  padding: 1.1rem 1.25rem;
   flex: 1;
   min-height: 0;
   overflow: auto;
@@ -50,100 +69,166 @@ ion-card-content.wiof-polls-widget-card-background {
 .poll-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0.9rem;
+  height: 100%;
+  min-height: 0;
 }
 
-.poll-question .question-label {
-  font-size: 12px;
-  color: $dark-color;
-  font-weight: 600;
+// A long poll question scrolls in its own small box instead of pushing the
+// options and submit button out of view below it — those stay put and
+// fully visible regardless of question length.
+.poll-question-scroll {
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: 128px;
+  overflow-y: auto;
+  padding-right: 0.25rem;
 }
 
-.poll-question .question-text {
-  font-size: 15px;
-  margin-top: 6px;
-  margin-bottom: 6px;
-  color: $home-text-color;
+.question-text {
+  font-family: 'Aleo', serif;
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--wiof-ink);
+  margin: 0;
 }
 
 .poll-options-list {
-  display: grid;
-  gap: 10px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
 }
 
 .poll-option {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
   cursor: pointer;
 }
 
 .poll-option input[type='radio'] {
-  display: none;
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
-.option-body {
-  background: linear-gradient(180deg, #ffffff 0%, var(--wiof-ivory) 100%);
-  border-radius: 12px;
-  padding: 12px 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border: 1.5px solid rgba($dark-color, 0.08);
-  transition: box-shadow 0.18s ease, transform 0.12s ease, border-color 0.12s ease;
-}
-
-.poll-option:hover .option-body {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 30px rgba(43, 36, 32, 0.06);
-}
-
-.poll-option input[type='radio']:checked + .option-body {
-  border-color: $home-color;
-  box-shadow: 0 4px 16px rgba(43, 36, 32, 0.1);
+// Custom radio indicator — a simple bordered dot that fills teal when
+// its sibling input is checked (input is visually hidden above, not
+// display:none, so the sibling-combinator + focus-visible below still work).
+.option-radio {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  background: var(--wiof-warm-white);
+  position: relative;
+  transition: border-color 0.15s ease;
 
   &::after {
-    content: '✓';
+    content: '';
     position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 22px;
-    height: 22px;
+    inset: 3px;
     border-radius: 50%;
-    background: $home-color;
-    color: #fff;
-    font-size: 0.7rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: var(--wiof-teal);
+    transform: scale(0);
+    transition: transform 0.15s ease;
   }
 }
 
+.poll-option input[type='radio']:checked ~ .option-radio {
+  border-color: var(--wiof-teal);
+
+  &::after { transform: scale(1); }
+}
+
+.poll-option input[type='radio']:focus-visible ~ .option-radio {
+  outline: 2px solid var(--wiof-teal-tint-20);
+  outline-offset: 2px;
+}
+
 .option-body {
-  position: relative;
+  flex: 1;
+  min-width: 0;
+  background: var(--wiof-ivory);
+  border-radius: 12px;
+  padding: 0.65rem 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border: 1.5px solid transparent;
+  transition: box-shadow 0.18s ease, transform 0.12s ease, border-color 0.12s ease, background 0.15s ease;
+}
+
+.poll-option:hover .option-body {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(43, 36, 32, 0.06);
+}
+
+.poll-option input[type='radio']:checked ~ .option-body {
+  background: rgba(33, 153, 159, 0.08);
+  border-color: var(--wiof-teal-tint-40);
 }
 
 .option-text {
-  color: $dark-color;
+  color: var(--wiof-ink);
   font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.option-meta {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: stretch;
+  width: 34%;
+}
+
+.option-percent {
+  font-weight: 700;
+  color: var(--wiof-teal);
+  font-size: 0.78rem;
+  text-align: right;
+}
+
+.option-progress {
+  display: block;
+  background: rgba(43, 36, 32, 0.08);
+  height: 6px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.option-progress-fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--wiof-teal-tint-20), var(--wiof-teal));
+  transition: width 0.5s ease;
 }
 
 .poll-footer {
+  flex-shrink: 0;
   display: flex;
   gap: 12px;
   align-items: center;
   justify-content: space-between;
-  margin-top: 6px;
+  margin-top: auto;
+  padding-top: 0.3rem;
 }
 
 .poll-widget-name-input {
   flex: 1 1 55%;
   border-radius: 8px;
-  border: 1px solid rgba($dark-color, 0.08);
+  border: 1.5px solid var(--wiof-brown-tint-40);
   padding: 10px 12px;
   height: 42px;
   font-size: $font-size-medium;
-  background-color: $light-color;
+  background-color: var(--wiof-warm-white);
 }
 
 .cta-and-error {
@@ -158,35 +243,32 @@ ion-card-content.wiof-polls-widget-card-background {
   font-size: 12px;
 }
 
-// Vote button — uses shared .wiof-primary-btn from theming, no override needed here
-
-.option-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: stretch;
-  margin-left: 12px;
-  width: 36%;
-}
-
-.option-percent {
+// Secondary-emphasis CTA (teal) rather than the shared marigold primary
+// button — a poll vote is a repeated, per-card action, not the page's one
+// primary call-to-action (brand guideline: one marigold CTA per page).
+.poll-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 999px;
+  padding: 0.6rem 1.3rem;
+  background: var(--wiof-teal);
+  color: var(--wiof-warm-white);
   font-weight: 700;
-  color: $home-color;
-  font-size: 13px;
-  text-align: right;
-}
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(33, 153, 159, 0.22);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 
-.option-progress {
-  background: rgba(43, 36, 32, 0.06);
-  height: 8px;
-  border-radius: 8px;
-  overflow: hidden;
-}
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(33, 153, 159, 0.3);
+  }
 
-.option-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, $home-color, darken($home-color, 6%));
-  transition: width 0.5s ease;
+  &:active {
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 600px) {
@@ -202,9 +284,13 @@ ion-card-content.wiof-polls-widget-card-background {
   .cta-and-error {
     align-items: stretch;
   }
+
+  .poll-submit-btn {
+    width: 100%;
+  }
 }
 
-// Voted indicator styles
+// ── Voted indicator ────────────────────────────────────────────────
 .poll-voted-indicator {
   display: flex;
   flex-direction: column;
@@ -213,27 +299,30 @@ ion-card-content.wiof-polls-widget-card-background {
   padding: 24px 16px;
   text-align: center;
   gap: 12px;
+  flex: 1;
 }
 
 .voted-icon {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--ion-color-success), var(--ion-color-success-shade));
-  color: #fff;
+  background: var(--wiof-teal);
+  color: var(--wiof-warm-white);
   font-size: 24px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  ion-icon { font-size: 1.5rem; }
 }
 
 .voted-message {
   font-size: 15px;
-  color: $dark-color;
+  color: var(--wiof-ink);
   line-height: 1.5;
 
   strong {
-    color: $home-color;
+    color: var(--wiof-teal);
   }
 }

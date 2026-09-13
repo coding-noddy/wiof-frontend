@@ -274,11 +274,17 @@ p {
   }
 }
 
+// Teal, not Marigold: this class is reused as a repeated, per-card CTA
+// across a single page (Read Full Story, Submit Vote, Visit Website, Know
+// More...), and brand guidelines reserve Marigold for the one primary CTA
+// per page — diluted if every button on the page is marigold. Marigold
+// stays reserved for genuine one-off primary actions (e.g. the hero's own
+// `.cta`, styled separately, not through this shared class).
 .wiof-primary-btn {
   @include wiof-button();
-  background: $energy-color;
-  color: $dark-color;
-  border: 1px solid $energy-color;
+  background: $water-color;
+  color: $light-color;
+  border: 1px solid $water-color;
 }
 
 .wiof-secondary-btn {
@@ -312,8 +318,8 @@ p {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: $energy-color;
-  color: $dark-color;
+  background: $water-color;
+  color: $light-color;
   margin: 0 auto;
   font-weight: 700;
   padding: 0.55rem 1rem;
@@ -321,7 +327,7 @@ p {
   font-size: 0.94rem;
   min-height: 36px;
   min-width: 120px;
-  box-shadow: 0 8px 18px rgba(204, 155, 89, 0.18);
+  box-shadow: 0 8px 18px rgba(33, 153, 159, 0.22);
   transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
 }
 

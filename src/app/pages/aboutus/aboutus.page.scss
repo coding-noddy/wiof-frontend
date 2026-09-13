@@ -135,17 +135,34 @@ ion-content {
   &:hover { opacity: 0.7; }
 }
 
+// `flex: 1` (not a fixed line count) is what makes this clamp to whatever
+// space is actually left after the name/LinkedIn link above it — a 2-line
+// name leaves less room, a 1-line name leaves more, and the bio fills
+// exactly that instead of a fixed "always 4 lines" that either wasted
+// space or (combined with flex-stretch) let a stray extra line peek
+// through past the intended cut. The fade (::after) makes the cut read as
+// intentional instead of text getting sliced off mid-line.
 .team-bio {
+  position: relative;
   font-size: 0.88rem;
   color: rgba(43, 36, 32, 0.75);
   line-height: 1.7;
-  text-align: justify;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
+  text-align: left;
   overflow: hidden;
   margin: 0 0 0.75rem;
   flex: 1;
+  min-height: calc(1.7em * 2); // never clip below ~2 lines
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1.7em;
+    background: linear-gradient(rgba(255, 252, 246, 0), var(--wiof-warm-white) 80%);
+    pointer-events: none;
+  }
 }
 
 .read-more-btn {
@@ -223,7 +240,7 @@ ion-content {
   font-size: 0.9rem;
   color: rgba(43, 36, 32, 0.75);
   line-height: 1.8;
-  text-align: justify;
+  text-align: left;
   overflow-y: auto;
   flex: 1;
   margin: 0;

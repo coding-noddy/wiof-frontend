@@ -1,10 +1,13 @@
 <ion-card *ngIf="newsList?.length > 0" class="breaking-news-container">
-  <ion-card-header class="ion-align-center wiof-slider-header">
-    <ion-card-title>Breaking NEWS</ion-card-title>
+  <ion-card-header class="bn-header">
+    <span class="bn-badge">
+      <span class="bn-badge-dot"></span>
+      Breaking News
+    </span>
   </ion-card-header>
 
   <ion-card-content class="breaking-news-content">
-    <div *ngIf="newsList; else loading">
+    <div class="bn-body" *ngIf="newsList; else loading">
       <swiper-container #swiperNews [attr.slides-per-view]="1" [attr.space-between]="1" [attr.loop]="true" [attr.autoplay-delay]="5000" class="breaking-news-slides">
         <swiper-slide *ngFor="let news of newsList">
           <div class="news-card">
@@ -13,35 +16,41 @@
               <div *ngIf="news.mediaType === 'video'" class="video-wrap">
                 <iframe class="news-media" [title]="'Video for news ' + news.headline" [src]="news.sanitizedLink" allowfullscreen></iframe>
               </div>
+              <span class="news-date-badge">{{ news.date | date: 'MMM d' }}</span>
             </div>
 
             <div class="detail-panel">
-              <p class="news-date">{{ news.date | date: 'EEE, MMM dd YYYY' }}</p>
               <h3 class="news-headline">{{ news.headline }}</h3>
               <div class="news-content" [innerHTML]="news.content"></div>
-              <a *ngIf="news.newsSource" [href]="news.newsSource" target="_blank" rel="noopener" class="wiof-primary-link">Read Full Story →</a>
+              <a *ngIf="news.newsSource" [href]="news.newsSource" target="_blank" rel="noopener" class="news-cta">
+                Read Full Story
+                <ion-icon name="arrow-forward"></ion-icon>
+              </a>
             </div>
           </div>
         </swiper-slide>
       </swiper-container>
 
-      <div class="news-marquee">
-        <div [ngStyle]="{ 'animation-duration': newsList.length * 10 + 's' }">
-          <span *ngFor="let news of newsList">&#x25cf; {{ news.headline }}</span>
-        </div>
-      </div>
-
-      <button class="swiper-nav-btn prev" *ngIf="newsList.length > 1" (click)="swiperNews.swiper.slidePrev()">
+      <button class="bn-nav-btn prev" *ngIf="newsList.length > 1" (click)="swiperNews.swiper.slidePrev()" aria-label="Previous story">
         <ion-icon name="chevron-back"></ion-icon>
       </button>
-      <button class="swiper-nav-btn next" *ngIf="newsList.length > 1" (click)="swiperNews.swiper.slideNext()">
+      <button class="bn-nav-btn next" *ngIf="newsList.length > 1" (click)="swiperNews.swiper.slideNext()" aria-label="Next story">
         <ion-icon name="chevron-forward"></ion-icon>
       </button>
     </div>
 
+    <div class="news-marquee">
+      <span class="news-marquee-label">Also today</span>
+      <div class="news-marquee-track">
+        <div class="news-marquee-content" [ngStyle]="{ 'animation-duration': newsList.length * 10 + 's' }">
+          <span *ngFor="let news of newsList">{{ news.headline }}</span>
+        </div>
+      </div>
+    </div>
+
     <ng-template #loading>
       <div class="loading-wrap">
-        <div class="skeleton" style="height: 220px; width: 33%; border-radius: 0;"></div>
+        <div class="skeleton" style="height: 220px; width: 33%; border-radius: 12px;"></div>
         <div style="flex: 1; padding: 1.5rem; display: flex; flex-direction: column; gap: 0.6rem;">
           <div class="skeleton" style="height: 14px; width: 40%; border-radius: 6px;"></div>
           <div class="skeleton" style="height: 20px; width: 80%; border-radius: 6px;"></div>

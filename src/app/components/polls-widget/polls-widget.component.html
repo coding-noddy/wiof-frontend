@@ -1,22 +1,24 @@
 <ion-card class="wiof-poll-card" *ngIf="pollQuestion">
-  <ion-card-header class="wiof-polls-widget-card-header">
-    <ion-card-title class="wiof-polls-widget-card-header-text">
-      Weekly Polls
-    </ion-card-title>
+  <ion-card-header class="poll-header">
+    <span class="poll-badge">
+      <ion-icon name="bar-chart-outline"></ion-icon>
+      Weekly Poll
+    </span>
   </ion-card-header>
 
   <ion-card-content class="wiof-polls-widget-card-background">
     <!-- Already voted indicator for authenticated users -->
     <div *ngIf="hasVoted" class="poll-voted-indicator">
-      <div class="voted-icon">✓</div>
+      <div class="voted-icon">
+        <ion-icon name="checkmark"></ion-icon>
+      </div>
       <div class="voted-message">You voted for: <strong>{{ votedOption }}</strong></div>
     </div>
 
     <div *ngIf="showForm && !hasVoted" class="polls-container">
       <form [formGroup]="wiofPollsForm" (submit)="submit()" class="poll-form">
-        <div class="poll-question">
-          <div class="question-label">Poll Question</div>
-          <div class="question-text">{{ pollQuestion.question }}</div>
+        <div class="poll-question-scroll">
+          <p class="question-text">{{ pollQuestion.question }}</p>
         </div>
 
         <div class="poll-options-list">
@@ -32,20 +34,21 @@
               value="option{{ i + 1 }}"
               formControlName="option"
             />
-              <div class="option-body">
-                <div class="option-text">{{ option }}</div>
-                <div class="option-meta" *ngIf="showPollResult">
-                  <div class="option-percent">
-                    {{ optionData['option' + (i + 1)]?.percent | number: '1.0-0' }}%
-                  </div>
-                  <div class="option-progress">
-                    <div
-                      class="option-progress-fill"
-                      [style.width]="optionData['option' + (i + 1)]?.percent + '%'"
-                    ></div>
-                  </div>
-                </div>
-              </div>
+            <span class="option-radio"></span>
+            <span class="option-body">
+              <span class="option-text">{{ option }}</span>
+              <span class="option-meta" *ngIf="showPollResult">
+                <span class="option-percent">
+                  {{ optionData['option' + (i + 1)]?.percent | number: '1.0-0' }}%
+                </span>
+                <span class="option-progress">
+                  <span
+                    class="option-progress-fill"
+                    [style.width]="optionData['option' + (i + 1)]?.percent + '%'"
+                  ></span>
+                </span>
+              </span>
+            </span>
           </label>
         </div>
 
@@ -62,7 +65,7 @@
 
           <div class="cta-and-error">
             <p *ngIf="errorShow" class="error">Please select an option</p>
-            <button class="wiof-primary-btn" type="submit">
+            <button class="poll-submit-btn" type="submit">
               Submit Vote
             </button>
           </div>

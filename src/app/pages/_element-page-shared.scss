@@ -346,13 +346,26 @@ ion-row + ion-row {
 
 // ── Keep Exploring — shared wrapper around Blogs + Videos ────────────────────
 .keep-exploring-sub-label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: 'Aleo', serif;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 1.2rem;
   color: var(--wiof-ink);
-  margin: 0 0 0.75rem;
+  margin: 0 0 1.1rem;
+
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 5px;
+    height: 1.2em;
+    border-radius: 999px;
+    background: var(--wiof-teal);
+  }
 
   &:not(:first-child) {
-    margin-top: 1.75rem;
+    margin-top: 2.25rem;
   }
 }
 
