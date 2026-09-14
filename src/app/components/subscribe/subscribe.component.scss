@@ -88,7 +88,9 @@
     right: 0;
   }
 
-  &.home   { background-color: lighten($home-color, 20%); }
+  // Ivory, not a Marigold tint: "home" isn't tied to any one element's
+  // identity colour, and brand guidelines reserve Marigold for accents/CTAs.
+  &.home   { background-color: var(--wiof-ivory); }
   &.earth  { background-color: lighten($earth-color, 5%); }
   &.water  { background-color: lighten($water-color, 3%); }
   &.air    { background-color: lighten($air-color, 5%); }

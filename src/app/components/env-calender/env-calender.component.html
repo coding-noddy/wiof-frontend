@@ -1,59 +1,53 @@
 <ion-card class="wiof-calendar-wrapper" *ngIf="EnvDays">
-  <ion-card-header class="wiof-env-calender-header wiof-home">
+  <ion-card-header class="wiof-env-calender-header">
     <ion-card-title class="title-text">
       <span>Environment Calender</span></ion-card-title
     >
   </ion-card-header>
   <ion-card-content class="wiof-env-calender-content background">
-    <ion-grid class="wiof-calendar-container">
-      <ion-row>
-        <ion-col class="month-header">
-          <div class="month-switcher">
-            <button class="month-nav" (click)="changeMonth(-1)" aria-label="Previous month">
-              <ion-icon name="caret-back-outline"></ion-icon>
-            </button>
-            <div class="month-title">
-              <h1>{{ displayMonth }}</h1>
-              <p>{{ displayDay }}</p>
-            </div>
-            <button class="month-nav" (click)="changeMonth(1)" aria-label="Next month">
-              <ion-icon name="caret-forward-outline"></ion-icon>
-            </button>
+    <div class="wiof-calendar-container">
+      <div class="month-header">
+        <div class="month-switcher">
+          <button class="month-nav" (click)="changeMonth(-1)" aria-label="Previous month">
+            <ion-icon name="caret-back-outline"></ion-icon>
+          </button>
+          <div class="month-title">
+            <h1>{{ displayMonth }}</h1>
+            <p>{{ displayDay }}</p>
           </div>
-        </ion-col>
-      </ion-row>
-      <ion-row class="weekday">
-        <ion-col>Sun</ion-col>
-        <ion-col>Mon</ion-col>
-        <ion-col>Tue</ion-col>
-        <ion-col>Wed</ion-col>
-        <ion-col>Thu</ion-col>
-        <ion-col>Fri</ion-col>
-        <ion-col>Sat</ion-col>
-      </ion-row>
+          <button class="month-nav" (click)="changeMonth(1)" aria-label="Next month">
+            <ion-icon name="caret-forward-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="weekday">
+        <span>Sun</span>
+        <span>Mon</span>
+        <span>Tue</span>
+        <span>Wed</span>
+        <span>Thu</span>
+        <span>Fri</span>
+        <span>Sat</span>
+      </div>
+
       <div class="days-grid-wrapper">
         <div class="calendar-loading-overlay" *ngIf="isLoading">
           <div class="skeleton" style="height: 100%; border-radius: 8px;"></div>
         </div>
         <div class="days-grid" [class.loading-blur]="isLoading">
-        <div
-          *ngFor="let day of days"
-          [class]="day.class"
-          [ngClass]="{
-            'occasion-day-container': day.occasion?.length,
-            'empty-day': !day.day,
-            'clickable': day.occasion?.length
-          }"
-          (click)="day.occasion?.length ? openOccasionDialog(day) : null"
-          [attr.title]="
-            day.occasion?.length ? day.occasion[day.selectedOccasionIndex]?.name : null
-          "
-        >
           <div
+            *ngFor="let day of days"
+            [class]="day.class"
             [ngClass]="{
-              'occasion-day': day.occasion?.length,
-              'no-occasion-day': !day.occasion?.length
+              'occasion-day-container': day.occasion?.length,
+              'empty-day': !day.day,
+              'clickable': day.occasion?.length
             }"
+            (click)="day.occasion?.length ? openOccasionDialog(day) : null"
+            [attr.title]="
+              day.occasion?.length ? day.occasion[day.selectedOccasionIndex]?.name : null
+            "
           >
             <div
               class="day-number"
@@ -88,9 +82,8 @@
               </button>
             </div>
           </div>
-        </div>
-      </div><!-- /days-grid -->
+        </div><!-- /days-grid -->
       </div><!-- /days-grid-wrapper -->
-    </ion-grid>
+    </div>
   </ion-card-content>
 </ion-card>

@@ -1,17 +1,5 @@
 <div class="video-slider-section" *ngIf="videoList && videoList.length > 0">
 
-  <!-- Actions -->
-  <div class="video-slider-actions">
-    <a
-      [routerLink]="['videos']"
-      class="action-link"
-      title="View all videos"
-      aria-label="View all videos"
-    >
-      View All <ion-icon name="arrow-forward-outline"></ion-icon>
-    </a>
-  </div>
-
   <!-- Slider -->
   <div *ngIf="videoList; else loading" class="slider-wrap">
     <swiper-container
@@ -42,6 +30,18 @@
     <button class="swiper-nav-btn next" (click)="swiperRef.swiper.slideNext()" *ngIf="showNavigator()">
       <ion-icon name="chevron-forward"></ion-icon>
     </button>
+  </div>
+
+  <!-- Trailing action, below the cards -->
+  <div class="video-slider-actions">
+    <a
+      [routerLink]="['videos']"
+      class="action-link"
+      title="View all videos"
+      aria-label="View all videos"
+    >
+      View All <ion-icon name="arrow-forward-outline"></ion-icon>
+    </a>
   </div>
 
   <ng-template #loading>

@@ -80,7 +80,6 @@ $streak-color: var(--wiof-marigold);
   backdrop-filter: blur($glass-blur);
   -webkit-backdrop-filter: blur($glass-blur);
   border-radius: $card-radius;
-  box-shadow: $card-shadow;
   border: 1.5px solid var(--wiof-brown-tint-40);
   border-top: 3px solid transparent;
   padding: 1rem;
@@ -92,7 +91,6 @@ $streak-color: var(--wiof-marigold);
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
   }
 
   .metric-value {
@@ -170,7 +168,6 @@ $streak-color: var(--wiof-marigold);
   backdrop-filter: blur($glass-blur);
   -webkit-backdrop-filter: blur($glass-blur);
   border-radius: $card-radius;
-  box-shadow: $card-shadow;
   border: 1.5px solid var(--wiof-brown-tint-40);
   padding: 0.75rem;
   text-decoration: none;
@@ -179,7 +176,6 @@ $streak-color: var(--wiof-marigold);
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -355,7 +351,6 @@ $streak-color: var(--wiof-marigold);
   backdrop-filter: blur($glass-blur);
   -webkit-backdrop-filter: blur($glass-blur);
   border-radius: $card-radius;
-  box-shadow: $card-shadow;
   border: 1.5px solid var(--wiof-brown-tint-40);
   padding: 1.25rem;
 

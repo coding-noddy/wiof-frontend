@@ -207,7 +207,7 @@ ion-content {
   &--primary {
     --background: #{$accent-color};
     --background-hover: #{$accent-color-dark};
-    --box-shadow: 0 4px 12px rgba(33, 153, 159, 0.35);
+    --box-shadow: none;
   }
 
   ion-icon {
@@ -222,7 +222,6 @@ ion-content {
   backdrop-filter: blur($glass-blur);
   -webkit-backdrop-filter: blur($glass-blur);
   border-radius: $card-radius;
-  box-shadow: $card-shadow;
   border: $card-border;
   margin: 0;
   overflow: hidden;
@@ -370,7 +369,7 @@ ion-content {
   --background: var(--wiof-marigold);
   --background-hover: var(--wiof-marigold-shade-20);
   --color: var(--wiof-ink);
-  --box-shadow: 0 6px 16px rgba(166, 135, 93, 0.3);
+  --box-shadow: none;
   font-weight: 700;
   font-size: 0.95rem;
 }

@@ -1,18 +1,35 @@
 @import '../../wiof-custom-theming.scss';
 
 // ── Card shell ────────────────────────────────────────────────────────────────
-// Teal, not Marigold: brand guidelines reserve Marigold for the one primary
-// CTA per page, never a background fill.
+// Warm-white badge header, matching Breaking News/Poll's treatment — one
+// consistent header language across every card family on the page, instead
+// of a solid colour bar (also keeps Marigold/Teal out of a background fill).
 .wiof-slider-header {
-  border-bottom: 2px solid white;
-  background-color: $water-color;
-  color: $light-color;
+  display: flex;
+  align-items: center;
+  padding: 0.9rem 1.25rem;
+  background: var(--wiof-warm-white);
+  border-bottom: 1.5px solid #EDE4D3;
+}
+
+.header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--wiof-teal);
+
+  ion-icon {
+    font-size: 1.05rem;
+  }
 }
 
 .wiof-course-in-focus-container {
   border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 14px 36px rgba(43, 36, 32, 0.1);
   border: 1.5px solid var(--wiof-brown-tint-40);
   background: var(--wiof-warm-white);
   margin: 0 !important;

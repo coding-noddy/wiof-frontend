@@ -39,6 +39,25 @@ ion-card-title {
   font-family: "Aleo", serif !important;
 }
 
+// Brand guideline: flat, bordered cards, no shadow — see ClimatEnlighten
+// brand file. Ionic's ion-card hardcodes a Material Design elevation
+// shadow directly on its internal `:host` rule (confirmed by inspecting
+// its shadow-root stylesheet) — it isn't exposed via any CSS custom
+// property, so there's no clean variable to override. Earlier per-
+// component "shadow removal" passes missed this: they deleted each
+// component's own extra hand-authored box-shadow declaration, but with
+// nothing left in app CSS to out-cascade Ionic's own rule, Ionic's
+// default silently came back — invisible at a glance, confirmed via a
+// computed-style probe on cards this project had already "de-shadowed".
+// `!important` is the deliberate, standard fix for a hardcoded Shadow
+// DOM default with no variable hook. A genuine overlay that wants
+// elevation (e.g. env-cal-dialog's .occasion-card) opts back in with its
+// own `box-shadow: ... !important` — that's the one documented exception,
+// keep it in sync with this rule.
+ion-card {
+  box-shadow: none !important;
+}
+
 html, body {
   /* Slightly smaller base font for denser layout */
   font-size: 15px;

@@ -9,7 +9,6 @@ $radius-card: 20px;
 .eq-widget-card {
   border-radius: $radius-card;
   overflow: hidden;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.10);
   background-color: lighten($s, 4%);
   display: flex;
   flex-direction: column;
@@ -143,12 +142,10 @@ $radius-card: 20px;
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.95);
   border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
   }
 }
 

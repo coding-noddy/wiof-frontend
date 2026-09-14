@@ -1,17 +1,5 @@
 <div class="blog-slider-section" *ngIf="blogList && blogList.length > 0">
 
-  <!-- Inline actions (list view / take action) -->
-  <div class="blog-slider-actions">
-    <a
-      [routerLink]="['blogs']"
-      class="action-link"
-      title="View all blogs"
-      aria-label="View all blogs"
-    >
-      View All <ion-icon name="arrow-forward-outline"></ion-icon>
-    </a>
-  </div>
-
   <!-- Slider -->
   <div *ngIf="blogList; else loading" class="slider-wrap">
     <swiper-container
@@ -32,6 +20,18 @@
     <button class="swiper-nav-btn next" (click)="swiperRef.swiper.slideNext()" *ngIf="showNavigator()">
       <ion-icon name="chevron-forward"></ion-icon>
     </button>
+  </div>
+
+  <!-- Trailing action, below the cards -->
+  <div class="blog-slider-actions">
+    <a
+      [routerLink]="['blogs']"
+      class="action-link"
+      title="View all blogs"
+      aria-label="View all blogs"
+    >
+      View All <ion-icon name="arrow-forward-outline"></ion-icon>
+    </a>
   </div>
 
   <ng-template #loading>

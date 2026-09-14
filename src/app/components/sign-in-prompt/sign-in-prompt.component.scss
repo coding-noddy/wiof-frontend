@@ -17,9 +17,6 @@
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1.5px solid var(--wiof-brown-tint-40);
-  box-shadow:
-    0 8px 32px rgba(43, 36, 32, 0.08),
-    0 2px 8px rgba(43, 36, 32, 0.04);
 
   // Entrance animation
   animation: promptSlideIn 0.25s ease;

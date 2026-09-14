@@ -12,7 +12,11 @@
   padding: 0;
   border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
+  // This is a genuine overlay (renders inside a modal), one of the
+  // documented exceptions to "no shadow by default" — !important because
+  // it opts back in over global.scss's `ion-card { box-shadow: none
+  // !important }` reset, which any non-!important shadow here would lose to.
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18) !important;
   background: #fff;
   width: 100%;
   display: flex;

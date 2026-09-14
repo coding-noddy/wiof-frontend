@@ -9,7 +9,6 @@ $radius-card: 20px;
 .aqi-widget-card {
   border-radius: $radius-card;
   overflow: hidden;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.10);
   background-color: lighten($a, 5%);
   display: flex;
   flex-direction: column;

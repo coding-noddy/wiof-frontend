@@ -28,13 +28,13 @@ ion-content {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 1rem;
-  padding: 1.1rem 1.25rem;
+  padding: 0 1.25rem;
   background: var(--wiof-warm-white);
   border-top: 1.5px solid #EDE4D3;
   border-bottom: 1.5px solid #EDE4D3;
 
   @media (min-width: 768px) {
-    padding: 1.1rem 6vw;
+    padding: 0 6vw;
   }
 
   .breadcrumb {
@@ -64,9 +64,11 @@ ion-content {
 }
 
 // ── Element banner / hero ─────────────────────────────────────────────────────
-// Full-bleed flat brand-color band (no photo, no card/border) — matches the
-// mockup exactly: solid element color, ink text throughout, icon badge next
-// to the heading, decorative low-opacity line/circle motif behind.
+// Full-bleed illustration + gradient scrim, one custom-generated banner per
+// element — matches the home page hero's treatment exactly (see .hero in
+// home.page.scss), replacing the earlier flat-color-band + SVG-rays mockup
+// now that real per-element artwork exists, for one consistent hero pattern
+// across every main page instead of a photo hero on home only.
 .element-hero {
   width: 100%;
   position: relative;
@@ -76,23 +78,44 @@ ion-content {
   padding: 2.5rem 1.25rem;
   margin-bottom: 1.5rem;
   color: var(--wiof-ink);
+  // The banners' own top third is mostly open sky (headroom for the sun/
+  // birds) — showing the full 8:3 height brought all of that empty space
+  // along with it, reading as dead space above and below the copy. Cropped
+  // tighter than the native ratio on purpose, biased toward the lower band
+  // (city/people/activity) via the 68% vertical position, which trims most
+  // of that empty sky off the top and only a little off the bottom.
+  background: var(--wiof-ivory) center 68% / cover no-repeat;
+  border-bottom: 1.5px solid #EDE4D3;
+  aspect-ratio: 16 / 5;
+  min-height: 340px;
+  max-height: 520px;
 
   @media (min-width: 768px) {
     padding: 4rem 6vw 3.5rem;
     margin-bottom: 2.5rem;
+    min-height: 440px;
   }
 
-  &.air, &.water, &.spirit { background: var(--wiof-teal); }
-  &.energy                 { background: var(--wiof-marigold); }
-  &.earth                  { background: var(--wiof-brown); }
+  &.air    { background-image: url('/assets/banners/air-hero.png'); }
+  &.water  { background-image: url('/assets/banners/water-hero.png'); }
+  &.spirit { background-image: url('/assets/banners/spirit-hero.png'); }
+  &.energy { background-image: url('/assets/banners/energy-hero.png'); }
+  &.earth  { background-image: url('/assets/banners/earth-hero.png'); }
 
-  .hero-rays {
+  // Ivory scrim so ink text stays legible over the illustration — same
+  // left-to-right treatment at every width (see home.page.scss's
+  // .hero-scrim) so the copy always reads as left-aligned over the banner,
+  // never a different top-down layout on mobile.
+  .hero-scrim {
     position: absolute;
     inset: 0;
-    width: 100%;
-    height: 100%;
     z-index: 0;
+    background: linear-gradient(100deg, var(--wiof-ivory) 0%, rgba(250, 245, 236, 0.92) 45%, rgba(250, 245, 236, 0.55) 68%, rgba(250, 245, 236, 0.18) 100%);
     pointer-events: none;
+
+    @media (min-width: 768px) {
+      background: linear-gradient(100deg, var(--wiof-ivory) 0%, rgba(250, 245, 236, 0.85) 30%, rgba(250, 245, 236, 0.35) 55%, rgba(250, 245, 236, 0) 75%);
+    }
   }
 
   .hero-main {

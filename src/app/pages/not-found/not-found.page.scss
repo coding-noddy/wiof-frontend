@@ -46,10 +46,8 @@ ion-content {
   font-size: 0.95rem;
   text-decoration: none;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
-  box-shadow: 0 8px 18px rgba(166, 135, 93, 0.25);
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 10px 22px rgba(166, 135, 93, 0.3);
   }
 }

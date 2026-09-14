@@ -5,11 +5,11 @@
   width: 100%;
 }
 
-// ── Actions row ───────────────────────────────────────────────────────────────
+// ── Actions row — trails the cards instead of floating above them ───────────
 .blog-slider-actions {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 0.75rem;
+  margin-top: 1rem;
 }
 
 .action-link {

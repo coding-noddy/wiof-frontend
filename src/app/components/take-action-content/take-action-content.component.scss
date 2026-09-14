@@ -28,7 +28,6 @@
     height: 100%;
     margin: 5px;
     border: 1.5px solid var(--wiof-brown-tint-40);
-    box-shadow: 0 8px 20px rgba(43, 36, 32, 0.08);
 
     .action-card-title,
     .action-media-container {
@@ -37,7 +36,6 @@
 
     &:hover {
       font-size: 18px !important;
-      box-shadow: 0 14px 32px rgba(43, 36, 32, 0.14);
     }
 
     .action-card-title {

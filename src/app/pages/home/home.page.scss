@@ -23,32 +23,46 @@ $page-padding-mobile:  16px;
 .hero {
   width: 100%;
   margin-bottom: 1.5rem;
-  background: var(--wiof-ivory);
+  background: var(--wiof-ivory) url('/assets/banners/home-hero.jpg') center / cover no-repeat;
   color: var(--wiof-ink);
   border-bottom: 1.5px solid #EDE4D3;
   overflow: hidden;
   position: relative;
-  min-height: 380px;
+  // The banner art is a native 2048x768 (8:3) illustration. Sizing the box
+  // to that same ratio means `cover` needs zero vertical crop to fill it —
+  // the full height of the artwork shows, cropping only the sides on
+  // viewport widths away from ~1440px (min/max-height below override the
+  // ratio at the extremes: too narrow, it crops sides for a readable text
+  // height instead of squashing the hero; too wide, it caps how tall the
+  // band gets rather than growing without bound).
+  aspect-ratio: 8 / 3;
+  min-height: 420px;
+  max-height: 640px;
   display: flex;
   align-items: center;
 
   @media (min-width: 768px) {
     margin-bottom: 2.5rem;
+    min-height: 540px;
   }
 
-  .hero-rays {
+  // Soft ivory-to-transparent wash, left to right, so the headline stays
+  // readable over the illustration without hiding the art — same treatment
+  // at every width so the copy always reads as "left-aligned over the
+  // banner," not a different top-down layout on mobile.
+  .hero-scrim {
     position: absolute;
     inset: 0;
-    width: 100%;
-    height: 100%;
     z-index: 0;
+    // Percentage stops are relative to element width, so the same fractions
+    // give a much narrower opaque "text zone" in absolute px on a phone —
+    // widened here (and never fully clearing to 0, since there's little
+    // width left to spare) so the copy still gets a readable runway.
+    background: linear-gradient(100deg, var(--wiof-ivory) 0%, rgba(250, 245, 236, 0.92) 45%, rgba(250, 245, 236, 0.55) 68%, rgba(250, 245, 236, 0.18) 100%);
     pointer-events: none;
 
-    line {
-      stroke: var(--wiof-marigold);
-      stroke-width: 10;
-      stroke-linecap: round;
-      opacity: 0.45;
+    @media (min-width: 768px) {
+      background: linear-gradient(100deg, var(--wiof-ivory) 0%, rgba(250, 245, 236, 0.85) 30%, rgba(250, 245, 236, 0.35) 55%, rgba(250, 245, 236, 0) 75%);
     }
   }
 
@@ -56,10 +70,13 @@ $page-padding-mobile:  16px;
     position: relative;
     z-index: 1;
     width: 100%;
-    max-width: 840px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
-    text-align: center;
+    max-width: 640px;
+    padding: 2rem 1.25rem;
+    text-align: left;
+
+    @media (min-width: 768px) {
+      padding: 2rem 6vw;
+    }
   }
 
     .eyebrow {
@@ -105,13 +122,11 @@ $page-padding-mobile:  16px;
     border-radius: 999px;
     background-color: var(--wiof-marigold);
     color: var(--wiof-ink);
-    box-shadow: 0 8px 18px rgba(166, 135, 93, 0.18);
     cursor: pointer;
     transition: transform 0.18s ease, box-shadow 0.18s ease;
 
     &:hover {
       transform: translateY(-1px);
-      box-shadow: 0 12px 20px rgba(166, 135, 93, 0.24);
     }
   }
 }

@@ -73,19 +73,17 @@
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 26px rgba(43, 36, 32, 0.12);
   }
 
   &.active {
     @include element-color(border-color, 1);
-    @include element-color(box-shadow, 0.22);
-    box-shadow: 0 12px 26px;
   }
 
   .element-icon {
     @extend %element-icon-base;
     width: 64px;
     height: 64px;
+    position: relative;
   }
 
   .element-name {
@@ -101,6 +99,116 @@
     color: $dark-color;
     opacity: 0.68;
   }
+
+  // ── Per-element hover motifs ──────────────────────────────────────────────
+  // Each element gets its own hover behaviour drawn from the brand guide's
+  // elemental vocabulary (terrain / waves / wind / rays / concentric
+  // circles) rather than one generic hover effect for all five.
+
+  // Air — wind: the icon drifts on a breeze, with two thin streak lines
+  // sliding past it.
+  &:hover .icon-air {
+    animation: elem-air-drift 1.6s ease-in-out infinite;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      left: -10%;
+      width: 55%;
+      height: 2px;
+      border-radius: 999px;
+      background: var(--wiof-teal);
+      opacity: 0;
+      animation: elem-air-streak 1.4s ease-in-out infinite;
+    }
+
+    &::before { top: 28%; animation-delay: 0s; }
+    &::after  { top: 62%; animation-delay: 0.35s; }
+  }
+
+  // Water — waves: a ring ripples outward from the icon and fades.
+  &:hover .icon-water {
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid var(--wiof-teal);
+      opacity: 0.7;
+      animation: elem-ripple 1.5s ease-out infinite;
+    }
+  }
+
+  // Earth — terrain: grounded, settles into a gentle grow rather than
+  // floating, echoing "grow from the ground" instead of drifting.
+  &:hover .icon-earth {
+    animation: elem-earth-grow 1.8s ease-in-out infinite;
+    transform-origin: bottom center;
+  }
+
+  // Energy — rays: the icon pulses with a warm glow, like light building.
+  &:hover .icon-energy {
+    animation: elem-energy-pulse 1.3s ease-in-out infinite;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -18%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 194, 111, 0.45) 0%, rgba(255, 194, 111, 0) 70%);
+      animation: elem-energy-glow 1.3s ease-in-out infinite;
+      z-index: -1;
+    }
+  }
+
+  // Spirit — concentric circles: rings expand outward from the centre,
+  // staggered, echoing reflection/expansion rather than a single ripple.
+  &:hover .icon-spirit {
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1.5px solid var(--wiof-teal);
+      opacity: 0;
+      animation: elem-ripple 2s ease-out infinite;
+    }
+
+    &::after { animation-delay: 0.7s; }
+  }
+}
+
+@keyframes elem-air-drift {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(4px); }
+}
+
+@keyframes elem-air-streak {
+  0%   { opacity: 0; transform: translateX(-20%); }
+  40%  { opacity: 0.8; }
+  100% { opacity: 0; transform: translateX(120%); }
+}
+
+@keyframes elem-ripple {
+  0%   { transform: scale(0.85); opacity: 0.7; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes elem-earth-grow {
+  0%, 100% { transform: scaleY(1); }
+  50%      { transform: scaleY(1.08); }
+}
+
+@keyframes elem-energy-pulse {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50%      { transform: scale(1.06); filter: brightness(1.15); }
+}
+
+@keyframes elem-energy-glow {
+  0%, 100% { opacity: 0.6; transform: scale(0.9); }
+  50%      { opacity: 1; transform: scale(1.1); }
 }
 
 // ── Pills variant (element pages — compact switcher) ────────────────────────
@@ -140,6 +248,41 @@
     @extend %element-icon-base;
     width: 20px;
     height: 20px;
+    position: relative;
+  }
+
+  // Same elemental hover motifs as the card grid, scaled down for the pill.
+  &:hover .icon-air {
+    animation: elem-air-drift 1.6s ease-in-out infinite;
+  }
+
+  &:hover .icon-water::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1.5px solid var(--wiof-teal);
+    opacity: 0.7;
+    animation: elem-ripple 1.5s ease-out infinite;
+  }
+
+  &:hover .icon-earth {
+    animation: elem-earth-grow 1.8s ease-in-out infinite;
+    transform-origin: bottom center;
+  }
+
+  &:hover .icon-energy {
+    animation: elem-energy-pulse 1.3s ease-in-out infinite;
+  }
+
+  &:hover .icon-spirit::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1.5px solid var(--wiof-teal);
+    opacity: 0;
+    animation: elem-ripple 2s ease-out infinite;
   }
 }
 

@@ -4,22 +4,25 @@
   display: flex;
   flex-direction: column;
   padding: 0.5rem;
-  background: #f7f9ff;
+  background: var(--wiof-ivory);
   min-height: 480px;
 }
 
 .wiof-calendar-container {
-  background-color: $light-color;
-  border-radius: 14px;
+  background-color: var(--wiof-warm-white);
+  border-radius: 12px;
   min-width: 100%;
   padding: 0.6rem;
-  box-shadow: inset 0 0 0 1px rgba($dark-color, 0.05);
+  border: 1px solid rgba($dark-color, 0.05);
   overflow: hidden;
 }
 
 .weekday {
-  ion-col {
-    color: $home-text-color;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+
+  span {
+    color: var(--wiof-ink);
     text-align: center;
     font-weight: 600;
     font-size: 0.85rem;
@@ -36,17 +39,17 @@
 // ── Each day cell ─────────────────────────────────────────────────────────────
 .day {
   border-radius: 10px;
-  background-color: #f5f7ff;
+  background-color: var(--wiof-ivory);
   border: 1px solid rgba($dark-color, 0.07);
   min-width: 0;
   position: relative;
   overflow: hidden;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  transition: transform 0.18s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  color: $home-text-color;
+  color: var(--wiof-ink);
   cursor: default;
   padding: 0.35rem 0.2rem;
   aspect-ratio: 1 / 1;   // always square
@@ -58,7 +61,6 @@
 
 .day.clickable:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(33, 49, 92, 0.10);
 }
 
 .day.today {
@@ -129,7 +131,7 @@
 
 .no-occasion-day-date {
   background: rgba($dark-color, 0.06);
-  color: $dark-color;
+  color: var(--wiof-ink);
 }
 
 // ── Nav buttons (multiple occasions on same day) ──────────────────────────────
@@ -141,16 +143,15 @@
 
 .nav-button {
   border: 1px solid rgba($dark-color, 0.1);
-  background: white;
+  background: var(--wiof-warm-white);
   width: 20px;
   height: 20px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: $dark-color;
+  color: var(--wiof-ink);
   font-size: 10px;
-  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.08);
   padding: 0;
 }
 
@@ -160,10 +161,13 @@
 }
 
 // ── Wrapper / header ──────────────────────────────────────────────────────────
+// Matches the agenda card's header text treatment (same Brown bar, same row) —
+// this was set to ink instead of warm-white, so it lost contrast against the
+// header instead of popping like "Coming Up" does right next to it.
 .title-text {
   font-size: 1.1rem;
-  font-weight: 600;
-  color: $dark-color;
+  font-weight: 700;
+  color: var(--wiof-warm-white);
 }
 
 .wiof-calendar-wrapper {
@@ -172,10 +176,11 @@
   height: 100%;
   min-height: 520px;
   margin: 0 !important;
-  background-color: $home-color-light;
+  // Warm White, not a Marigold tint — matches every other card on the page
+  // (brand guidelines reserve Marigold for accents/CTAs, never a background).
+  background-color: var(--wiof-warm-white);
   border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.10);
 }
 
 .wiof-env-calendar-dialog-container {
@@ -201,14 +206,14 @@
 // brand guidelines reserve Marigold for the one primary CTA per page,
 // never a background fill.
 .wiof-env-calender-header {
-  background-color: $earth-color;
-  border-bottom: 2px solid white;
-  color: $light-color;
+  background-color: var(--wiof-brown);
+  border-bottom: 2px solid var(--wiof-warm-white);
+  color: var(--wiof-warm-white);
 }
 
 .month-header {
   text-align: center;
-  color: $dark-color;
+  color: var(--wiof-ink);
 
   .month-switcher {
     display: inline-flex;
@@ -224,38 +229,37 @@
 
   .month-nav {
     border: 1px solid rgba($dark-color, 0.12);
-    background: #fff;
+    background: var(--wiof-warm-white);
     width: 32px;
     height: 32px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: $dark-color;
-    box-shadow: 0 2px 6px rgba(16, 24, 40, 0.08);
+    color: var(--wiof-ink);
   }
+}
 
-  .calendar-loading {
-    font-size: 0.75rem;
-    color: rgba($dark-color, 0.75);
-  }
+// These sit alongside .month-header/.weekday in the markup, not inside it —
+// they were previously nested under `.month-header { }` in this file, which
+// compiled to `.month-header .days-grid-wrapper` etc and never matched
+// anything, so the loading overlay rendered unpositioned/unstyled and the
+// grid never actually dimmed during a month change.
+.days-grid-wrapper {
+  position: relative;
+}
 
-  .days-grid-wrapper {
-    position: relative;
-  }
+.calendar-loading-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 8px;
+}
 
-  .calendar-loading-overlay {
-    position: absolute;
-    inset: 0;
-    z-index: 5;
-    background: rgba(255,255,255,.6);
-    border-radius: 8px;
-  }
-
-  .loading-blur {
-    opacity: 0.4;
-    pointer-events: none;
-  }
+.loading-blur {
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 // ── Responsive ────────────────────────────────────────────────────────────────
@@ -273,7 +277,7 @@
     gap: 0.25rem;
   }
 
-  .weekday ion-col {
+  .weekday span {
     font-size: 0.65rem;
   }
 

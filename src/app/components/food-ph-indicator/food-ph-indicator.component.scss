@@ -45,21 +45,24 @@ $panel-shadow:
 
   border-radius: $card-radius;
 
-  background: lighten($earth-color, 12%);
-
-  box-shadow: $card-shadow;
+  background: var(--wiof-warm-white);
+  border: 1.5px solid var(--wiof-brown-tint-40);
 }
 
 /* ==========================================================
    Header
 ========================================================== */
 
+// Warm-white badge header, matching Breaking News/Poll/NGO/Course-in-Focus'
+// treatment — this card previously stood out as a lone solid-Brown-bar
+// header with no documented reason (unlike the Environment Calendar
+// family's deliberately-kept Brown identity).
 .wiof-food-ph-widget-card-header {
   padding: 1rem 1.4rem;
 
-  background: $earth-color;
+  background: var(--wiof-warm-white);
 
-  border-bottom: 1px solid rgba(255,255,255,.65);
+  border-bottom: 1.5px solid #EDE4D3;
 }
 
 .food-ph-widget-header {
@@ -77,11 +80,11 @@ $panel-shadow:
 
 .header-icon {
   font-size: 1.45rem;
-  color: darken($earth-color, 38%);
+  color: var(--wiof-teal);
 }
 
 .title-text {
-  color: $dark-color;
+  color: var(--wiof-teal);
 
   font-size: clamp(1rem,1.3vw,1.25rem);
   font-weight: 700;
@@ -99,10 +102,10 @@ $panel-shadow:
 
   padding: .55rem 1rem;
 
-  border: 1px solid rgba(255,255,255,.9);
+  border: 1.5px solid var(--wiof-teal-tint-20);
   border-radius: 999px;
 
-  background: rgba(255,255,255,.72);
+  background: var(--wiof-teal-tint-40);
 
   color: $dark-color;
   font-size: .9rem;
@@ -118,7 +121,7 @@ $panel-shadow:
 
 .about-toggle:hover {
 
-  background: rgba(255,255,255,.96);
+  background: var(--wiof-warm-white);
 
   transform: translateY(-2px);
 
@@ -155,7 +158,7 @@ $panel-shadow:
 .about-panel {
   overflow: hidden;
   max-height: 0;
-  background: rgba(255,255,255,.55);
+  background: var(--wiof-ivory);
   border-bottom: 1px solid rgba(0,0,0,.06);
   transition:
     max-height .3s ease,
@@ -450,11 +453,13 @@ $panel-shadow:
 ========================================================== */
 
 .food-ph-meter-panel {
-  background: $panel-background;
-  border: 1px solid rgba(255,255,255,.5);
+  // Was a translucent glass panel (opacity + blur) meant to be read against
+  // the Brown wash behind it — now that the wash is Warm White (matching
+  // every other card's background), a solid Ivory fill + real border gives
+  // the same "distinct panel" separation without relying on that contrast.
+  background: var(--wiof-ivory);
+  border: 1px solid var(--wiof-brown-tint-40);
   border-radius: $panel-radius;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   padding: 0;
   overflow: hidden;
   // Fixed height so left side never grows
@@ -513,7 +518,7 @@ $panel-shadow:
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: rgba(255,255,255,.65);
+  background: var(--wiof-warm-white);
   border: 1px solid rgba(0,0,0,.08);
   border-radius: 999px;
   padding: 4px 12px;
@@ -579,11 +584,12 @@ $panel-shadow:
 }
 
 .food-ph-input-area {
-  background: $panel-background;
-  border: 1px solid rgba(255,255,255,.5);
+  // See .food-ph-meter-panel — same swap from a translucent glass panel to
+  // a solid Ivory fill + real border now that the wash behind it is Warm
+  // White, not Brown.
+  background: var(--wiof-ivory);
+  border: 1px solid var(--wiof-brown-tint-40);
   border-radius: $panel-radius;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   padding: 1rem;
   overflow: visible;
   position: relative;
@@ -1159,7 +1165,7 @@ input:focus-visible {
 
 .fact-strip {
   margin: 0;
-  background: rgba(255,255,255,.6);
+  background: var(--wiof-ivory);
   border-top: 1px solid rgba(0,0,0,.06);
   border-radius: 0 0 $card-radius $card-radius;
   padding: .6rem .75rem;
@@ -1329,13 +1335,11 @@ input:focus-visible {
   border-radius: 14px;
   background: linear-gradient(180deg,#ffffff,#f8faf6);
   border: 1px solid rgba(118,155,76,.18);
-  box-shadow: 0 4px 12px rgba(0,0,0,.04);
   transition: all .25s ease;
 }
 
 .summary-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(0,0,0,.08);
 }
 
 .summary-item span {

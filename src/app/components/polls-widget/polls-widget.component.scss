@@ -15,7 +15,6 @@
   border-radius: 18px;
   overflow: hidden;
   border: 1.5px solid var(--wiof-brown-tint-40);
-  box-shadow: 0 14px 36px rgba(43, 36, 32, 0.1);
 }
 
 // ── Header — identity badge on warm-white, matching Breaking News'
@@ -83,6 +82,39 @@ ion-card-content.wiof-polls-widget-card-background {
   max-height: 128px;
   overflow-y: auto;
   padding-right: 0.25rem;
+  background-color: var(--wiof-warm-white);
+  background-repeat: no-repeat;
+  // "Scroll shadow": a soft fade + edge tint that's only visible while
+  // there's more question text below the fold. The fade is glued to the
+  // content (`local`) so it slides out of view once you've scrolled to the
+  // real end, uncovering... nothing — while the tint stays pinned to the
+  // box's visible bottom (`scroll`) and reads as "more below." No JS
+  // overflow-detection needed; a plain hard clip here looked like a
+  // rendering bug rather than a deliberate "keep scrolling" cue.
+  background-image:
+    linear-gradient(rgba(43, 36, 32, 0), var(--wiof-warm-white) 75%),
+    linear-gradient(to top, rgba(43, 36, 32, 0.14), rgba(43, 36, 32, 0));
+  background-position: 0 100%, 0 100%;
+  background-size: 100% 36px, 100% 14px;
+  background-attachment: local, scroll;
+
+  // Default scrollbars here are near-invisible (thin, auto-hiding) —
+  // style one in explicitly so the box reads as scrollable at a glance.
+  scrollbar-width: thin;
+  scrollbar-color: var(--wiof-teal-tint-20) transparent;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--wiof-teal-tint-20);
+    border-radius: 999px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
 }
 
 .question-text {
@@ -166,7 +198,6 @@ ion-card-content.wiof-polls-widget-card-background {
 
 .poll-option:hover .option-body {
   transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgba(43, 36, 32, 0.06);
 }
 
 .poll-option input[type='radio']:checked ~ .option-body {
