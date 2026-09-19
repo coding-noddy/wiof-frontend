@@ -69,6 +69,10 @@ $transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebar-title {
+  // Same wordmark reasoning as the footer's own "WIOF" — the brand guide
+  // sets wordmarks in Aleo. Not a heading tag, so it needs the explicit
+  // override to win over global.scss's universal Noto Sans reset.
+  font-family: 'Aleo', serif !important;
   color: #fff;
   font-size: 1.1rem;
   font-weight: 700;

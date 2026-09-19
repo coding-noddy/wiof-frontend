@@ -61,6 +61,9 @@
 }
 
 .course-name-link {
+  // Not a heading tag (it's an <a>), so it needs its own explicit override
+  // to win over global.scss's universal Noto Sans reset.
+  font-family: 'Aleo', serif !important;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--wiof-ink);

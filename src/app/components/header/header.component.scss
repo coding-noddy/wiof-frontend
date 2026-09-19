@@ -58,18 +58,42 @@ $mobile-breakpoint: 768px;
 }
 
 .nav-link {
+  position: relative;
   padding: 8px 16px;
   font-size: 0.88rem;
   font-weight: 600;
   color: var(--wiof-ink);
   text-decoration: none;
-  border-radius: 8px;
-  transition: background 0.15s ease, color 0.15s ease;
   letter-spacing: -0.01em;
 
-  &:hover {
-    background: var(--wiof-ivory);
-    color: var(--wiof-teal);
+  // Marigold underline — grows in from the left on hover, stays fully
+  // expanded (no hover needed) once this is the active route. transform:
+  // scaleX (not width) so the grow animation is a GPU-friendly transform,
+  // not a layout-triggering width change.
+  &::after {
+    content: '';
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 2px;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--wiof-marigold);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.28s ease;
+  }
+
+  &:hover::after {
+    transform: scaleX(1);
+  }
+
+  &.active-link {
+    font-weight: 700;
+
+    &::after {
+      transform: scaleX(1);
+    }
   }
 }
 
@@ -191,6 +215,14 @@ $mobile-breakpoint: 768px;
 
   &:hover {
     background: var(--wiof-ivory);
+  }
+
+  // Same marigold accent language as the desktop underline, adapted for a
+  // vertical list row — a left border reads better here than an underline.
+  &.active-link {
+    font-weight: 700;
+    border-left: 3px solid var(--wiof-marigold);
+    padding-left: calc(1.5rem - 3px);
   }
 }
 

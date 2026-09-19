@@ -28,6 +28,9 @@
 }
 
 .in-focus-header-title {
+  // Not a heading tag (a <span>), so it needs its own explicit override to
+  // win over global.scss's universal Noto Sans reset.
+  font-family: 'Aleo', serif !important;
   font-size: 1.08rem;
   font-weight: 700;
   letter-spacing: -0.02em;

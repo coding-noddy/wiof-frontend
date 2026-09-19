@@ -33,6 +33,11 @@
 }
 
 .footer-title {
+  // The brand guide is explicit that a wordmark — "the name alone, styled
+  // in its font" — is set in Aleo, same as the logo's own wordmark. Not a
+  // heading tag (a <span> beside the logo image), so it needs its own
+  // explicit override to win over global.scss's universal Noto Sans reset.
+  font-family: 'Aleo', serif !important;
   font-weight: 700;
   font-size: 1.05rem;
   color: var(--wiof-brown);

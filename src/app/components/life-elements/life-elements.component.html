@@ -20,19 +20,32 @@
       <span class="element-desc">{{ el.description }}</span>
 
       <div class="element-motif" [ngSwitch]="el.slug" aria-hidden="true">
+        <!-- Wind: directional gust streaks (each a mostly-straight stroke
+             that hooks at one end), not a repeating wave crest — Water
+             already owns that shape, and the brand file draws these two
+             apart on purpose (waves describe a surface; wind moves
+             through open space). -->
         <svg *ngSwitchCase="'air'" class="motif-svg" viewBox="0 0 300 100" preserveAspectRatio="none">
-          <path d="M0,30 C40,15 70,45 110,30 C150,15 180,45 220,30 C250,20 270,35 300,25" />
-          <path d="M0,55 C40,40 70,70 110,55 C150,40 180,70 220,55 C250,45 270,60 300,50" />
-          <path d="M0,80 C40,65 70,95 110,80 C150,65 180,95 220,80 C250,70 270,85 300,75" />
+          <path d="M0,20 L185,20 C202,20 202,6 190,4" />
+          <path d="M25,52 L165,52 C181,52 181,66 169,68" />
+          <path d="M0,84 L120,84 C134,84 134,72 125,70" />
         </svg>
         <svg *ngSwitchCase="'water'" class="motif-svg" viewBox="0 0 300 100" preserveAspectRatio="none">
           <path d="M0,40 Q25,25 50,40 T100,40 T150,40 T200,40 T250,40 T300,40" />
           <path d="M0,65 Q25,50 50,65 T100,65 T150,65 T200,65 T250,65 T300,65" />
           <path d="M0,90 Q25,75 50,90 T100,90 T150,90 T200,90 T250,90 T300,90" />
         </svg>
+        <!-- Terrain: bold *contour-like* lines — the brand file's own word
+             for Earth's vocabulary, meaning smooth topographic-map curves
+             tracing a hillside, not a sharp zigzag mountain silhouette (the
+             earlier version used straight line-to segments only, which read
+             as angular peaks rather than contour lines, and was the one
+             motif out of five that wasn't curve-based). Two layered,
+             irregularly-humped curves so it still reads as rolling
+             terrain rather than Water's tighter, evenly-repeating waves. -->
         <svg *ngSwitchCase="'earth'" class="motif-svg" viewBox="0 0 300 100" preserveAspectRatio="none">
-          <path d="M0,95 L40,55 L80,75 L120,35 L160,65 L200,25 L240,60 L270,40 L300,55" />
-          <path d="M0,105 L50,75 L90,90 L130,60 L170,85 L210,50 L250,80 L300,65" />
+          <path d="M0,55 Q45,25 95,45 Q145,65 195,35 Q245,15 300,45" />
+          <path d="M0,80 Q55,55 110,78 Q165,100 220,72 Q265,50 300,75" />
         </svg>
         <svg *ngSwitchCase="'energy'" class="motif-svg" viewBox="0 0 300 100" preserveAspectRatio="none">
           <line x1="300" y1="100" x2="220" y2="20" />

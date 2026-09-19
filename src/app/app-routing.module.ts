@@ -148,12 +148,19 @@ const routes: Routes = [
     canActivate: [PublicUserGuard]
   },
   {
-    path: 'my-saved',
+    path: 'my-library',
     loadChildren: () =>
-      import('./pages/my-saved/my-saved.module').then(
-        (m) => m.MySavedPageModule
+      import('./pages/my-library/my-library.module').then(
+        (m) => m.MyLibraryPageModule
       ),
     canActivate: [PublicUserGuard]
+  },
+  {
+    // Kept for bookmarks/old links/SEO, same pattern as the aboutus/discover-more
+    // redirects from the our-team/our-purpose rename.
+    path: 'my-saved',
+    redirectTo: 'my-library',
+    pathMatch: 'full'
   },
   {
     path: 'settings',

@@ -9,6 +9,41 @@ $heading-color: var(--wiof-ink);
 $body-color: var(--wiof-ink);
 $accent-color: var(--wiof-teal);
 
+// ── Breadcrumb — same local pattern as our-purpose/our-team's own copy
+// (_element-page-shared.scss's .element-switcher-bar/.breadcrumb pulls in
+// the element pills too, which don't belong on this page) ───────────────
+.page-breadcrumb-bar {
+  width: 100%;
+  padding: 1.1rem 1.25rem;
+  background: var(--wiof-warm-white);
+  border-top: 1.5px solid #EDE4D3;
+  border-bottom: 1.5px solid #EDE4D3;
+
+  @media (min-width: 768px) {
+    padding: 1.1rem 6vw;
+  }
+}
+
+.breadcrumb {
+  font-size: 0.9rem;
+  color: var(--wiof-ink);
+
+  a {
+    color: var(--wiof-ink);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .sep {
+    margin: 0 0.5rem;
+    opacity: 0.5;
+  }
+
+  .current {
+    font-weight: 700;
+  }
+}
+
 .my-saved-page {
   padding: 1rem;
   max-width: 1200px;

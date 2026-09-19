@@ -4,8 +4,40 @@ ion-content {
   --background: var(--wiof-ivory);
 }
 
+.page-breadcrumb-bar {
+  width: 100%;
+  padding: 1.1rem 1.25rem;
+  background: var(--wiof-warm-white);
+  border-top: 1.5px solid #EDE4D3;
+  border-bottom: 1.5px solid #EDE4D3;
+
+  @media (min-width: 768px) {
+    padding: 1.1rem 6vw;
+  }
+}
+
+.breadcrumb {
+  font-size: 0.9rem;
+  color: var(--wiof-ink);
+
+  a {
+    color: var(--wiof-ink);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .sep {
+    margin: 0 0.5rem;
+    opacity: 0.5;
+  }
+
+  .current {
+    font-weight: 700;
+  }
+}
+
 .sitemap-title {
-  padding: 0 1.25rem;
+  padding: 1.5rem 1.25rem 0;
   font-size: 2rem;
   font-weight: 800;
   color: var(--wiof-ink);

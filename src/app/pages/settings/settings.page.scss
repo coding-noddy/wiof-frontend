@@ -267,13 +267,11 @@ ion-content {
   ion-input {
     --color: var(--ion-text-color, #{$heading-color});
     font-size: 0.95rem;
-    font-family: 'Roboto', sans-serif;
   }
 
   ion-select {
     --placeholder-color: var(--ion-color-medium, #{$body-color});
     font-size: 0.95rem;
-    font-family: 'Roboto', sans-serif;
   }
 }
 

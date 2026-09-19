@@ -1016,6 +1016,11 @@ ion-header {
   margin-bottom: 16px;
 
   .form-card-title {
+    // Not a heading tag (a plain <div>), so it needs its own explicit
+    // override to win over global.scss's universal Noto Sans reset. Shared
+    // by every admin add/edit page's section headers (e.g. "Basic
+    // Information", "Blog Content"), so this one fix applies sitewide.
+    font-family: 'Aleo', serif !important;
     font-size: 0.88rem;
     font-weight: 700;
     color: $text-primary;

@@ -282,6 +282,12 @@
   100% { height: 0; opacity: 0; }
 }
 
+@keyframes elem-earth-sprout-sm {
+  0%   { height: 0; opacity: 0; }
+  55%  { height: 5px; opacity: 0.9; }
+  100% { height: 0; opacity: 0; }
+}
+
 @keyframes elem-energy-pulse {
   0%, 100% { transform: scale(1); filter: brightness(1); }
   50%      { transform: scale(1.06); filter: brightness(1.15); }
@@ -347,11 +353,25 @@
     animation: elem-ripple 1.5s ease-out infinite;
   }
 
-  // Same settle as the card grid, minus the sprouts — too small at pill
-  // scale (20px) to read as anything but noise.
+  // Same settle + sprouts as the card grid, scaled down for the 20px icon.
   &:hover .icon-earth {
     animation: elem-earth-settle 1.8s ease-in-out infinite;
     transform-origin: bottom center;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      width: 1px;
+      height: 0;
+      border-radius: 999px;
+      background: var(--wiof-brown);
+      animation: elem-earth-sprout-sm 1.8s ease-in-out infinite;
+    }
+
+    &::before { left: 36%; animation-delay: 0s; }
+    &::after  { left: 58%; animation-delay: 0.3s; }
   }
 
   &:hover .icon-energy {

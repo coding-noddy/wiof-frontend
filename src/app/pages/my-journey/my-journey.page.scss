@@ -112,7 +112,8 @@ $streak-color: var(--wiof-marigold);
     margin-top: 0.25rem;
     font-weight: 500;
 
-    .metric-date {
+    .metric-date,
+    .metric-best {
       display: block;
       font-size: 0.7rem;
       color: $body-color-light;

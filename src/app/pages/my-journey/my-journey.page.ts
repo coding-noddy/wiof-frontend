@@ -24,6 +24,7 @@ export class MyJourneyPage implements OnInit, OnDestroy {
   // Engagement metrics
   metrics: EngagementMetrics | null = null;
   currentStreak = 0;
+  longestStreak = 0;
   savedContentCount = 0;
 
   // Saved content list
@@ -194,6 +195,7 @@ export class MyJourneyPage implements OnInit, OnDestroy {
     this.hasError = false;
     this.metrics = null;
     this.currentStreak = 0;
+    this.longestStreak = 0;
     this.savedContentCount = 0;
     this.savedContent = [];
     this.hasSavedContent = false;
@@ -269,7 +271,7 @@ export class MyJourneyPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Loads the user profile for currentStreak.
+   * Loads the user profile for currentStreak/longestStreak.
    */
   private loadProfile(userId: string): void {
     this.userProfileService.getProfile(userId)
@@ -281,7 +283,11 @@ export class MyJourneyPage implements OnInit, OnDestroy {
         next: (profile) => {
           if (profile) {
             this.currentStreak = profile.currentStreak || 0;
-            this.savedContentCount = Math.max(this.savedContentCount, profile.savedBlogsCount || 0);
+            this.longestStreak = profile.longestStreak || 0;
+            // savedContentCount comes from the live user_saved_content query in
+            // loadSavedContent() below — profile.savedBlogsCount is never actually
+            // incremented anywhere (only initialized/reset to 0), so folding it in
+            // here was always a no-op.
           }
           this.checkLoadingComplete();
         },

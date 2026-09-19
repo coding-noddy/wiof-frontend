@@ -7,9 +7,9 @@
 
     <!-- Desktop Navigation -->
     <nav class="desktop-nav">
-      <a routerLink="/home" class="nav-link">Home</a>
-      <a routerLink="/our-purpose" class="nav-link">Our Purpose</a>
-      <a routerLink="/our-team" class="nav-link">Our Team</a>
+      <a routerLink="/home" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Home</a>
+      <a routerLink="/our-purpose" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Our Purpose</a>
+      <a routerLink="/our-team" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Our Team</a>
 
       <!-- Auth-aware -->
       <ng-container *ngIf="isAuthenticated$ | async; else guestSignIn">
@@ -38,16 +38,16 @@
 
   <!-- Mobile menu -->
   <nav class="mobile-menu" [class.mobile-menu--open]="mobileMenuOpen">
-    <a routerLink="/home" class="mobile-link" (click)="closeMobileMenu()">Home</a>
-    <a routerLink="/our-purpose" class="mobile-link" (click)="closeMobileMenu()">Our Purpose</a>
-    <a routerLink="/our-team" class="mobile-link" (click)="closeMobileMenu()">Our Team</a>
+    <a routerLink="/home" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" class="mobile-link" (click)="closeMobileMenu()">Home</a>
+    <a routerLink="/our-purpose" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" class="mobile-link" (click)="closeMobileMenu()">Our Purpose</a>
+    <a routerLink="/our-team" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" class="mobile-link" (click)="closeMobileMenu()">Our Team</a>
 
     <ng-container *ngIf="!(isAuthenticated$ | async)">
       <button class="mobile-sign-in" (click)="signIn(); closeMobileMenu()">Sign In</button>
     </ng-container>
     <ng-container *ngIf="isAuthenticated$ | async">
       <a routerLink="/my-journey" class="mobile-link" (click)="closeMobileMenu()">My Journey</a>
-      <a routerLink="/my-saved" class="mobile-link" (click)="closeMobileMenu()">Saved</a>
+      <a routerLink="/my-library" class="mobile-link" (click)="closeMobileMenu()">My Library</a>
       <a routerLink="/settings" class="mobile-link" (click)="closeMobileMenu()">Settings</a>
       <button class="mobile-link mobile-logout" (click)="logout(); closeMobileMenu()">Logout</button>
     </ng-container>

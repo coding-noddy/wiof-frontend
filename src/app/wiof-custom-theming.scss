@@ -64,43 +64,116 @@ ion-card-content {
   position: relative;
 }
 
+// Sitewide slider-arrow standard — matches Breaking News' own .bn-nav-btn
+// treatment (warm-white + ink + a soft shadow, the documented "small
+// functional icon-button" shadow exception) rather than a plain, ungrounded
+// gray circle. Shared by every other swiper across the site (Course-in-Focus,
+// NGO, video/blog sliders, Coffee Conversation, the calendar dialog, In Focus).
 .swiper-nav-btn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background-color: rgba(85, 83, 83, 0.1);
-  border: none;
+  background: rgba(255, 252, 246, 0.88);
+  color: var(--wiof-ink);
+  border: 1px solid rgba(43, 36, 32, 0.08);
+  box-shadow: 0 6px 16px rgba(43, 36, 32, 0.16);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.3s ease;
+  transition: background 0.2s ease, transform 0.15s ease;
 
   ion-icon {
-    font-size: 22px;
-    color: #fff;
+    font-size: 20px;
+    color: inherit;
   }
 
   &:hover {
-    background-color: rgba(130, 130, 130, 0.5);
+    background: var(--wiof-warm-white);
+    transform: translateY(-50%) scale(1.06);
   }
 
   &:active {
-    transform: translateY(-50%) scale(0.9);
+    transform: translateY(-50%) scale(0.94);
   }
 
   &.prev {
-    left: 6px;
+    left: 10px;
   }
 
   &.next {
+    right: 10px;
+  }
+}
+
+// Same size contract as .bn-nav-btn's own mobile breakpoint — every
+// slider-arrow on the site should shrink identically on small viewports,
+// not just share a desktop size.
+@media (max-width: 767px) {
+  .swiper-nav-btn {
+    width: 32px;
+    height: 32px;
+
+    ion-icon {
+      font-size: 16px;
+    }
+  }
+
+  .swiper-nav-btn.prev {
+    left: 6px;
+  }
+
+  .swiper-nav-btn.next {
     right: 6px;
   }
 }
+
+// ── Alternate: the earlier neutral-gray style (plain gray circle, white
+// icon, no brand tokens) — kept here for an easy revert. To restore it,
+// comment out the active .swiper-nav-btn block above and uncomment this one
+// (same selector — only one should be active at a time).
+//
+// .swiper-nav-btn {
+//   position: absolute;
+//   top: 50%;
+//   transform: translateY(-50%);
+//   z-index: 10;
+//   width: 48px;
+//   height: 48px;
+//   border-radius: 50%;
+//   background-color: rgba(85, 83, 83, 0.1);
+//   border: none;
+//   cursor: pointer;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   transition: background-color 0.3s ease;
+//
+//   ion-icon {
+//     font-size: 22px;
+//     color: #fff;
+//   }
+//
+//   &:hover {
+//     background-color: rgba(130, 130, 130, 0.5);
+//   }
+//
+//   &:active {
+//     transform: translateY(-50%) scale(0.9);
+//   }
+//
+//   &.prev {
+//     left: 6px;
+//   }
+//
+//   &.next {
+//     right: 6px;
+//   }
+// }
 
 .swiper-button-next {
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2027%2044'%3E%3Cpath%20d%3D'M27%2C22L27%2C22L5%2C44l-2.1-2.1L22.8%2C22L2.9%2C2.1L5%2C0L27%2C22L27%2C22z'%20fill%3D'%23ffffff'%2F%3E%3C%2Fsvg%3E");

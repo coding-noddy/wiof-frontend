@@ -63,6 +63,7 @@ export interface UserProfile {
   loginCount: number;            // Min 0
   daysVisited: number;           // Min 0
   currentStreak: number;         // Min 0
+  longestStreak: number;         // Min 0 — the best currentStreak has ever reached
   savedBlogsCount: number;       // Min 0
 }
 

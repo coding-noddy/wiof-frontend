@@ -2,6 +2,19 @@
 <ion-content>
   <div class="blog-post-wrapper" *ngIf="(blogDetails | async) as blog; else loading">
 
+    <!-- Breadcrumb -->
+    <div class="page-breadcrumb-bar" *ngIf="element">
+      <div class="breadcrumb">
+        <a routerLink="/home">Home</a>
+        <span class="sep">/</span>
+        <a [routerLink]="['/element', element]">{{ element | titlecase }}</a>
+        <span class="sep">/</span>
+        <a [routerLink]="['/element', element, 'blogs']">Blogs</a>
+        <span class="sep">/</span>
+        <span class="current">{{ blog.title }}</span>
+      </div>
+    </div>
+
     <!-- Hero image with blurred background -->
     <div class="blog-hero" *ngIf="(blog.image$ | async) as blogImage">
       <div class="blog-hero-blur" [style.backgroundImage]="'url(' + blogImage + ')'"></div>
@@ -38,7 +51,6 @@
 
       <!-- Meta -->
       <div class="blog-meta-top">
-        <app-back-button></app-back-button>
         <span class="blog-read-time">
           <ion-icon name="time-outline"></ion-icon>
           {{ blog.timeToRead }} min read

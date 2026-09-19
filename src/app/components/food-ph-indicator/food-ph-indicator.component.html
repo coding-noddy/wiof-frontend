@@ -17,16 +17,15 @@
   <!-- ── Body ───────────────────────────────────────────────── -->
   <ion-card-content class="wiof-food-ph-widget-card-content">
 
-    <!-- About panel -->
+    <!-- About panel — same single-paragraph pattern as every other widget's
+         (AQI/Water/Energy), not a title + bulleted fact list of its own. -->
     <section class="about-panel" [class.open]="about">
-      <div class="about-content">
-        <h3 class="about-title">Understanding Food pH</h3>
-        <ul class="about-list">
-          <li>Foods are classified as acidic (pH &lt; 7), neutral (pH 7), or alkaline (pH &gt; 7).</li>
-          <li>543 foods verified against FDA, USDA &amp; Clemson University data.</li>
-          <li>Items marked ★★★★★ are directly cross-referenced with official sources. Items marked ★★★☆☆ use published food science literature.</li>
-        </ul>
-      </div>
+      <p class="about-text">
+        Foods are classified as acidic (pH below 7), neutral (pH 7), or alkaline (pH above 7).
+        All 543 entries are checked against FDA, USDA, and Clemson University data — items
+        marked ★★★★★ are directly cross-referenced with official sources, while ★★★☆☆ items
+        draw on published food science literature.
+      </p>
     </section>
 
     <!-- Search + Random -->

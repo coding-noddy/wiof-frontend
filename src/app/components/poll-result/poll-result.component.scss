@@ -18,6 +18,11 @@
 }
 
 .results-title {
+  // Not a heading tag (a <span>), so it needs its own explicit override to
+  // win over global.scss's universal Noto Sans reset — same "widget section
+  // title" role as in-focus-widget's/video-widget's own title, which get
+  // the same treatment.
+  font-family: 'Aleo', serif !important;
   font-size: 0.9rem;
   font-weight: 700;
   color: $dark-color;

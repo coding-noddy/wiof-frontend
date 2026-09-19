@@ -2,6 +2,19 @@
 <ion-content>
   <div class="video-post-wrapper" *ngIf="urlSafe; else loading">
 
+    <!-- Breadcrumb -->
+    <div class="page-breadcrumb-bar" *ngIf="element">
+      <div class="breadcrumb">
+        <a routerLink="/home">Home</a>
+        <span class="sep">/</span>
+        <a [routerLink]="['/element', element]">{{ element | titlecase }}</a>
+        <span class="sep">/</span>
+        <a [routerLink]="['/element', element, 'videos']">Videos</a>
+        <span class="sep">/</span>
+        <span class="current">{{ videoTitle }}</span>
+      </div>
+    </div>
+
     <!-- Video player -->
     <div class="video-player-wrap">
       <iframe
@@ -21,7 +34,6 @@
 
       <!-- Meta top -->
       <div class="video-meta-top">
-        <app-back-button></app-back-button>
         <app-bookmark-icon
           [contentId]="id"
           contentType="video"

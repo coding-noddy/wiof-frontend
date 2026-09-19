@@ -3,7 +3,7 @@ import { forkJoin, Subject } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { ActivityService } from 'src/app/services/activity.service';
-import { UserProfileService } from 'src/app/services/user-profile.service';
+import { SavedContentService } from 'src/app/services/saved-content.service';
 
 interface LastActivity {
   type: 'blog' | 'video';
@@ -39,7 +39,7 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private activityService: ActivityService,
-    private userProfileService: UserProfileService
+    private savedContentService: SavedContentService
   ) {}
 
   ngOnInit(): void {
@@ -62,10 +62,14 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
       reads: this.activityService.getQualityReads(userId),
       videos: this.activityService.getVideoWatchHistory(userId),
       metrics: this.activityService.getActivityCounts(userId).pipe(first()),
-      profile: this.userProfileService.getProfile(userId).pipe(first())
+      // profile.savedBlogsCount is never actually incremented anywhere in
+      // functions/index.js (only ever initialized/reset to 0) — it's a dead
+      // counter. The real count comes from querying user_saved_content
+      // directly, the same source my-journey.page.ts uses for its own count.
+      savedIds: this.savedContentService.getSavedContentIds(userId).pipe(first())
     })
       .pipe(takeUntil(this.destroy$))
-      .subscribe(({ reads, videos, metrics, profile }) => {
+      .subscribe(({ reads, videos, metrics, savedIds }) => {
         const candidates: LastActivity[] = [];
         const latestRead = reads[0];
         const latestVideo = videos[0];
@@ -90,7 +94,7 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
 
         this.lastActivity = candidates[0] || null;
         this.lastEqScore = metrics.lastEqScore;
-        this.savedContentCount = profile?.savedBlogsCount || 0;
+        this.savedContentCount = savedIds.size;
         this.isLoading = false;
       });
   }

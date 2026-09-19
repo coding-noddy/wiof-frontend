@@ -1,16 +1,43 @@
 @import '../../wiof-custom-theming.scss';
 
+.page-breadcrumb-bar {
+  width: 100%;
+  padding: 1.1rem 1.25rem;
+  background: var(--wiof-warm-white);
+  border-top: 1.5px solid #EDE4D3;
+  border-bottom: 1.5px solid #EDE4D3;
+
+  @media (min-width: 768px) {
+    padding: 1.1rem 6vw;
+  }
+}
+
+.breadcrumb {
+  font-size: 0.9rem;
+  color: var(--wiof-ink);
+
+  a {
+    color: var(--wiof-ink);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .sep {
+    margin: 0 0.5rem;
+    opacity: 0.5;
+  }
+
+  .current {
+    font-weight: 700;
+  }
+}
+
 .take-action-title {
   padding: 10px;
   margin: 0 auto;
   color: $dark-color;
   display: inline-block;
   font-size: x-large;
-}
-
-.back-button {
-  padding: 5px;
-  float: right;
 }
 
 .element-buttons {

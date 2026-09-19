@@ -105,6 +105,10 @@ $radius-item: 14px;
 }
 
 .rainfall-title {
+  // Same "widget section title" role as in-focus-widget's/video-widget's
+  // own title (already Aleo) — not a heading tag, so it needs its own
+  // explicit override to win over global.scss's universal Noto Sans reset.
+  font-family: 'Aleo', serif !important;
   display: flex;
   align-items: center;
   gap: 6px;

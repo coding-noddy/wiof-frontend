@@ -48,6 +48,9 @@ h2 {
 }
 
 .teaser-heading {
+  // Not a heading tag (a <span>), so it needs its own explicit override to
+  // win over global.scss's universal Noto Sans reset.
+  font-family: 'Aleo', serif !important;
   font-weight: 700;
   font-size: 0.95rem;
   color: var(--wiof-ink);

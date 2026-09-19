@@ -196,13 +196,16 @@
     }
   }
 
-  // ── Nav arrows — soft glass circles instead of flat black dots.
+  // ── Nav arrows — same size/style contract as the sitewide .swiper-nav-btn
+  // (see wiof-custom-theming.scss) — this card uses its own class only
+  // because it isn't a real swiper instance, not because the arrow should
+  // look or size any differently.
   .bn-nav-btn {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 34px;
-    height: 34px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -215,7 +218,7 @@
     cursor: pointer;
     transition: background 0.2s ease, transform 0.15s ease;
 
-    ion-icon { font-size: 1rem; }
+    ion-icon { font-size: 20px; }
 
     &:hover {
       background: var(--wiof-warm-white);
@@ -225,8 +228,20 @@
 
   // Both arrows anchor to the outer card edges — mirrors of each other —
   // not to the media/detail column boundary in between.
-  .bn-nav-btn.prev { left: 12px; }
-  .bn-nav-btn.next { right: 12px; }
+  .bn-nav-btn.prev { left: 10px; }
+  .bn-nav-btn.next { right: 10px; }
+
+  @media (max-width: 767px) {
+    .bn-nav-btn {
+      width: 32px;
+      height: 32px;
+
+      ion-icon { font-size: 16px; }
+    }
+
+    .bn-nav-btn.prev { left: 6px; }
+    .bn-nav-btn.next { right: 6px; }
+  }
 
   // ── Ticker — a labelled strip instead of an unlabeled scrolling bar.
   .news-marquee {
