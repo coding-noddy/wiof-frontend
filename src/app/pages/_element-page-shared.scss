@@ -283,11 +283,22 @@ ion-row + ion-row {
   margin-bottom: 0.6rem;
 }
 
-// ── Reflect band — full-bleed teal wrapper around Coffee Conversation ────────
+// ── Reflect band — full-bleed wrapper around Coffee Conversation, tinted to
+// the current element per the five-element triad (Air/Water/Spirit = Teal,
+// Earth = Brown, Energy = Marigold — same triad `.element-hero` used before
+// it moved to illustration banners). Previously hardcoded to Teal for every
+// element — a real bug: Earth and Energy pages showed a Teal band instead of
+// their own Brown/Marigold identity. Needs the page's own `air`/`water`/
+// `earth`/`spirit`/`energy` class alongside `reflect-band` (added to each
+// element page's template) to pick the right color below.
 .reflect-band {
   width: 100%;
   background: var(--wiof-teal);
   padding: 2.5rem 1.25rem;
+
+  &.air, &.water, &.spirit { background: var(--wiof-teal); }
+  &.energy                 { background: var(--wiof-marigold); }
+  &.earth                  { background: var(--wiof-brown); }
 
   @media (min-width: 768px) {
     padding: 3.5rem 6vw;
@@ -312,59 +323,6 @@ ion-row + ion-row {
     }
   }
 
-  .reflect-row {
-    display: flex;
-    gap: 2rem;
-    align-items: stretch;
-    flex-wrap: wrap;
-
-    > .reflect-conversation {
-      flex: 1 1 480px;
-      min-width: 0;
-    }
-  }
-
-  .eq-tie-in {
-    flex: 0 0 260px;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    align-items: flex-start;
-    justify-content: center;
-    padding-left: 2rem;
-    border-left: 1.5px solid rgba(43, 36, 32, 0.2);
-    color: var(--wiof-ink);
-
-    ion-icon {
-      font-size: 1.9rem;
-    }
-
-    p {
-      margin: 0;
-      font-size: 0.9rem;
-      line-height: 1.5;
-    }
-
-    a {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--wiof-ink);
-      text-decoration: none;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
-
-  @media (max-width: 767px) {
-    .eq-tie-in {
-      padding-left: 0;
-      border-left: none;
-      padding-top: 1.25rem;
-      border-top: 1.5px solid rgba(43, 36, 32, 0.2);
-    }
-  }
 }
 
 // ── Keep Exploring — shared wrapper around Blogs + Videos ────────────────────
@@ -372,7 +330,11 @@ ion-row + ion-row {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  font-family: 'Aleo', serif;
+  // !important: this is a <p>, and global.scss's sitewide reset
+  // (`*:not(ion-icon) { font-family: "Noto Sans" !important }`) targets it
+  // directly — without !important here this Aleo declaration is dead and
+  // the label silently renders in the body font.
+  font-family: 'Aleo', serif !important;
   font-weight: 700;
   font-size: 1.2rem;
   color: var(--wiof-ink);

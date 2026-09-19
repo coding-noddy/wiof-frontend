@@ -90,11 +90,17 @@ const routes: Routes = [
       import('./pages/videos/videos.module').then((m) => m.VideosPageModule)
   },
   {
-    path: 'discover-more',
+    path: 'our-purpose',
     loadChildren: () =>
-      import('./pages/discover-more/discover-more.module').then(
-        (m) => m.DiscoverMorePageModule
+      import('./pages/our-purpose/our-purpose.module').then(
+        (m) => m.OurPurposePageModule
       )
+  },
+  {
+    // Old URL — keep resolving for anyone with it bookmarked or indexed.
+    path: 'discover-more',
+    redirectTo: 'our-purpose',
+    pathMatch: 'full'
   },
   {
     path: 'privacy-policy',
@@ -116,9 +122,15 @@ const routes: Routes = [
       )
   },
   {
-    path: 'aboutus',
+    path: 'our-team',
     loadChildren: () =>
-      import('./pages/aboutus/aboutus.module').then((m) => m.AboutusPageModule)
+      import('./pages/our-team/our-team.module').then((m) => m.OurTeamPageModule)
+  },
+  {
+    // Old URL — keep resolving for anyone with it bookmarked or indexed.
+    path: 'aboutus',
+    redirectTo: 'our-team',
+    pathMatch: 'full'
   },
   {
     path: 'climatenlighten',

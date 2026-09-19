@@ -7,12 +7,12 @@
   align-items: center;
   gap: 16px;
   padding: 10px 14px;
-  background: #f9fafb;
-  border: 1px solid #f0f0f0;
+  background: var(--wiof-ivory);
+  border: 1px solid var(--wiof-brown-tint-40);
   border-top: none;
   border-radius: 0 0 10px 10px;
   font-size: 0.75rem;
-  color: #6b7280;
+  color: rgba(43, 36, 32, 0.6);
   font-weight: 500;
 
   span {
@@ -27,7 +27,7 @@
 
   .editor-stats-right {
     margin-left: auto;
-    color: #f59e0b;
+    color: #d97706;
   }
 }
 
@@ -84,8 +84,8 @@
 // ── Keyboard Shortcuts Panel ────────────────────────────────────────
 
 .shortcuts-panel {
-  background: #fff;
-  border: 1px solid #e5e7eb;
+  background: var(--wiof-warm-white);
+  border: 1px solid var(--wiof-brown-tint-40);
   border-radius: 12px;
   padding: 16px 20px;
   margin-bottom: 16px;
@@ -94,7 +94,7 @@
 .shortcuts-title {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--wiof-ink);
   margin-bottom: 10px;
 }
 
@@ -109,16 +109,16 @@
   align-items: center;
   gap: 10px;
   font-size: 0.78rem;
-  color: #6b7280;
+  color: rgba(43, 36, 32, 0.6);
 
   kbd {
-    background: #f3f4f6;
-    border: 1px solid #e5e7eb;
+    background: var(--wiof-ivory);
+    border: 1px solid var(--wiof-brown-tint-40);
     border-radius: 4px;
     padding: 2px 6px;
     font-size: 0.7rem;
     font-family: monospace;
-    color: #374151;
+    color: var(--wiof-ink);
     white-space: nowrap;
   }
 }
@@ -132,7 +132,7 @@
 .preview-category {
   font-size: 0.72rem;
   font-weight: 700;
-  color: #3f7f6b;
+  color: var(--wiof-teal);
   letter-spacing: 0.05em;
 }
 
@@ -181,28 +181,29 @@
 
 .blog-read-time,
 .author-name {
-  color: #475569;
+  color: rgba(43, 36, 32, 0.65);
   font-size: 0.85rem;
   font-weight: 600;
 }
 
 .blog-title {
+  font-family: 'Aleo', serif;
   font-size: 2rem;
   font-weight: 800;
-  color: #10263c;
+  color: var(--wiof-ink);
   line-height: 1.25;
   margin: 1rem 0;
 }
 
 .blog-divider {
   border: none;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 1px solid var(--wiof-brown-tint-40);
   margin: 1.5rem 0;
 }
 
 .blog-description {
   font-size: 1rem;
-  color: #475569;
+  color: rgba(43, 36, 32, 0.65);
   font-style: italic;
   line-height: 1.7;
 }
@@ -210,18 +211,18 @@
 .blog-content {
   font-size: 1.05rem;
   line-height: 1.85;
-  color: #2d3748;
+  color: var(--wiof-ink);
   text-align: justify;
 
   p { margin-bottom: 1.25rem; }
-  h1, h2, h3, h4 { margin-top: 1.5rem; margin-bottom: 0.75rem; color: #10263c; }
+  h1, h2, h3, h4 { font-family: 'Aleo', serif; margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--wiof-ink); }
   img { max-width: 100%; border-radius: 12px; margin: 1rem 0; }
-  a { color: #3f7f6b; font-weight: 600; }
+  a { color: var(--wiof-teal); font-weight: 600; }
   blockquote {
-    border-left: 4px solid #3f7f6b;
+    border-left: 4px solid var(--wiof-teal);
     padding-left: 1rem;
     margin: 1.5rem 0;
-    color: #4a5568;
+    color: rgba(43, 36, 32, 0.7);
     font-style: italic;
   }
   ul, ol { padding-left: 1.5rem; margin-bottom: 1.25rem; }
@@ -229,12 +230,12 @@
 }
 
 .blog-about-author {
-  background: rgba(0, 0, 0, 0.03);
+  background: var(--wiof-ivory);
   border-radius: 14px;
   padding: 1.25rem;
 
-  h4 { margin: 0 0 0.5rem; color: #10263c; }
-  p { margin: 0; color: #475569; line-height: 1.7; }
+  h4 { font-family: 'Aleo', serif; margin: 0 0 0.5rem; color: var(--wiof-ink); }
+  p { margin: 0; color: rgba(43, 36, 32, 0.65); line-height: 1.7; }
 }
 
 .preview-image {
@@ -251,16 +252,16 @@
 
 .preview-desc {
   font-size: 1rem;
-  color: #4b5563;
+  color: rgba(43, 36, 32, 0.65);
   font-style: italic;
   margin-bottom: 20px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--wiof-brown-tint-40);
 }
 
 .preview-content {
   font-size: 0.95rem;
-  color: #374151;
+  color: var(--wiof-ink);
   line-height: 1.75;
 
   img {
@@ -270,14 +271,15 @@
   }
 
   h1, h2, h3, h4 {
-    color: #1f2937;
+    font-family: 'Aleo', serif;
+    color: var(--wiof-ink);
     margin-top: 24px;
   }
 
   blockquote {
-    border-left: 3px solid #6366f1;
+    border-left: 3px solid var(--wiof-teal);
     padding-left: 16px;
-    color: #6b7280;
+    color: rgba(43, 36, 32, 0.6);
     font-style: italic;
   }
 }

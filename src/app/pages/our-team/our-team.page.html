@@ -1,0 +1,75 @@
+<app-header></app-header>
+
+<ion-content>
+  <!-- ── Breadcrumb ───────────────────────────────────────────────── -->
+  <div class="page-breadcrumb-bar">
+    <div class="breadcrumb">
+      <a routerLink="/home">Home</a>
+      <span class="sep">/</span>
+      <span class="current">Our Team</span>
+    </div>
+  </div>
+
+  <div class="team-page">
+
+    <!-- Hero -->
+    <section class="team-hero">
+      <p class="team-eyebrow">Our team</p>
+      <h1 class="team-title">Meet Our Team</h1>
+      <p class="team-subtitle">The people behind World is One Family</p>
+    </section>
+
+    <!-- Team grid -->
+    <section class="team-grid" *ngIf="aboutUsProfiles$ | async as profiles">
+      <div class="team-card" *ngFor="let profile of profiles">
+        <div class="flip-card" [class.flipped]="profile.showKnowMore">
+
+          <!-- Front face -->
+          <div class="flip-front">
+            <div class="card-avatar-section">
+              <img
+                class="team-avatar"
+                [src]="profile.imageLink"
+                [alt]="'Profile image of ' + profile.name"
+              />
+            </div>
+            <div class="card-info">
+              <h3 class="team-name">{{ profile.name }}</h3>
+              <a
+                *ngIf="profile.socialLink"
+                [href]="profile.socialLink"
+                target="_blank"
+                rel="noopener"
+                class="team-linkedin"
+              >
+                <ion-icon name="logo-linkedin"></ion-icon>
+                LinkedIn
+              </a>
+              <p class="team-bio">{{ profile.bio }}</p>
+              <button class="read-more-btn" (click)="profile.showKnowMore = true">
+                Read Full Bio
+                <ion-icon name="arrow-forward-outline"></ion-icon>
+              </button>
+            </div>
+          </div>
+
+          <!-- Back face -->
+          <div class="flip-back">
+            <div class="expanded-header">
+              <img class="expanded-avatar" [src]="profile.imageLink" [alt]="profile.name" />
+              <h3>{{ profile.name }}</h3>
+              <button class="close-btn" (click)="profile.showKnowMore = false" aria-label="Back to summary">
+                <ion-icon name="close-outline"></ion-icon>
+              </button>
+            </div>
+            <p class="expanded-bio">{{ profile.bio }}</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <app-wiof-footer></app-wiof-footer>
+</ion-content>

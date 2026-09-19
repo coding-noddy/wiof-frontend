@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { DiscoverMorePageRoutingModule } from './discover-more-routing.module';
+import { OurPurposePageRoutingModule } from './our-purpose-routing.module';
 
-import { DiscoverMorePage } from './discover-more.page';
+import { OurPurposePage } from './our-purpose.page';
 
 import { AppCommonModule } from '../../app-common.module';
 
@@ -15,9 +15,9 @@ import { AppCommonModule } from '../../app-common.module';
     CommonModule,
     FormsModule,
     IonicModule,
-    DiscoverMorePageRoutingModule,
+    OurPurposePageRoutingModule,
     AppCommonModule
   ],
-  declarations: [DiscoverMorePage]
+  declarations: [OurPurposePage]
 })
-export class DiscoverMorePageModule {}
+export class OurPurposePageModule {}

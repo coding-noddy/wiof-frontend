@@ -5,9 +5,9 @@ import { AppCommonModule } from 'src/app/app-common.module';
 
 import { IonicModule } from '@ionic/angular';
 
-import { AboutusPageRoutingModule } from './aboutus-routing.module';
+import { OurTeamPageRoutingModule } from './our-team-routing.module';
 
-import { AboutusPage } from './aboutus.page';
+import { OurTeamPage } from './our-team.page';
 
 @NgModule({
   imports: [
@@ -15,8 +15,8 @@ import { AboutusPage } from './aboutus.page';
     AppCommonModule,
     FormsModule,
     IonicModule,
-    AboutusPageRoutingModule
+    OurTeamPageRoutingModule
   ],
-  declarations: [AboutusPage]
+  declarations: [OurTeamPage]
 })
-export class AboutusPageModule {}
+export class OurTeamPageModule {}

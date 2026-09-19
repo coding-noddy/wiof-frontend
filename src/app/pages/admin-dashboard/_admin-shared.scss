@@ -1,15 +1,28 @@
 // ── Shared Admin Sub-page Styles ────────────────────────────────────
 // Import this in all manage-*.page.scss files for consistent design
-
-$admin-bg: #f4f6f9;
-$card-bg: #ffffff;
-$card-radius: 14px;
-$border-color: #f0f0f0;
-$text-primary: #1f2937;
-$text-secondary: #6b7280;
-$text-muted: #9ca3af;
-$accent: #6366f1;
-$accent-light: rgba(99, 102, 241, 0.08);
+//
+// Retargeted to the WIOF brand palette (was a generic indigo SaaS-admin
+// theme, completely disconnected from the rest of the site) — since every
+// rule below already routes through these variables, changing the values
+// here re-themes all ~18 admin sub-pages that import this partial at once.
+// Every var() below is safe to use directly: the file's only Sass color
+// function call (`darken()`, for the primary-button hover) is fixed
+// separately below rather than fed one of these, since `darken()` needs a
+// literal color, not a CSS custom property, to compute at compile time.
+// $success/$danger/$warning intentionally stay universal status colors
+// (green/red/amber) rather than brand hues — publish/error/pending states
+// need to read as immediately, unambiguously recognizable, the same reason
+// the AQI widget keeps its own semantic color scale instead of the 3-hue
+// brand palette.
+$admin-bg: var(--wiof-ivory);
+$card-bg: var(--wiof-warm-white);
+$card-radius: 18px;
+$border-color: var(--wiof-brown-tint-40);
+$text-primary: var(--wiof-ink);
+$text-secondary: rgba(43, 36, 32, 0.65);
+$text-muted: rgba(43, 36, 32, 0.45);
+$accent: var(--wiof-teal);
+$accent-light: rgba(33, 153, 159, 0.08);
 $success: #10b981;
 $danger: #ef4444;
 $warning: #f59e0b;
@@ -92,7 +105,7 @@ ion-header {
   }
 
   &:hover {
-    background: darken(#6366f1, 8%);
+    background: var(--wiof-teal-shade-20);
     transform: translateY(-1px);
   }
 }
@@ -318,11 +331,15 @@ ion-header {
   background: $accent-light;
   color: $accent;
 
-  &.earth, &[data-cat="earth"] { background: rgba(67, 233, 123, 0.12); color: #059669; }
-  &.water, &[data-cat="water"] { background: rgba(79, 172, 254, 0.12); color: #0284c7; }
-  &.air, &[data-cat="air"] { background: rgba(162, 155, 254, 0.12); color: #7c3aed; }
-  &.fire, &[data-cat="fire"], &.energy, &[data-cat="energy"] { background: rgba(251, 191, 36, 0.12); color: #d97706; }
-  &.spirit, &[data-cat="spirit"] { background: rgba(251, 146, 60, 0.12); color: #c2410c; }
+  // Five-element triad (Air/Water/Spirit = Teal, Earth = Brown, Energy =
+  // Marigold) — was 5 unrelated rainbow colors (green/blue/purple/amber/
+  // orange) with no relationship to the actual brand element colors used
+  // everywhere else on the site.
+  &.earth, &[data-cat="earth"] { background: rgba(166, 135, 93, 0.14); color: var(--wiof-brown-shade-20); }
+  &.water, &[data-cat="water"] { background: rgba(33, 153, 159, 0.12); color: var(--wiof-teal-shade-20); }
+  &.air, &[data-cat="air"] { background: rgba(77, 173, 178, 0.14); color: var(--wiof-teal-shade-20); }
+  &.fire, &[data-cat="fire"], &.energy, &[data-cat="energy"] { background: rgba(255, 194, 111, 0.2); color: var(--wiof-brown-shade-20); }
+  &.spirit, &[data-cat="spirit"] { background: rgba(26, 122, 127, 0.14); color: var(--wiof-teal-shade-40); }
 }
 
 .cell-date {

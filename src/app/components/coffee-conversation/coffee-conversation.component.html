@@ -3,13 +3,13 @@
   class="coffee-conv-container"
   [ngClass]="[fromHomePage ? 'layout-home' : 'layout-element', coffeeConvClass]"
 >
-  <ion-card-header
-    class="ion-align-center wiof-slider-header"
-    [ngClass]="coffeeConvClass"
-  >
-    <ion-card-title class="title-text">Coffee Conversations</ion-card-title>
+  <ion-card-header class="wiof-slider-header">
+    <span class="header-badge">
+      <ion-icon name="cafe-outline"></ion-icon>
+      Coffee Conversations
+    </span>
   </ion-card-header>
-  <ion-card-content class="background" [ngClass]="coffeeConvClass">
+  <ion-card-content class="background">
     <div *ngIf="coffeeConvList; else loading">
       <swiper-container #swiperCC [attr.slides-per-view]="1" [attr.space-between]="10">
         <swiper-slide *ngFor="let coffeeConv of coffeeConvList">
@@ -31,40 +31,32 @@
                 <h2>
                   <strong>{{ coffeeConv.topic }}</strong>
                 </h2>
-                <div class="conversation-meta">
-                  <span *ngIf="coffeeConv.intervieweeName.toUpperCase() !== 'NA'">
-                    <ion-icon name="person-outline"></ion-icon>
-                    {{ coffeeConv.intervieweeName }}
-                  </span>
-                  <span>
-                    <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
-                    Community conversation
-                  </span>
-                </div>
-                <div
-                  class="interviewee-details"
+                <p
+                  class="conversation-byline"
                   *ngIf="coffeeConv.intervieweeName.toUpperCase() !== 'NA'"
                 >
+                  <ion-icon name="person-outline"></ion-icon>
+                  Conversation with {{ coffeeConv.intervieweeName }}
+                </p>
+                <p class="conversation-desc">
+                  <span [innerHTML]="coffeeConv.topicShortDesc"></span>
+                </p>
+                <div class="conversation-footer">
                   <button
+                    *ngIf="coffeeConv.intervieweeName.toUpperCase() !== 'NA'"
                     class="interviewee-trigger"
                     type="button"
                     (click)="showIntervieweeDetails($event, true)"
                   >
-                    <ion-icon name="person-circle-outline"></ion-icon>
                     About {{ coffeeConv.intervieweeName }}
                   </button>
-                </div>
-                <p style="margin-bottom: 20px">
-                  <span [innerHTML]="coffeeConv.topicShortDesc"></span>
-                </p>
-                <p>
                   <a
                     [href]="coffeeConv.knowMoreLink"
                     target="_blank"
                     class="conversation-cta"
                     >Explore conversation <ion-icon name="arrow-forward-outline"></ion-icon></a
                   >
-                </p>
+                </div>
                 <div
                   class="about-interviewee"
                   *ngIf="showAboutInterviewee"

@@ -1,15 +1,159 @@
-.login-container {
-  padding: 20px;
-  border-radius: 20px;
-  margin-top: 20px;
+@import '../../wiof-custom-theming.scss';
 
-  h1 {
-    text-align: center;
-    margin: 0;
+ion-content {
+  --background: var(--wiof-ivory);
+}
+
+.login-page {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem;
+}
+
+// ── Card — same flat, bordered convention as every other card on the site ──
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--wiof-warm-white);
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  border-radius: 18px;
+  padding: 2.25rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.login-logo-link {
+  margin-bottom: 1.25rem;
+}
+
+.login-logo {
+  height: 48px;
+  width: auto;
+}
+
+.login-eyebrow {
+  margin: 0 0 0.4rem;
+  color: var(--wiof-teal);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.login-title {
+  margin: 0 0 0.4rem;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--wiof-ink);
+}
+
+.login-subtitle {
+  margin: 0 0 1.5rem;
+  font-size: 0.9rem;
+  color: rgba(43, 36, 32, 0.6);
+}
+
+.login-error {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.18);
+  text-align: left;
+
+  ion-icon {
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-size: 1.1rem;
+    color: var(--ion-color-danger);
   }
 
-  .button-container {
-    margin-top: 20px;
-    text-align: center;
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--ion-color-danger);
+    line-height: 1.4;
+  }
+}
+
+.login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  text-align: left;
+}
+
+.login-field-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--wiof-ink);
+}
+
+.login-field input {
+  height: 46px;
+  padding: 0 0.9rem;
+  border-radius: 10px;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  background: var(--wiof-warm-white);
+  color: var(--wiof-ink);
+  font-size: 0.95rem;
+  transition: border-color 0.15s ease;
+
+  &::placeholder {
+    color: rgba(43, 36, 32, 0.4);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--wiof-teal);
+  }
+}
+
+// Marigold: this page has exactly one action and no competing hero CTA,
+// same reasoning as the element pages' Coffee Conversation CTA — genuinely
+// the one primary action on the page.
+.login-submit-btn {
+  margin-top: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  height: 48px;
+  border: none;
+  border-radius: 999px;
+  background: var(--wiof-marigold);
+  color: var(--wiof-ink);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 8px 18px rgba(255, 194, 111, 0.3);
+
+  ion-icon {
+    font-size: 1.05rem;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(255, 194, 111, 0.38);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 }

@@ -19,98 +19,108 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
   isMobile = false;
   isDarkTheme = false;
 
+  // Gradients cycle through 5 on-brand tonal pairs (Teal/Brown/Marigold and
+  // their tints/shades from theme/variables.scss) instead of the previous
+  // 16 unrelated rainbow gradients — was purely decorative variety with no
+  // connection to the site's actual palette.
+  private static readonly GRADIENT_TEAL = 'linear-gradient(135deg, #21999F, #145C5F)';
+  private static readonly GRADIENT_BROWN = 'linear-gradient(135deg, #A6875D, #645138)';
+  private static readonly GRADIENT_MARIGOLD = 'linear-gradient(135deg, #FFC26F, #CC9B59)';
+  private static readonly GRADIENT_TEAL_TINT = 'linear-gradient(135deg, #4DADB2, #21999F)';
+  private static readonly GRADIENT_BROWN_TINT = 'linear-gradient(135deg, #CAB79E, #A6875D)';
+
   navItems = [
     {
       name: 'Blogs',
       route: 'manage-blog',
       icon: 'document-text-outline',
-      color: 'linear-gradient(135deg, #667eea, #764ba2)',
+      color: AdminDashboardPage.GRADIENT_TEAL,
       description: 'Create and manage blog posts'
     },
     {
       name: 'Polls',
       route: 'manage-polls',
       icon: 'bar-chart-outline',
-      color: 'linear-gradient(135deg, #f093fb, #f5576c)',
+      color: AdminDashboardPage.GRADIENT_BROWN,
       description: 'Manage polls and surveys'
     },
     {
       name: 'Breaking News',
       route: 'manage-news',
       icon: 'newspaper-outline',
-      color: 'linear-gradient(135deg, #4facfe, #00f2fe)',
+      color: AdminDashboardPage.GRADIENT_MARIGOLD,
       description: 'Publish breaking news items'
     },
     {
       name: 'Calendar',
       route: 'manage-calendar',
       icon: 'calendar-outline',
-      color: 'linear-gradient(135deg, #43e97b, #38f9d7)',
+      color: AdminDashboardPage.GRADIENT_TEAL_TINT,
       description: 'Environment calendar events'
     },
     {
       name: 'Coffee Conversations',
       route: 'manage-coffee-conversation',
       icon: 'cafe-outline',
-      color: 'linear-gradient(135deg, #fa709a, #fee140)',
+      color: AdminDashboardPage.GRADIENT_BROWN_TINT,
       description: 'Manage video conversations'
     },
     {
       name: 'In Focus',
       route: 'manage-in-focus',
       icon: 'eye-outline',
-      color: 'linear-gradient(135deg, #a18cd1, #fbc2eb)',
+      color: AdminDashboardPage.GRADIENT_TEAL,
       description: 'Featured content spotlight'
     },
     {
       name: 'Firm In Focus',
       route: 'manage-ngo-in-focus',
       icon: 'business-outline',
-      color: 'linear-gradient(135deg, #ffecd2, #fcb69f)',
+      color: AdminDashboardPage.GRADIENT_BROWN,
       description: 'Manage featured organizations'
     },
     {
       name: 'Courses',
       route: 'manage-course-in-focus',
       icon: 'school-outline',
-      color: 'linear-gradient(135deg, #89f7fe, #66a6ff)',
+      color: AdminDashboardPage.GRADIENT_MARIGOLD,
       description: 'Featured courses and programs'
     },
     {
       name: 'Team Profiles',
       route: 'manage-about-us',
       icon: 'people-outline',
-      color: 'linear-gradient(135deg, #c3cfe2, #f5f7fa)',
+      color: AdminDashboardPage.GRADIENT_TEAL_TINT,
       description: 'Manage team member profiles'
     },
     {
       name: 'Subscribers',
       route: 'subscribers',
       icon: 'mail-outline',
-      color: 'linear-gradient(135deg, #fdfcfb, #e2d1c3)',
+      color: AdminDashboardPage.GRADIENT_BROWN_TINT,
       description: 'View and export subscriber list'
     },
     {
       name: 'Registered Users',
       route: 'users',
       icon: 'people-outline',
-      color: 'linear-gradient(135deg, #22c1c3, #2f80ed)',
+      color: AdminDashboardPage.GRADIENT_TEAL,
       description: 'View registered user profiles'
     },
     {
       name: 'Analytics',
       route: 'analytics',
       icon: 'analytics-outline',
-      color: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+      color: AdminDashboardPage.GRADIENT_BROWN,
       description: 'Daily visits and engagement charts'
     }
   ];
 
   stats = [
-    { label: 'Blogs', value: '—', icon: 'document-text-outline', bgColor: 'linear-gradient(135deg, #667eea, #764ba2)' },
-    { label: 'News', value: '—', icon: 'newspaper-outline', bgColor: 'linear-gradient(135deg, #4facfe, #00f2fe)' },
-    { label: 'Subscribers', value: '—', icon: 'mail-outline', bgColor: 'linear-gradient(135deg, #43e97b, #38f9d7)' },
-    { label: 'Polls', value: '—', icon: 'bar-chart-outline', bgColor: 'linear-gradient(135deg, #f093fb, #f5576c)' }
+    { label: 'Blogs', value: '—', icon: 'document-text-outline', bgColor: AdminDashboardPage.GRADIENT_TEAL },
+    { label: 'News', value: '—', icon: 'newspaper-outline', bgColor: AdminDashboardPage.GRADIENT_MARIGOLD },
+    { label: 'Subscribers', value: '—', icon: 'mail-outline', bgColor: AdminDashboardPage.GRADIENT_BROWN_TINT },
+    { label: 'Polls', value: '—', icon: 'bar-chart-outline', bgColor: AdminDashboardPage.GRADIENT_BROWN }
   ];
 
   constructor(

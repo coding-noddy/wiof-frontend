@@ -43,6 +43,20 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
   // Per-browser guard for guests who don't enter an email
   private readonly POLL_VOTE_STORAGE_PREFIX = 'wiof_poll_voted_';
 
+  // Long questions (real production example: a multi-sentence lead-in
+  // followed by the actual question at the very end) used to sit in a
+  // small fixed-height scroll box — the actual question was routinely
+  // scrolled out of view by default, with only a faint fade/scrollbar
+  // hinting there was more. Clamped preview + an explicit toggle instead:
+  // impossible to miss that there's more to read, and expanding always
+  // reveals the *whole* question, not just a couple more lines.
+  questionExpanded = false;
+  private readonly QUESTION_CLAMP_THRESHOLD = 140;
+
+  get isQuestionLong(): boolean {
+    return !!this.pollQuestion?.question && this.pollQuestion.question.length > this.QUESTION_CLAMP_THRESHOLD;
+  }
+
   constructor(
     private pollsService: PollsService,
     private pollQuestionService: PollQuestionService,
@@ -83,6 +97,7 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
           // this.IP4 = ip4Data;
           // this.IP6 = ip6Data;
           this.pollQuestion = pollData[0];
+          this.questionExpanded = false;
           // load current results (useful after vote)
           this.loadResults();
           // Testing-only: `?resetPollVote=1` clears this browser's local vote lock

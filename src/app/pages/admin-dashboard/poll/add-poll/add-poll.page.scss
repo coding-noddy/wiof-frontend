@@ -12,7 +12,7 @@ mat-form-field {
 }
 
 .mat-form-field-appearance-fill .mat-form-field-flex {
-  background-color: #fff;
+  background-color: var(--wiof-warm-white);
 }
 
 .poll-options {
@@ -23,7 +23,7 @@ mat-form-field {
 
 .poll-bar {
   height: 20px;
-  border: solid black 2px;
+  border: solid var(--wiof-brown-tint-40) 2px;
   margin-bottom: 5px;
   position: relative;
 }
@@ -31,8 +31,8 @@ mat-form-field {
 .poll-bar-fill {
   transition: 1s;
   height: 16px;
-  border-right: solid black 2px;
-  background-color: deepskyblue;
+  border-right: solid var(--wiof-teal-shade-20) 2px;
+  background-color: var(--wiof-teal);
 }
 
 .poll-percent {
@@ -40,11 +40,11 @@ mat-form-field {
   position: absolute;
   font-size: 11px;
   padding-left: 2%;
-  color: black;
+  color: var(--wiof-ink);
 }
 
 .poll-result-header {
-  background: deepskyblue;
+  background: var(--wiof-teal);
   font-size: 16px;
-  color: black;
+  color: var(--wiof-warm-white);
 }

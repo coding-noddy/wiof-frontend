@@ -61,16 +61,16 @@ export class AnalyticsPage implements OnInit {
           {
             label: 'Unique Visitors',
             data: chartData.uniqueVisitors,
-            borderColor: '#3b82f6',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            borderColor: '#21999F', // Ocean Teal
+            backgroundColor: 'rgba(33, 153, 159, 0.1)',
             fill: false,
             tension: 0.3
           },
           {
             label: 'Engaged Users',
             data: chartData.engagedUsers,
-            borderColor: '#10b981',
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            borderColor: '#FFC26F', // Sunny Marigold
+            backgroundColor: 'rgba(255, 194, 111, 0.15)',
             fill: false,
             tension: 0.3
           }

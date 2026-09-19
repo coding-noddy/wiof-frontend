@@ -49,57 +49,23 @@
 // against, so its overflow:auto never kicked in and the option list just
 // grew the whole card. Chaining flex + min-height:0 here makes the fixed
 // card height (from .wiof-poll-card) actually reach .polls-container.
+// The scroll owner for the whole card body: previously only
+// .polls-container (the pre-vote form) had its own overflow:auto — the
+// post-vote state (.poll-voted-indicator + app-poll-result, both direct
+// children here) had no scroll fallback of its own, so once someone
+// voted, the confirmation banner plus the full results panel (repeated
+// question + a result bar per option) routinely ran taller than the
+// card's fixed height and got silently clipped by .wiof-poll-card's
+// overflow:hidden — "too big" was really "cut off with no way to see the
+// rest". Making this the single scroll owner covers every child state.
 ion-card-content.wiof-polls-widget-card-background {
   display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 0;
   height: 100%;
-}
-
-.polls-container {
-  background-color: transparent;
-  padding: 1.1rem 1.25rem;
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
-}
-
-.poll-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
-  height: 100%;
-  min-height: 0;
-}
-
-// A long poll question scrolls in its own small box instead of pushing the
-// options and submit button out of view below it — those stay put and
-// fully visible regardless of question length.
-.poll-question-scroll {
-  flex: 0 1 auto;
-  min-height: 0;
-  max-height: 128px;
   overflow-y: auto;
-  padding-right: 0.25rem;
-  background-color: var(--wiof-warm-white);
-  background-repeat: no-repeat;
-  // "Scroll shadow": a soft fade + edge tint that's only visible while
-  // there's more question text below the fold. The fade is glued to the
-  // content (`local`) so it slides out of view once you've scrolled to the
-  // real end, uncovering... nothing — while the tint stays pinned to the
-  // box's visible bottom (`scroll`) and reads as "more below." No JS
-  // overflow-detection needed; a plain hard clip here looked like a
-  // rendering bug rather than a deliberate "keep scrolling" cue.
-  background-image:
-    linear-gradient(rgba(43, 36, 32, 0), var(--wiof-warm-white) 75%),
-    linear-gradient(to top, rgba(43, 36, 32, 0.14), rgba(43, 36, 32, 0));
-  background-position: 0 100%, 0 100%;
-  background-size: 100% 36px, 100% 14px;
-  background-attachment: local, scroll;
 
-  // Default scrollbars here are near-invisible (thin, auto-hiding) —
-  // style one in explicitly so the box reads as scrollable at a glance.
   scrollbar-width: thin;
   scrollbar-color: var(--wiof-teal-tint-20) transparent;
 
@@ -117,13 +83,86 @@ ion-card-content.wiof-polls-widget-card-background {
   }
 }
 
+.polls-container {
+  background-color: transparent;
+  padding: 1.1rem 1.25rem;
+  flex: 1;
+  min-height: 0;
+  // Scrolling is now owned by the parent ion-card-content above (which
+  // this container doesn't wrap in the voted state) — no independent
+  // overflow/scrollbar here to avoid a confusing nested scroll area.
+}
+
+.poll-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  height: 100%;
+  min-height: 0;
+}
+
+// A long question used to scroll in a small fixed-height box — the actual
+// question (routinely the very last sentence of a multi-sentence lead-in,
+// per the real production content) got scrolled out of view *by default*,
+// with only a faint fade/scrollbar hinting there was more to see. Clamped
+// preview + an explicit "Read full question" toggle instead: nothing is
+// silently hidden, and there's no way to miss that more text exists.
+.poll-question-wrap {
+  // flex-shrink: 0, not 1 — as the only sibling here without a fixed size
+  // (options-list and the footer are both flex-shrink:0 already), this was
+  // the one thing the flexbox algorithm could squash to make everything
+  // fit its allotted space. But shrinking it doesn't shrink the *text*
+  // inside (overflow:visible, so the clamp/expand still needs its full
+  // natural height) — it just paints past its own squashed box straight
+  // over the options below. flex-shrink:0 keeps this at its real content
+  // height always; .polls-container's own overflow:auto (further up the
+  // chain) is what actually handles a genuinely-too-tall expanded question.
+  flex: 0 0 auto;
+}
+
 .question-text {
-  font-family: 'Aleo', serif;
+  // global.scss's sitewide reset (`*:not(ion-icon) { font-family: "Noto
+  // Sans" !important }`) targets this <p> directly — without !important
+  // here too, this Aleo declaration is silently dead and the question
+  // renders in the body font instead of the intended brand serif.
+  font-family: 'Aleo', serif !important;
   font-size: 1.02rem;
   font-weight: 700;
   line-height: 1.35;
   color: var(--wiof-ink);
   margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  &.expanded {
+    display: block;
+    -webkit-line-clamp: unset;
+    overflow: visible;
+  }
+}
+
+.question-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.35rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--wiof-teal);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+
+  ion-icon {
+    font-size: 0.85rem;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .poll-options-list {
@@ -253,12 +292,19 @@ ion-card-content.wiof-polls-widget-card-background {
 }
 
 .poll-widget-name-input {
+  // Was $font-size-medium (18px) — an input at that size, with no
+  // min-width:0, has a browser-enforced intrinsic minimum content width
+  // wide enough that it wouldn't actually shrink to its 55% flex-basis on
+  // the card's real width. The oversized, non-shrinking input pushed
+  // .cta-and-error (and the submit button inside it) to the right, past
+  // the card's edge, clipped by .wiof-poll-card's overflow:hidden.
   flex: 1 1 55%;
+  min-width: 0;
   border-radius: 8px;
   border: 1.5px solid var(--wiof-brown-tint-40);
-  padding: 10px 12px;
-  height: 42px;
-  font-size: $font-size-medium;
+  padding: 8px 12px;
+  height: 38px;
+  font-size: 0.85rem;
   background-color: var(--wiof-warm-white);
 }
 
@@ -267,6 +313,9 @@ ion-card-content.wiof-polls-widget-card-background {
   flex-direction: column;
   align-items: flex-end;
   gap: 8px;
+  // Never shrink the CTA to make room for the email input — the input is
+  // the one that should give up width first (see min-width:0 above).
+  flex-shrink: 0;
 }
 
 .error {
@@ -322,36 +371,42 @@ ion-card-content.wiof-polls-widget-card-background {
 }
 
 // ── Voted indicator ────────────────────────────────────────────────
+// Was a large vertically-centered block (flex:1, 48px icon, generous
+// padding) that filled the card's whole fixed height on its own — fine
+// when it was the only content, but app-poll-result renders right below
+// it once voted, so the two together made "you voted" read as a giant,
+// mostly-empty banner sitting on top of the real results. A compact
+// horizontal strip (small icon + inline text) reads as a confirmation,
+// not a whole screen, and leaves the results panel to do the rest.
 .poll-voted-indicator {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 24px 16px;
-  text-align: center;
-  gap: 12px;
-  flex: 1;
+  gap: 10px;
+  padding: 0.85rem 1.25rem;
+  text-align: left;
+  flex-shrink: 0;
+  border-bottom: 1.5px solid #EDE4D3;
 }
 
 .voted-icon {
-  width: 48px;
-  height: 48px;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
   border-radius: 50%;
   background: var(--wiof-teal);
   color: var(--wiof-warm-white);
-  font-size: 24px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  ion-icon { font-size: 1.5rem; }
+  ion-icon { font-size: 1.05rem; }
 }
 
 .voted-message {
-  font-size: 15px;
+  font-size: 0.88rem;
   color: var(--wiof-ink);
-  line-height: 1.5;
+  line-height: 1.4;
 
   strong {
     color: var(--wiof-teal);

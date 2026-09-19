@@ -1,8 +1,6 @@
 <!-- home.page.html -->
 <app-header></app-header>
-<app-subscribe [page]="'home'"></app-subscribe>
-<app-social-share style="z-index: 2"></app-social-share>
-<app-concent-popup *ngIf="viewConsentPopup" (accepted)="onAccept()"></app-concent-popup>
+<app-subscribe [page]="'home'"></app-subscribe><app-concent-popup *ngIf="viewConsentPopup" (accepted)="onAccept()"></app-concent-popup>
 
 <ion-content>
   <!-- Banner / Hero Section — intentionally full-bleed, outside .page-container -->
@@ -11,9 +9,18 @@
     <div class="hero-copy">
       <p class="eyebrow">World is One Family</p>
       <h1>
-        Inspire through Creativity<br />
-        Enlighten through Knowledge<br />
-        Protect through Action
+        <span class="hero-line">
+          <span class="hero-lead">Inspire through</span>
+          <span class="hero-highlight">Creativity</span>
+        </span>
+        <span class="hero-line">
+          <span class="hero-lead">Enlighten through</span>
+          <span class="hero-highlight">Knowledge</span>
+        </span>
+        <span class="hero-line">
+          <span class="hero-lead">Protect through</span>
+          <span class="hero-highlight">Action</span>
+        </span>
       </h1>
       <button class="cta" (click)="scrollToElements()">Discover More</button>
     </div>

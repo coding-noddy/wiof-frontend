@@ -7,8 +7,8 @@
 
     <!-- Desktop Navigation -->
     <nav class="desktop-nav">
-      <a routerLink="/discover-more" class="nav-link">About Us</a>
-      <a routerLink="/aboutus" class="nav-link">Our Team</a>
+      <a routerLink="/our-purpose" class="nav-link">Our Purpose</a>
+      <a routerLink="/our-team" class="nav-link">Our Team</a>
 
       <!-- Auth-aware -->
       <ng-container *ngIf="isAuthenticated$ | async; else guestSignIn">
@@ -37,8 +37,8 @@
 
   <!-- Mobile menu -->
   <nav class="mobile-menu" [class.mobile-menu--open]="mobileMenuOpen">
-    <a routerLink="/discover-more" class="mobile-link" (click)="closeMobileMenu()">About Us</a>
-    <a routerLink="/aboutus" class="mobile-link" (click)="closeMobileMenu()">Our Team</a>
+    <a routerLink="/our-purpose" class="mobile-link" (click)="closeMobileMenu()">Our Purpose</a>
+    <a routerLink="/our-team" class="mobile-link" (click)="closeMobileMenu()">Our Team</a>
 
     <ng-container *ngIf="!(isAuthenticated$ | async)">
       <button class="mobile-sign-in" (click)="signIn(); closeMobileMenu()">Sign In</button>

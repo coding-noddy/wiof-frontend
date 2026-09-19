@@ -1,13 +1,12 @@
 <app-header></app-header>
 <app-subscribe [page]="'water'"></app-subscribe>
-<app-social-share style="z-index: 2"></app-social-share>
 
 <app-section-nav [sections]="pageSections" [element]="elementName"></app-section-nav>
 <ion-content>
   <!-- ── Element switcher — breadcrumb + pills, above the hero ───────── -->
   <div class="element-switcher-bar">
     <div class="breadcrumb">
-      <a routerLink="/home">Five Elements</a>
+      <a routerLink="/home">Home</a>
       <span class="sep">/</span>
       <span class="current">Water</span>
     </div>
@@ -63,7 +62,7 @@
 
   <!-- ── Reflect: Coffee Conversation + EQ tie-in ────────────────── -->
   <div
-    class="reflect-band"
+    class="reflect-band water"
     id="water-conversations"
     *ngIf="this.coffeeConversations$ | async as coffeeConversations"
   >
@@ -71,19 +70,10 @@
       <p class="eyebrow">Reflect</p>
       <h2>Coffee Conversations: Water</h2>
     </div>
-    <div class="reflect-row">
-      <div class="reflect-conversation">
-        <app-coffee-conversation
-          [element]="elementName"
-          [coffeeConvList]="coffeeConversations"
-        ></app-coffee-conversation>
-      </div>
-      <div class="eq-tie-in">
-        <ion-icon name="radio-button-on-outline"></ion-icon>
-        <p>Prefer a quieter kind of reflection?</p>
-        <a routerLink="/element/water/eq-assessment">Take the EQ Reflection →</a>
-      </div>
-    </div>
+    <app-coffee-conversation
+      [element]="elementName"
+      [coffeeConvList]="coffeeConversations"
+    ></app-coffee-conversation>
   </div>
 
   <div class="page-container">

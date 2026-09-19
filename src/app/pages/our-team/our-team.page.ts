@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { AboutUsService, AboutUsProfile } from '../../services/aboutus.service';
 import { Observable, of } from 'rxjs';
-import { aboutUsData } from './aboutus-mock';
+import { aboutUsData } from './our-team-mock';
 
 @Component({
-  selector: 'app-aboutus',
-  templateUrl: './aboutus.page.html',
-  styleUrls: ['./aboutus.page.scss'],
+  selector: 'app-our-team',
+  templateUrl: './our-team.page.html',
+  styleUrls: ['./our-team.page.scss'],
 })
-export class AboutusPage implements OnInit {
+export class OurTeamPage implements OnInit {
   aboutUsProfiles$: Observable<AboutUsProfile[]>;
 
   constructor(private aboutUsService: AboutUsService) {}

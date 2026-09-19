@@ -10,17 +10,7 @@
       breakpoints='{"0":{"slidesPerView":1},"480":{"slidesPerView":2},"767":{"slidesPerView":3},"1024":{"slidesPerView":4}}'
     >
       <swiper-slide *ngFor="let video of videoList">
-        <div class="video-card" [routerLink]="['video', video.url]">
-          <div class="video-image-wrap">
-            <img [src]="video.thumbnail" [alt]="video.title" class="video-image" />
-            <div class="play-overlay">
-              <ion-icon name="play-circle"></ion-icon>
-            </div>
-          </div>
-          <div class="video-body">
-            <h3 class="video-title">{{ video.title }}</h3>
-          </div>
-        </div>
+        <app-video-card [video]="video" [element]="element"></app-video-card>
       </swiper-slide>
     </swiper-container>
 

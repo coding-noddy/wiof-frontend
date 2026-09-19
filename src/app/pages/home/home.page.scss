@@ -89,18 +89,72 @@ $page-padding-mobile:  16px;
   }
 
     h1 {
-    font-size: 1.85rem;
-    font-weight: 800;
-    line-height: 1.06;
+    margin: 0 0 0.85rem;
+  }
+
+  // Each verse ("Inspire through" / "Creativity") is its own two-line
+  // block, guaranteed at every width — not relying on the text happening
+  // to wrap there, since a wider container or a longer/shorter word could
+  // put "Creativity" back on the same line as "through".
+  .hero-line {
+    display: block;
+
+    &:not(:last-child) {
+      margin-bottom: 0.3rem;
+
+      @media (min-width: 768px) {
+        margin-bottom: 0.5rem;
+      }
+    }
+  }
+
+  // Small, quiet lead-in — the highlighted word below it is the one meant
+  // to land.
+  .hero-lead {
+    display: block;
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.2;
     color: var(--wiof-ink);
-    margin-bottom: 0.85rem;
 
     @media (min-width: 768px) {
-      font-size: 2.6rem;
+      font-size: 1.4rem;
     }
 
     @media (min-width: 1024px) {
-      font-size: 3.2rem;
+      font-size: 1.7rem;
+    }
+  }
+
+  // The three words WIOF's own mission statement is literally built from
+  // (see Our Purpose's "How We Started": "combining three aspects:
+  // Creativity, Knowledge, and Action") — Teal, not Marigold, since Marigold
+  // is reserved for the page's one primary CTA (.cta below). Italic ties
+  // into the same slogan already being set in italics as an emphasis device
+  // on the Our Purpose page, so the treatment reads as intentional brand
+  // voice rather than a one-off flourish. Sized noticeably bigger than the
+  // lead-in line above it (rather than just bolder/colored) so it's the
+  // clear visual peak of each verse, on its own guaranteed line.
+  .hero-highlight {
+    display: block;
+    // global.scss's sitewide reset (`*:not(ion-icon) { font-family: "Noto
+    // Sans" !important }`) targets this span directly, not just via
+    // inheritance from the Aleo h1 around it — needs its own !important to
+    // win, or it silently renders in the body font instead of the heading
+    // serif.
+    font-family: 'Aleo', serif !important;
+    font-size: 2.1rem;
+    line-height: 1.05;
+    color: var(--wiof-teal);
+    font-style: italic;
+    font-weight: 700;
+
+    @media (min-width: 768px) {
+      font-size: 2.8rem;
+    }
+
+    @media (min-width: 1024px) {
+      font-size: 3.4rem;
     }
   }
 

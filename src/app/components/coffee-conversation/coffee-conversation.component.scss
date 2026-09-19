@@ -1,14 +1,5 @@
 @import '../../wiof-custom-theming.scss';
 
-// ─── Element theme map ────────────────────────────────────────────────────────
-$element-themes: (
-  'wiof-water':  ($water-color,  darken($water-color, 18%)),
-  'wiof-earth':  ($earth-color,  darken($earth-color, 18%)),
-  'wiof-fire':   ($energy-color, darken($energy-color, 18%)),
-  'wiof-air':    ($air-color,    darken($air-color, 18%)),
-  'wiof-spirit': ($spirit-color, darken($spirit-color, 18%))
-);
-
 // ─── Single container block — all rules live here ────────────────────────────
 .coffee-conv-container {
   border-radius: 18px;
@@ -48,17 +39,23 @@ $element-themes: (
     }
   }
 
-  // ── Layout: element pages — a light, chrome-free panel sitting directly on
-  // the Reflect band's solid element color (see _element-page-shared.scss'
-  // .reflect-band). The page-level h2 ("Coffee Conversations: {Element}")
-  // already provides the heading, so this variant hides its own internal
-  // title bar rather than showing it twice, and blends into the band with a
-  // translucent fill instead of a separate white card. ─────────────────────
+  // ── Layout: element pages — same flat warm-white card convention as every
+  // other card on the site (border-radius:18px, border, warm-white fill),
+  // now that it sits on the Reflect band's correct per-element color (see
+  // _element-page-shared.scss' .reflect-band) instead of blending into it.
+  // The page-level h2 ("Coffee Conversations: {Element}") already provides
+  // the heading, so this variant still hides its own internal badge header
+  // rather than showing the label twice.
   &.layout-element {
     height: auto;
-    border: none;
-    box-shadow: none;
-    background-color: rgba(255, 252, 246, 0.18);
+    // The Reflect band now gives this card the full page width (the EQ
+    // sidebar that used to share the row is gone) — capped rather than
+    // stretched edge-to-edge, or the content column's body text would run
+    // to 100+ characters per line. 1040px keeps the video at a sensible
+    // size and the text at a comfortable reading measure while still using
+    // noticeably more width than the old row ever gave it.
+    max-width: 1040px;
+    margin: 0 auto !important;
 
     .wiof-slider-header {
       display: none;
@@ -67,12 +64,10 @@ $element-themes: (
     ::ng-deep .background {
       height: auto;
       flex: 1;
-      background-color: transparent;
     }
 
     .coffee-conv-card {
       height: auto;
-      background-color: transparent;
 
       .card-body {
         height: auto;
@@ -85,20 +80,15 @@ $element-themes: (
         aspect-ratio: 16 / 9;
         --ion-grid-column-padding: 0;
         padding: 0;
-        background: rgba(255, 252, 246, 0.5);
+        background: var(--wiof-ivory);
       }
     }
 
     .coffee-conv-content {
-      background-color: transparent;
-
-      h2, p, .conversation-meta {
-        color: var(--wiof-ink);
-      }
-
       // Marigold here (unlike the home layout's teal): the element page's
       // hero has no CTA of its own, so this genuinely is that page's one
-      // primary action, popping against the solid teal band behind it.
+      // primary action, popping against the (correctly per-element-colored)
+      // Reflect band behind the card.
       // !important because the shared `.conversation-cta` rule below
       // (scoped to the structural card, not a layout) has higher selector
       // specificity and would otherwise win regardless of layout.
@@ -114,18 +104,30 @@ $element-themes: (
     }
   }
 
-  // ── Header — default (home) ───────────────────────────────────────────────
-  // Teal, not Marigold: brand guidelines reserve Marigold for the one
-  // primary CTA per page, never a background fill.
+  // ── Header — warm-white badge, matching Breaking News/Poll/NGO/
+  // Course-in-Focus/Food pH Widget's treatment (small icon + uppercase
+  // eyebrow text in Teal, not a solid color-block bar) — this was the last
+  // card on the site still using the older solid-fill header pattern.
   .wiof-slider-header {
-    border-bottom: 1px solid rgba(43, 36, 32, 0.10);
-    background-color: $water-color;
-    color: $light-color;
+    display: flex;
+    align-items: center;
+    padding: 0.9rem 1.25rem;
+    background: var(--wiof-warm-white);
+    border-bottom: 1.5px solid #EDE4D3;
+  }
 
-    .title-text {
-      font-size: 1.08rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--wiof-teal);
+
+    ion-icon {
+      font-size: 1.05rem;
     }
   }
 
@@ -133,7 +135,7 @@ $element-themes: (
   ::ng-deep .background {
     padding: 0;
     width: 100%;
-    background-color: var(--wiof-teal-tint-40);
+    background-color: var(--wiof-ivory);
 
     ion-slides {
       height: 100%;
@@ -142,44 +144,6 @@ $element-themes: (
 
   .background > div {
     height: 100%;
-  }
-
-  // ── Element theme overrides (defined AFTER defaults — source order wins) ──
-  @each $element, $colors in $element-themes {
-    $bg:   nth($colors, 1);
-    $text: nth($colors, 2);
-
-    &.#{$element} .wiof-slider-header {
-      background-color: $bg;
-      color: $dark-color;
-      border-bottom: 2px solid white;
-    }
-
-    &.#{$element} ::ng-deep .background {
-      background-color: lighten($bg, 10%);
-    }
-
-    // Content column background tinted to element colour
-    &.#{$element} .coffee-conv-content {
-      background-color: lighten($bg, 10%);
-    }
-
-    // Interviewee box tinted to element colour
-    &.#{$element} .interviewee-details {
-      background: lighten($bg, 14%);
-
-      a {
-        color: $text;
-      }
-    }
-  }
-
-  // Keep element pages light and let the theme colour act as an accent.
-  &.layout-element {
-    ::ng-deep .background,
-    .coffee-conv-content {
-      background-color: transparent;
-    }
   }
 
   // ── Card internals ───────────────────────────────────────────────────────
@@ -200,12 +164,16 @@ $element-themes: (
       flex-direction: column;
     }
 
+    // Inset padding reveals the ivory background as a frame around the
+    // video instead of the iframe touching the card edges directly — was
+    // reading as a raw embed rather than media styled to belong in one of
+    // our cards (compare Breaking News' own inset, rounded media-panel).
     .media-container {
       text-align: center;
       position: relative;
       overflow: hidden;
       width: 100%;
-      padding: 0;
+      padding: 12px;
       background: var(--wiof-ivory);
     }
 
@@ -217,95 +185,102 @@ $element-themes: (
       position: relative;
 
       h2 {
-          margin-top: 0;
-          font-family: 'Aleo', serif;
-          font-size: 1.4rem;
-          font-weight: 700;
-          line-height: 1.25;
-          margin-bottom: 0.75rem;
-          color: var(--wiof-ink);
+        margin-top: 0;
+        font-family: 'Aleo', serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        line-height: 1.25;
+        margin-bottom: 0.4rem;
+        color: var(--wiof-ink);
+      }
+
+      // Plain byline text, not a pill badge — "Community conversation" (the
+      // old second badge) was identical, static text on every single card
+      // with zero information value, and the interviewee name doesn't need
+      // badge-level emphasis to be legible as a byline.
+      .conversation-byline {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin: 0 0 0.85rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--wiof-teal);
+
+        ion-icon {
+          font-size: 0.95rem;
         }
+      }
 
-        .conversation-meta {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.5rem;
-          margin-bottom: 0.85rem;
+      // Clamped so card height stays predictable across a slider of very
+      // differently-lengthed descriptions, same reasoning as every other
+      // clamped card excerpt on the site (blog/video cards, breaking news).
+      .conversation-desc {
+        margin: 0 0 1.1rem;
+        color: rgba(43, 36, 32, 0.78);
+        line-height: 1.7;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
 
-          span {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            padding: 0.3rem 0.65rem;
-            border-radius: 999px;
-            background: rgba(33, 153, 159, 0.08);
-            color: rgba(43, 36, 32, 0.7);
-            font-size: 0.76rem;
-            font-weight: 700;
-          }
+      .conversation-footer {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: auto;
+      }
 
-          ion-icon {
-            color: $water-color;
-            font-size: 0.92rem;
-          }
+      // Teal, not Marigold: the hero already carries the page's one
+      // primary (marigold) CTA — this is a repeated, secondary action.
+      .conversation-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.6rem 0.9rem;
+        border-radius: 999px;
+        background: $water-color;
+        color: $light-color;
+        font-size: 0.82rem;
+        font-weight: 800;
+        text-decoration: none;
+        box-shadow: 0 8px 16px rgba(33, 153, 159, 0.22);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+        ion-icon { font-size: 0.95rem; }
+
+        &:hover {
+          transform: translateX(2px);
+          box-shadow: 0 10px 18px rgba(33, 153, 159, 0.28);
         }
+      }
 
-        p {
-          color: rgba(43, 36, 32, 0.78);
-          line-height: 1.75;
+      // A quiet text link, not a second CTA competing with "Explore
+      // conversation" — was a full-width teal pill sitting between the meta
+      // row and the description, interrupting the reading order before a
+      // visitor even reached the description.
+      .interviewee-trigger {
+        display: inline-flex;
+        align-items: center;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--wiof-ink);
+        opacity: 0.6;
+        text-decoration: underline;
+        text-decoration-color: transparent;
+        transition: opacity 0.15s ease, text-decoration-color 0.15s ease;
+
+        &:hover {
+          opacity: 1;
+          text-decoration-color: currentColor;
         }
-
-        .coffee-description {
-          margin-bottom: 1.2rem;
-        }
-
-        // Teal, not Marigold: the hero already carries the page's one
-        // primary (marigold) CTA — this is a repeated, secondary action.
-        .conversation-cta {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.35rem;
-          padding: 0.6rem 0.9rem;
-          border-radius: 999px;
-          background: $water-color;
-          color: $light-color;
-          font-size: 0.82rem;
-          font-weight: 800;
-          text-decoration: none;
-          box-shadow: 0 8px 16px rgba(33, 153, 159, 0.22);
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-          ion-icon { font-size: 0.95rem; }
-
-          &:hover {
-            transform: translateX(2px);
-            box-shadow: 0 10px 18px rgba(33, 153, 159, 0.28);
-          }
-        }
-
-        // Default interviewee box (home)
-        .interviewee-details {
-          background: var(--wiof-teal-tint-40);
-          border-radius: 12px;
-          padding: 14px;
-          margin: 1rem 0;
-
-          .interviewee-trigger {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            padding: 0;
-            border: 0;
-            background: transparent;
-            cursor: pointer;
-            font-weight: 700;
-            color: $water-color;
-
-            ion-icon { font-size: 1.05rem; }
-
-            &:hover { text-decoration: underline; }
-          }
-        }
+      }
       }
 
       .about-interviewee {
@@ -418,10 +393,9 @@ $element-themes: (
       .coffee-conv-content {
         padding: 0.85rem !important;
 
-        h2 { font-size: 1.1rem; margin-bottom: 0.5rem; }
-        p { margin-bottom: 0.5rem; }
-        .interviewee-details { margin: 0.5rem 0; padding: 10px; }
-        .conversation-meta { margin-bottom: 0.6rem; font-size: 0.72rem; }
+        h2 { font-size: 1.1rem; margin-bottom: 0.35rem; }
+        .conversation-byline { margin-bottom: 0.6rem; font-size: 0.76rem; }
+        .conversation-desc { margin-bottom: 0.75rem; }
 
         .about-interviewee {
           inset: 0.65rem;
@@ -453,6 +427,7 @@ $element-themes: (
   width: 100%;
   height: 100%;
   border: none;
+  border-radius: 12px;
   object-fit: cover;
 }
 

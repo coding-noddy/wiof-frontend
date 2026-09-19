@@ -43,16 +43,36 @@ export class BlogService {
     }
     return blogCollectn.get().pipe(
       map((querySnapshot) =>
-        querySnapshot.docs.map((doc) => {
-          const data = doc.data() as Blog;
-          data.id = doc.id;
-          data.image$ = this.getImage(data.imageName);
-          data.contentDelta = (doc.data() as any).contentDelta || null;
-          data.timeToRead = this.getTimeToRead(data.content);
-          return data;
-        })
+        querySnapshot.docs
+          .map((doc) => {
+            const data = doc.data() as Blog;
+            data.id = doc.id;
+            data.image$ = this.getImage(data.imageName);
+            data.contentDelta = (doc.data() as any).contentDelta || null;
+            data.timeToRead = this.getTimeToRead(data.content);
+            return data;
+          })
+          // Newest first. Firestore's default doc order isn't a creation-date
+          // order, so blog and element pages were showing blogs in a
+          // effectively random order. publishDate falls back to submitDate,
+          // matching the admin blog list's own "Published" column logic.
+          .sort((a, b) => this.blogSortDate(b) - this.blogSortDate(a))
       )
     );
+  }
+
+  /**
+   * Resolves a blog's sortable timestamp: publishDate if set, else
+   * submitDate, else 0 (sorts undated legacy docs last).
+   */
+  private blogSortDate(blog: Blog): number {
+    const raw = blog.publishDate || blog.submitDate;
+    if (!raw) return 0;
+    // Stored as epoch millis (`new Date().getTime()`) in this project's
+    // other date fields, but tolerate a Date/Firestore Timestamp too.
+    if (typeof raw === 'number') return raw;
+    if ((raw as any).toDate) return (raw as any).toDate().getTime();
+    return new Date(raw as any).getTime();
   }
 
   getTimeToRead(content: string): number {

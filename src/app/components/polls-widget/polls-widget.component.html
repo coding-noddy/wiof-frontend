@@ -17,8 +17,17 @@
 
     <div *ngIf="showForm && !hasVoted" class="polls-container">
       <form [formGroup]="wiofPollsForm" (submit)="submit()" class="poll-form">
-        <div class="poll-question-scroll">
-          <p class="question-text">{{ pollQuestion.question }}</p>
+        <div class="poll-question-wrap">
+          <p class="question-text" [class.expanded]="questionExpanded">{{ pollQuestion.question }}</p>
+          <button
+            *ngIf="isQuestionLong"
+            type="button"
+            class="question-toggle"
+            (click)="questionExpanded = !questionExpanded"
+          >
+            {{ questionExpanded ? 'Show less' : 'Read full question' }}
+            <ion-icon [name]="questionExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+          </button>
         </div>
 
         <div class="poll-options-list">

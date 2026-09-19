@@ -1,37 +1,47 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title routerLink="/home"
-      ><ion-img style="height: 56px" alt="WIOF" [src]="wiofLogo"></ion-img
-    ></ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
-  <ion-grid>
-    <ion-row>
-      <ion-col size="12" size-md="6" offset-md="3" class="login-container">
-        <ion-text color="dark" class="wiof-login">
-          <h1>Login to Admin Dashboard</h1>
-        </ion-text>
-        <div *ngIf="error" style="color: red">
-          <p>{{error}}</p>
-        </div>
-        <ion-item>
-          <ion-label position="floating">Email</ion-label>
-          <ion-input name="email" [(ngModel)]="email"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="floating">Password</ion-label>
-          <ion-input
+  <div class="login-page">
+    <div class="login-card">
+      <a routerLink="/home" class="login-logo-link">
+        <ion-img class="login-logo" alt="WIOF" [src]="wiofLogo"></ion-img>
+      </a>
+
+      <p class="login-eyebrow">Admin Access</p>
+      <h1 class="login-title">Sign in to WIOF</h1>
+      <p class="login-subtitle">Manage content for World Is One Family</p>
+
+      <div *ngIf="error" class="login-error">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        <p>{{ error }}</p>
+      </div>
+
+      <form class="login-form" (ngSubmit)="onLogin()">
+        <label class="login-field">
+          <span class="login-field-label">Email</span>
+          <input
+            type="email"
+            name="email"
+            autocomplete="email"
+            [(ngModel)]="email"
+            placeholder="you@worldisonefamily.com"
+          />
+        </label>
+
+        <label class="login-field">
+          <span class="login-field-label">Password</span>
+          <input
             type="password"
             name="password"
+            autocomplete="current-password"
             [(ngModel)]="password"
-          ></ion-input>
-        </ion-item>
-        <div class="button-container">
-          <ion-button class="wiof-login" (click)="onLogin()">Login</ion-button>
-        </div>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+            placeholder="••••••••"
+          />
+        </label>
+
+        <button type="submit" class="login-submit-btn">
+          Sign In
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </button>
+      </form>
+    </div>
+  </div>
 </ion-content>

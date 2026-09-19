@@ -69,7 +69,11 @@ h2 {
 }
 
 .card-title {
-  font-family: 'Aleo', serif;
+  // !important: this is a <span>, and global.scss's sitewide reset
+  // (`*:not(ion-icon) { font-family: "Noto Sans" !important }`) targets it
+  // directly — without !important here this Aleo declaration is dead and
+  // the title silently renders in the body font.
+  font-family: 'Aleo', serif !important;
   font-size: 1.15rem;
   font-weight: 700;
   color: var(--wiof-ink);
