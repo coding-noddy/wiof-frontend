@@ -46,6 +46,16 @@ $page-padding-mobile:  16px;
     min-height: 540px;
   }
 
+  // At narrow widths `cover` crops the sides to fill the box (see the
+  // comment above) — centered cropping cuts evenly from both edges, but
+  // the illustration's more eventful content (sun, turbines, the tree,
+  // people) sits on the right, while the left is already dimmed under the
+  // text scrim. Biasing the crop right keeps more of that content visible
+  // instead of losing it evenly with the already-covered left side.
+  @media (max-width: 767px) {
+    background-position: right center;
+  }
+
   // Soft ivory-to-transparent wash, left to right, so the headline stays
   // readable over the illustration without hiding the art — same treatment
   // at every width so the copy always reads as "left-aligned over the

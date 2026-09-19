@@ -11,6 +11,40 @@ $body-color-light: rgba(43, 36, 32, 0.48);
 $accent-color: var(--wiof-teal);
 $streak-color: var(--wiof-marigold);
 
+// ── Breadcrumb — same local pattern as my-library/settings/sitemap's own
+// copy ─────────────────────────────────────────────────────────────────
+.page-breadcrumb-bar {
+  width: 100%;
+  padding: 1.1rem 1.25rem;
+  background: var(--wiof-warm-white);
+  border-top: 1.5px solid #EDE4D3;
+  border-bottom: 1.5px solid #EDE4D3;
+
+  @media (min-width: 768px) {
+    padding: 1.1rem 6vw;
+  }
+}
+
+.breadcrumb {
+  font-size: 0.9rem;
+  color: var(--wiof-ink);
+
+  a {
+    color: var(--wiof-ink);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .sep {
+    margin: 0 0.5rem;
+    opacity: 0.5;
+  }
+
+  .current {
+    font-weight: 700;
+  }
+}
+
 .my-journey-page {
   padding: 1rem;
   max-width: 1200px;
@@ -534,12 +568,29 @@ $streak-color: var(--wiof-marigold);
 
 // ─── History List Items ───────────────────────────────────────────────────────
 .history-list {
+  // Now a real link to the blog/video's own page (was a plain non-clickable
+  // row) — block + reset link styling so it still lays out identically,
+  // plus a hover tint since there's nothing else to signal it's clickable.
   .history-item {
+    display: block;
     padding: 0.65rem 0;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    text-decoration: none;
+    color: inherit;
+    border-radius: 8px;
+    transition: background 0.15s ease;
 
     &:last-child {
       border-bottom: none;
+    }
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.03);
+
+      .history-item-arrow {
+        transform: translateX(2px);
+        opacity: 1;
+      }
     }
   }
 
@@ -556,12 +607,22 @@ $streak-color: var(--wiof-marigold);
     }
 
     .history-item-title {
+      flex: 1;
+      min-width: 0;
       font-size: 0.88rem;
       font-weight: 600;
       color: $heading-color;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    .history-item-arrow {
+      flex-shrink: 0;
+      font-size: 0.85rem;
+      color: $body-color-light;
+      opacity: 0.6;
+      transition: transform 0.15s ease, opacity 0.15s ease;
     }
   }
 

@@ -9,11 +9,12 @@ ion-content {
   min-height: 100vh;
 }
 
-// ── Header — plain, non-sticky, no per-element color block ───────
+// ── Header — centered eyebrow + title, matching Settings/My Journey/
+// My Library's own header pattern (was a big left-aligned title with no
+// eyebrow, notably larger than those other pages' headings) ───────
 .blogs-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  position: relative;
+  text-align: center;
   padding: 1.5rem;
   background: var(--wiof-warm-white);
   border-bottom: 1.5px solid #EDE4D3;
@@ -21,6 +22,15 @@ ion-content {
   @media (min-width: 768px) {
     padding: 2rem 6vw;
   }
+}
+
+.header-eyebrow {
+  margin: 0 0 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--wiof-teal);
 }
 
 .header-title {
@@ -31,14 +41,22 @@ ion-content {
   margin: 0;
 
   @media (min-width: 768px) {
-    font-size: 2rem;
+    font-size: 1.75rem;
   }
 }
 
 .header-actions {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+
+  @media (min-width: 768px) {
+    top: 1.5rem;
+    right: 6vw;
+  }
 }
 
 .action-link {

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 export interface SectionNavItem {
   label: string;
@@ -11,17 +11,17 @@ export interface SectionNavItem {
   templateUrl: './section-nav.component.html',
   styleUrls: ['./section-nav.component.scss']
 })
-export class SectionNavComponent implements OnInit, AfterViewInit, OnDestroy {
+export class SectionNavComponent implements OnInit {
   @Input() sections: SectionNavItem[] = [];
   @Input() element: string = '';
   activeSection = '';
-  // Hidden on load (the page already shows the element-switcher pills up top) —
-  // only reveals once the hero has been scrolled past, so the two pill rows
-  // never compete for attention at the same time.
-  visible = false;
+  // Always shown at the top of the page — the show/hide-on-scroll behaviour
+  // was pulled after repeated regressions (premature reveal, then stuck
+  // visible, then hidden immediately) chasing an Ionic scroll-container edge
+  // case that wasn't worth the complexity.
+  visible = true;
 
-  private featuredObserver?: IntersectionObserver;
-  private scrollSpyObserver?: IntersectionObserver;
+  private rafPending = false;
 
   ngOnInit() {
     if (this.sections.length > 0) {
@@ -29,56 +29,50 @@ export class SectionNavComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  ngAfterViewInit() {
-    // Watch the first section ("Featured", right after the hero) rather than
-    // the hero itself — on a tall viewport the Featured section starts well
-    // before the hero has fully scrolled out, so "hero fully gone" as a
-    // trigger left the nav hidden far longer than intended.
-    const target = this.sections[0] && document.getElementById(this.sections[0].sectionId);
-    if (!target || typeof IntersectionObserver === 'undefined') {
-      this.visible = true;
+  /**
+   * Call on every `(ionScroll)` from the page's own <ion-content> (with
+   * [scrollEvents]="true" — Ionic doesn't emit ionScroll otherwise). Reaching
+   * into ion-content's internal scroll element and attaching a raw DOM
+   * listener directly (an earlier version of this component did that) turned
+   * out to be unreliable after an in-app route change to another element
+   * page: the very first page load worked, but scrolling on a page reached
+   * via a client-side navigation never updated the active pill. Ionic's own
+   * (ionScroll) output is the documented, zone-safe way to observe content
+   * scrolling and doesn't have that failure mode.
+   */
+  handleScroll() {
+    if (this.rafPending) {
       return;
     }
-    this.featuredObserver = new IntersectionObserver(
-      ([entry]) => {
-        this.visible = entry.isIntersecting;
-      },
-      // Shrink the effective viewport so the reveal fires once the section
-      // is meaningfully in view, not the instant its edge peeks in.
-      { threshold: 0, rootMargin: '-80px 0px -40% 0px' }
-    );
-    this.featuredObserver.observe(target);
-
-    // Scroll-spy: highlight whichever pill's section is currently under a
-    // thin band near the top of the viewport, not just the one last clicked.
-    // Each section's top crosses that band once as you scroll past it, so
-    // whichever fired most recently is the "active" one — the same trick
-    // used above for the reveal, just with a much thinner trigger zone.
-    this.scrollSpyObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) {
-            return;
-          }
-          const match = this.sections.find((s) => s.sectionId === entry.target.id);
-          if (match && !match.disabled) {
-            this.activeSection = match.sectionId;
-          }
-        });
-      },
-      { threshold: 0, rootMargin: '-96px 0px -75% 0px' }
-    );
-    this.sections.forEach((s) => {
-      const el = document.getElementById(s.sectionId);
-      if (el) {
-        this.scrollSpyObserver!.observe(el);
-      }
+    this.rafPending = true;
+    requestAnimationFrame(() => {
+      this.rafPending = false;
+      this.updateActiveSection();
     });
   }
 
-  ngOnDestroy() {
-    this.featuredObserver?.disconnect();
-    this.scrollSpyObserver?.disconnect();
+  private updateActiveSection() {
+    const triggerY = 140;
+    let current = '';
+    // Looked up fresh every time rather than cached once: sections like
+    // Conversations/Videos sit behind `*ngIf="... | async"` in the page
+    // templates and don't exist in the DOM yet when this component first
+    // initializes (before their Firestore/HTTP data resolves) — a one-time
+    // getElementById at setup silently dropped them from tracking forever,
+    // which is exactly why those two pills never lit up.
+    for (const s of this.sections) {
+      const el = document.getElementById(s.sectionId);
+      if (el && el.getBoundingClientRect().top <= triggerY) {
+        current = s.sectionId;
+      }
+    }
+    if (!current) {
+      current = this.sections[0]?.sectionId ?? '';
+    }
+    const match = this.sections.find((s) => s.sectionId === current);
+    if (match && !match.disabled) {
+      this.activeSection = current;
+    }
   }
 
   scrollTo(sectionId: string) {

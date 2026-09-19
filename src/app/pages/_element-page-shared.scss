@@ -96,6 +96,14 @@ ion-content {
     min-height: 440px;
   }
 
+  // Same reasoning as home.page.scss's own .hero — centered cropping at
+  // narrow widths cuts evenly from both sides, but the copy (same
+  // left-to-right scrim below) already dims the left, so biasing right
+  // keeps more of the illustration's own content visible.
+  @media (max-width: 767px) {
+    background-position: right 68%;
+  }
+
   &.air    { background-image: url('/assets/banners/air-hero.png'); }
   &.water  { background-image: url('/assets/banners/water-hero.png'); }
   &.spirit { background-image: url('/assets/banners/spirit-hero.png'); }

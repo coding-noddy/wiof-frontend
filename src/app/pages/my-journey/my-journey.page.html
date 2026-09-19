@@ -1,6 +1,15 @@
 <app-header></app-header>
 
 <ion-content>
+  <!-- ── Breadcrumb ───────────────────────────────────────────────── -->
+  <div class="page-breadcrumb-bar">
+    <div class="breadcrumb">
+      <a routerLink="/home">Home</a>
+      <span class="sep">/</span>
+      <span class="current">My Journey</span>
+    </div>
+  </div>
+
   <div class="my-journey-page">
 
     <!-- Page Header -->
@@ -168,17 +177,22 @@
 
           <!-- Quality Reads List -->
           <div *ngIf="qualityReads.length > 0" class="history-list">
-            <div class="history-item" *ngFor="let read of qualityReads">
+            <a
+              class="history-item"
+              *ngFor="let read of qualityReads"
+              [routerLink]="getBlogHistoryLink(read.contentId)"
+            >
               <div class="history-item-main">
                 <ion-icon name="book-outline" class="history-item-icon"></ion-icon>
                 <span class="history-item-title">{{ read.blogTitle }}</span>
+                <ion-icon name="chevron-forward-outline" class="history-item-arrow"></ion-icon>
               </div>
               <div class="history-item-meta">
                 <span class="meta-tag">{{ read.scrollDepth }}% read</span>
                 <span class="meta-tag">{{ formatTimeSpent(read.timeSpent) }}</span>
                 <span class="meta-date">{{ formatDate(read.completedDate) }}</span>
               </div>
-            </div>
+            </a>
           </div>
 
           <!-- Empty State -->
@@ -215,16 +229,21 @@
         <!-- Videos Watched Content -->
         <div *ngIf="!videoWatchHistoryLoading && !videoWatchHistoryError">
           <div *ngIf="videoWatchHistory.length > 0" class="history-list">
-            <div class="history-item" *ngFor="let video of videoWatchHistory">
+            <a
+              class="history-item"
+              *ngFor="let video of videoWatchHistory"
+              [routerLink]="getVideoHistoryLink(video.contentId)"
+            >
               <div class="history-item-main">
                 <ion-icon name="play-circle-outline" class="history-item-icon"></ion-icon>
                 <span class="history-item-title">{{ video.videoTitle }}</span>
+                <ion-icon name="chevron-forward-outline" class="history-item-arrow"></ion-icon>
               </div>
               <div class="history-item-meta">
                 <span class="meta-tag">{{ video.watchPercent }}% watched</span>
                 <span class="meta-date">{{ video.completedDate | date:'mediumDate' }}</span>
               </div>
-            </div>
+            </a>
           </div>
 
           <!-- Empty State -->

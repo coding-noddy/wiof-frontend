@@ -72,7 +72,7 @@
     class="element-pill"
     [ngClass]="'color-' + el.colorClass"
     [class.active]="isSelectedElement(el.slug)"
-    [routerLink]="['/element', el.slug]"
+    [routerLink]="pillLink(el.slug)"
   >
     <span class="pill-icon" [ngClass]="'icon-' + el.slug"></span>
     {{ el.name }}

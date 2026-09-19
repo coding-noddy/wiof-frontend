@@ -35,6 +35,7 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
   savedContentCount = 0;
 
   private destroy$ = new Subject<void>();
+  private userId: string | null = null;
 
   constructor(
     private authService: AuthService,
@@ -47,12 +48,26 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((user) => {
         this.isAuthenticated = !!user;
+        this.userId = user?.uid || null;
         if (user) {
           this.loadJourney(user.uid);
         } else {
           this.isLoading = false;
         }
       });
+  }
+
+  /**
+   * Re-fetches journey data for the current user. Ionic keeps this
+   * component's home page alive in the nav stack rather than destroying it
+   * on back-navigation, so ngOnInit never re-runs on its own — home.page.ts
+   * calls this from ionViewWillEnter() instead, e.g. so a blog saved from
+   * another page shows up in the count on return without a full reload.
+   */
+  refresh(): void {
+    if (this.userId) {
+      this.loadJourney(this.userId);
+    }
   }
 
   private loadJourney(userId: string): void {

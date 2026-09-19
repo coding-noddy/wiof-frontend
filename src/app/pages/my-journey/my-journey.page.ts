@@ -419,6 +419,23 @@ export class MyJourneyPage implements OnInit, OnDestroy {
   }
 
   /**
+   * Link for a Quality Reads / Videos Watched history-list item. Same
+   * "element/earth" simplification as getContentLink() and the home
+   * journey panel's own activity link — the actual blog/video is looked up
+   * by contentId alone, so the element segment doesn't need to be correct
+   * for the content to load; it only affects that page's own breadcrumb
+   * label. A contentId that no longer exists lands on the 404 page, which
+   * is the intended fallback, not a bug to route around.
+   */
+  getBlogHistoryLink(contentId: string): string {
+    return `/element/earth/blog/${contentId}`;
+  }
+
+  getVideoHistoryLink(contentId: string): string {
+    return `/element/earth/video/${contentId}`;
+  }
+
+  /**
    * Formats the last EQ date for display.
    */
   getFormattedEqDate(): string {

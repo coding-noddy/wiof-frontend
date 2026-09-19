@@ -1,9 +1,6 @@
 @import '../../wiof-custom-theming.scss';
 
-// ── Nav bar — sits below the header, but only reveals once the hero has
-// scrolled past (see the IntersectionObserver in the .ts). Before that, the
-// page's own element-switcher pills are already visible up top; showing both
-// pill rows at once reads as clutter.
+// ── Nav bar — sits below the header, at the top of the page, always visible.
 .section-nav {
   display: flex;
   justify-content: center;
@@ -13,21 +10,7 @@
   padding: 0.5rem 1rem;
   width: 100%;
   max-height: 64px;
-  opacity: 1;
   overflow: hidden;
-  transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.3s ease, border-color 0.3s ease;
-
-  &.section-nav-hidden {
-    max-height: 0;
-    opacity: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    // Width, not just color — a `1.5px solid transparent` border still
-    // reserves box height, which read as a stray line under the header
-    // while the bar was supposed to be fully collapsed.
-    border-bottom-width: 0;
-    pointer-events: none;
-  }
 }
 
 .nav-scroll {
@@ -78,35 +61,41 @@
 }
 
 // ── Element theme colors for active pill ──────────────────────────────────────
+// Matches the element-switcher pills' own palette (life-elements.component's
+// .element-pill.active): full-saturation element color as the background with
+// plain $dark-color text, not a heavily darkened per-element text tint — that
+// read as muddy/too-dark next to the switcher pills right above this bar. Air,
+// Water and Spirit all share the same plain teal ($water-color) there too,
+// rather than three separate tint/shade variants.
 .theme-earth .nav-item.active {
   background: $earth-color;
-  color: darken($earth-color, 40%);
+  color: $dark-color;
 }
 .theme-earth .nav-item:hover { background: rgba($earth-color, 0.15); color: darken($earth-color, 30%); }
 
 .theme-water .nav-item.active {
-  background: darken($water-color, 10%);
-  color: darken($water-color, 50%);
+  background: $water-color;
+  color: $dark-color;
 }
-.theme-water .nav-item:hover { background: rgba($water-color, 0.2); color: darken($water-color, 40%); }
+.theme-water .nav-item:hover { background: rgba($water-color, 0.15); color: darken($water-color, 30%); }
 
 .theme-energy .nav-item.active {
   background: $energy-color;
-  color: darken($energy-color, 40%);
+  color: $dark-color;
 }
 .theme-energy .nav-item:hover { background: rgba($energy-color, 0.15); color: darken($energy-color, 30%); }
 
 .theme-air .nav-item.active {
-  background: $air-color;
-  color: darken($air-color, 40%);
+  background: $water-color;
+  color: $dark-color;
 }
-.theme-air .nav-item:hover { background: rgba($air-color, 0.15); color: darken($air-color, 30%); }
+.theme-air .nav-item:hover { background: rgba($water-color, 0.15); color: darken($water-color, 30%); }
 
 .theme-spirit .nav-item.active {
-  background: $spirit-color;
-  color: darken($spirit-color, 40%);
+  background: $water-color;
+  color: $dark-color;
 }
-.theme-spirit .nav-item:hover { background: rgba($spirit-color, 0.15); color: darken($spirit-color, 30%); }
+.theme-spirit .nav-item:hover { background: rgba($water-color, 0.15); color: darken($water-color, 30%); }
 
 // ── Responsive ────────────────────────────────────────────────────────────────
 @media (max-width: 767px) {

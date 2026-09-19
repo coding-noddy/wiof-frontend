@@ -2,7 +2,7 @@
 <app-subscribe [page]="'spirit'"></app-subscribe>
 
 <app-section-nav [sections]="pageSections" [element]="elementName"></app-section-nav>
-<ion-content>
+<ion-content [scrollEvents]="true" (ionScroll)="onContentScroll()">
   <!-- ── Element switcher — breadcrumb + pills, above the hero ───────── -->
   <div class="element-switcher-bar">
     <div class="breadcrumb">

@@ -13,10 +13,15 @@ ion-content {
   align-items: center;
 }
 
+// The brand's Air icon (already draws its own circle + wind lines) instead
+// of a generic compass glyph — "the wind carried this page away" literally
+// calls for Air's own icon, not an unrelated navigation symbol.
 .not-found-icon {
-  font-size: 3.5rem;
-  color: var(--wiof-teal);
+  display: inline-block;
+  width: 64px;
+  height: 64px;
   margin-bottom: 1.25rem;
+  background: url('/assets/icons/icon_air.svg') no-repeat center / contain;
 }
 
 .not-found-title {

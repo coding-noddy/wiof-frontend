@@ -23,6 +23,16 @@ export class LifeElementsComponent implements OnInit {
    */
   @Input() variant: 'cards' | 'pills' = 'cards';
 
+  /**
+   * Extra path segment appended to each pill's link (pills variant only),
+   * e.g. 'blogs' so the Blogs list page's own pills switch between elements'
+   * Blogs lists rather than jumping to each element's home page — the
+   * pills should keep you in the same section you're already looking at.
+   * Empty string (default) keeps the plain element-home link used on
+   * element pages' own switcher bar.
+   */
+  @Input() linkSuffix: string = '';
+
   readonly elements: ElementDef[] = [
     { slug: 'air', name: 'Air', description: 'Moves. Connects. Carries change.', colorClass: 'teal' },
     { slug: 'energy', name: 'Energy', description: 'Illuminates. Reveals. Activates action.', colorClass: 'marigold' },
@@ -37,5 +47,9 @@ export class LifeElementsComponent implements OnInit {
 
   isSelectedElement(element: string) {
     return this.selectedElement === element;
+  }
+
+  pillLink(slug: string): string[] {
+    return this.linkSuffix ? ['/element', slug, this.linkSuffix] : ['/element', slug];
   }
 }

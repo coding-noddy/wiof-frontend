@@ -321,9 +321,13 @@
       height: auto;
     }
 
+    // width: calc(100% - 2rem), not 100% — min-width: 100% (of the 356px-wide
+    // parent) plus the 1rem margin on each side added another 32px on top,
+    // overflowing the card by that much (silently clipped by the card's own
+    // overflow: hidden — the image LOOKED cut off because it actually was).
     .media-panel {
-      max-width: 100%;
-      min-width: 100%;
+      width: calc(100% - 2rem);
+      max-width: calc(100% - 2rem);
       flex: none;
       margin: 1rem 1rem 0;
       height: 180px;

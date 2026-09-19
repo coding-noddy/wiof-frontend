@@ -15,7 +15,7 @@ import { CoffeeConversation } from 'src/app/models/CoffeeConversation';
 import { InFocus } from 'src/app/models/InFocus';
 import { InFocusService } from 'src/app/services/in-focus.service';
 
-import { SectionNavItem } from 'src/app/components/section-nav/section-nav.component';
+import { SectionNavComponent, SectionNavItem } from 'src/app/components/section-nav/section-nav.component';
 
 @Component({
   selector: 'app-air',
@@ -24,6 +24,7 @@ import { SectionNavItem } from 'src/app/components/section-nav/section-nav.compo
 })
 export class AirPage implements OnInit {
   @ViewChild(VideoWidgetComponent) videoWidgetRef: VideoWidgetComponent;
+  @ViewChild(SectionNavComponent) sectionNav?: SectionNavComponent;
 
   blogs$: Observable<Blog[]>;
   videos$: Observable<Video[]>;
@@ -67,5 +68,9 @@ export class AirPage implements OnInit {
       const item = this.pageSections.find(s => s.sectionId === 'air-videos');
       if (item) item.disabled = !videos || videos.length === 0;
     });
+  }
+
+  onContentScroll() {
+    this.sectionNav?.handleScroll();
   }
 }
