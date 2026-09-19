@@ -200,13 +200,13 @@ function withTriggerErrorLogging(functionName, handler) {
 /**
  * User profile system-managed fields
  * ===================================
- * loginCount, lastLogin, daysVisited, currentStreak and savedBlogsCount are
- * engagement counters, not user preferences — a client that could set them
- * directly could forge its own streak/login history. These four functions
- * are the only path that may write them; firestore.rules denies `create` on
- * `users/{uid}` entirely and excludes these fields from the allowed `update`
- * key set, so the Admin SDK writes below (which bypass rules) are the only
- * way any of these fields change.
+ * loginCount, lastLogin, daysVisited, currentStreak, longestStreak and
+ * savedBlogsCount are engagement counters, not user preferences — a client
+ * that could set them directly could forge its own streak/login history.
+ * These four functions are the only path that may write them; firestore.rules
+ * denies `create` on `users/{uid}` entirely and excludes these fields from
+ * the allowed `update` key set, so the Admin SDK writes below (which bypass
+ * rules) are the only way any of these fields change.
  */
 
 /** Mirrors user-profile.service.ts's toCalendarDay() — kept in sync manually since this runs in a separate Node runtime. */
@@ -263,6 +263,7 @@ exports.createUserProfile = functions
       loginCount: 1,
       daysVisited: 1,
       currentStreak: 1,
+      longestStreak: 1,
       savedBlogsCount: 0
     });
 
@@ -328,8 +329,14 @@ exports.recordUserVisit = functions
 
       if (today !== lastDay) {
         const daysDiff = diffCalendarDays(today, lastDay);
+        // Computed as a plain number (not FieldValue.increment) because
+        // longestStreak needs the actual resulting value to compare against —
+        // safe here since we already hold `profile` from this same transaction's
+        // read, so there's no lost-update race to guard against.
+        const newStreak = daysDiff === 1 ? (profile.currentStreak || 0) + 1 : 1;
         update.daysVisited = admin.firestore.FieldValue.increment(1);
-        update.currentStreak = daysDiff === 1 ? admin.firestore.FieldValue.increment(1) : 1;
+        update.currentStreak = newStreak;
+        update.longestStreak = Math.max(profile.longestStreak || 0, newStreak);
       }
 
       tx.update(userRef, update);
@@ -406,6 +413,7 @@ exports.resetEngagementData = functions
       loginCount: 0,
       daysVisited: 0,
       currentStreak: 0,
+      longestStreak: 0,
       savedBlogsCount: 0,
       lastLogin: admin.firestore.FieldValue.serverTimestamp()
     });
