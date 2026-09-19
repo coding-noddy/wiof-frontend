@@ -223,12 +223,10 @@
     }
   }
 
-  .bn-nav-btn.prev { left: calc(36% - 17px); }
+  // Both arrows anchor to the outer card edges — mirrors of each other —
+  // not to the media/detail column boundary in between.
+  .bn-nav-btn.prev { left: 12px; }
   .bn-nav-btn.next { right: 12px; }
-
-  @media (max-width: 991px) {
-    .bn-nav-btn.prev { left: 12px; }
-  }
 
   // ── Ticker — a labelled strip instead of an unlabeled scrolling bar.
   .news-marquee {

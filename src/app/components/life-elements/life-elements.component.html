@@ -12,9 +12,42 @@
       [class.active]="isSelectedElement(el.slug)"
       [routerLink]="['/element', el.slug]"
     >
+      <!-- Icon leads, as every other icon-badge on the site does — the
+           line-vocabulary motif sits behind/below it as brand texture,
+           not something the icon needs to be artfully anchored into. -->
       <span class="element-icon" [ngClass]="'icon-' + el.slug" [class.active]="isSelectedElement(el.slug)"></span>
       <span class="element-name">{{ el.name }}</span>
       <span class="element-desc">{{ el.description }}</span>
+
+      <div class="element-motif" [ngSwitch]="el.slug" aria-hidden="true">
+        <svg *ngSwitchCase="'air'" class="motif-svg" viewBox="0 0 300 100" preserveAspectRatio="none">
+          <path d="M0,30 C40,15 70,45 110,30 C150,15 180,45 220,30 C250,20 270,35 300,25" />
+          <path d="M0,55 C40,40 70,70 110,55 C150,40 180,70 220,55 C250,45 270,60 300,50" />
+          <path d="M0,80 C40,65 70,95 110,80 C150,65 180,95 220,80 C250,70 270,85 300,75" />
+        </svg>
+        <svg *ngSwitchCase="'water'" class="motif-svg" viewBox="0 0 300 100" preserveAspectRatio="none">
+          <path d="M0,40 Q25,25 50,40 T100,40 T150,40 T200,40 T250,40 T300,40" />
+          <path d="M0,65 Q25,50 50,65 T100,65 T150,65 T200,65 T250,65 T300,65" />
+          <path d="M0,90 Q25,75 50,90 T100,90 T150,90 T200,90 T250,90 T300,90" />
+        </svg>
+        <svg *ngSwitchCase="'earth'" class="motif-svg" viewBox="0 0 300 100" preserveAspectRatio="none">
+          <path d="M0,95 L40,55 L80,75 L120,35 L160,65 L200,25 L240,60 L270,40 L300,55" />
+          <path d="M0,105 L50,75 L90,90 L130,60 L170,85 L210,50 L250,80 L300,65" />
+        </svg>
+        <svg *ngSwitchCase="'energy'" class="motif-svg" viewBox="0 0 300 100" preserveAspectRatio="none">
+          <line x1="300" y1="100" x2="220" y2="20" />
+          <line x1="300" y1="100" x2="255" y2="10" />
+          <line x1="300" y1="100" x2="300" y2="5" />
+          <line x1="300" y1="100" x2="180" y2="55" />
+          <line x1="300" y1="100" x2="150" y2="90" />
+        </svg>
+        <svg *ngSwitchCase="'spirit'" class="motif-svg" viewBox="0 0 300 100" preserveAspectRatio="none">
+          <circle cx="150" cy="100" r="20" />
+          <circle cx="150" cy="100" r="45" />
+          <circle cx="150" cy="100" r="70" />
+          <circle cx="150" cy="100" r="95" />
+        </svg>
+      </div>
     </a>
   </div>
 </div>

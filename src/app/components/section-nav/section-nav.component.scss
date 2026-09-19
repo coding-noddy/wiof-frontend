@@ -1,6 +1,9 @@
 @import '../../wiof-custom-theming.scss';
 
-// ── Nav bar — always visible below header ─────────────────────────────────────
+// ── Nav bar — sits below the header, but only reveals once the hero has
+// scrolled past (see the IntersectionObserver in the .ts). Before that, the
+// page's own element-switcher pills are already visible up top; showing both
+// pill rows at once reads as clutter.
 .section-nav {
   display: flex;
   justify-content: center;
@@ -9,6 +12,22 @@
   border-bottom: 1.5px solid #EDE4D3;
   padding: 0.5rem 1rem;
   width: 100%;
+  max-height: 64px;
+  opacity: 1;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.3s ease, border-color 0.3s ease;
+
+  &.section-nav-hidden {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    // Width, not just color — a `1.5px solid transparent` border still
+    // reserves box height, which read as a stray line under the header
+    // while the bar was supposed to be fully collapsed.
+    border-bottom-width: 0;
+    pointer-events: none;
+  }
 }
 
 .nav-scroll {

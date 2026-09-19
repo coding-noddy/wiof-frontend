@@ -20,6 +20,7 @@ export class EnvCalDialogComponent implements OnInit {
   width: number;
   slideOpts = BREAKING_NEWS_SLIDER_OPTIONS;
   showNavigation: boolean = false;
+  activeIndex: number = 0;
   imageLoadState: { [key: number]: { loaded: boolean; error: boolean } } = {};
 
   @HostListener('window:resize', [])

@@ -68,6 +68,8 @@
   background: $light-color;
   border: 1.5px solid;
   text-decoration: none;
+  position: relative;
+  overflow: hidden;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
   @include element-color(border-color, 0.55);
 
@@ -79,11 +81,61 @@
     @include element-color(border-color, 1);
   }
 
+  // Icon, name and description stay in normal flow, above the motif —
+  // icon leads as it does on every other card on the site (Breaking News,
+  // Food pH, etc.), so this section scans the same way.
+  .element-icon,
+  .element-name,
+  .element-desc {
+    position: relative;
+    z-index: 1;
+  }
+
+  // Grounded line-vocabulary motif — a horizon strip behind the text, low
+  // opacity so it reads as texture, not a second graphic competing with it.
+  .element-motif {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 68px;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0.22;
+    transition: opacity 0.25s ease, transform 0.35s ease;
+  }
+
+  // `@include element-color(color, 1)` here would compile to
+  // `.element-card .element-motif.color-teal` — matching only if the
+  // color-* class sat on .element-motif itself. It's actually on
+  // .element-card (this element), so every motif silently fell back to the
+  // same inherited default instead of its own theme color. Scoping the
+  // color-* class to the ancestor and targeting the motif as a descendant
+  // fixes that.
+  &.color-teal .element-motif     { color: var(--wiof-teal); }
+  &.color-marigold .element-motif { color: var(--wiof-marigold); }
+  &.color-brown .element-motif    { color: var(--wiof-brown); }
+
+  &:hover .element-motif {
+    opacity: 0.4;
+    transform: translateY(-4px);
+  }
+
+  .motif-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
   .element-icon {
     @extend %element-icon-base;
     width: 64px;
     height: 64px;
-    position: relative;
   }
 
   .element-name {
@@ -144,11 +196,29 @@
     }
   }
 
-  // Earth — terrain: grounded, settles into a gentle grow rather than
-  // floating, echoing "grow from the ground" instead of drifting.
+  // Earth — terrain: the icon settles rather than floating (a small vertical
+  // press, not a squash — scaleY alone turned the circular icon into a
+  // flattened oval mid-animation), and two small sprouts grow up from the
+  // base, echoing "grounds us, connects us to place" instead of leaving
+  // Earth as the one element with no accompanying motif like the other four.
   &:hover .icon-earth {
-    animation: elem-earth-grow 1.8s ease-in-out infinite;
+    animation: elem-earth-settle 1.8s ease-in-out infinite;
     transform-origin: bottom center;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      width: 2px;
+      height: 0;
+      border-radius: 999px;
+      background: var(--wiof-brown);
+      animation: elem-earth-sprout 1.8s ease-in-out infinite;
+    }
+
+    &::before { left: 36%; animation-delay: 0s; }
+    &::after  { left: 58%; animation-delay: 0.3s; }
   }
 
   // Energy — rays: the icon pulses with a warm glow, like light building.
@@ -168,6 +238,7 @@
 
   // Spirit — concentric circles: rings expand outward from the centre,
   // staggered, echoing reflection/expansion rather than a single ripple.
+  // Already distinct enough from Water's one ring — left as is.
   &:hover .icon-spirit {
     &::before,
     &::after {
@@ -200,9 +271,15 @@
   100% { transform: scale(1.5); opacity: 0; }
 }
 
-@keyframes elem-earth-grow {
-  0%, 100% { transform: scaleY(1); }
-  50%      { transform: scaleY(1.08); }
+@keyframes elem-earth-settle {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(2px); }
+}
+
+@keyframes elem-earth-sprout {
+  0%   { height: 0; opacity: 0; }
+  55%  { height: 13px; opacity: 0.9; }
+  100% { height: 0; opacity: 0; }
 }
 
 @keyframes elem-energy-pulse {
@@ -270,8 +347,10 @@
     animation: elem-ripple 1.5s ease-out infinite;
   }
 
+  // Same settle as the card grid, minus the sprouts — too small at pill
+  // scale (20px) to read as anything but noise.
   &:hover .icon-earth {
-    animation: elem-earth-grow 1.8s ease-in-out infinite;
+    animation: elem-earth-settle 1.8s ease-in-out infinite;
     transform-origin: bottom center;
   }
 

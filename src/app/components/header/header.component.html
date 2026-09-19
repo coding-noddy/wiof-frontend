@@ -7,6 +7,7 @@
 
     <!-- Desktop Navigation -->
     <nav class="desktop-nav">
+      <a routerLink="/home" class="nav-link">Home</a>
       <a routerLink="/our-purpose" class="nav-link">Our Purpose</a>
       <a routerLink="/our-team" class="nav-link">Our Team</a>
 
@@ -37,6 +38,7 @@
 
   <!-- Mobile menu -->
   <nav class="mobile-menu" [class.mobile-menu--open]="mobileMenuOpen">
+    <a routerLink="/home" class="mobile-link" (click)="closeMobileMenu()">Home</a>
     <a routerLink="/our-purpose" class="mobile-link" (click)="closeMobileMenu()">Our Purpose</a>
     <a routerLink="/our-team" class="mobile-link" (click)="closeMobileMenu()">Our Team</a>
 

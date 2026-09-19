@@ -367,6 +367,18 @@
       }
     }
   }
+
+  // On element pages the video sits directly against the description column
+  // with no gap — squaring off the video's right corners (instead of the
+  // player's default all-round radius) reads as one connected piece rather
+  // than a card floating disconnected from its own text.
+  &.layout-element {
+    @media (min-width: 992px) {
+      .coffee-conv-card .media-container .media-player {
+        border-radius: 12px 0 0 12px;
+      }
+    }
+  }
 }
 
 // ─── Misc (outside container, not scoped) ────────────────────────────────────

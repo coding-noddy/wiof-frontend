@@ -17,7 +17,7 @@
   // it opts back in over global.scss's `ion-card { box-shadow: none
   // !important }` reset, which any non-!important shadow here would lose to.
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18) !important;
-  background: #fff;
+  background: var(--wiof-warm-white);
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -56,6 +56,9 @@
   flex: 1;                  // takes all remaining space between badge and button
   min-width: 0;             // allows text to wrap instead of overflowing
   margin: 0;
+  // Not a heading tag, so it needs its own explicit override to win over
+  // global.scss's universal `* { font-family: "Noto Sans" !important }` reset.
+  font-family: 'Aleo', serif !important;
   font-size: 1rem;
   font-weight: 700;
   color: $light-color;
@@ -186,7 +189,8 @@
 
   p {
     margin: 0 0 0.75rem;
-    color: #475569;
+    // Tinted ink, not a cool slate-gray — matches Breaking News' secondary text.
+    color: rgba(43, 36, 32, 0.72);
     line-height: 1.7;
     font-size: 0.92rem;
     text-align: left;
@@ -204,8 +208,30 @@
   align-items: center;
   justify-content: center;
   height: 200px;
-  background: #fff;
+  background: var(--wiof-warm-white);
   border-radius: 18px;
+}
+
+// ── Pagination dots ─────────────────────────────────────────────────────────
+.occasion-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding-top: 0.65rem;
+}
+
+.occasion-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--wiof-brown-tint-40);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+
+  &.active {
+    background: var(--wiof-teal);
+    transform: scale(1.35);
+  }
 }
 
 // ── Responsive ───────────────────────────────────────────────────────────────
