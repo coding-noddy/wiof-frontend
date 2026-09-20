@@ -7,7 +7,11 @@
  * the default WIOF meta tags.
  */
 
-const functions = require('firebase-functions');
+// firebase-functions v5+ points the default export at the v2 API, which
+// doesn't have .region().https.onCall/.firestore.document() — every trigger
+// in this file uses that v1-style API, so import it explicitly to keep them
+// working after the upgrade (see functions/package.json).
+const functions = require('firebase-functions/v1');
 const admin = require('firebase-admin');
 
 admin.initializeApp();

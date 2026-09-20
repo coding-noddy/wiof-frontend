@@ -165,7 +165,30 @@ h2 {
     text-align: center;
   }
 
+  // .guest-copy's flex-basis (320px, meant for the row layout on desktop)
+  // doesn't get reset for the column layout above — the browser was still
+  // giving it a 320px-wide box even on a narrower phone screen, pushing its
+  // title/body text out past the card's own right edge and under the
+  // fixed "Subscribe" ribbon on the right side of the screen.
+  .guest-copy {
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  // Same overflow, different cause: three fixed 84px-wide items plus 1.5rem
+  // gaps (~300px total) don't fit a narrow phone's content width, and
+  // flex-shrink:0 let them spill out past the card instead of shrinking —
+  // the "Your streak" label was the one landing under the ribbon.
   .guest-features {
     justify-content: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .guest-feature {
+    width: auto;
+    min-width: 60px;
+    flex: 0 1 auto;
   }
 }
