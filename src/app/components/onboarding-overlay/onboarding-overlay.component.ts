@@ -1,12 +1,14 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, AfterViewInit, HostListener, ViewChild, ElementRef } from '@angular/core';
 
 @Component({
   selector: 'app-onboarding-overlay',
   templateUrl: './onboarding-overlay.component.html',
   styleUrls: ['./onboarding-overlay.component.scss']
 })
-export class OnboardingOverlayComponent implements OnInit {
+export class OnboardingOverlayComponent implements OnInit, AfterViewInit {
   visible = false;
+
+  @ViewChild('closeBtn') closeBtn?: ElementRef<HTMLButtonElement>;
 
   // Same order, colors and taglines as life-elements.component.html and
   // continue-journey-banner's ELEMENT_TAGLINES — one voice across the app.
@@ -34,6 +36,16 @@ export class OnboardingOverlayComponent implements OnInit {
 
   ngOnInit(): void {
     this.visible = this.shouldShowOverlay();
+  }
+
+  ngAfterViewInit(): void {
+    if (this.visible) {
+      // Ionic's gesture controller (used by the home page's sliders) blurs
+      // whatever is focused during its own init, shortly after mount — a
+      // focus set any earlier gets silently stolen back. 1s clears it
+      // reliably and is still well inside the entrance animation window.
+      setTimeout(() => this.closeBtn?.nativeElement.focus(), 1000);
+    }
   }
 
   @HostListener('document:keydown.escape')

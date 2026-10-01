@@ -6,9 +6,11 @@
   *ngIf="visible"
   class="onboarding-overlay"
   role="dialog"
+  aria-modal="true"
   aria-label="Welcome to WIOF onboarding"
 >
   <button
+    #closeBtn
     class="close-btn"
     (click)="dismiss()"
     aria-label="Close onboarding overlay"
@@ -19,10 +21,10 @@
   <div class="overlay-content">
     <!-- Header with gradient -->
     <div class="overlay-header">
-      <img src="assets/logo.png" alt="WIOF Logo" class="header-logo" />
+      <img src="assets/brand/logos/WIOF-full-logo.png" alt="World Is One Family logo" class="header-logo" />
       <h2 class="overlay-title">Welcome to WIOF</h2>
       <p class="overlay-purpose">
-        Vasudhaiva Kutumbakam — the world is one family. Explore the five elements that hold
+        The world is one family — Vasudhaiva Kutumbakam. Explore the five elements that hold
         every life on Earth together, and find the spark that's yours to carry forward.
       </p>
     </div>

@@ -136,6 +136,19 @@ $page-padding-mobile:  16px;
       background: var(--wiof-brown);
     }
 
+    // Standard phones (iPhone 16 class, ~390px+) get their own step instead
+    // of sharing the single small size tuned for the narrowest devices
+    // (iPhone SE etc.) — same reasoning as .hero-highlight/.hero-lead below.
+    @media (min-width: 390px) {
+      gap: 0.48em;
+      margin-bottom: 0.68rem;
+      font-size: 0.72rem;
+
+      &::before {
+        width: 22px;
+      }
+    }
+
     // Tablet gets its own intermediate step rather than jumping straight to
     // the desktop size — same reasoning as .hero-highlight/.hero-lead below.
     @media (min-width: 768px) {
@@ -162,7 +175,7 @@ $page-padding-mobile:  16px;
   }
 
     h1 {
-    margin: 0 0 0.85rem;
+    margin: 0.5rem 0 0.85rem;
   }
 
   // Each verse ("Inspire through Creativity") is one line at every width —
@@ -221,6 +234,13 @@ $page-padding-mobile:  16px;
     color: var(--wiof-ink);
     opacity: 0.68;
 
+    // Standard phones (iPhone 16 class, ~390px+) — the single small size
+    // below was tuned for the narrowest devices (iPhone SE etc.) and read
+    // as too small on anything wider.
+    @media (min-width: 390px) {
+      font-size: 0.85rem;
+    }
+
     @media (min-width: 768px) {
       font-size: 1.2rem;
     }
@@ -256,6 +276,15 @@ $page-padding-mobile:  16px;
     font-style: italic;
     font-weight: 700;
 
+    // Standard phones (iPhone 16 class, ~390px+) — the single small size
+    // above was tuned for the narrowest devices (iPhone SE etc.) and read
+    // as too small on anything wider; nowrap on .hero-line (above) still
+    // holds at this size, verified against "Enlighten through Knowledge"
+    // (the longest verse) at 393px.
+    @media (min-width: 390px) {
+      font-size: 1.55rem;
+    }
+
     @media (min-width: 768px) {
       font-size: 2.3rem;
     }
@@ -276,6 +305,9 @@ $page-padding-mobile:  16px;
 
     .cta {
     margin-top: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
     // Smaller on mobile — the tablet/desktop size (restored below) read as
     // oversized next to the now phone-sized motto above it.
     padding: 9px 22px;
@@ -287,6 +319,10 @@ $page-padding-mobile:  16px;
     color: var(--wiof-ink);
     cursor: pointer;
     transition: transform 0.18s ease, box-shadow 0.18s ease;
+
+    ion-icon {
+      font-size: 1.1em;
+    }
 
     @media (min-width: 768px) {
       padding: 12px 30px;
@@ -304,7 +340,7 @@ $page-padding-mobile:  16px;
     // a short ~0.4s pause after that before the button appears, instead of
     // the longer 1.5s pause this had before the motto's own animation was
     // slowed down further.
-    animation-delay: 3.75s;
+    animation-delay: 3s;
 
     &:hover {
       transform: translateY(-1px);

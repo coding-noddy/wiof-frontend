@@ -126,7 +126,6 @@
   object-fit: contain;
   margin: 0 auto 0.5rem;
   display: block;
-  filter: brightness(0) invert(1);
 }
 
 .overlay-title {
@@ -181,6 +180,12 @@
   background: color-mix(in srgb, var(--chip-color) 8%, white);
   border: 1px solid color-mix(in srgb, var(--chip-color) 20%, white);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  // 5 chips in a 2-col grid would otherwise leave the last one stranded
+  // alone on its own half-empty row.
+  &:last-child {
+    grid-column: 1 / -1;
+  }
 
   &:hover {
     transform: translateX(2px);

@@ -11,7 +11,7 @@ import firebase from 'firebase/compat/app';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  wiofLogo: string = '../../assets/brand/logos/WIOF-full-logo-SVG.svg';
+  wiofLogo: string = '../../assets/brand/logos/WIOF-full-logo.png';
   sub: Subscription;
   colorName: string;
 
