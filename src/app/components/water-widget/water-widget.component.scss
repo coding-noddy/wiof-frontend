@@ -29,7 +29,6 @@ $radius-item: 14px;
   background-color: $w;
   border-bottom: 2px solid rgba(255, 255, 255, 0.8);
   padding: 0.9rem 1.1rem;
-  min-height: 58px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -42,10 +41,24 @@ $radius-item: 14px;
   gap: 0.5rem;
 }
 
+// White text/icon on Water's header, matching video-widget/in-focus-widget's
+// own Water state — every element header goes white except Energy, whose
+// Marigold background stays too light for white text at any usable shade.
 .header-icon {
   font-size: 1.4rem;
-  color: $w-dark;
+  color: $light-color;
   flex-shrink: 0;
+}
+
+// Matches video-widget/in-focus-widget's own header title typography — the
+// sitewide .title-text default (20px Noto Sans, from wiof-custom-theming.scss)
+// reads visibly bigger/heavier than Aleo serif at the same nominal size.
+.title-text {
+  font-family: 'Aleo', serif !important;
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: $light-color;
 }
 
 .about-toggle {
@@ -72,20 +85,22 @@ $radius-item: 14px;
 }
 
 // ── About panel ──────────────────────────────────────────────────
+// Height/overflow during open/close are owned entirely by the
+// expandCollapse animation trigger bound in the template (see
+// src/app/util/expand-collapse-animation.ts) — Angular measures this
+// element's real rendered height via '*' and animates to that exact value.
+// Earlier CSS-only attempts (fixed max-height, then grid-template-rows
+// 0fr/1fr) either guessed the wrong pixel value or forced a full layout
+// recalculation every frame since neither is a compositor-only property;
+// this is the approach Angular itself recommends for "animate to auto
+// height" and is the first of these that's actually smooth.
 .about-panel {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease, padding 0.3s ease;
   background: rgba(255, 255, 255, 0.55);
   border-bottom: 1px solid rgba($w-dark, 0.15);
-
-  &.open {
-    max-height: 120px;
-    padding: 0.75rem 1.1rem;
-  }
 }
 
 .about-text {
+  padding: 0.75rem 1.1rem;
   font-size: 0.88rem;
   color: $dark-color;
   line-height: 1.6;
@@ -503,6 +518,11 @@ $radius-item: 14px;
   width: 28px;
   height: 28px;
   object-fit: contain;
+  // These are plain black-line-on-transparent PNGs, not colorable SVGs —
+  // forces them fully black then flips black->white, so they read as a
+  // clean white icon against the blue circle instead of a dark line that
+  // barely stood out.
+  filter: brightness(0) invert(1);
 }
 
 .water-item-label {

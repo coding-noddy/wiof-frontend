@@ -1,7 +1,12 @@
 <ion-card class="wiof-food-ph-widget-card-background ph-widget-height">
 
   <!-- ── Header ─────────────────────────────────────────────── -->
-  <ion-card-header class="wiof-food-ph-widget-card-header">
+  <!-- Plain div, not ion-card-header: Ionic's ion-card-header ships its own
+       built-in Shadow DOM padding (16px) that competed with this header's
+       own padding below, making it taller than every sibling widget's
+       header (aqi/water/energy/eq/video/in-focus), which all use a plain
+       div for exactly this reason. -->
+  <div class="wiof-food-ph-widget-card-header">
     <div class="food-ph-widget-header">
       <div class="header-left">
         <ion-icon name="leaf-outline" class="header-icon"></ion-icon>
@@ -12,21 +17,23 @@
         <span>About</span>
       </button>
     </div>
-  </ion-card-header>
+  </div>
+
+  <!-- About panel — sits flush against the header, like every other widget's
+       (AQI/Water/Energy); was previously inside ion-card-content below,
+       whose own 1.25rem padding made it look inset with a gap around it
+       instead of sticking directly below the header. -->
+  <section class="about-panel" [@expandCollapse]="about ? 'expanded' : 'collapsed'">
+    <p class="about-text">
+      Foods are classified as acidic (pH below 7), neutral (pH 7), or alkaline (pH above 7).
+      All 543 entries are checked against FDA, USDA, and Clemson University data — items
+      marked ★★★★★ are directly cross-referenced with official sources, while ★★★☆☆ items
+      draw on published food science literature.
+    </p>
+  </section>
 
   <!-- ── Body ───────────────────────────────────────────────── -->
   <ion-card-content class="wiof-food-ph-widget-card-content">
-
-    <!-- About panel — same single-paragraph pattern as every other widget's
-         (AQI/Water/Energy), not a title + bulleted fact list of its own. -->
-    <section class="about-panel" [class.open]="about">
-      <p class="about-text">
-        Foods are classified as acidic (pH below 7), neutral (pH 7), or alkaline (pH above 7).
-        All 543 entries are checked against FDA, USDA, and Clemson University data — items
-        marked ★★★★★ are directly cross-referenced with official sources, while ★★★☆☆ items
-        draw on published food science literature.
-      </p>
-    </section>
 
     <!-- Search + Random -->
     <div class="food-ph-grid">

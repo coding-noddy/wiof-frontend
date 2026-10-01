@@ -23,21 +23,34 @@
 // header — ink-on-Marigold has good contrast, unlike white-on-Marigold.
 .in-focus-header {
   padding: 0.9rem 1.1rem;
-  min-height: 58px;
   border-bottom: 1px solid rgba(43, 36, 32, 0.10);
   background-color: var(--wiof-warm-white);
 
   // Flat colors (not the old rgba(..., 0.9-0.95) dilution) so this header
   // is pixel-identical to the same element's color on every other widget
-  // header in the app (aqi/water/eq/food-ph/energy-widget).
-  &.wiof-earth  { background-color: $earth-color; }
-  &.wiof-water  { background-color: $water-color; }
-  &.wiof-fire   { background-color: $energy-color; color: $dark-color; }
-  &.wiof-air    { background-color: $air-color; }
-  // $spirit-color is a dark teal SHADE — ink text on it was ~3:1 contrast,
-  // below AA's 4.5:1. .in-focus-header-title sets its own explicit color
-  // (same specificity, declared later in this file), so it needs its own
-  // override here to actually win over the parent's.
+  // header in the app (aqi/water/eq/food-ph/energy-widget). White text on
+  // every element except Energy (Marigold stays too light for white text
+  // to pass contrast at any usable shade — ink is the only option there).
+  // .in-focus-header-title sets its own explicit color (same specificity,
+  // declared later in this file), so each state needs its own nested
+  // override to actually win over that default.
+  &.wiof-earth {
+    background-color: $earth-color;
+    .in-focus-header-title { color: $light-color; }
+  }
+  &.wiof-water {
+    background-color: $water-color;
+    .in-focus-header-title { color: $light-color; }
+  }
+  // Was .wiof-fire — leftover from before the Fire->Energy rename; the
+  // class actually applied at runtime is `wiof-${element}` ('energy'), so
+  // this rule never matched and silently fell back to warm-white instead
+  // of Marigold on the Energy page.
+  &.wiof-energy { background-color: $energy-color; color: $dark-color; }
+  &.wiof-air {
+    background-color: $air-color;
+    .in-focus-header-title { color: $light-color; }
+  }
   &.wiof-spirit {
     background-color: $spirit-color;
 

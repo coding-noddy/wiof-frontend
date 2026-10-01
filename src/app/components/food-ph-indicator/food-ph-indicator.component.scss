@@ -71,7 +71,6 @@ $panel-shadow:
 // everywhere else (video/in-focus headers), not a one-off lighten() tint.
 .wiof-food-ph-widget-card-header {
   padding: 0.9rem 1.1rem;
-  min-height: 58px;
 
   background-color: $f;
 
@@ -91,20 +90,27 @@ $panel-shadow:
   gap: .75rem;
 }
 
+// White text/icon on Earth's header, matching video-widget/in-focus-widget's
+// own Earth state — every element header goes white except Energy, whose
+// Marigold background stays too light for white text at any usable shade.
 .header-icon {
   font-size: 1.4rem;
-  color: $f-dark;
+  color: $light-color;
 }
 
 .title-text {
-  // AQI/Water/Energy leave their own .title-text color unset (it renders
-  // in the browser's plain black default) — using the Ink token instead is
-  // the same near-black reading with an on-brand color behind it.
-  color: $dark-color;
+  color: $light-color;
 
-  font-size: clamp(1rem,1.3vw,1.25rem);
+  // Matches video-widget/in-focus-widget's own header title typography
+  // exactly, not just the font-size — this span had no font-family set, so
+  // it fell back to the sitewide Noto Sans reset instead of Aleo serif.
+  // Noto Sans Bold at the same pixel size reads visibly heavier/bigger
+  // than Aleo Bold, which is why it still looked oversized after only
+  // matching the font-size number.
+  font-family: 'Aleo', serif !important;
+  font-size: 1.08rem;
   font-weight: 700;
-  letter-spacing: .2px;
+  letter-spacing: -0.02em;
 }
 
 /* ==========================================================
@@ -114,12 +120,18 @@ $panel-shadow:
 // A translucent white pill floating on the now-solid header, matching
 // AQI/Water/Energy's own about-toggle exactly — not a teal-tinted pill,
 // which only made sense against a warm-white header.
+// This was the real source of the oversized header: padding .55rem 1rem
+// (8.8px/16px) and font-size .9rem with no icon-size control made this
+// button the tallest element in the row via align-items:center — taller
+// than the icon, taller than the title, and (since video-widget's header
+// has no button at all) much taller than video-widget's header beside it.
+// Matches AQI/Water/EQ/Energy's own compact about-toggle exactly.
 .about-toggle {
   display: inline-flex;
   align-items: center;
-  gap: .45rem;
+  gap: 4px;
 
-  padding: .55rem 1rem;
+  padding: 4px 12px;
 
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 999px;
@@ -127,15 +139,18 @@ $panel-shadow:
   background: rgba(255, 255, 255, 0.6);
 
   color: $dark-color;
-  font-size: .9rem;
+  font-size: 0.82rem;
   font-weight: 600;
 
   cursor: pointer;
+  white-space: nowrap;
 
   transition:
     background $transition-normal,
     box-shadow $transition-normal,
     transform $transition-fast;
+
+  ion-icon { font-size: 1rem; }
 }
 
 .about-toggle:hover {
@@ -179,22 +194,22 @@ $panel-shadow:
 // widget with its own title + bulleted fact-list structure instead. The
 // translucent-white background matches their about-panel too, now that it
 // sits on the Brown wash rather than a warm-white card.
+// Height/overflow during open/close are owned entirely by the
+// expandCollapse animation trigger bound in the template (see
+// src/app/util/expand-collapse-animation.ts) — Angular measures this
+// element's real rendered height via '*' and animates to that exact value.
+// Earlier CSS-only attempts (fixed max-height, then grid-template-rows
+// 0fr/1fr) either guessed the wrong pixel value or forced a full layout
+// recalculation every frame since neither is a compositor-only property;
+// this is the approach Angular itself recommends for "animate to auto
+// height" and is the first of these that's actually smooth.
 .about-panel {
-  overflow: hidden;
-  max-height: 0;
   background: rgba(255, 255, 255, 0.55);
   border-bottom: 1px solid rgba($f-dark, 0.15);
-  transition:
-    max-height .3s ease,
-    padding .3s ease;
-}
-
-.about-panel.open {
-  max-height: 140px;
-  padding: 0.75rem 1.1rem;
 }
 
 .about-text {
+  padding: 0.75rem 1.1rem;
   margin: 0;
   font-size: 0.88rem;
   color: $dark-color;

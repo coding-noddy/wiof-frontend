@@ -114,6 +114,11 @@
   font-weight: 700;
   color: var(--wiof-ink);
   line-height: 1.4;
+  // Reserves the full 2-line height always, not just caps it — without
+  // this, a one-line title left the meta footer sitting higher than it did
+  // on a two-line title's card, so cards looked inconsistent internally
+  // even though the outer card height already matched via flex stretch.
+  min-height: 2.8rem; // 1rem * 1.4 line-height * 2 lines
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
@@ -127,6 +132,9 @@
   color: rgba(43, 36, 32, 0.7);
   font-size: 0.9rem;
   line-height: 1.6;
+  // Same reasoning as .blog-title above — reserves the full 2-line height
+  // always, regardless of how short the actual excerpt text is.
+  min-height: 2.88rem; // 0.9rem * 1.6 line-height * 2 lines
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
@@ -187,5 +195,6 @@
 
   .blog-title {
     font-size: 0.96rem;
+    min-height: 2.688rem; // 0.96rem * 1.4 line-height * 2 lines
   }
 }

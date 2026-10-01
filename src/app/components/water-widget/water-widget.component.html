@@ -13,7 +13,7 @@
   </div>
 
   <!-- ── About panel ─────────────────────────────────────────── -->
-  <div class="about-panel" [class.open]="about">
+  <div class="about-panel" [@expandCollapse]="about ? 'expanded' : 'collapsed'">
     <p class="about-text">
       Explore India's water wealth and resources. Get access to telemetry-based
       real-time statistics on surface and groundwater availability and quality,

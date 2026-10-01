@@ -94,7 +94,7 @@ ion-content {
   display: flex;
   align-items: center;
   padding: 2.5rem 1.25rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
   color: var(--wiof-ink);
   // The banners' own top third is mostly open sky (headroom for the sun/
   // birds) — showing the full 8:3 height brought all of that empty space
@@ -116,7 +116,7 @@ ion-content {
   @media (min-width: 768px) {
     padding: 3rem 6vw 3.5rem;
     padding-left: 9vw;
-    margin-bottom: 2.5rem;
+    margin-bottom: 0;
     min-height: 440px;
     align-items: flex-start;
   }
@@ -218,6 +218,14 @@ ion-content {
   padding: 0.8rem 0 0.2rem;
 }
 
+// In Focus follows directly after Take Action — the default 3rem
+// margin-top on top of Take Action's own bottom spacing read as too much
+// gap between the two, scoped via id suffix instead of a class repeated
+// across all 5 element page templates.
+[id$="-in-focus"] {
+  margin-top: 0;
+}
+
 .section-header {
   margin-bottom: 1.5rem;
   display: flex;
@@ -245,6 +253,21 @@ ion-content {
     color: var(--wiof-ink);
     opacity: 0.75;
     font-size: 0.9rem;
+  }
+
+  // Was missing entirely — "Go Deeper" and "Keep exploring" (both plain,
+  // non-reflect-band section headers) fell back to the generic `p` rule
+  // above instead of reading as a proper brand eyebrow, unlike "Learn —
+  // start here" (.col-label below) sitting right above them in the same
+  // page rhythm. Matches home.page.scss's own eyebrow exactly, so the
+  // treatment is consistent between the home page and every element page.
+  p.eyebrow {
+    opacity: 1;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--wiof-teal);
   }
 }
 
@@ -314,10 +337,14 @@ ion-row + ion-row {
 }
 
 // ── "Learn / Explore" column labels above the video+widget row ───────────────
+// Same exact values as .section-header's p.eyebrow above — this one was
+// close (0.75rem/0.08em) but not identical, so it still read as a subtly
+// different eyebrow treatment next to "Go Deeper"/"Keep exploring" on the
+// same page.
 .col-label {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--wiof-teal);
   margin-bottom: 0.6rem;
@@ -334,32 +361,35 @@ ion-row + ion-row {
 .reflect-band {
   width: 100%;
   background: var(--wiof-teal);
-  padding: 2.5rem 1.25rem;
+  padding: 2rem 1.25rem;
 
   &.air, &.water, &.spirit { background: var(--wiof-teal); }
   &.energy                 { background: var(--wiof-marigold); }
   &.earth                  { background: var(--wiof-brown); }
 
   @media (min-width: 768px) {
-    padding: 3.5rem 6vw;
+    padding: 2rem 6vw;
   }
 
+  // Centered now, matching every other section heading on element pages
+  // (Go Deeper, Keep exploring, Take Action) — this was the one holdout
+  // still left-aligned.
   .section-header {
-    align-items: flex-start;
-    text-align: left;
     margin-bottom: 1.5rem;
 
     h2, p.eyebrow {
       color: var(--wiof-ink);
     }
 
+    // No margin-bottom here — the parent .section-header's own flex `gap:
+    // 0.4rem` already spaces this from the h2 below; adding margin on top
+    // of that doubled the gap compared to every other eyebrow on the page.
     p.eyebrow {
       opacity: 0.75;
       font-size: 0.8rem;
       font-weight: 700;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      margin: 0 0 0.4rem;
     }
   }
 
@@ -392,6 +422,16 @@ ion-row + ion-row {
   &:not(:first-child) {
     margin-top: 2.25rem;
   }
+}
+
+// The Videos section (every element page's #{element}-videos wrapper) sat
+// right under the Blogs section's own "Explore More Blogs" link with only
+// the label's own 2.25rem margin-top between them — read as stuck together
+// rather than two distinct sub-sections. Extra breathing room on top of
+// that, scoped to every element page via the shared id suffix instead of
+// repeating a class across all 5 page templates.
+[id$="-videos"] {
+  margin-top: 2.5rem;
 }
 
 // ── Footer spacing ───────────────────────────────────────────────────────────

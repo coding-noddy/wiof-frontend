@@ -2,23 +2,7 @@
 
 <ion-content>
   <div class="videos-page" [ngClass]="element">
-
-    <!-- Header -->
-    <div class="videos-header">
-      <div class="header-actions">
-        <a
-          [routerLink]="['take-action']"
-          class="action-link"
-          title="Go to Take Action"
-          aria-label="Go to Take Action"
-        >
-          <ion-icon name="trail-sign-outline"></ion-icon>
-        </a>
-      </div>
-      <p class="header-eyebrow">Explore</p>
-      <h1 class="header-title">{{ category }} Videos</h1>
-    </div>
-
+    
     <div class="element-switcher-bar">
       <div class="breadcrumb">
         <a routerLink="/home">Home</a>
@@ -28,6 +12,22 @@
         <span class="current">Videos</span>
       </div>
       <app-life-elements [element]="element" variant="pills" linkSuffix="videos"></app-life-elements>
+    </div>
+
+    <!-- Header -->
+    <div class="videos-header">
+      <!-- <div class="header-actions">
+        <a
+          [routerLink]="['take-action']"
+          class="action-link"
+          title="Go to Take Action"
+          aria-label="Go to Take Action"
+        >
+          <ion-icon name="trail-sign-outline"></ion-icon>
+        </a>
+      </div> -->
+      <p class="header-eyebrow">Explore</p>
+      <h1 class="header-title">{{ category }} Videos</h1>
     </div>
 
     <!-- Video grid -->

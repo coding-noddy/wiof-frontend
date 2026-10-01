@@ -6,6 +6,7 @@
     [class.loading]="isLoading"
     (click)="onBookmarkClick($event)"
     [attr.aria-label]="isSaved ? 'Remove from saved' : 'Save this content'"
+    [attr.title]="isSaved ? 'Remove from saved' : 'Save this content'"
     [attr.aria-pressed]="isSaved"
     type="button">
     <ion-icon

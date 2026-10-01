@@ -13,7 +13,7 @@
   </div>
 
   <!-- ── About panel ─────────────────────────────────────────── -->
-  <div class="about-panel" [class.open]="about">
+  <div class="about-panel" [@expandCollapse]="about ? 'expanded' : 'collapsed'">
     <p class="about-text">
       Enter your monthly electricity consumption in kWh (found on your electricity bill)
       to see its CO₂ equivalent and understand your carbon footprint in real-world terms —

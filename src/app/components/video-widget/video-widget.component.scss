@@ -26,7 +26,6 @@
 // header — ink-on-Marigold has good contrast, unlike white-on-Marigold.
 .video-widget-header {
   padding: 0.9rem 1.1rem;
-  min-height: 58px;
   border-bottom: 1px solid rgba(43, 36, 32, 0.10);
   background-color: var(--wiof-warm-white);
   color: $dark-color;
@@ -36,16 +35,33 @@
   // header in the app (aqi/water/eq/food-ph/energy-widget) — the earlier
   // per-file alpha variation was exactly why colors looked slightly
   // different between widgets tagged to the same element.
-  &.wiof-earth  { background-color: $earth-color; }
-  &.wiof-water  { background-color: $water-color; }
-  &.wiof-fire   { background-color: $energy-color; color: $dark-color; }
-  &.wiof-air    { background-color: $air-color; }
-  // $spirit-color is a dark teal SHADE (not a tint like $air-color) — ink
-  // text on it was ~3:1 contrast, below AA's 4.5:1. Light text instead,
-  // same approach already used for .wiof-config below. .video-widget-title
-  // sets its own explicit color (same specificity, declared later in this
-  // file), so the parent's `color` alone wouldn't cascade — needs its own
-  // override here to actually win.
+  // White text on every element except Energy (Marigold stays too light for
+  // white text to pass contrast at any usable shade — ink is the only
+  // option there). .video-widget-title sets its own explicit color (same
+  // specificity, declared later in this file), so each state needs its own
+  // nested override to actually win over that default.
+  &.wiof-earth {
+    background-color: $earth-color;
+    color: $light-color;
+    .video-widget-title { color: $light-color; }
+  }
+  &.wiof-water {
+    background-color: $water-color;
+    color: $light-color;
+    .video-widget-title { color: $light-color; }
+  }
+  // Was .wiof-fire — leftover from before the Fire->Energy rename. The
+  // class actually applied at runtime is `wiof-${element}`, and `element`
+  // is always 'energy' now, so .wiof-fire never matched: this header was
+  // silently falling back to the default warm-white instead of Marigold
+  // on the Energy page, while energy-widget (no class dependency) showed
+  // the correct color right next to it.
+  &.wiof-energy { background-color: $energy-color; color: $dark-color; }
+  &.wiof-air {
+    background-color: $air-color;
+    color: $light-color;
+    .video-widget-title { color: $light-color; }
+  }
   &.wiof-spirit {
     background-color: $spirit-color;
     color: $light-color;

@@ -3,12 +3,6 @@
 <ion-content>
   <div class="blogs-page" [ngClass]="element">
 
-    <!-- Header -->
-    <div class="blogs-header">
-      <p class="header-eyebrow">Explore</p>
-      <h1 class="header-title">{{ category }} Blogs</h1>
-    </div>
-
     <div class="element-switcher-bar">
       <div class="breadcrumb">
         <a routerLink="/home">Home</a>
@@ -18,6 +12,12 @@
         <span class="current">Blogs</span>
       </div>
       <app-life-elements [element]="element" variant="pills" linkSuffix="blogs"></app-life-elements>
+    </div>
+
+    <!-- Header -->
+    <div class="blogs-header">
+      <p class="header-eyebrow">Explore</p>
+      <h1 class="header-title">{{ category }} Blogs</h1>
     </div>
 
     <!-- Blog grid -->

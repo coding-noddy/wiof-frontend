@@ -8,7 +8,7 @@
       [attr.free-mode]="true"
       breakpoints='{"0":{"slidesPerView":1},"480":{"slidesPerView":2},"767":{"slidesPerView":3},"1024":{"slidesPerView":4}}'
     >
-      <swiper-slide *ngFor="let video of videoList">
+      <swiper-slide *ngFor="let video of displayList">
         <app-video-card [video]="video" [element]="element"></app-video-card>
       </swiper-slide>
     </swiper-container>
@@ -25,11 +25,12 @@
   <div class="video-slider-actions">
     <a
       [routerLink]="['videos']"
-      class="action-link"
-      title="View all videos"
-      aria-label="View all videos"
+      class="view-more-link"
+      title="Explore more {{ element }} videos"
+      aria-label="Explore more {{ element }} videos"
     >
-      View All <ion-icon name="arrow-forward-outline"></ion-icon>
+      Explore More {{ element | titlecase }} Videos
+      <ion-icon name="arrow-forward-outline"></ion-icon>
     </a>
   </div>
 

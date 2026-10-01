@@ -33,7 +33,6 @@ $radius-item: 14px;
   background-color: $e;
   border-bottom: 1.5px solid var(--wiof-border);
   padding: 0.9rem 1.1rem;
-  min-height: 58px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -49,6 +48,16 @@ $radius-item: 14px;
 .header-icon {
   font-size: 1.4rem;
   color: $e-dark;
+}
+
+// Matches video-widget/in-focus-widget's own header title typography — the
+// sitewide .title-text default (20px Noto Sans, from wiof-custom-theming.scss)
+// reads visibly bigger/heavier than Aleo serif at the same nominal size.
+.title-text {
+  font-family: 'Aleo', serif !important;
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 // ── About panel ──────────────────────────────────────────────────
@@ -75,20 +84,22 @@ $radius-item: 14px;
   }
 }
 
+// Height/overflow during open/close are owned entirely by the
+// expandCollapse animation trigger bound in the template (see
+// src/app/util/expand-collapse-animation.ts) — Angular measures this
+// element's real rendered height via '*' and animates to that exact value.
+// Earlier CSS-only attempts (fixed max-height, then grid-template-rows
+// 0fr/1fr) either guessed the wrong pixel value or forced a full layout
+// recalculation every frame since neither is a compositor-only property;
+// this is the approach Angular itself recommends for "animate to auto
+// height" and is the first of these that's actually smooth.
 .about-panel {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease, padding 0.3s ease;
   background: rgba(255, 255, 255, 0.55);
   border-bottom: 1px solid rgba($e-dark, 0.15);
-
-  &.open {
-    max-height: 120px;
-    padding: 0.75rem 1.1rem;
-  }
 }
 
 .about-text {
+  padding: 0.75rem 1.1rem;
   font-size: 0.88rem;
   color: $dark-color;
   line-height: 1.6;

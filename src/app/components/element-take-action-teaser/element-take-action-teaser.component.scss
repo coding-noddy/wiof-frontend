@@ -4,6 +4,11 @@
   padding: 1.75rem 0;
 }
 
+// Centered to match every other section heading on element pages
+// (.section-header's eyebrow/h2 — Go Deeper, Reflect, Keep exploring) —
+// this one was left-aligned, which it didn't need to be: .teaser-grid and
+// .view-more-link below stay left-aligned on purpose (matching the other
+// sections' "Explore More" links), only the heading itself centers.
 .eyebrow {
   margin: 0 0 0.5rem;
   font-size: 0.78rem;
@@ -11,6 +16,7 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--wiof-brown);
+  text-align: center;
 }
 
 h2 {
@@ -18,6 +24,7 @@ h2 {
   font-size: 1.5rem;
   font-weight: 800;
   color: var(--wiof-ink);
+  text-align: center;
 }
 
 .teaser-grid {
