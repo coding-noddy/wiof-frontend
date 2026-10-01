@@ -6,20 +6,30 @@ $a-mid: darken($a, 12%);
 $radius-card: 20px;
 
 // ── Card shell ───────────────────────────────────────────────────
+// Was lighten($a, 5%) — a near-solid teal-tint wash across the whole card,
+// the PO's "too dark" complaint. Ivory (not pure warm-white) keeps the
+// translucent-white "glass panel" inner elements (search bar, city chips,
+// etc. — rgba(255,255,255,X) throughout this file) visibly popping against
+// the card instead of blending into a pure-white background.
 .aqi-widget-card {
   border-radius: $radius-card;
   overflow: hidden;
-  background-color: lighten($a, 5%);
+  background-color: var(--wiof-ivory);
+  border: 1.5px solid var(--wiof-brown-tint-40);
   display: flex;
   flex-direction: column;
   margin: 0;
 }
 
 // ── Header ───────────────────────────────────────────────────────
+// Solid Air (teal-tint-20) — the widget's identity strip, matching the
+// same flat brand color used for Air everywhere else (video/in-focus
+// headers), not a one-off lighten() tint unique to this file.
 .aqi-widget-header {
   background-color: $a;
   border-bottom: 2px solid rgba(255, 255, 255, 0.8);
   padding: 0.9rem 1.1rem;
+  min-height: 58px;
   display: flex;
   align-items: center;
   justify-content: space-between;

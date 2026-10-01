@@ -9,20 +9,27 @@ $radius-card: 20px;
 $radius-item: 14px;
 
 // ── Card shell ───────────────────────────────────────────────────
+// Was $w-bg (lighten($w,3%)) — a near-solid teal wash. Ivory (not pure
+// warm-white) keeps this file's rgba(255,255,255,X) glass-panel inner
+// elements visibly popping against the card instead of blending into white.
 .water-widget-card {
   border-radius: $radius-card;
   overflow: hidden;
-  background-color: $w-bg;
+  background-color: var(--wiof-ivory);
+  border: 1.5px solid var(--wiof-brown-tint-40);
   display: flex;
   flex-direction: column;
   margin: 0;
 }
 
 // ── Header ───────────────────────────────────────────────────────
+// Solid Water teal — matching the same flat brand color used for Water
+// everywhere else (video/in-focus headers), not a one-off lighten() tint.
 .water-widget-header {
   background-color: $w;
   border-bottom: 2px solid rgba(255, 255, 255, 0.8);
   padding: 0.9rem 1.1rem;
+  min-height: 58px;
   display: flex;
   align-items: center;
   justify-content: space-between;

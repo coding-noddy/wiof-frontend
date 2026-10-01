@@ -145,11 +145,35 @@ ion-content::part(scroll) {
   contain: none !important;
 }
 
-/* Calendar dialog - presented via ModalController (viewport-centered) */
+/* Calendar dialog - presented via ModalController (viewport-centered).
+   --background matches .occasion-card's own warm-white fill and
+   --border-radius matches its 18px exactly — otherwise the modal shell's
+   default white background and mismatched corner radius peek out from
+   behind the card (visible as a light sliver at the corners, and as a
+   blank gap below the card when its content is shorter than the shell). */
 .env-cal-modal {
   --width: 440px;
   --max-width: 95vw;
   --height: auto;
   --max-height: 90vh;
+  --border-radius: 18px;
+  --background: var(--wiof-warm-white);
+}
+
+/* Take Action detail dialog - presented via ModalController (viewport-centered) */
+.take-action-detail-modal {
+  --width: 480px;
+  --max-width: 95vw;
+  --height: auto;
+  --max-height: 85vh;
   --border-radius: 16px;
+}
+
+/* NGO in Focus detail dialog - presented via ModalController (viewport-centered) */
+.ngo-detail-modal {
+  --width: 800px;
+  --max-width: 95vw;
+  --height: auto;
+  --max-height: 90vh;
+  --border-radius: 18px;
 }

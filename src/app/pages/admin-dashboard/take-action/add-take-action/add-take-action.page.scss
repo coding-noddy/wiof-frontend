@@ -1,0 +1,51 @@
+@import '../../admin-shared';
+
+.form-card-note {
+  display: block;
+  margin: -0.4rem 0 0.75rem;
+  font-size: 0.78rem;
+  color: var(--ion-color-medium, #6b6b6b);
+}
+
+// Element multi-select pills for elementIds — same interaction pattern as
+// the Settings page's preferred-elements pills (the one existing
+// multi-select-elements UI in this codebase), simplified to a single accent
+// color since this is an internal admin form, not the public Settings page.
+.preferred-elements-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ion-color-medium, #6b6b6b);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.6rem;
+}
+
+.element-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.element-toggle-pill {
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--wiof-ink, #2b2b2b);
+  background: var(--wiof-warm-white, #faf7f2);
+  border: 1.5px solid var(--wiof-teal, #21999f);
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+
+  &.active {
+    background: var(--wiof-teal, #21999f);
+    color: var(--wiof-warm-white, #faf7f2);
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+}

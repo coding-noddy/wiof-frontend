@@ -542,13 +542,75 @@ exports.onActivityLogCreated = functions
   }));
 
 /**
+ * Maintains the Take Action counters on `user_metrics/{uid}`
+ * (totalActionsCompleted, uniqueActionsCompleted, actionsByElement,
+ * lastActionAt) from `user_actions` writes — the client never increments
+ * these directly (user_metrics is write:false for clients; see
+ * onActivityLogCreated above for why this is the established pattern here).
+ *
+ * user_actions is an evolving doc (unlike activity_log's write-once events),
+ * so this is an onWrite trigger keyed off completionCount rather than an
+ * onCreate: a "completion event" is any write where completionCount
+ * increased — covers both a first-ever completion (create or IN_PROGRESS ->
+ * COMPLETE update) and a DAILY action's repeat completions, each counted by
+ * the actual delta rather than assuming it's always exactly 1.
+ */
+exports.onUserActionWritten = functions
+  .region(REGION)
+  .firestore.document('user_actions/{docId}')
+  .onWrite(withTriggerErrorLogging('onUserActionWritten', async (change) => {
+    if (!change.after.exists) {
+      return null; // no client delete path exists; nothing to reconcile
+    }
+
+    const after = change.after.data() || {};
+    const before = change.before.exists ? change.before.data() : null;
+    const uid = after.userId;
+    if (!uid) {
+      return null;
+    }
+
+    const beforeCount = (before && before.completionCount) || 0;
+    const afterCount = after.completionCount || 0;
+    const delta = afterCount - beforeCount;
+    if (delta <= 0) {
+      return null; // not a new completion (e.g. just an IN_PROGRESS start)
+    }
+
+    const update = {
+      totalActionsCompleted: admin.firestore.FieldValue.increment(delta),
+      lastActionAt: admin.firestore.FieldValue.serverTimestamp()
+    };
+
+    // Unique count only grows on an action's very first completion, not on
+    // DAILY repeats of an action already completed before.
+    if (beforeCount === 0) {
+      update.uniqueActionsCompleted = admin.firestore.FieldValue.increment(1);
+    }
+
+    const elements = Array.isArray(after.elementIdsSnapshot) ? after.elementIdsSnapshot : [];
+    elements.forEach((element) => {
+      if (typeof element === 'string' && element) {
+        update[`actionsByElement.${element}`] = admin.firestore.FieldValue.increment(delta);
+      }
+    });
+
+    await db.collection('user_metrics').doc(uid).set(update, { merge: true });
+    return null;
+  }));
+
+/**
  * One-time admin-triggered backfill: recomputes user_metrics for every user
- * from the full activity_log history. Needed because onActivityLogCreated
- * only aggregates events created after it was deployed. Unlike the trigger,
- * this dedupes blog_read/video_view by contentId explicitly (via a Set)
- * rather than relying on one-create-per-key, since historical data predates
- * today's deterministic-ID dedup fix and could in rare cases already contain
- * a race-condition duplicate from the old query-before-write pattern.
+ * from the full activity_log + user_actions history. Needed because
+ * onActivityLogCreated/onUserActionWritten only aggregate events from the
+ * point they were deployed onward — this catches anything that happened
+ * before that (including onUserActionWritten's own late deployment, which
+ * left every pre-existing Take Action completion uncounted). Unlike the
+ * triggers, this dedupes blog_read/video_view by contentId explicitly (via
+ * a Set) rather than relying on one-create-per-key, since historical data
+ * predates today's deterministic-ID dedup fix and could in rare cases
+ * already contain a race-condition duplicate from the old
+ * query-before-write pattern.
  * Admin-gated via the `admins` collection, checked with the Admin SDK.
  */
 exports.backfillUserMetrics = functions
@@ -563,7 +625,10 @@ exports.backfillUserMetrics = functions
       throw new functions.https.HttpsError('permission-denied', 'Admin privileges required.');
     }
 
-    const snapshot = await db.collection('activity_log').get();
+    const [activitySnapshot, actionsSnapshot] = await Promise.all([
+      db.collection('activity_log').get(),
+      db.collection('user_actions').get()
+    ]);
     const perUser = new Map();
 
     const isNewer = (a, b) => {
@@ -572,12 +637,7 @@ exports.backfillUserMetrics = functions
       return a.toMillis() > b.toMillis();
     };
 
-    snapshot.forEach((doc) => {
-      const entry = doc.data();
-      const uid = entry.userId;
-      if (!uid) {
-        return;
-      }
+    const getUser = (uid) => {
       if (!perUser.has(uid)) {
         perUser.set(uid, {
           blogsRead: new Set(),
@@ -586,10 +646,23 @@ exports.backfillUserMetrics = functions
           pollsVoted: 0,
           lastEqScore: null,
           lastEqDate: null,
-          lastBlogReadDate: null
+          lastBlogReadDate: null,
+          totalActionsCompleted: 0,
+          uniqueActionsCompleted: 0,
+          actionsByElement: {},
+          lastActionAt: null
         });
       }
-      const u = perUser.get(uid);
+      return perUser.get(uid);
+    };
+
+    activitySnapshot.forEach((doc) => {
+      const entry = doc.data();
+      const uid = entry.userId;
+      if (!uid) {
+        return;
+      }
+      const u = getUser(uid);
 
       switch (entry.activityType) {
         case 'blog_read':
@@ -614,22 +687,57 @@ exports.backfillUserMetrics = functions
       }
     });
 
+    // Mirrors onUserActionWritten's own counting rules: totalActionsCompleted
+    // sums every completion (DAILY repeats included), uniqueActionsCompleted
+    // only counts an action once regardless of repeat completions.
+    actionsSnapshot.forEach((doc) => {
+      const entry = doc.data();
+      const uid = entry.userId;
+      const completionCount = entry.completionCount || 0;
+      if (!uid || completionCount <= 0) {
+        return;
+      }
+      const u = getUser(uid);
+      u.totalActionsCompleted += completionCount;
+      u.uniqueActionsCompleted += 1;
+      if (isNewer(entry.lastCompletedAt, u.lastActionAt)) {
+        u.lastActionAt = entry.lastCompletedAt;
+      }
+      const elements = Array.isArray(entry.elementIdsSnapshot) ? entry.elementIdsSnapshot : [];
+      elements.forEach((element) => {
+        if (typeof element === 'string' && element) {
+          u.actionsByElement[element] = (u.actionsByElement[element] || 0) + completionCount;
+        }
+      });
+    });
+
     const uids = Array.from(perUser.keys());
     let batch = db.batch();
     let opCount = 0;
 
     for (const uid of uids) {
       const u = perUser.get(uid);
-      batch.set(db.collection('user_metrics').doc(uid), {
-        blogsRead: u.blogsRead.size,
-        videosWatched: u.videosWatched.size,
-        videosCompleted: u.videosCompleted,
-        pollsVoted: u.pollsVoted,
-        lastEqScore: u.lastEqScore,
-        lastEqDate: u.lastEqDate,
-        lastBlogReadDate: u.lastBlogReadDate,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp()
-      });
+      // merge:true — this doc is also written incrementally by
+      // onActivityLogCreated/onUserActionWritten; a plain set() here would
+      // wipe out any field this backfill doesn't itself compute.
+      batch.set(
+        db.collection('user_metrics').doc(uid),
+        {
+          blogsRead: u.blogsRead.size,
+          videosWatched: u.videosWatched.size,
+          videosCompleted: u.videosCompleted,
+          pollsVoted: u.pollsVoted,
+          lastEqScore: u.lastEqScore,
+          lastEqDate: u.lastEqDate,
+          lastBlogReadDate: u.lastBlogReadDate,
+          totalActionsCompleted: u.totalActionsCompleted,
+          uniqueActionsCompleted: u.uniqueActionsCompleted,
+          actionsByElement: u.actionsByElement,
+          lastActionAt: u.lastActionAt,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        },
+        { merge: true }
+      );
       opCount++;
       if (opCount === 450) {
         await batch.commit();

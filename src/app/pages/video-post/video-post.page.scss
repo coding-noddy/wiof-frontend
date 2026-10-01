@@ -46,8 +46,8 @@ ion-content {
   width: 100%;
   padding: 1.1rem 1.25rem;
   background: var(--wiof-warm-white);
-  border-top: 1.5px solid #EDE4D3;
-  border-bottom: 1.5px solid #EDE4D3;
+  border-top: 1.5px solid var(--wiof-border);
+  border-bottom: 1.5px solid var(--wiof-border);
 
   @media (min-width: 768px) {
     padding: 1.1rem 6vw;
@@ -110,7 +110,7 @@ ion-content {
 // ── Divider ──────────────────────────────────────────────────────
 .video-divider {
   border: none;
-  border-top: 1px solid #EDE4D3;
+  border-top: 1px solid var(--wiof-border);
   margin: 1.25rem 0;
 }
 

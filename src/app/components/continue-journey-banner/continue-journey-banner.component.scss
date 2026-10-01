@@ -1,5 +1,9 @@
 @import '../../wiof-custom-theming.scss';
 
+// Colored to match the NEXT element being linked to (not always Marigold)
+// — so the user already sees that element's color before reading the
+// label, same five-element triad used everywhere else: Earth = Brown,
+// Energy = Marigold, Air/Water/Spirit = Teal.
 .journey-banner {
   background: var(--wiof-marigold);
   border-radius: 18px;
@@ -10,6 +14,17 @@
   justify-content: space-between;
   gap: 1.5rem;
   flex-wrap: wrap;
+
+  &.earth { background: var(--wiof-brown); }
+  &.air, &.water, &.spirit { background: var(--wiof-teal); }
+  // .energy keeps the default Marigold above.
+
+  // Teal/Brown are dark enough that ink (near-black) text fails contrast —
+  // switch to warm-white for those; Marigold stays ink (its default below).
+  &.earth, &.air, &.water, &.spirit {
+    .eyebrow, h2, .tagline { color: var(--wiof-warm-white); }
+    .eyebrow { opacity: 0.85; }
+  }
 }
 
 .eyebrow {

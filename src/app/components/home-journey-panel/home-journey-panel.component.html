@@ -43,6 +43,13 @@
       <span class="card-title">{{ savedContentCount }} saved</span>
       <span class="card-meta">Blogs and videos you've bookmarked to revisit</span>
     </a>
+
+    <a routerLink="/take-action" class="journey-card">
+      <span class="eyebrow">Protect through action</span>
+      <span class="card-title">{{ actionsCompletedCount }} action{{ actionsCompletedCount === 1 ? '' : 's' }} completed</span>
+      <span class="card-meta" *ngIf="nextActionTitle">Next: {{ nextActionTitle }}</span>
+      <span class="card-meta" *ngIf="!nextActionTitle">Explore what you can do today</span>
+    </a>
   </div>
 
   <ng-template #journeyLoading>
@@ -78,6 +85,10 @@
       <div class="guest-feature">
         <ion-icon name="flash-outline"></ion-icon>
         <span>Your streak</span>
+      </div>
+      <div class="guest-feature">
+        <ion-icon name="checkmark-done-outline"></ion-icon>
+        <span>Your actions</span>
       </div>
     </div>
     <button class="wiof-primary-btn guest-signin" (click)="signIn()" [disabled]="signingIn">

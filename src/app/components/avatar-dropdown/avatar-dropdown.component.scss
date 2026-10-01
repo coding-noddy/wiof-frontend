@@ -45,7 +45,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--wiof-teal) 0%, var(--wiof-teal-tint-40) 100%);
+  // Was teal -> teal-tint-40 (a light tint, #7AC2C5) — white initials over
+  // that end of the gradient were ~2:1 contrast. teal-shade-20 keeps the
+  // gradient effect while staying dark enough at both ends for white text.
+  background: linear-gradient(135deg, var(--wiof-teal) 0%, var(--wiof-teal-shade-20) 100%);
   color: #ffffff;
   font-size: 14px;
   font-weight: 600;

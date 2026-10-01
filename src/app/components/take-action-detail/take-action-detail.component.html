@@ -1,0 +1,55 @@
+<ion-card class="detail-card">
+  <ion-card-header class="detail-header" [ngClass]="action.elementIds?.[0]">
+    <div class="header-row">
+      <div class="header-icon" [ngClass]="action.elementIds?.[0]">
+        <ion-icon [name]="action.iconName || 'checkmark-circle-outline'"></ion-icon>
+      </div>
+      <p class="detail-title">{{ action.title }}</p>
+      <button class="detail-close-btn" (click)="close()" aria-label="Close">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </div>
+  </ion-card-header>
+
+  <ion-card-content class="detail-body">
+    <div class="detail-chips" *ngIf="action.elementIds?.length">
+      <span class="chip" *ngFor="let element of action.elementIds" [ngClass]="element">{{ element }}</span>
+      <span class="chip meta-chip" *ngIf="action.estimatedDurationMinutes">
+        <ion-icon name="time-outline"></ion-icon> {{ action.estimatedDurationMinutes }} min
+      </span>
+      <span class="chip meta-chip" *ngIf="action.difficulty">{{ action.difficulty | enumLabel }}</span>
+    </div>
+
+    <p class="detail-description" *ngIf="action.description">{{ action.description }}</p>
+
+    <div class="detail-section" *ngIf="action.instructions?.length">
+      <h4>How to do this</h4>
+      <ol class="detail-instructions">
+        <li *ngFor="let step of action.instructions">{{ step }}</li>
+      </ol>
+    </div>
+
+    <div class="detail-notes safety" *ngIf="action.safetyNotes?.length">
+      <ion-icon name="warning-outline"></ion-icon>
+      <ul>
+        <li *ngFor="let note of action.safetyNotes">{{ note }}</li>
+      </ul>
+    </div>
+
+    <div class="detail-notes accessibility" *ngIf="action.accessibilityNotes?.length">
+      <ion-icon name="accessibility-outline"></ion-icon>
+      <ul>
+        <li *ngFor="let note of action.accessibilityNotes">{{ note }}</li>
+      </ul>
+    </div>
+
+    <div class="detail-evidence" *ngIf="action.evidence">
+      <span class="evidence-badge" [ngClass]="action.evidence.level | lowercase">{{ action.evidence.level | enumLabel }}</span>
+      <a [href]="action.evidence.sourceUrl" target="_blank" rel="noopener" *ngIf="action.evidence.sourceUrl">
+        {{ action.evidence.sourceOrganization }} — {{ action.evidence.sourceTitle }}
+      </a>
+      <span *ngIf="!action.evidence.sourceUrl">{{ action.evidence.sourceOrganization }}</span>
+      <p class="evidence-rationale" *ngIf="action.evidence.rationale">{{ action.evidence.rationale }}</p>
+    </div>
+  </ion-card-content>
+</ion-card>

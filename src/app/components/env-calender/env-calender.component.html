@@ -11,7 +11,7 @@
           <button class="month-nav" (click)="changeMonth(-1)" aria-label="Previous month">
             <ion-icon name="caret-back-outline"></ion-icon>
           </button>
-          <div class="month-title">
+          <div class="month-title" [@monthSlide]="monthSlideState">
             <h1>{{ displayMonth }}</h1>
             <p>{{ displayDay }}</p>
           </div>
@@ -35,7 +35,7 @@
         <div class="calendar-loading-overlay" *ngIf="isLoading">
           <div class="skeleton" style="height: 100%; border-radius: 8px;"></div>
         </div>
-        <div class="days-grid" [class.loading-blur]="isLoading">
+        <div class="days-grid" [class.loading-blur]="isLoading" [@monthSlide]="monthSlideState">
           <div
             *ngFor="let day of days"
             [class]="day.class"

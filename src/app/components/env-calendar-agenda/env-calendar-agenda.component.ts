@@ -3,6 +3,7 @@ import { ModalController } from '@ionic/angular';
 import { EnvcalService } from 'src/app/services/envcal-service';
 import { EnvDay } from 'src/app/models/env-cal-data';
 import { EnvCalDialogComponent } from '../env-cal-dialog/env-cal-dialog.component';
+import { buildModalZoomAnimation } from 'src/app/util/modal-zoom-animation';
 
 interface AgendaDay {
   label: string;
@@ -68,7 +69,7 @@ export class EnvCalendarAgendaComponent implements OnInit {
   // Opens the same event-detail modal the full calendar grid uses. All
   // occasions sharing that date are passed together so the modal's own
   // prev/next navigation between same-day events still works.
-  async openOccasion(occasions: EnvDay[]): Promise<void> {
+  async openOccasion(occasions: EnvDay[], event?: MouseEvent): Promise<void> {
     const occasion = occasions.map((day) => ({
       day: day.day,
       month: day.month,
@@ -78,11 +79,16 @@ export class EnvCalendarAgendaComponent implements OnInit {
       link: day.showMoreLink
     }));
 
+    const originEl = event?.currentTarget as HTMLElement;
+    const originRect = originEl?.getBoundingClientRect();
+
     const modal = await this.modalCtrl.create({
       component: EnvCalDialogComponent,
       componentProps: { occasionDetails: { occasion } },
       cssClass: 'env-cal-modal',
-      backdropDismiss: true
+      backdropDismiss: true,
+      enterAnimation: (baseEl) => buildModalZoomAnimation(baseEl, originRect, false),
+      leaveAnimation: (baseEl) => buildModalZoomAnimation(baseEl, originRect, true)
     });
     await modal.present();
   }

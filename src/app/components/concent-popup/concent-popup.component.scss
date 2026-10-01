@@ -1,5 +1,10 @@
 @import '../../wiof-custom-theming.scss';
 
+// Was a generic near-black bar (rgba(30,30,30,.95)) with a Material-blue
+// link and a plain white button — none of it drawn from the brand system,
+// so it read as a stock cookie-consent widget bolted onto the site. Ink is
+// the brand's own dark neutral (not flat black), so a dark overlay bar can
+// still clearly read as "WIOF," not generic chrome.
 .consent-bar {
   position: fixed;
   top: 0;
@@ -11,9 +16,8 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0.75rem 1.5rem;
-  background: rgba(30, 30, 30, 0.95);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: var(--wiof-ink);
+  border-bottom: 2px solid var(--wiof-marigold);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   animation: slideDown 0.4s ease;
 }
@@ -32,25 +36,34 @@
 
 .consent-icon {
   font-size: 1.3rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--wiof-marigold);
   flex-shrink: 0;
 }
 
 .consent-text {
   margin: 0;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--wiof-warm-white);
+  opacity: 0.88;
   line-height: 1.5;
 
   a {
-    color: #90caf9;
+    // warm-white link itself would blend into the body copy around it —
+    // teal-tint-40 reads clearly as a link against ink and ties back to
+    // the brand's identity color instead of a generic Material blue.
+    color: var(--wiof-teal-tint-40);
     text-decoration: underline;
     font-weight: 600;
+    opacity: 1;
 
-    &:hover { color: #bbdefb; }
+    &:hover { color: var(--wiof-warm-white); }
   }
 }
 
+// Same teal pill used by .wiof-primary-btn elsewhere for repeated per-card
+// CTAs — Marigold stays reserved for the page's own single primary CTA
+// (e.g. the home hero button), which this overlay sits on top of on every
+// page, so it can't also claim Marigold without competing with it.
 .consent-accept-btn {
   display: inline-flex;
   align-items: center;
@@ -58,17 +71,17 @@
   padding: 0.5rem 1.25rem;
   border-radius: 999px;
   border: none;
-  background: #fff;
-  color: $dark-color;
+  background: var(--wiof-teal);
+  color: var(--wiof-warm-white);
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+    background: var(--wiof-teal-shade-20);
   }
 
   &:active { transform: translateY(0); }

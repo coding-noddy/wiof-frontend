@@ -1,0 +1,222 @@
+@import '../../wiof-custom-theming.scss';
+
+.detail-card {
+  margin: 0;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+}
+
+// Matches the card's icon-badge color per element (first elementId) —
+// the triad used everywhere else in Take Action, not just a fixed teal.
+// Raw teal/brown behind warm-white title text (.detail-title below) was
+// ~3.3:1, below AA's 4.5:1 for normal text — the shade-20 step clears it.
+.detail-header {
+  background: var(--wiof-teal-shade-20);
+  padding: 1rem 1.1rem;
+
+  &.earth { background: var(--wiof-brown-shade-20); }
+  &.air, &.water, &.spirit { background: var(--wiof-teal-shade-20); }
+
+  // Marigold is light enough that white text/icons fail contrast on it —
+  // this codebase's own convention (header.component.scss's CTA button,
+  // etc.) always pairs a marigold fill with ink text, never white.
+  &.energy {
+    background: var(--wiof-marigold);
+
+    .detail-title { color: var(--wiof-ink); }
+    .header-icon {
+      background: rgba(43, 36, 32, 0.12);
+      ion-icon { color: var(--wiof-ink); }
+    }
+    .detail-close-btn {
+      background: rgba(43, 36, 32, 0.1);
+      color: var(--wiof-ink);
+
+      &:hover { background: rgba(43, 36, 32, 0.2); }
+    }
+  }
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.header-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.18);
+
+  ion-icon {
+    font-size: 1.2rem;
+    color: var(--wiof-warm-white);
+  }
+}
+
+.detail-title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-family: 'Aleo', serif !important;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--wiof-warm-white);
+  line-height: 1.3;
+}
+
+.detail-close-btn {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.15);
+  color: var(--wiof-warm-white);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.18s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+}
+
+.detail-body {
+  overflow-y: auto;
+  padding: 1.1rem !important;
+}
+
+.detail-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.9rem;
+}
+
+.chip {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-transform: capitalize;
+
+  &.earth { background: rgba(166, 135, 93, 0.14); color: var(--wiof-brown-shade-20); }
+  &.water, &.air, &.spirit { background: rgba(33, 153, 159, 0.12); color: var(--wiof-teal-shade-20); }
+  &.energy { background: rgba(255, 194, 111, 0.2); color: var(--wiof-marigold-shade-20); }
+
+  &.meta-chip {
+    background: var(--wiof-ivory, #faf5ec);
+    color: var(--wiof-ink);
+    text-transform: none;
+
+    ion-icon {
+      font-size: 0.8rem;
+      vertical-align: -1px;
+    }
+  }
+}
+
+.detail-description {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--wiof-ink);
+  opacity: 0.85;
+}
+
+.detail-section {
+  margin-bottom: 1rem;
+
+  h4 {
+    margin: 0 0 0.5rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--wiof-teal-shade-20);
+  }
+}
+
+.detail-instructions {
+  margin: 0;
+  padding-left: 1.2rem;
+  font-size: 0.88rem;
+  color: var(--wiof-ink);
+
+  li {
+    margin-bottom: 0.35rem;
+  }
+}
+
+.detail-notes {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+  font-size: 0.86rem;
+
+  ion-icon {
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1rem;
+  }
+
+  &.safety {
+    background: rgba(220, 38, 38, 0.06);
+    ion-icon { color: #dc2626; }
+  }
+
+  &.accessibility {
+    background: rgba(33, 153, 159, 0.08);
+    ion-icon { color: var(--wiof-teal); }
+  }
+}
+
+.detail-evidence {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--wiof-brown-tint-40);
+  font-size: 0.8rem;
+  color: var(--wiof-ink);
+  opacity: 0.85;
+
+  a {
+    color: var(--wiof-teal);
+    margin-left: 0.4rem;
+  }
+}
+
+.evidence-badge {
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+
+  &.official_support { background: rgba(33, 153, 159, 0.16); color: var(--wiof-teal-shade-20); }
+  &.widely_accepted { background: rgba(166, 135, 93, 0.16); color: var(--wiof-brown-shade-20); }
+  &.wiof_curated { background: rgba(255, 194, 111, 0.22); color: var(--wiof-brown-shade-20); }
+}
+
+.evidence-rationale {
+  margin: 0.5rem 0 0;
+  font-size: 0.74rem;
+  font-style: italic;
+  opacity: 0.75;
+}

@@ -8,16 +8,7 @@
   text-align: center;
   padding: 3rem 1.5rem 2.5rem;
   background: var(--wiof-warm-white);
-  border-bottom: 1.5px solid #EDE4D3;
-}
-
-.eyebrow {
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--wiof-teal);
-  margin: 0 0 1rem;
+  border-bottom: 1.5px solid var(--wiof-border);
 }
 
 .header-logo {
@@ -55,20 +46,21 @@
 }
 
 /* ── One brand card treatment for every phase — no per-card color themes ── */
+/* Flat, bordered card — no shadow by default (brand rule: shadows are
+   reserved for genuine overlays, not page-flow cards like these). */
 .card {
   background-color: var(--wiof-warm-white);
   border: 1.5px solid var(--wiof-brown-tint-40);
   border-radius: 18px;
-  box-shadow: 0 14px 36px rgba(43, 36, 32, 0.12);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s ease, border-color 0.3s ease;
 }
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 18px 40px rgba(43, 36, 32, 0.16);
+  border-color: var(--wiof-teal);
 }
 
 .card-header {
@@ -128,11 +120,14 @@
   margin-top: auto;
 }
 
+/* Teal, not Marigold — three cards each with their own CTA means three of
+   these on screen together, and brand convention reserves Marigold for one
+   true primary CTA per page; repeated/secondary CTAs use Teal instead. */
 .enquire-btn {
   display: block;
   text-align: center;
-  color: var(--wiof-ink);
-  background: var(--wiof-marigold);
+  color: var(--wiof-warm-white);
+  background: var(--wiof-teal);
   padding: 12px 20px;
   border-radius: 999px;
   text-decoration: none;
@@ -141,7 +136,7 @@
 }
 
 .enquire-btn:hover {
-  background: var(--wiof-marigold-shade-20);
+  background: var(--wiof-teal-shade-20);
 }
 
 .enquire-btn:active {

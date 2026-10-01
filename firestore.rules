@@ -25,13 +25,13 @@ service cloud.firestore {
 
     // Fields a signed-in user may change on their own profile document via the
     // Settings page (display name, avatar, preferred elements) — nothing else.
-    // loginCount/lastLogin/daysVisited/currentStreak/savedBlogsCount are
-    // system-managed engagement counters: a client that could set them
-    // directly could forge its own login/streak history, so they are written
-    // only by createUserProfile/recordLoginMetrics/recordUserVisit/
-    // resetEngagementCounters (Cloud Functions, Admin SDK, bypasses these
-    // rules) — never by this update path. role/uid/email/joinedDate may never
-    // change at all.
+    // loginCount/lastLogin/daysVisited/currentStreak/longestStreak/
+    // savedBlogsCount are system-managed engagement counters: a client that
+    // could set them directly could forge its own login/streak history, so
+    // they are written only by createUserProfile/recordLoginMetrics/
+    // recordUserVisit/resetEngagementCounters (Cloud Functions, Admin SDK,
+    // bypasses these rules) — never by this update path. role/uid/email/
+    // joinedDate may never change at all.
     // Uses get(key, default) instead of direct field access because legacy
     // profile documents may not have every field (e.g. 'role'), and reading a
     // missing map key directly throws and denies the whole request.
@@ -128,8 +128,69 @@ service cloud.firestore {
       // Materialized dashboard summary derived from activity_log (see
       // onActivityLogCreated / backfillUserMetrics in functions/index.js) —
       // owner can read their own; no client write path, Admin SDK only.
+      // Also extended by onUserActionWritten with Take Action counters
+      // (totalActionsCompleted, uniqueActionsCompleted, actionsByElement,
+      // lastActionAt) — no new match block needed since write:false already
+      // covers any new field names.
       allow read: if isOwner(uid) || isAdmin();
       allow write: if false;
+    }
+
+    // ─── Take Action ────────────────────────────────────────────────────────
+
+    match /actions/{actionId} {
+      // Public read of the full catalogue, including deactivated items —
+      // the client filters isActive==true for browsing, but a deactivated
+      // action must stay readable so existing user_actions history
+      // referencing it doesn't break (see Section 30 of the architecture doc).
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /user_actions/{userActionId} {
+      // Owner or admin can read. No `list` beyond a user's own docs: every
+      // query the client issues already filters by userId, so this is
+      // enforced the same way as activity_log's read rule.
+      allow read: if isAdmin()
+        || (isAuthenticated() && resource.data.userId == request.auth.uid);
+
+      allow create: if isAuthenticated()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      // Unlike activity_log (fully immutable), a user_action's status
+      // legitimately advances client-side (IN_PROGRESS -> COMPLETE, and
+      // repeat DAILY completions bump completionCount in place). Only the
+      // owner may update, only these fields may change, updatedAt must be
+      // server-stamped, and status may never regress from COMPLETE back to
+      // IN_PROGRESS.
+      allow update: if isAuthenticated()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.actionId == resource.data.actionId
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['status', 'completedAt', 'completionCount', 'lastCompletedAt', 'updatedAt'])
+        && (request.resource.data.status == 'COMPLETE' || resource.data.status != 'COMPLETE');
+
+      allow delete: if false; // no client delete path needed in V1
+    }
+
+    // Per-calendar-day completion dedup guards for DAILY repeat actions, one
+    // doc per userId+actionId+calendarDay. Deliberately a separate collection
+    // from user_actions (rather than a second doc shape inside it) so this
+    // can be fully immutable/append-only like activity_log — the same
+    // deterministic-ID + denied-update trick UserActionService relies on to
+    // treat a second same-day completion attempt as "already recorded."
+    match /user_action_completions/{docId} {
+      allow read: if isAdmin()
+        || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.createdAt == request.time;
+      allow update: if false;
+      allow delete: if false;
     }
 
     // ─── Admin Collections ──────────────────────────────────────────────────

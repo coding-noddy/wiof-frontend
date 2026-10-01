@@ -39,6 +39,11 @@
   --wiof-warm-white: #FFFCF6;   /* card/box surfaces — lifts off the page without going flat white */
   --wiof-warm-grey: #A69C8E;    /* secondary text, borders */
   --wiof-ink: #2B2420;          /* primary text — not flat black */
+  /* Hairline border color for header/card dividers — the brand kit's own
+     token file ships --wiof-border as #DCCFC0, but this lighter cream
+     already matches the app everywhere it's used; standardized into a
+     token instead of the 20+ files that previously hardcoded this hex. */
+  --wiof-border: #EDE4D3;
 
   /** primary — mapped to Ocean Teal, the identity color **/
   --ion-color-primary: #21999F;

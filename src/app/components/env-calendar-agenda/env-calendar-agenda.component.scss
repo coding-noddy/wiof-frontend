@@ -9,6 +9,10 @@
   background-color: var(--wiof-warm-white);
   border-radius: 18px;
   overflow: hidden;
+  // Matches the Environment Calendar card's outer border, sitting right
+  // next to it in the same row — the pair now reads as two consistently
+  // framed cards instead of the calendar alone having a visible edge.
+  border: 1.5px solid var(--wiof-brown-tint-40);
 }
 
 .agenda-header {

@@ -17,8 +17,8 @@ $streak-color: var(--wiof-marigold);
   width: 100%;
   padding: 1.1rem 1.25rem;
   background: var(--wiof-warm-white);
-  border-top: 1.5px solid #EDE4D3;
-  border-bottom: 1.5px solid #EDE4D3;
+  border-top: 1.5px solid var(--wiof-border);
+  border-bottom: 1.5px solid var(--wiof-border);
 
   @media (min-width: 768px) {
     padding: 1.1rem 6vw;
@@ -109,6 +109,21 @@ $streak-color: var(--wiof-marigold);
   margin-bottom: 2rem;
 }
 
+// auto-fit: as many tiles as comfortably fit per row at the current width,
+// existing tiles stretch to fill it (no orphaned single-tile row), and it
+// never needs retuning if a tile is ever added or removed again — see the
+// comment above this section in the .html for why this replaced Ionic's
+// fixed 12-column ion-grid.
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+
+  @media (max-width: 575px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .metric-card {
   background: $glass-bg;
   backdrop-filter: blur($glass-blur);
@@ -169,7 +184,8 @@ $streak-color: var(--wiof-marigold);
   &.videos-card,
   &.polls-card,
   &.eq-card,
-  &.saved-metric-card {
+  &.saved-metric-card,
+  &.actions-card {
     border-top-color: var(--wiof-teal);
     cursor: pointer;
     .metric-icon { color: var(--wiof-teal); }
@@ -179,7 +195,10 @@ $streak-color: var(--wiof-marigold);
   &.streak-card {
     border-top-color: var(--wiof-marigold);
     cursor: default;
-    .metric-icon { color: var(--wiof-marigold); }
+    // marigold-shade-20, not raw marigold — at 70% opacity (.metric-icon's
+    // base rule above) on this card's warm-white background, raw marigold
+    // was ~1.4:1 contrast, same underlying issue as the onboarding chip fix.
+    .metric-icon { color: var(--wiof-marigold-shade-20); }
     .metric-value { color: var(--wiof-marigold-shade-20); }
   }
 }
@@ -310,6 +329,17 @@ $streak-color: var(--wiof-marigold);
     color: $accent-color;
     text-decoration: none;
 
+    // The `.empty-state ion-icon` rule above (3rem, margin-bottom) is a
+    // descendant selector that also matched this inline compass icon,
+    // blowing it up to the same size as the big bookmark icon above and
+    // pushing it down with that margin — visibly misaligned with the text
+    // beside it. Needs its own override to opt back out of that rule.
+    ion-icon {
+      font-size: 1.1rem;
+      margin-bottom: 0;
+      color: $accent-color;
+    }
+
     &:hover {
       text-decoration: underline;
     }
@@ -433,6 +463,39 @@ $streak-color: var(--wiof-marigold);
     font-size: 0.88rem;
     color: $body-color;
     margin: 0 0 0.5rem;
+  }
+}
+
+.see-more-btn {
+  display: block;
+  margin: 0.6rem auto 0;
+  padding: 6px 14px;
+  border: none;
+  background: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--wiof-teal-shade-20, $accent-color);
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.streak-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: rgba(255, 194, 111, 0.22);
+  color: var(--wiof-brown-shade-20);
+  font-size: 0.7rem;
+  font-weight: 700;
+
+  ion-icon {
+    font-size: 0.8rem;
   }
 }
 

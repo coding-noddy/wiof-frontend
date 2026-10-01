@@ -27,16 +27,12 @@
 
     <!-- Loading State -->
     <div *ngIf="isLoading" class="loading-state">
-      <ion-grid>
-        <ion-row>
-          <ion-col size="6" size-md="4" size-lg="2" *ngFor="let i of [1,2,3,4,5,6]">
-            <div class="metric-card skeleton-metric">
-              <div class="skeleton" style="height: 32px; width: 50%; border-radius: 6px; margin-bottom: 0.5rem;"></div>
-              <div class="skeleton" style="height: 14px; width: 80%; border-radius: 4px;"></div>
-            </div>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+      <div class="metrics-grid">
+        <div class="metric-card skeleton-metric" *ngFor="let i of [1,2,3,4,5,6,7]">
+          <div class="skeleton" style="height: 32px; width: 50%; border-radius: 6px; margin-bottom: 0.5rem;"></div>
+          <div class="skeleton" style="height: 14px; width: 80%; border-radius: 4px;"></div>
+        </div>
+      </div>
       <div class="saved-content-section">
         <div class="skeleton" style="height: 20px; width: 140px; border-radius: 6px; margin-bottom: 1rem;"></div>
         <ion-grid>
@@ -68,64 +64,60 @@
     <!-- Content (loaded successfully) -->
     <div *ngIf="!isLoading && !hasError">
 
-      <!-- Engagement Metrics Cards -->
+      <!-- Engagement Metrics Cards — a self-balancing CSS grid (auto-fit),
+           not Ionic's fixed 12-column ion-grid: the old size-lg="2" only
+           ever looked right because 6 tiles happened to divide evenly into
+           12; adding the 7th (Actions Taken) broke that and left it
+           wrapping alone onto its own row. auto-fit adapts to any tile
+           count at any width without ever needing to be re-tuned again. -->
       <div class="metrics-section">
-        <ion-grid>
-          <ion-row>
-            <ion-col size="6" size-md="4" size-lg="2">
-              <div class="metric-card blogs-card" (click)="scrollToSection('blogs-read')">
-                <div class="metric-value">{{ metrics?.blogsRead ?? 0 }}</div>
-                <div class="metric-label">
-                  Blogs Explored
-                  <span *ngIf="metrics?.lastBlogReadDate" class="metric-date">{{ getFormattedLastBlogDate() }}</span>
-                </div>
-                <ion-icon name="newspaper-outline" class="metric-icon"></ion-icon>
-              </div>
-            </ion-col>
-            <ion-col size="6" size-md="4" size-lg="2">
-              <div class="metric-card videos-card" (click)="scrollToSection('videos-watched')">
-                <div class="metric-value">{{ metrics?.videosCompleted ?? 0 }}</div>
-                <div class="metric-label">Videos Watched</div>
-                <ion-icon name="videocam-outline" class="metric-icon"></ion-icon>
-              </div>
-            </ion-col>
-            <ion-col size="6" size-md="4" size-lg="2">
-              <div class="metric-card polls-card" (click)="scrollToSection('polls-voted')">
-                <div class="metric-value">{{ metrics?.pollsVoted ?? 0 }}</div>
-                <div class="metric-label">Polls Voted</div>
-                <ion-icon name="bar-chart-outline" class="metric-icon"></ion-icon>
-              </div>
-            </ion-col>
-            <ion-col size="6" size-md="4" size-lg="2">
-              <div class="metric-card eq-card" (click)="scrollToSection('eq-score')">
-                <div class="metric-value" *ngIf="metrics?.lastEqScore !== null">{{ metrics?.lastEqScore }}</div>
-                <div class="metric-value muted" *ngIf="metrics?.lastEqScore === null">Not yet taken</div>
-                <div class="metric-label">
-                  EQ Score
-                  <span *ngIf="metrics?.lastEqDate" class="metric-date">{{ getFormattedEqDate() }}</span>
-                </div>
-                <ion-icon name="heart-outline" class="metric-icon"></ion-icon>
-              </div>
-            </ion-col>
-            <ion-col size="6" size-md="4" size-lg="2">
-              <div class="metric-card saved-metric-card" (click)="scrollToSection('saved-content')">
-                <div class="metric-value">{{ savedContentCount }}</div>
-                <div class="metric-label">Saved Content</div>
-                <ion-icon name="bookmark-outline" class="metric-icon"></ion-icon>
-              </div>
-            </ion-col>
-            <ion-col size="6" size-md="4" size-lg="2">
-              <div class="metric-card streak-card">
-                <div class="metric-value">{{ currentStreak }}</div>
-                <div class="metric-label">
-                  Day Streak
-                  <span class="metric-best" *ngIf="longestStreak > 0">Best: {{ longestStreak }}-day streak</span>
-                </div>
-                <ion-icon name="flame-outline" class="metric-icon"></ion-icon>
-              </div>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
+        <div class="metrics-grid">
+          <div class="metric-card blogs-card" (click)="scrollToSection('blogs-read')">
+            <div class="metric-value">{{ metrics?.blogsRead ?? 0 }}</div>
+            <div class="metric-label">
+              Blogs Explored
+              <span *ngIf="metrics?.lastBlogReadDate" class="metric-date">{{ getFormattedLastBlogDate() }}</span>
+            </div>
+            <ion-icon name="newspaper-outline" class="metric-icon"></ion-icon>
+          </div>
+          <div class="metric-card videos-card" (click)="scrollToSection('videos-watched')">
+            <div class="metric-value">{{ metrics?.videosCompleted ?? 0 }}</div>
+            <div class="metric-label">Videos Watched</div>
+            <ion-icon name="videocam-outline" class="metric-icon"></ion-icon>
+          </div>
+          <div class="metric-card polls-card" (click)="scrollToSection('polls-voted')">
+            <div class="metric-value">{{ metrics?.pollsVoted ?? 0 }}</div>
+            <div class="metric-label">Polls Voted</div>
+            <ion-icon name="bar-chart-outline" class="metric-icon"></ion-icon>
+          </div>
+          <div class="metric-card eq-card" (click)="scrollToSection('eq-score')">
+            <div class="metric-value" *ngIf="metrics?.lastEqScore !== null">{{ metrics?.lastEqScore }}</div>
+            <div class="metric-value muted" *ngIf="metrics?.lastEqScore === null">Not yet taken</div>
+            <div class="metric-label">
+              EQ Score
+              <span *ngIf="metrics?.lastEqDate" class="metric-date">{{ getFormattedEqDate() }}</span>
+            </div>
+            <ion-icon name="heart-outline" class="metric-icon"></ion-icon>
+          </div>
+          <div class="metric-card saved-metric-card" (click)="scrollToSection('saved-content')">
+            <div class="metric-value">{{ savedContentCount }}</div>
+            <div class="metric-label">Saved Content</div>
+            <ion-icon name="bookmark-outline" class="metric-icon"></ion-icon>
+          </div>
+          <div class="metric-card actions-card" (click)="scrollToSection('actions-taken')">
+            <div class="metric-value">{{ metrics?.totalActionsCompleted ?? 0 }}</div>
+            <div class="metric-label">Actions Taken</div>
+            <ion-icon name="checkmark-done-outline" class="metric-icon"></ion-icon>
+          </div>
+          <div class="metric-card streak-card">
+            <div class="metric-value">{{ currentStreak }}</div>
+            <div class="metric-label">
+              Day Streak
+              <span class="metric-best" *ngIf="longestStreak > 0">Best: {{ longestStreak }}-day streak</span>
+            </div>
+            <ion-icon name="flame-outline" class="metric-icon"></ion-icon>
+          </div>
+        </div>
       </div>
 
       <!-- Global Retry (all new sections failed) -->
@@ -179,7 +171,7 @@
           <div *ngIf="qualityReads.length > 0" class="history-list">
             <a
               class="history-item"
-              *ngFor="let read of qualityReads"
+              *ngFor="let read of visibleQualityReads"
               [routerLink]="getBlogHistoryLink(read.contentId)"
             >
               <div class="history-item-main">
@@ -194,6 +186,15 @@
               </div>
             </a>
           </div>
+
+          <button
+            type="button"
+            class="see-more-btn"
+            *ngIf="qualityReads.length > 3"
+            (click)="toggleQualityReadsExpanded()"
+          >
+            {{ qualityReadsExpanded ? 'Show less' : 'See more (' + (qualityReads.length - 3) + ')' }}
+          </button>
 
           <!-- Empty State -->
           <div *ngIf="qualityReads.length === 0" class="section-empty">
@@ -231,7 +232,7 @@
           <div *ngIf="videoWatchHistory.length > 0" class="history-list">
             <a
               class="history-item"
-              *ngFor="let video of videoWatchHistory"
+              *ngFor="let video of visibleVideoWatchHistory"
               [routerLink]="getVideoHistoryLink(video.contentId)"
             >
               <div class="history-item-main">
@@ -246,10 +247,91 @@
             </a>
           </div>
 
+          <button
+            type="button"
+            class="see-more-btn"
+            *ngIf="videoWatchHistory.length > 3"
+            (click)="toggleVideoWatchHistoryExpanded()"
+          >
+            {{ videoWatchHistoryExpanded ? 'Show less' : 'See more (' + (videoWatchHistory.length - 3) + ')' }}
+          </button>
+
           <!-- Empty State -->
           <div *ngIf="videoWatchHistory.length === 0" class="section-empty">
             <ion-icon name="videocam-outline"></ion-icon>
             <p>No videos completed yet — watch videos to track your engagement!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions Taken Section -->
+      <div class="history-section" id="actions-taken-section" *ngIf="!allSectionsFailed">
+        <h2 class="section-title">
+          <ion-icon name="checkmark-done-outline" class="section-icon"></ion-icon>
+          Actions Taken
+        </h2>
+
+        <!-- Actions Taken Loading Skeleton -->
+        <div *ngIf="actionsTakenLoading" class="section-skeleton">
+          <div class="skeleton-row" *ngFor="let i of [1,2,3]">
+            <div class="skeleton" style="height: 14px; width: 60%; border-radius: 4px; margin-bottom: 0.4rem;"></div>
+            <div class="skeleton" style="height: 12px; width: 35%; border-radius: 4px;"></div>
+          </div>
+        </div>
+
+        <!-- Actions Taken Error -->
+        <div *ngIf="actionsTakenError && !actionsTakenLoading" class="section-error">
+          <p>Failed to load your action history.</p>
+          <button class="retry-button-sm" (click)="retrySection('actionsTaken')">
+            <ion-icon name="refresh-outline"></ion-icon> Retry
+          </button>
+        </div>
+
+        <!-- Actions Taken Content -->
+        <div *ngIf="!actionsTakenLoading && !actionsTakenError">
+          <!-- Per-element breakdown -->
+          <div class="quality-metrics-row" *ngIf="metrics?.uniqueActionsCompleted">
+            <div class="quality-metric">
+              <span class="quality-metric-value">{{ metrics?.uniqueActionsCompleted ?? 0 }}</span>
+              <span class="quality-metric-label">Unique Actions</span>
+            </div>
+            <div class="quality-metric highlight">
+              <span class="quality-metric-value">{{ metrics?.totalActionsCompleted ?? 0 }}</span>
+              <span class="quality-metric-label">Total Completions</span>
+            </div>
+          </div>
+
+          <div class="history-list" *ngIf="recentActions.length > 0">
+            <div class="history-item" *ngFor="let item of visibleRecentActions">
+              <ng-container *ngIf="getActionMeta(item.actionId) | async as actionMeta">
+                <div class="history-item-main">
+                  <ion-icon name="checkmark-circle-outline" class="history-item-icon"></ion-icon>
+                  <span class="history-item-title">{{ actionMeta?.title || item.actionId }}</span>
+                  <span class="streak-badge" *ngIf="actionMeta?.repeatType === 'DAILY' && (getActionStreak(item.actionId) | async) as streak">
+                    <ion-icon name="flame-outline"></ion-icon> {{ streak }}
+                  </span>
+                </div>
+                <div class="history-item-meta">
+                  <span class="meta-tag" *ngIf="item.completionCount > 1">{{ item.completionCount }}x completed</span>
+                  <span class="meta-date" *ngIf="item.lastCompletedAt?.toDate">{{ item.lastCompletedAt.toDate() | date:'mediumDate' }}</span>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="see-more-btn"
+            *ngIf="recentActions.length > 3"
+            (click)="toggleActionsExpanded()"
+          >
+            {{ actionsExpanded ? 'Show less' : 'See more (' + (recentActions.length - 3) + ')' }}
+          </button>
+
+          <!-- Empty State -->
+          <div *ngIf="recentActions.length === 0" class="section-empty">
+            <ion-icon name="checkmark-done-outline"></ion-icon>
+            <p>No actions completed yet — visit Take Action to get started!</p>
           </div>
         </div>
       </div>
@@ -348,9 +430,9 @@
                   <text x="4" y="53" class="chart-y-label" font-size="7" fill="var(--wiof-warm-grey)">72</text>
                   <text x="4" y="78" class="chart-y-label" font-size="7" fill="var(--wiof-warm-grey)">48</text>
                   <!-- Grid lines -->
-                  <line x1="22" y1="25" x2="245" y2="25" stroke="#EDE4D3" stroke-width="0.5" />
-                  <line x1="22" y1="50" x2="245" y2="50" stroke="#EDE4D3" stroke-width="0.5" />
-                  <line x1="22" y1="75" x2="245" y2="75" stroke="#EDE4D3" stroke-width="0.5" />
+                  <line x1="22" y1="25" x2="245" y2="25" stroke="var(--wiof-border)" stroke-width="0.5" />
+                  <line x1="22" y1="50" x2="245" y2="50" stroke="var(--wiof-border)" stroke-width="0.5" />
+                  <line x1="22" y1="75" x2="245" y2="75" stroke="var(--wiof-border)" stroke-width="0.5" />
                   <!-- Area fill -->
                   <polygon [attr.points]="getEqAreaPoints()" fill="rgba(33, 153, 159, 0.1)" />
                   <!-- Line -->

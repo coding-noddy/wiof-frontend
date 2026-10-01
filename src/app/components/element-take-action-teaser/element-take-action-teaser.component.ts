@@ -1,65 +1,46 @@
-import { Component, Input, OnChanges } from '@angular/core';
-import { TAKE_ACTION_DATA } from 'src/app/pages/take-action/take-action-data';
-
-interface TakeActionLink {
-  heading: string;
-  desc: string;
-  icon: string;
-}
-
-// One icon per real TAKE_ACTION_DATA heading (trimmed — a couple of source
-// entries carry a trailing space) so the four cards read as distinct
-// actions rather than four repeats of the same glyph.
-const ACTION_ICONS: { [heading: string]: string } = {
-  'Rethink your Food': 'restaurant-outline',
-  'Revive the Soil': 'leaf-outline',
-  'Handle waste and minimalize': 'trash-outline',
-  'Treat other species humanely': 'paw-outline',
-  'Solar Energy': 'sunny-outline',
-  'Wind Energy': 'cloudy-outline',
-  'Electric Vehicles': 'car-outline',
-  'Bio-Fuels': 'flame-outline',
-  'Take Public Transport': 'bus-outline',
-  'Switch to Electric': 'car-sport-outline',
-  'Handle Crop Wastage': 'home-outline',
-  'Cleaner Cooking Fuel': 'flame-outline',
-  'Rain-Water Harvesting': 'rainy-outline',
-  'Use STP Water for Toilets': 'water-outline',
-  'Treat Effluents': 'beaker-outline',
-  'Desilting and Plantation': 'leaf-outline',
-  'Yoga': 'accessibility-outline',
-  'Meditation': 'moon-outline',
-  'Gratitude': 'heart-outline',
-  'Real Connections': 'people-outline'
-};
-const DEFAULT_ACTION_ICON = 'checkmark-circle-outline';
+import { Component, Input, OnChanges, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { ActionItem } from 'src/app/models/ActionItem';
+import { ActionService } from 'src/app/services/action.service';
 
 /**
  * "Small shifts, real impact" teaser shown on each element page — surfaces
- * the first 4 real take-action items for that element (from
- * TAKE_ACTION_DATA, the same data the full Take Action page uses) and links
- * through to it, rather than inventing separate copy.
+ * up to 4 Firestore-backed actions tagged to this element (Section 13: show
+ * 2-4 relevant actions) as real interactive cards, and links through to the
+ * full element Take Action page for more.
  */
 @Component({
   selector: 'app-element-take-action-teaser',
   templateUrl: './element-take-action-teaser.component.html',
   styleUrls: ['./element-take-action-teaser.component.scss']
 })
-export class ElementTakeActionTeaserComponent implements OnChanges {
+export class ElementTakeActionTeaserComponent implements OnChanges, OnDestroy {
   @Input() element: string;
 
-  links: TakeActionLink[] = [];
+  actions: ActionItem[] = [];
+  private sub: Subscription | null = null;
+
+  constructor(private actionService: ActionService) {}
 
   ngOnChanges(): void {
-    const entry = TAKE_ACTION_DATA.find(
-      (tab) => tab.tab.title.toLowerCase() === (this.element || '').toLowerCase()
-    );
-    this.links = entry
-      ? entry.links.slice(0, 4).map((link) => ({
-          heading: link.heading,
-          desc: link.desc,
-          icon: ACTION_ICONS[link.heading.trim()] || DEFAULT_ACTION_ICON
-        }))
-      : [];
+    if (this.sub) {
+      this.sub.unsubscribe();
+      this.sub = null;
+    }
+    if (!this.element) {
+      this.actions = [];
+      return;
+    }
+    this.sub = this.actionService
+      .getActionsForElement(this.element.toLowerCase(), 4)
+      .subscribe((actions) => {
+        this.actions = actions;
+      });
+  }
+
+  ngOnDestroy(): void {
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
   }
 }

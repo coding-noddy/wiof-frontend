@@ -17,7 +17,7 @@ ion-content {
   text-align: center;
   padding: 1.5rem;
   background: var(--wiof-warm-white);
-  border-bottom: 1.5px solid #EDE4D3;
+  border-bottom: 1.5px solid var(--wiof-border);
 
   @media (min-width: 768px) {
     padding: 2rem 6vw;
@@ -42,40 +42,6 @@ ion-content {
 
   @media (min-width: 768px) {
     font-size: 1.75rem;
-  }
-}
-
-.header-actions {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  @media (min-width: 768px) {
-    top: 1.5rem;
-    right: 6vw;
-  }
-}
-
-.action-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 1.5px solid var(--wiof-brown-tint-40);
-  background: var(--wiof-ivory);
-  color: var(--wiof-ink);
-  text-decoration: none;
-  transition: background 0.15s ease, box-shadow 0.15s ease;
-
-  ion-icon { font-size: 1.1rem; }
-
-  &:hover {
-    background: var(--wiof-warm-white);
   }
 }
 

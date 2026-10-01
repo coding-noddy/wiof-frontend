@@ -9,20 +9,31 @@ $radius-card: 20px;
 $radius-item: 14px;
 
 // ── Card shell ───────────────────────────────────────────────────
+// Was $e-bg (lighten($e,3%)) — a near-solid Marigold wash across the whole
+// card. Ivory (not pure warm-white) keeps this file's glass-panel inner
+// elements visibly popping against the card instead of blending into white.
 .energy-widget-card {
   border-radius: $radius-card;
   overflow: hidden;
-  background-color: $e-bg;
+  background-color: var(--wiof-ivory);
+  border: 1.5px solid var(--wiof-brown-tint-40);
   display: flex;
   flex-direction: column;
   margin: 0;
 }
 
 // ── Header ───────────────────────────────────────────────────────
+// Solid Marigold — matching the same flat brand color used for Energy
+// everywhere else (video/in-focus headers). Marigold stays an accent for
+// page-level CTAs/backgrounds, but a header strip paired with dark ink
+// text ($e-dark icon, ink title below) is the one established exception
+// used throughout the app (take-action-detail, video/in-focus Energy
+// headers) — ink-on-Marigold has good contrast, unlike white-on-Marigold.
 .energy-widget-header {
   background-color: $e;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.8);
+  border-bottom: 1.5px solid var(--wiof-border);
   padding: 0.9rem 1.1rem;
+  min-height: 58px;
   display: flex;
   align-items: center;
   justify-content: space-between;

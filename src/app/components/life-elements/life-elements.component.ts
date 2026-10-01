@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 interface ElementDef {
   slug: string;
@@ -33,6 +33,15 @@ export class LifeElementsComponent implements OnInit {
    */
   @Input() linkSuffix: string = '';
 
+  /**
+   * When false (pills variant only), clicking an element emits
+   * elementSelect instead of navigating — for an in-page element filter
+   * (e.g. Take Action's "Browse by Element") that wants this component's
+   * exact order/colors/hover animation without a route change.
+   */
+  @Input() navigate = true;
+  @Output() elementSelect = new EventEmitter<string>();
+
   readonly elements: ElementDef[] = [
     { slug: 'air', name: 'Air', description: 'Moves. Connects. Carries change.', colorClass: 'teal' },
     { slug: 'energy', name: 'Energy', description: 'Illuminates. Reveals. Activates action.', colorClass: 'marigold' },
@@ -51,5 +60,12 @@ export class LifeElementsComponent implements OnInit {
 
   pillLink(slug: string): string[] {
     return this.linkSuffix ? ['/element', slug, this.linkSuffix] : ['/element', slug];
+  }
+
+  onPillClick(event: Event, slug: string): void {
+    if (!this.navigate) {
+      event.preventDefault();
+      this.elementSelect.emit(slug);
+    }
   }
 }

@@ -4,6 +4,8 @@ import { first, takeUntil } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { ActivityService } from 'src/app/services/activity.service';
 import { SavedContentService } from 'src/app/services/saved-content.service';
+import { ActionService } from 'src/app/services/action.service';
+import { UserActionService } from 'src/app/services/user-action.service';
 
 interface LastActivity {
   type: 'blog' | 'video';
@@ -34,13 +36,19 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
   lastEqScore: number | null = null;
   savedContentCount = 0;
 
+  // Protect Through Action tile (Section 14 of the architecture doc).
+  actionsCompletedCount = 0;
+  nextActionTitle: string | null = null;
+
   private destroy$ = new Subject<void>();
   private userId: string | null = null;
 
   constructor(
     private authService: AuthService,
     private activityService: ActivityService,
-    private savedContentService: SavedContentService
+    private savedContentService: SavedContentService,
+    private actionService: ActionService,
+    private userActionService: UserActionService
   ) {}
 
   ngOnInit(): void {
@@ -81,10 +89,12 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
       // functions/index.js (only ever initialized/reset to 0) — it's a dead
       // counter. The real count comes from querying user_saved_content
       // directly, the same source my-journey.page.ts uses for its own count.
-      savedIds: this.savedContentService.getSavedContentIds(userId).pipe(first())
+      savedIds: this.savedContentService.getSavedContentIds(userId).pipe(first()),
+      actions: this.actionService.getActiveActions().pipe(first()),
+      actionHistory: this.userActionService.getUserActionHistory(userId).pipe(first())
     })
       .pipe(takeUntil(this.destroy$))
-      .subscribe(({ reads, videos, metrics, savedIds }) => {
+      .subscribe(({ reads, videos, metrics, savedIds, actions, actionHistory }) => {
         const candidates: LastActivity[] = [];
         const latestRead = reads[0];
         const latestVideo = videos[0];
@@ -110,6 +120,18 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
         this.lastActivity = candidates[0] || null;
         this.lastEqScore = metrics.lastEqScore;
         this.savedContentCount = savedIds.size;
+        this.actionsCompletedCount = metrics.totalActionsCompleted || 0;
+
+        // Suggest a featured action the user hasn't tried before; fall back
+        // to any not-yet-tried action, then to the first active one if
+        // they've engaged with everything already.
+        const completedIds = new Set(actionHistory.map((h) => h.actionId));
+        const next =
+          actions.find((a) => a.isFeatured && !completedIds.has(a.id)) ||
+          actions.find((a) => !completedIds.has(a.id)) ||
+          actions[0];
+        this.nextActionTitle = next?.title || null;
+
         this.isLoading = false;
       });
   }

@@ -18,17 +18,40 @@
 }
 
 // ── Header bar — element colored, like coffee conversation & in-focus ─────────
+// Untagged default stays warm-white (no element to represent — every real
+// usage always passes [element], this is an unreachable fallback). Energy
+// uses raw Marigold with ink text, not white: brand guidelines reserve
+// Marigold as an accent, but a solid fill paired with dark ink text is the
+// one established exception already used for take-action-detail's Energy
+// header — ink-on-Marigold has good contrast, unlike white-on-Marigold.
 .video-widget-header {
-  padding: 0.8rem 1rem;
+  padding: 0.9rem 1.1rem;
+  min-height: 58px;
   border-bottom: 1px solid rgba(43, 36, 32, 0.10);
-  background-color: $home-color;
+  background-color: var(--wiof-warm-white);
   color: $dark-color;
 
-  &.wiof-earth  { background-color: rgba($earth-color, 0.9); }
-  &.wiof-water  { background-color: rgba($water-color, 0.92); }
-  &.wiof-fire   { background-color: rgba($energy-color, 0.95); }
-  &.wiof-air    { background-color: rgba($air-color, 0.92); }
-  &.wiof-spirit { background-color: rgba($spirit-color, 0.92); }
+  // Flat colors (not the old rgba(..., 0.9-0.95) dilution) so this header
+  // is pixel-identical to the same element's color on every other widget
+  // header in the app (aqi/water/eq/food-ph/energy-widget) — the earlier
+  // per-file alpha variation was exactly why colors looked slightly
+  // different between widgets tagged to the same element.
+  &.wiof-earth  { background-color: $earth-color; }
+  &.wiof-water  { background-color: $water-color; }
+  &.wiof-fire   { background-color: $energy-color; color: $dark-color; }
+  &.wiof-air    { background-color: $air-color; }
+  // $spirit-color is a dark teal SHADE (not a tint like $air-color) — ink
+  // text on it was ~3:1 contrast, below AA's 4.5:1. Light text instead,
+  // same approach already used for .wiof-config below. .video-widget-title
+  // sets its own explicit color (same specificity, declared later in this
+  // file), so the parent's `color` alone wouldn't cascade — needs its own
+  // override here to actually win.
+  &.wiof-spirit {
+    background-color: $spirit-color;
+    color: $light-color;
+
+    .video-widget-title { color: $light-color; }
+  }
   &.wiof-config { background-color: $dark-color; color: $light-color; }
 }
 

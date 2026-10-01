@@ -6,24 +6,35 @@ $s-mid: darken($s, 10%);
 $radius-card: 20px;
 
 // ── Card shell ───────────────────────────────────────────────────
+// $s (spirit-color) is itself an already-darkened teal SHADE, not a tint —
+// the old lighten($s,4%) barely moved it, making this the darkest/heaviest
+// of all the widget cards. Ivory (not pure warm-white) keeps this file's
+// glass-panel inner elements visibly popping against the card.
 .eq-widget-card {
   border-radius: $radius-card;
   overflow: hidden;
-  background-color: lighten($s, 4%);
+  background-color: var(--wiof-ivory);
+  border: 1.5px solid var(--wiof-brown-tint-40);
   display: flex;
   flex-direction: column;
   margin: 0;
 }
 
 // ── Header ───────────────────────────────────────────────────────
+// Solid Spirit (teal-shade-20) — matching the same flat brand color used
+// for Spirit everywhere else (video/in-focus headers). $s is already a
+// dark shade, so icon/title need light text here instead of the app-wide
+// default ink — same reasoning as .wiof-spirit elsewhere in the app.
 .eq-widget-header {
   background-color: $s;
   border-bottom: 2px solid rgba(255, 255, 255, 0.8);
   padding: 0.9rem 1.1rem;
+  min-height: 58px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
+  color: $light-color;
 }
 
 .header-left {
@@ -34,7 +45,11 @@ $radius-card: 20px;
 
 .header-icon {
   font-size: 1.4rem;
-  color: $s-dark;
+  color: $light-color;
+}
+
+.title-text {
+  color: $light-color;
 }
 
 .about-toggle {

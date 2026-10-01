@@ -18,7 +18,7 @@ ion-content {
   text-align: center;
   padding: 1.5rem;
   background: var(--wiof-warm-white);
-  border-bottom: 1.5px solid #EDE4D3;
+  border-bottom: 1.5px solid var(--wiof-border);
 
   @media (min-width: 768px) {
     padding: 2rem 6vw;

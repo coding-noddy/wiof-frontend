@@ -1,13 +1,29 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController, createAnimation, Animation } from '@ionic/angular';
+import { trigger, transition, style, animate } from '@angular/animations';
+import { ModalController } from '@ionic/angular';
 import { EnvDay } from '../../models/env-cal-data';
 import { EnvcalService } from '../../services/envcal-service';
 import { EnvCalDialogComponent } from '../env-cal-dialog/env-cal-dialog.component';
+import { buildModalZoomAnimation } from '../../util/modal-zoom-animation';
 
 @Component({
   selector: 'app-env-calender',
   templateUrl: './env-calender.component.html',
-  styleUrls: ['./env-calender.component.scss']
+  styleUrls: ['./env-calender.component.scss'],
+  animations: [
+    // Re-runs on every monthKey change (prev/next both produce a new number),
+    // sliding the already-updated grid in from the direction the user
+    // navigated toward — a "changing slide" feel instead of a flat snap.
+    trigger('monthSlide', [
+      transition('* => *', [
+        style({ transform: 'translateX({{ enterX }}%)', opacity: 0 }),
+        animate(
+          '280ms cubic-bezier(0.22, 1, 0.36, 1)',
+          style({ transform: 'translateX(0%)', opacity: 1 })
+        )
+      ], { params: { enterX: 28 } })
+    ])
+  ]
 })
 export class EnvCalenderComponent implements OnInit {
   todayDate = new Date();
@@ -26,6 +42,7 @@ export class EnvCalenderComponent implements OnInit {
   }[] = [];
   EnvDays: EnvDay[];
   isLoading: boolean = false;
+  slideDirection: 'next' | 'prev' = 'next';
   months = [
     'January',
     'February',
@@ -82,8 +99,20 @@ export class EnvCalenderComponent implements OnInit {
   }
 
   changeMonth(delta: number) {
+    this.slideDirection = delta >= 0 ? 'next' : 'prev';
     const nextDate = new Date(this.currentYear, this.currentMonth + delta, 1);
     this.loadMonth(nextDate.getMonth(), nextDate.getFullYear());
+  }
+
+  get monthKey(): number {
+    return this.currentYear * 12 + this.currentMonth;
+  }
+
+  get monthSlideState() {
+    return {
+      value: this.monthKey,
+      params: { enterX: this.slideDirection === 'next' ? 28 : -28 }
+    };
   }
 
   renderCalendar() {
@@ -139,51 +168,10 @@ export class EnvCalenderComponent implements OnInit {
       componentProps: { occasionDetails: occasion },
       cssClass: 'env-cal-modal',
       backdropDismiss: true,
-      enterAnimation: (baseEl) => this.buildZoomAnimation(baseEl, originRect, false),
-      leaveAnimation: (baseEl) => this.buildZoomAnimation(baseEl, originRect, true)
+      enterAnimation: (baseEl) => buildModalZoomAnimation(baseEl, originRect, false),
+      leaveAnimation: (baseEl) => buildModalZoomAnimation(baseEl, originRect, true)
     });
     await modal.present();
-  }
-
-  private buildZoomAnimation(
-    baseEl: HTMLElement,
-    originRect: DOMRect | undefined,
-    reverse: boolean
-  ): Animation {
-    // Ionic 7 modals render inside a shadow root — fall back to baseEl itself
-    // if there isn't one (e.g. shady-DOM polyfill environments).
-    const root = (baseEl.shadowRoot ?? baseEl) as ParentNode;
-    const wrapperEl = root.querySelector('.modal-wrapper') as HTMLElement;
-    const backdropEl = root.querySelector('ion-backdrop') as HTMLElement;
-
-    const backdropAnimation = createAnimation().addElement(backdropEl).fromTo('opacity', '0.01', 'var(--backdrop-opacity)');
-    const wrapperAnimation = createAnimation().addElement(wrapperEl);
-
-    if (originRect && wrapperEl) {
-      const targetRect = wrapperEl.getBoundingClientRect();
-      const translateX = originRect.left + originRect.width / 2 - (targetRect.left + targetRect.width / 2);
-      const translateY = originRect.top + originRect.height / 2 - (targetRect.top + targetRect.height / 2);
-      const scale = Math.max(Math.min(originRect.width / targetRect.width, 1), 0.05);
-
-      wrapperAnimation.keyframes([
-        { offset: 0, opacity: '0', transform: `translate(${translateX}px, ${translateY}px) scale(${scale})` },
-        { offset: 1, opacity: '1', transform: 'translate(0, 0) scale(1)' }
-      ]);
-    } else {
-      // No origin captured (e.g. keyboard-triggered open) — plain scale-in.
-      wrapperAnimation.keyframes([
-        { offset: 0, opacity: '0', transform: 'scale(0.8)' },
-        { offset: 1, opacity: '1', transform: 'scale(1)' }
-      ]);
-    }
-
-    const baseAnimation = createAnimation()
-      .addElement(baseEl)
-      .easing('cubic-bezier(0.32, 0.72, 0, 1)')
-      .duration(380)
-      .addAnimation([backdropAnimation, wrapperAnimation]);
-
-    return reverse ? baseAnimation.direction('reverse') : baseAnimation;
   }
 
   nextOccasion(day) {

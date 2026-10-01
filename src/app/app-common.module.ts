@@ -39,9 +39,12 @@ import { AvatarDropdownComponent } from './components/avatar-dropdown/avatar-dro
 import { BookmarkIconComponent } from './components/bookmark-icon/bookmark-icon.component';
 import { HomeJourneyPanelComponent } from './components/home-journey-panel/home-journey-panel.component';
 import { ElementTakeActionTeaserComponent } from './components/element-take-action-teaser/element-take-action-teaser.component';
+import { TakeActionCardComponent } from './components/take-action-card/take-action-card.component';
+import { TakeActionDetailComponent } from './components/take-action-detail/take-action-detail.component';
 import { ContinueJourneyBannerComponent } from './components/continue-journey-banner/continue-journey-banner.component';
 import { BlogReadTrackerDirective } from './directives/blog-read-tracker.directive';
 import { YoutubeWatchTrackerDirective } from './directives/youtube-watch-tracker.directive';
+import { EnumLabelPipe } from './pipes/enum-label.pipe';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 const COMPONENTS = [
@@ -82,9 +85,12 @@ const COMPONENTS = [
   BookmarkIconComponent,
   HomeJourneyPanelComponent,
   ElementTakeActionTeaserComponent,
+  TakeActionCardComponent,
+  TakeActionDetailComponent,
   ContinueJourneyBannerComponent,
   BlogReadTrackerDirective,
-  YoutubeWatchTrackerDirective
+  YoutubeWatchTrackerDirective,
+  EnumLabelPipe
 ];
 
 @NgModule({

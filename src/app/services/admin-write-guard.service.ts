@@ -16,7 +16,8 @@ export const ADMIN_COLLECTIONS: string[] = [
   FIREBASE_COLLECTION.COURSE_IN_FOCUS,
   FIREBASE_COLLECTION.ENVCAL,
   'AboutUs',
-  'AboutUsProfiles'
+  'AboutUsProfiles',
+  FIREBASE_COLLECTION.ACTIONS
 ];
 
 /**

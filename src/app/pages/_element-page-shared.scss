@@ -30,8 +30,8 @@ ion-content {
   gap: 1rem;
   padding: 0 1.25rem;
   background: var(--wiof-warm-white);
-  border-top: 1.5px solid #EDE4D3;
-  border-bottom: 1.5px solid #EDE4D3;
+  border-top: 1.5px solid var(--wiof-border);
+  border-bottom: 1.5px solid var(--wiof-border);
 
   @media (min-width: 768px) {
     padding: 0 6vw;
@@ -103,15 +103,22 @@ ion-content {
   // (city/people/activity) via the 68% vertical position, which trims most
   // of that empty sky off the top and only a little off the bottom.
   background: var(--wiof-ivory) center 68% / cover no-repeat;
-  border-bottom: 1.5px solid #EDE4D3;
+  border-bottom: 1.5px solid var(--wiof-border);
   aspect-ratio: 16 / 5;
   min-height: 340px;
   max-height: 520px;
 
+  // Tablet and up: the content block was vertically centered in a hero up
+  // to 520px tall and flush with the same left inset as mobile, landing
+  // lower and further left than a visitor's eye line. flex-start + a touch
+  // more left padding pulls it up toward the top and a little right,
+  // without encroaching on the scrim's opaque zone below.
   @media (min-width: 768px) {
-    padding: 4rem 6vw 3.5rem;
+    padding: 3rem 6vw 3.5rem;
+    padding-left: 9vw;
     margin-bottom: 2.5rem;
     min-height: 440px;
+    align-items: flex-start;
   }
 
   // Same reasoning as home.page.scss's own .hero — centered cropping at
@@ -139,8 +146,15 @@ ion-content {
     background: linear-gradient(100deg, var(--wiof-ivory) 0%, rgba(250, 245, 236, 0.92) 45%, rgba(250, 245, 236, 0.55) 68%, rgba(250, 245, 236, 0.18) 100%);
     pointer-events: none;
 
+    // Tablet and up: tried a backdrop-blur-only-behind-the-text treatment
+    // first, but that's a glassmorphism effect and this brand explicitly
+    // avoids glossy/dimensional rendering — tightening the existing scrim's
+    // falloff instead. The actual text (hero-body's own max-width: 560px)
+    // rarely reaches past ~50% of the hero's width even on a typical
+    // tablet/laptop viewport, so the wash can end much earlier and still
+    // keep the copy legible, revealing more of the illustration.
     @media (min-width: 768px) {
-      background: linear-gradient(100deg, var(--wiof-ivory) 0%, rgba(250, 245, 236, 0.85) 30%, rgba(250, 245, 236, 0.35) 55%, rgba(250, 245, 236, 0) 75%);
+      background: linear-gradient(100deg, var(--wiof-ivory) 0%, rgba(250, 245, 236, 0.88) 25%, rgba(250, 245, 236, 0.3) 45%, rgba(250, 245, 236, 0) 60%);
     }
   }
 

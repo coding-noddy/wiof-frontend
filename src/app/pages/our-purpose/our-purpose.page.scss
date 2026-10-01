@@ -10,8 +10,8 @@ ion-content {
   width: 100%;
   padding: 1.1rem 1.25rem;
   background: var(--wiof-warm-white);
-  border-top: 1.5px solid #EDE4D3;
-  border-bottom: 1.5px solid #EDE4D3;
+  border-top: 1.5px solid var(--wiof-border);
+  border-bottom: 1.5px solid var(--wiof-border);
 
   @media (min-width: 768px) {
     padding: 1.1rem 6vw;
@@ -110,9 +110,16 @@ ion-content {
   }
 }
 
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
 .card-icon {
+  flex-shrink: 0;
   font-size: 1.75rem;
-  margin-bottom: 0.5rem;
   color: var(--wiof-teal);
 }
 
@@ -120,7 +127,7 @@ ion-content {
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--wiof-ink);
-  margin: 0 0 0.75rem;
+  margin: 0;
 }
 
 .content-card p {

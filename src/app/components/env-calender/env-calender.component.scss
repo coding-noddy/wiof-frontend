@@ -3,17 +3,23 @@
 .wiof-env-calender-content {
   display: flex;
   flex-direction: column;
-  padding: 0.5rem;
-  background: var(--wiof-ivory);
+  padding: 0.75rem;
+  // Warm White, matching .wiof-calendar-wrapper around it — the ivory day
+  // tiles (.day below) then read as distinct cells against a clean white
+  // field instead of blending into an ivory content area.
+  background: var(--wiof-warm-white);
   min-height: 480px;
 }
 
 .wiof-calendar-container {
-  background-color: var(--wiof-warm-white);
-  border-radius: 12px;
+  // No background/radius here — this div was its own rounded warm-white
+  // panel nested inside the outer card, which is what actually caused the
+  // "box inside box" look (two stacked rounded panels), not a spacing
+  // problem. Letting it sit flat on the ivory content area behind it means
+  // there's only one visible box: the outer card.
+  background-color: transparent;
   min-width: 100%;
   padding: 0.6rem;
-  border: 1px solid rgba($dark-color, 0.05);
   overflow: hidden;
 }
 
@@ -181,6 +187,10 @@
   background-color: var(--wiof-warm-white);
   border-radius: 18px;
   overflow: hidden;
+  // This is the actual outer card (ion-card.wiof-calendar-wrapper) — the
+  // standard app-wide card border belongs here, not on the inner month-grid
+  // div (.wiof-calendar-container below, reverted to borderless).
+  border: 1.5px solid var(--wiof-brown-tint-40);
 }
 
 .wiof-env-calendar-dialog-container {
@@ -247,6 +257,9 @@
 // grid never actually dimmed during a month change.
 .days-grid-wrapper {
   position: relative;
+  // Clips the slide-in transform below so a month change animates in place
+  // instead of briefly overflowing/scrolling the card horizontally.
+  overflow: hidden;
 }
 
 .calendar-loading-overlay {

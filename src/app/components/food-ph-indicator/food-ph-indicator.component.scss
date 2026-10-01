@@ -6,11 +6,12 @@
 
 // This widget belongs to the same family as AQI/Water/Energy widgets (an
 // interactive data-lookup tool, not an editorial content card like Breaking
-// News/Poll/NGO) and should share their exact visual language: a bold,
-// solid element-color header + a lightened wash for the whole card, not a
-// warm-white card with a colored accent. Variable names mirror theirs
-// exactly ($a/$a-dark in aqi-widget, $w/$w-dark in water-widget, $e/$e-dark
-// in energy-widget) so the pattern is traceable across all four files.
+// News/Poll/NGO). As of 2026-10-01 that whole family (AQI/Water/Energy/EQ/
+// this one) moved to a lighter ivory card + softened-tint header — the
+// "bold solid fill" version was product-feedback'd as too heavy/dark across
+// the board. Variable names still mirror the siblings' ($a/$a-dark in
+// aqi-widget, $w/$w-dark in water-widget, $e/$e-dark in energy-widget) so
+// the pattern stays traceable across all five files.
 $f: $earth-color;
 $f-dark: darken($f, 24%);
 
@@ -55,23 +56,22 @@ $panel-shadow:
 
   border-radius: $card-radius;
 
-  // No border — like AQI/Water/Energy, the bold fill itself is the card
-  // edge, not a thin border on a neutral background.
-  background-color: lighten($f, 5%);
+  // Ivory (not pure warm-white) keeps this file's glass-panel inner
+  // elements visibly popping against the card instead of blending into
+  // white — same reasoning as the AQI/Water/Energy/EQ siblings.
+  background-color: var(--wiof-ivory);
+  border: 1.5px solid var(--wiof-brown-tint-40);
 }
 
 /* ==========================================================
    Header
 ========================================================== */
 
-// Solid Brown header — matches AQI's/Water's/Energy's own header exactly
-// (a solid fill of the widget's own element color, not a warm-white badge).
-// This card had been converted to the badge convention in an earlier pass
-// that compared it against Breaking News/Poll/NGO — the wrong reference
-// set, since those are editorial content cards, not data-lookup widgets
-// like this one's actual siblings.
+// Solid Earth brown — matching the same flat brand color used for Earth
+// everywhere else (video/in-focus headers), not a one-off lighten() tint.
 .wiof-food-ph-widget-card-header {
   padding: 0.9rem 1.1rem;
+  min-height: 58px;
 
   background-color: $f;
 

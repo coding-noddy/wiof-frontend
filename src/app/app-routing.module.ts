@@ -171,6 +171,18 @@ const routes: Routes = [
     canActivate: [PublicUserGuard]
   },
   {
+    // Standalone entry point for the Take Action hub (Featured / Browse by
+    // Element / Browse by Category / Recently Completed) — the page itself
+    // is shared with the element-nested element/:element/take-action routes
+    // below; this just gives it a real top-level, element-agnostic URL to
+    // link to (nav, home CTA, etc.) without requiring an element context.
+    path: 'take-action',
+    loadChildren: () =>
+      import('./pages/take-action/take-action.module').then(
+        (m) => m.TakeActionPageModule
+      )
+  },
+  {
     path: '**',
     loadChildren: () =>
       import('./pages/not-found/not-found.module').then(

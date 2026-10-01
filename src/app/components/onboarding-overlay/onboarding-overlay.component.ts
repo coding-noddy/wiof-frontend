@@ -12,7 +12,12 @@ export class OnboardingOverlayComponent implements OnInit {
   // continue-journey-banner's ELEMENT_TAGLINES — one voice across the app.
   readonly elements = [
     { name: 'Air', description: 'Moves. Connects. Carries change.', icon: 'cloud-outline', color: '#21999F' },
-    { name: 'Energy', description: 'Illuminates. Reveals. Activates action.', icon: 'flash-outline', color: '#FFC26F' },
+    // Marigold-shade-20 (#CC9B59), not raw Marigold (#FFC26F) — this value
+    // is used for both the icon color and the background tint (via
+    // color-mix below), and raw Marigold is light enough that icon-on-its-
+    // own-8%-tint failed contrast (~1.5:1). Every other element's color is
+    // dark enough that this isn't an issue; Energy alone needed the shade.
+    { name: 'Energy', description: 'Illuminates. Reveals. Activates action.', icon: 'flash-outline', color: '#CC9B59' },
     { name: 'Water', description: 'Flows. Adapts. Sustains life.', icon: 'water-outline', color: '#21999F' },
     { name: 'Earth', description: 'Grounds us. Connects us to place.', icon: 'leaf-outline', color: '#A6875D' },
     { name: 'Spirit', description: 'Reflects. Expands. Deepens understanding.', icon: 'sparkles-outline', color: '#21999F' }

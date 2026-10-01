@@ -183,7 +183,49 @@ export const FIREBASE_COLLECTION = {
   ACTIVITY_LOG: 'activity_log',
   USER_SAVED_CONTENT: 'user_saved_content',
   POLL_RESULTS: 'poll_results',
-  USER_METRICS: 'user_metrics'
+  USER_METRICS: 'user_metrics',
+  ACTIONS: 'actions',
+  USER_ACTIONS: 'user_actions',
+  USER_ACTION_COMPLETIONS: 'user_action_completions'
+};
+
+export const ACTION_TYPE = {
+  PERSONAL: 'PERSONAL',
+  NATURE: 'NATURE',
+  COMMUNITY: 'COMMUNITY',
+  EVENT: 'EVENT'
+};
+
+export const COMPLETION_TYPE = {
+  SELF_REPORTED: 'SELF_REPORTED'
+};
+
+export const REPEAT_TYPE = {
+  ONCE: 'ONCE',
+  DAILY: 'DAILY',
+  // No per-period dedup guard (unlike DAILY) — the user can mark these done
+  // again any time. OCCASIONAL is the same mechanic as REPEATABLE; it exists
+  // as a separate value only to convey a lighter expected cadence to the
+  // user, not a different completion rule.
+  REPEATABLE: 'REPEATABLE',
+  OCCASIONAL: 'OCCASIONAL'
+};
+
+export const ACTION_DIFFICULTY = {
+  VERY_EASY: 'VERY_EASY',
+  EASY: 'EASY',
+  MODERATE: 'MODERATE'
+};
+
+export const EVIDENCE_LEVEL = {
+  OFFICIAL_SUPPORT: 'OFFICIAL_SUPPORT',
+  WIDELY_ACCEPTED: 'WIDELY_ACCEPTED',
+  WIOF_CURATED: 'WIOF_CURATED'
+};
+
+export const USER_ACTION_STATUS = {
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETE: 'COMPLETE'
 };
 
 export const VIDEO_PLAYER_TITLES = {
@@ -272,7 +314,8 @@ export const ITEMS = {
   NEWS: 'News',
   COURSE_IN_FOCUS: 'Course in focus',
   NGO_IN_FOCUS: 'NGO in focus',
-  ABOUT_US:'About us Profile'
+  ABOUT_US:'About us Profile',
+  TAKE_ACTION: 'Action'
 };
 
 export const UI_MESSAGES = {
@@ -299,7 +342,13 @@ export const UI_MESSAGES = {
   CONFIRM_DELETE_PRIMARY_CTA: 'Yes',
   CONFIRM_DELETE_SECONDARY_CTA: 'No',
   SAVE_IN_PROGRESS: 'Saving $ITEM...',
-  DELETE_IN_PROGRESS: 'Deleting $ITEM...'
+  DELETE_IN_PROGRESS: 'Deleting $ITEM...',
+  CONFIRM_DEACTIVATE_ITEM_DESC: 'Are you sure you want to deactivate this $ITEM? It will no longer be shown to users, but existing history referencing it is preserved.',
+  CONFIRM_DEACTIVATE_PRIMARY_CTA: 'Yes',
+  CONFIRM_DEACTIVATE_SECONDARY_CTA: 'No',
+  DEACTIVATE_IN_PROGRESS: 'Deactivating $ITEM...',
+  SUCCESS_DEACTIVATE_ITEM_DESC: '$ITEM deactivated successfully!',
+  FAILURE_DEACTIVATE_ITEM_DESC: 'Uh oh! Failed to deactivate $ITEM. Please try again.'
 };
 
 export const AVG_WORD_READ_PER_MIN = 250;

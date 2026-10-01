@@ -66,13 +66,19 @@
 </div>
 
 <!-- Element pages: compact switcher pills -->
-<div class="elements-pills" *ngIf="variant === 'pills'">
+<div class="elements-pills" *ngIf="variant === 'pills'" [attr.role]="navigate ? null : 'tablist'">
   <a
     *ngFor="let el of elements"
     class="element-pill"
     [ngClass]="'color-' + el.colorClass"
     [class.active]="isSelectedElement(el.slug)"
-    [routerLink]="pillLink(el.slug)"
+    [routerLink]="navigate ? pillLink(el.slug) : null"
+    [attr.role]="navigate ? null : 'tab'"
+    [attr.aria-selected]="navigate ? null : isSelectedElement(el.slug)"
+    [attr.tabindex]="navigate ? null : 0"
+    (click)="onPillClick($event, el.slug)"
+    (keydown.enter)="onPillClick($event, el.slug)"
+    (keydown.space)="onPillClick($event, el.slug)"
   >
     <span class="pill-icon" [ngClass]="'icon-' + el.slug"></span>
     {{ el.name }}

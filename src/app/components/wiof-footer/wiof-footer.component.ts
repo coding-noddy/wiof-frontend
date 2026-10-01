@@ -13,7 +13,7 @@ export class WiofFooterComponent implements OnInit {
   currentYear = new Date().getFullYear();
   appVersion: string = require('../../../../package.json').version;
   envLabel = environment.production ? 'prod' : 'staging';
-  wiofLogo = '../../../assets/logo.png';
+  wiofLogo = '../../../assets/brand/logos/WIOF-full-logo-SVG.svg';
 
   // Moved here from the old floating app-social-share sidebar (removed
   // sitewide — a position:fixed/absolute rail with a hardcoded vertical

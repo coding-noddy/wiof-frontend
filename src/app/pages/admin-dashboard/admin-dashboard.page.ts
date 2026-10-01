@@ -94,6 +94,13 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
       description: 'Manage team member profiles'
     },
     {
+      name: 'Take Action',
+      route: 'manage-take-action',
+      icon: 'checkmark-done-outline',
+      color: AdminDashboardPage.GRADIENT_MARIGOLD,
+      description: 'Manage the Take Action catalogue'
+    },
+    {
       name: 'Subscribers',
       route: 'subscribers',
       icon: 'mail-outline',

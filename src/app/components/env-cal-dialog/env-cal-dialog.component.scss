@@ -28,7 +28,10 @@
 // agenda card, and brand guidelines reserve Marigold for the one primary
 // CTA per page, never a background fill.
 .occasion-card-header {
-  background-color: $earth-color;
+  // Raw $earth-color behind warm-white text (.occasion-name below) was
+  // ~3.3:1, below AA's 4.5:1 for normal text — the shade-20 step clears it
+  // (~4.8:1).
+  background-color: var(--wiof-brown-shade-20);
   padding: 0.85rem 1rem 0.75rem;
   position: relative;
 }
@@ -184,7 +187,9 @@
 .occasion-body {
   padding: 1rem !important;
   overflow-y: auto;
-  max-height: 180px;      // scroll if description is long, keeps modal compact
+  // No fixed cap — flex:1 lets it fill whatever space the card has (so
+  // short descriptions don't leave a blank gap below); the outer modal's
+  // --max-height: 90vh is still the real ceiling for very long text.
   flex: 1;
 
   p {
@@ -238,10 +243,6 @@
 @media (max-width: 480px) {
   .occasion-image-wrap {
     height: 160px;
-  }
-
-  .occasion-body {
-    max-height: 140px;
   }
 
   .occasion-name {

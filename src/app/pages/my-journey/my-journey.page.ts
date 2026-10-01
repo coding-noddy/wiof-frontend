@@ -1,12 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Observable, of, Subject } from 'rxjs';
-import { takeUntil, first, catchError, distinctUntilChanged } from 'rxjs/operators';
+import { takeUntil, first, catchError, distinctUntilChanged, map, shareReplay } from 'rxjs/operators';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { AuthService } from 'src/app/services/auth.service';
 import { ActivityService, EngagementMetrics } from 'src/app/services/activity.service';
 import { SavedContentService, SavedContentDocument } from 'src/app/services/saved-content.service';
 import { UserProfileService } from 'src/app/services/user-profile.service';
 import { QualityReadEntry, EqHistoryEntry, PollHistoryEntry, VideoWatchHistoryEntry } from 'src/app/models/engagement-history';
+import { UserActionService } from 'src/app/services/user-action.service';
+import { ActionService } from 'src/app/services/action.service';
+import { UserAction } from 'src/app/models/UserAction';
+import { ActionItem } from 'src/app/models/ActionItem';
 
 @Component({
   selector: 'app-my-journey',
@@ -36,6 +40,7 @@ export class MyJourneyPage implements OnInit, OnDestroy {
   qualityReadCount = 0;
   qualityReadsLoading = true;
   qualityReadsError = false;
+  qualityReadsExpanded = false;
 
   // EQ History section
   eqHistory: EqHistoryEntry[] = [];
@@ -52,6 +57,19 @@ export class MyJourneyPage implements OnInit, OnDestroy {
   videoWatchHistory: VideoWatchHistoryEntry[] = [];
   videoWatchHistoryLoading = true;
   videoWatchHistoryError = false;
+  videoWatchHistoryExpanded = false;
+
+  // Actions Taken section — totals come from user_metrics (maintained by
+  // onUserActionWritten), the recent list from a direct user_actions query,
+  // same split ActivityService.getActivityCounts()/getQualityReads() use.
+  recentActions: UserAction[] = [];
+  actionsTakenLoading = true;
+  actionsTakenError = false;
+  actionsExpanded = false;
+
+  /** How many rows a history list shows before "See more" — keeps the page
+   *  from growing tall with 4+ sections each listing up to 10 items. */
+  private static readonly COLLAPSED_LIST_SIZE = 3;
 
   /**
    * Mapping of metric tile identifiers to their target section element IDs.
@@ -61,7 +79,8 @@ export class MyJourneyPage implements OnInit, OnDestroy {
     'videos-watched': 'videos-watched-section',
     'polls-voted': 'poll-history-section',
     'eq-score': 'eq-history-section',
-    'saved-content': 'saved-content-section'
+    'saved-content': 'saved-content-section',
+    'actions-taken': 'actions-taken-section'
   };
 
   constructor(
@@ -69,6 +88,8 @@ export class MyJourneyPage implements OnInit, OnDestroy {
     private activityService: ActivityService,
     private savedContentService: SavedContentService,
     private userProfileService: UserProfileService,
+    private userActionService: UserActionService,
+    private actionService: ActionService,
     private storage: AngularFireStorage
   ) {}
 
@@ -119,6 +140,7 @@ export class MyJourneyPage implements OnInit, OnDestroy {
     this.loadEqHistory(userId);
     this.loadPollHistory(userId);
     this.loadVideoWatchHistory(userId);
+    this.loadActionsTaken(userId);
   }
 
   /**
@@ -155,7 +177,7 @@ export class MyJourneyPage implements OnInit, OnDestroy {
   /**
    * Retry loading a specific section.
    */
-  retrySection(section: 'qualityReads' | 'eqHistory' | 'pollHistory' | 'videoWatchHistory'): void {
+  retrySection(section: 'qualityReads' | 'eqHistory' | 'pollHistory' | 'videoWatchHistory' | 'actionsTaken'): void {
     if (!this.activeUserId) return;
     switch (section) {
       case 'qualityReads':
@@ -169,6 +191,9 @@ export class MyJourneyPage implements OnInit, OnDestroy {
         break;
       case 'videoWatchHistory':
         this.loadVideoWatchHistory(this.activeUserId);
+        break;
+      case 'actionsTaken':
+        this.loadActionsTaken(this.activeUserId);
         break;
     }
   }
@@ -188,6 +213,37 @@ export class MyJourneyPage implements OnInit, OnDestroy {
     if (this.qualityReadsError) this.loadQualityReads(this.activeUserId);
     if (this.eqHistoryError) this.loadEqHistory(this.activeUserId);
     if (this.pollHistoryError) this.loadPollHistory(this.activeUserId);
+    if (this.actionsTakenError) this.loadActionsTaken(this.activeUserId);
+  }
+
+  /**
+   * Collapsed-by-default history lists (Quality Reads, Videos Watched,
+   * Actions Taken) — "See more" expands to the full fetched list instead of
+   * always rendering everything, so the page doesn't grow tall with several
+   * 10-item sections stacked before the next one is reachable.
+   */
+  get visibleQualityReads(): QualityReadEntry[] {
+    return this.qualityReadsExpanded ? this.qualityReads : this.qualityReads.slice(0, MyJourneyPage.COLLAPSED_LIST_SIZE);
+  }
+
+  get visibleVideoWatchHistory(): VideoWatchHistoryEntry[] {
+    return this.videoWatchHistoryExpanded ? this.videoWatchHistory : this.videoWatchHistory.slice(0, MyJourneyPage.COLLAPSED_LIST_SIZE);
+  }
+
+  get visibleRecentActions(): UserAction[] {
+    return this.actionsExpanded ? this.recentActions : this.recentActions.slice(0, MyJourneyPage.COLLAPSED_LIST_SIZE);
+  }
+
+  toggleQualityReadsExpanded(): void {
+    this.qualityReadsExpanded = !this.qualityReadsExpanded;
+  }
+
+  toggleVideoWatchHistoryExpanded(): void {
+    this.videoWatchHistoryExpanded = !this.videoWatchHistoryExpanded;
+  }
+
+  toggleActionsExpanded(): void {
+    this.actionsExpanded = !this.actionsExpanded;
   }
 
   private resetData(): void {
@@ -212,6 +268,14 @@ export class MyJourneyPage implements OnInit, OnDestroy {
     this.eqHistoryError = false;
     this.pollHistoryError = false;
     this.videoWatchHistoryError = false;
+    this.recentActions = [];
+    this.actionsTakenLoading = true;
+    this.actionsTakenError = false;
+    this.qualityReadsExpanded = false;
+    this.videoWatchHistoryExpanded = false;
+    this.actionsExpanded = false;
+    this.actionMetaCache = {};
+    this.actionStreakCache = {};
   }
 
   /**
@@ -237,7 +301,11 @@ export class MyJourneyPage implements OnInit, OnDestroy {
             pollsVoted: 0,
             lastEqScore: null,
             lastEqDate: null,
-            lastBlogReadDate: null
+            lastBlogReadDate: null,
+            totalActionsCompleted: 0,
+            uniqueActionsCompleted: 0,
+            actionsByElement: {},
+            lastActionAt: null
           };
           this.checkLoadingComplete();
         }
@@ -395,6 +463,34 @@ export class MyJourneyPage implements OnInit, OnDestroy {
           console.warn('Failed to load video watch history:', err);
           this.videoWatchHistoryLoading = false;
           this.videoWatchHistoryError = true;
+        }
+      });
+  }
+
+  /**
+   * Loads recent Take Action completions for the user (independent section).
+   * The tile counts (totalActionsCompleted, uniqueActionsCompleted,
+   * actionsByElement) come from `metrics` (loadMetrics() above) — this only
+   * fetches the recent-completions list, same split as every other section.
+   */
+  private loadActionsTaken(userId: string): void {
+    this.actionsTakenLoading = true;
+    this.actionsTakenError = false;
+
+    this.userActionService.getUserActionHistory(userId)
+      .pipe(
+        first(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (history) => {
+          this.recentActions = history.filter((a) => a.status === 'COMPLETE').slice(0, 10);
+          this.actionsTakenLoading = false;
+        },
+        error: (err) => {
+          console.warn('Failed to load actions taken:', err);
+          this.actionsTakenLoading = false;
+          this.actionsTakenError = true;
         }
       });
   }
@@ -575,6 +671,40 @@ export class MyJourneyPage implements OnInit, OnDestroy {
     const lastX = points[points.length - 1].x;
     const firstX = points[0].x;
     return `${linePoints} ${lastX},${bottomY} ${firstX},${bottomY}`;
+  }
+
+  /**
+   * Cache of resolved action catalogue entries, for the Actions Taken recent
+   * list — one read per actionId regardless of how many times the template
+   * reads title/repeatType/etc off it (shareReplay so a second `| async` on
+   * the same call doesn't trigger a second Firestore read).
+   */
+  private actionMetaCache: Record<string, Observable<ActionItem | null>> = {};
+
+  getActionMeta(actionId: string): Observable<ActionItem | null> {
+    if (!this.actionMetaCache[actionId]) {
+      this.actionMetaCache[actionId] = this.actionService.getAction(actionId).pipe(
+        catchError(() => of(null)),
+        shareReplay(1)
+      );
+    }
+    return this.actionMetaCache[actionId];
+  }
+
+  /** Cache of per-action streaks, for the DAILY entries in that same list. */
+  private actionStreakCache: Record<string, Observable<number>> = {};
+
+  getActionStreak(actionId: string): Observable<number> {
+    if (!this.activeUserId) {
+      return of(0);
+    }
+    if (!this.actionStreakCache[actionId]) {
+      this.actionStreakCache[actionId] = this.userActionService.getActionStreak(this.activeUserId, actionId).pipe(
+        catchError(() => of(0)),
+        shareReplay(1)
+      );
+    }
+    return this.actionStreakCache[actionId];
   }
 
   /** Cache of resolved image URLs */

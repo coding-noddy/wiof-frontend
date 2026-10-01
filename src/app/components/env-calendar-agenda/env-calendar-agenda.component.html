@@ -13,7 +13,7 @@
           <span class="agenda-day-date">{{ todayLabel }}</span>
         </div>
         <ul class="agenda-list" *ngIf="today.length; else noToday">
-          <li class="agenda-item" *ngFor="let day of today" (click)="openOccasion(today)">
+          <li class="agenda-item" *ngFor="let day of today" (click)="openOccasion(today, $event)">
             <span class="agenda-dot"></span>
             <span class="agenda-item-text">{{ day.occasion }}</span>
           </li>
@@ -31,7 +31,7 @@
           <span class="agenda-day-date">{{ day.date }}</span>
         </div>
         <ul class="agenda-list">
-          <li class="agenda-item" *ngFor="let occasion of day.occasions" (click)="openOccasion(day.occasions)">
+          <li class="agenda-item" *ngFor="let occasion of day.occasions" (click)="openOccasion(day.occasions, $event)">
             <span class="agenda-dot"></span>
             <span class="agenda-item-text">{{ occasion.occasion }}</span>
           </li>
