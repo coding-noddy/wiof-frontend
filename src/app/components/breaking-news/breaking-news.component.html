@@ -40,7 +40,7 @@
     </div>
 
     <div class="news-marquee">
-      <span class="news-marquee-label">Also today</span>
+      <span class="news-marquee-label">This Week</span>
       <div class="news-marquee-track">
         <div class="news-marquee-content" [ngStyle]="{ 'animation-duration': newsList.length * 10 + 's' }">
           <span *ngFor="let news of newsList">{{ news.headline }}</span>
