@@ -90,11 +90,17 @@ const routes: Routes = [
       import('./pages/videos/videos.module').then((m) => m.VideosPageModule)
   },
   {
-    path: 'discover-more',
+    path: 'our-purpose',
     loadChildren: () =>
-      import('./pages/discover-more/discover-more.module').then(
-        (m) => m.DiscoverMorePageModule
+      import('./pages/our-purpose/our-purpose.module').then(
+        (m) => m.OurPurposePageModule
       )
+  },
+  {
+    // Old URL — keep resolving for anyone with it bookmarked or indexed.
+    path: 'discover-more',
+    redirectTo: 'our-purpose',
+    pathMatch: 'full'
   },
   {
     path: 'privacy-policy',
@@ -116,9 +122,15 @@ const routes: Routes = [
       )
   },
   {
-    path: 'aboutus',
+    path: 'our-team',
     loadChildren: () =>
-      import('./pages/aboutus/aboutus.module').then((m) => m.AboutusPageModule)
+      import('./pages/our-team/our-team.module').then((m) => m.OurTeamPageModule)
+  },
+  {
+    // Old URL — keep resolving for anyone with it bookmarked or indexed.
+    path: 'aboutus',
+    redirectTo: 'our-team',
+    pathMatch: 'full'
   },
   {
     path: 'climatenlighten',
@@ -136,12 +148,19 @@ const routes: Routes = [
     canActivate: [PublicUserGuard]
   },
   {
-    path: 'my-saved',
+    path: 'my-library',
     loadChildren: () =>
-      import('./pages/my-saved/my-saved.module').then(
-        (m) => m.MySavedPageModule
+      import('./pages/my-library/my-library.module').then(
+        (m) => m.MyLibraryPageModule
       ),
     canActivate: [PublicUserGuard]
+  },
+  {
+    // Kept for bookmarks/old links/SEO, same pattern as the aboutus/discover-more
+    // redirects from the our-team/our-purpose rename.
+    path: 'my-saved',
+    redirectTo: 'my-library',
+    pathMatch: 'full'
   },
   {
     path: 'settings',
@@ -150,6 +169,18 @@ const routes: Routes = [
         (m) => m.SettingsPageModule
       ),
     canActivate: [PublicUserGuard]
+  },
+  {
+    // Standalone entry point for the Take Action hub (Featured / Browse by
+    // Element / Browse by Category / Recently Completed) — the page itself
+    // is shared with the element-nested element/:element/take-action routes
+    // below; this just gives it a real top-level, element-agnostic URL to
+    // link to (nav, home CTA, etc.) without requiring an element context.
+    path: 'take-action',
+    loadChildren: () =>
+      import('./pages/take-action/take-action.module').then(
+        (m) => m.TakeActionPageModule
+      )
   },
   {
     path: '**',
@@ -161,7 +192,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { anchorScrolling: 'enabled' })],
   exports: [RouterModule]
 })
 export class AppRoutingModule {}

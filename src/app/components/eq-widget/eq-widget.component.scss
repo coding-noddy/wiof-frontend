@@ -3,20 +3,28 @@
 $s: $spirit-color;
 $s-dark: darken($s, 22%);
 $s-mid: darken($s, 10%);
-$radius-card: 20px;
+$radius-card: 18px;
 
 // ── Card shell ───────────────────────────────────────────────────
+// $s (spirit-color) is itself an already-darkened teal SHADE, not a tint —
+// the old lighten($s,4%) barely moved it, making this the darkest/heaviest
+// of all the widget cards. Ivory (not pure warm-white) keeps this file's
+// glass-panel inner elements visibly popping against the card.
 .eq-widget-card {
   border-radius: $radius-card;
   overflow: hidden;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.10);
-  background-color: lighten($s, 4%);
+  background-color: var(--wiof-ivory);
+  border: 1.5px solid var(--wiof-brown-tint-40);
   display: flex;
   flex-direction: column;
   margin: 0;
 }
 
 // ── Header ───────────────────────────────────────────────────────
+// Solid Spirit (teal-shade-20) — matching the same flat brand color used
+// for Spirit everywhere else (video/in-focus headers). $s is already a
+// dark shade, so icon/title need light text here instead of the app-wide
+// default ink — same reasoning as .wiof-spirit elsewhere in the app.
 .eq-widget-header {
   background-color: $s;
   border-bottom: 2px solid rgba(255, 255, 255, 0.8);
@@ -25,6 +33,7 @@ $radius-card: 20px;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
+  color: $light-color;
 }
 
 .header-left {
@@ -35,7 +44,18 @@ $radius-card: 20px;
 
 .header-icon {
   font-size: 1.4rem;
-  color: $s-dark;
+  color: $light-color;
+}
+
+// Matches video-widget/in-focus-widget's own header title typography — the
+// sitewide .title-text default (20px Noto Sans) reads visibly bigger/heavier
+// than Aleo serif at the same nominal size.
+.title-text {
+  color: $light-color;
+  font-family: 'Aleo', serif !important;
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .about-toggle {
@@ -62,20 +82,22 @@ $radius-card: 20px;
 }
 
 // ── About panel ──────────────────────────────────────────────────
+// Height/overflow during open/close are owned entirely by the
+// expandCollapse animation trigger bound in the template (see
+// src/app/util/expand-collapse-animation.ts) — Angular measures this
+// element's real rendered height via '*' and animates to that exact value.
+// Earlier CSS-only attempts (fixed max-height, then grid-template-rows
+// 0fr/1fr) either guessed the wrong pixel value or forced a full layout
+// recalculation every frame since neither is a compositor-only property;
+// this is the approach Angular itself recommends for "animate to auto
+// height" and is the first of these that's actually smooth.
 .about-panel {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease, padding 0.3s ease;
   background: rgba(255, 255, 255, 0.55);
   border-bottom: 1px solid rgba($s-dark, 0.15);
-
-  &.open {
-    max-height: 120px;
-    padding: 0.75rem 1.1rem;
-  }
 }
 
 .about-text {
+  padding: 0.75rem 1.1rem;
   font-size: 0.85rem;
   color: $dark-color;
   line-height: 1.6;
@@ -143,12 +165,10 @@ $radius-card: 20px;
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.95);
   border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
   }
 }
 

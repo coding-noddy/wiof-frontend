@@ -21,109 +21,403 @@ $page-padding-mobile:  16px;
 }
 
 .hero {
-  background: linear-gradient(
-      180deg,
-      rgba(0, 56, 115, 0.5) 0%,
-      rgba(0, 56, 115, 0.35) 40%,
-      rgba(2, 24, 49, 0.6) 100%
-    ),
-    url("../../../assets/banners/home_banner.jpg") no-repeat center center;
-  background-size: cover;
-  color: #fff;
-  border-radius: 18px;
-  margin-bottom: 1.4rem;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.24);
+  width: 100%;
+  margin-bottom: 1.5rem;
+  background: var(--wiof-ivory) url('/assets/banners/home-hero.jpg') center / cover no-repeat;
+  color: var(--wiof-ink);
+  border-bottom: 1.5px solid var(--wiof-border);
   overflow: hidden;
   position: relative;
-  min-height: 380px;
+  // The banner art is a native 2048x768 (8:3) illustration. Sizing the box
+  // to that same ratio means `cover` needs zero vertical crop to fill it —
+  // the full height of the artwork shows, cropping only the sides on
+  // viewport widths away from ~1440px (min/max-height below override the
+  // ratio at the extremes: too narrow, it crops sides for a readable text
+  // height instead of squashing the hero; too wide, it caps how tall the
+  // band gets rather than growing without bound).
+  aspect-ratio: 8 / 3;
+  min-height: 420px;
+  max-height: 640px;
   display: flex;
-  align-items: center;
+  // Was centered — nudged up toward the top of the hero (.hero-copy's own
+  // padding already provides the gap from the edge) so the motto lands a
+  // little closer to eye line instead of sitting in the dead center.
+  align-items: flex-start;
+
+  @media (min-width: 768px) {
+    margin-bottom: 2.5rem;
+    min-height: 540px;
+  }
+
+  // At narrow widths `cover` crops the sides to fill the box (see the
+  // comment above) — centered cropping cuts evenly from both edges, but
+  // the illustration's more eventful content (sun, turbines, the tree,
+  // people) sits on the right, while the left is already dimmed under the
+  // text scrim. Biasing the crop right keeps more of that content visible
+  // instead of losing it evenly with the already-covered left side.
+  @media (max-width: 767px) {
+    background-position: right center;
+  }
+
+  // Soft ivory-to-transparent wash so the headline stays readable over the
+  // illustration without hiding the art.
+  .hero-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    // Mobile: top-to-bottom instead of left-to-right. The hero content is
+    // top-anchored (align-items: flex-start above) and nearly full-width on
+    // a narrow screen, so a horizontal wash left most of the actual text
+    // row only lightly covered while washing out banner area beside it that
+    // had no text over it anyway — opaque top fading toward a clear bottom
+    // matches where the text and the empty banner space actually are.
+    background: linear-gradient(180deg, var(--wiof-ivory) 0%, rgba(250, 245, 236, 0.92) 40%, rgba(250, 245, 236, 0.5) 65%, rgba(250, 245, 236, 0.12) 100%);
+    pointer-events: none;
+
+    // Tablet/desktop: back to the original left-to-right wash — content is
+    // narrower than the banner there, so a horizontal "text zone" fits.
+    @media (min-width: 768px) {
+      background: linear-gradient(100deg, var(--wiof-ivory) 0%, rgba(250, 245, 236, 0.85) 30%, rgba(250, 245, 236, 0.35) 55%, rgba(250, 245, 236, 0) 75%);
+    }
+
+    // Desktop: same tightened falloff as the element pages' hero scrim —
+    // the motto rarely reaches past ~55% of the banner's width even at
+    // common laptop widths, so the wash can clear by 60% instead of 75%
+    // and reveal more of the illustration without hurting legibility.
+    @media (min-width: 1024px) {
+      background: linear-gradient(100deg, var(--wiof-ivory) 0%, rgba(250, 245, 236, 0.88) 25%, rgba(250, 245, 236, 0.3) 45%, rgba(250, 245, 236, 0) 60%);
+    }
+  }
 
     .hero-copy {
+    position: relative;
+    z-index: 1;
     width: 100%;
-    max-width: 840px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
-    text-align: center;
-  }
-
-    .eyebrow {
-    margin-bottom: 0.6rem;
-    color: rgba(255, 255, 255, 0.9);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    font-size: 0.88rem;
-    font-weight: 700;
-  }
-
-    h1 {
-    font-size: 1.85rem;
-    font-weight: 800;
-    line-height: 1.06;
-    text-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
-    margin-bottom: 0.85rem;
+    max-width: 640px;
+    padding: 2.5rem 1.25rem 2rem;
+    text-align: left;
 
     @media (min-width: 768px) {
-      font-size: 2.6rem;
+      padding: 2.75rem 6vw 2rem;
+    }
+
+    // A touch more breathing room on desktop so the bigger motto below
+    // (bumped up a size step) has headroom to stay on one line per verse
+    // without the column itself forcing an early wrap.
+    @media (min-width: 1024px) {
+      max-width: 760px;
+    }
+  }
+
+  // Teal is already the headline's own dominant color below — an equally
+  // teal kicker blended into it instead of reading as a separate label.
+  // Brown + a short rule distinguishes "what this site is" (the kicker)
+  // from "what it does" (the motto), the way a kicker is meant to work.
+    .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    margin-bottom: 0.65rem;
+    color: var(--wiof-brown);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    // Smaller on mobile — at the tablet/desktop size (restored below) it
+    // read as oversized next to the now phone-sized motto beneath it.
+    font-size: 0.68rem;
+    font-weight: 700;
+    opacity: 0;
+    animation: heroLineIn 1.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 2px;
+      background: var(--wiof-brown);
+    }
+
+    // Standard phones (iPhone 16 class, ~390px+) get their own step instead
+    // of sharing the single small size tuned for the narrowest devices
+    // (iPhone SE etc.) — same reasoning as .hero-highlight/.hero-lead below.
+    @media (min-width: 390px) {
+      gap: 0.48em;
+      margin-bottom: 0.68rem;
+      font-size: 0.72rem;
+
+      &::before {
+        width: 22px;
+      }
+    }
+
+    // Tablet gets its own intermediate step rather than jumping straight to
+    // the desktop size — same reasoning as .hero-highlight/.hero-lead below.
+    @media (min-width: 768px) {
+      gap: 0.52em;
+      margin-bottom: 0.7rem;
+      letter-spacing: 0.16em;
+      font-size: 0.78rem;
+
+      &::before {
+        width: 24px;
+      }
     }
 
     @media (min-width: 1024px) {
-      font-size: 3.2rem;
+      gap: 0.6em;
+      margin-bottom: 0.75rem;
+      letter-spacing: 0.18em;
+      font-size: 0.88rem;
+
+      &::before {
+        width: 28px;
+      }
+    }
+  }
+
+    h1 {
+    margin: 0.5rem 0 0.85rem;
+  }
+
+  // Each verse ("Inspire through Creativity") is one line at every width —
+  // flex + baseline so the differently-sized first/middle/last words align
+  // naturally like a sentence, with wrap as a safety net rather than a
+  // relied-on behavior if a narrow viewport genuinely can't fit it.
+  .hero-line {
+    display: flex;
+    align-items: baseline;
+    // Was wrap-as-a-safety-net, but at the bumped-up font sizes a verse like
+    // "Inspire through Creativity" doesn't actually fit a typical phone's
+    // width, so it was wrapping mid-verse (often stranding the last word
+    // alone on its own line) — the actual cause of mobile feeling off.
+    // nowrap everywhere + a mobile-specific smaller size (below) keeps every
+    // verse on its one line at every width instead.
+    flex-wrap: nowrap;
+    column-gap: 0.25em;
+    row-gap: 0.1em;
+
+    @media (min-width: 768px) {
+      column-gap: 0.35em;
+    }
+    // Entrance animation — see the shared @keyframes + prefers-reduced-motion
+    // guard below .cta. Starts invisible so there's no flash of the final
+    // state before the animation (and its staggered delay) kicks in.
+    opacity: 0;
+    animation: heroLineIn 1.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+
+    &:nth-child(1) { animation-delay: 0.55s; }
+    &:nth-child(2) { animation-delay: 1.1s; }
+    &:nth-child(3) { animation-delay: 1.65s; }
+
+    &:not(:last-child) {
+      margin-bottom: 0.45rem;
+
+      @media (min-width: 768px) {
+        margin-bottom: 0.6rem;
+      }
+    }
+  }
+
+  // Small, quiet middle word — the first/last highlighted words are the
+  // ones meant to land. Refinement pass: same serif family as
+  // .hero-highlight (not the body sans), just unitalicized/lighter/lower
+  // opacity — reads as one coherent headline where weight/size/opacity do
+  // the differentiating, rather than the line mixing two unrelated
+  // typefaces mid-sentence.
+  .hero-lead {
+    font-family: 'Aleo', serif !important;
+    // Smaller than tablet/desktop specifically so "Inspire through
+    // Creativity" fits one line at nowrap on a phone-width screen instead
+    // of overflowing.
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--wiof-ink);
+    opacity: 0.68;
+
+    // Standard phones (iPhone 16 class, ~390px+) — the single small size
+    // below was tuned for the narrowest devices (iPhone SE etc.) and read
+    // as too small on anything wider.
+    @media (min-width: 390px) {
+      font-size: 0.85rem;
+    }
+
+    @media (min-width: 768px) {
+      font-size: 1.2rem;
+    }
+
+    @media (min-width: 1024px) {
+      font-size: 1.5rem;
+    }
+  }
+
+  // The three words WIOF's own mission statement is literally built from
+  // (see Our Purpose's "How We Started": "combining three aspects:
+  // Creativity, Knowledge, and Action") — Teal, not Marigold, since Marigold
+  // is reserved for the page's one primary CTA (.cta below). Italic ties
+  // into the same slogan already being set in italics as an emphasis device
+  // on the Our Purpose page, so the treatment reads as intentional brand
+  // voice rather than a one-off flourish. Both the first and last word of
+  // each verse get this treatment (not just the last), per direct product
+  // request — sized smaller than the old one-word-per-line version since
+  // three words now share a single line within .hero-copy's 640px column.
+  .hero-highlight {
+    // global.scss's sitewide reset (`*:not(ion-icon) { font-family: "Noto
+    // Sans" !important }`) targets this span directly, not just via
+    // inheritance from the Aleo h1 around it — needs its own !important to
+    // win, or it silently renders in the body font instead of the heading
+    // serif.
+    font-family: 'Aleo', serif !important;
+    // Smaller than tablet/desktop specifically so "Inspire through
+    // Creativity" fits one line at nowrap on a phone-width screen instead
+    // of overflowing.
+    font-size: 1.3rem;
+    line-height: 1.1;
+    color: var(--wiof-teal);
+    font-style: italic;
+    font-weight: 700;
+
+    // Standard phones (iPhone 16 class, ~390px+) — the single small size
+    // above was tuned for the narrowest devices (iPhone SE etc.) and read
+    // as too small on anything wider; nowrap on .hero-line (above) still
+    // holds at this size, verified against "Enlighten through Knowledge"
+    // (the longest verse) at 393px.
+    @media (min-width: 390px) {
+      font-size: 1.55rem;
+    }
+
+    @media (min-width: 768px) {
+      font-size: 2.3rem;
+    }
+
+    @media (min-width: 1024px) {
+      font-size: 2.75rem;
     }
   }
 
     .hero-text {
     margin: 0 auto 1.2rem;
     max-width: 700px;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--wiof-ink);
+    opacity: 0.75;
     font-size: 0.95rem;
     line-height: 1.6;
   }
 
     .cta {
     margin-top: 0.8rem;
-    padding: 12px 30px;
-    font-size: 0.96rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    // Smaller on mobile — the tablet/desktop size (restored below) read as
+    // oversized next to the now phone-sized motto above it.
+    padding: 9px 22px;
+    font-size: 0.82rem;
     font-weight: 700;
     border: none;
     border-radius: 999px;
-    background-color: #ffcd00;
-    color: #00234b;
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
+    background-color: var(--wiof-marigold);
+    color: var(--wiof-ink);
     cursor: pointer;
     transition: transform 0.18s ease, box-shadow 0.18s ease;
 
+    ion-icon {
+      font-size: 1.1em;
+    }
+
+    @media (min-width: 768px) {
+      padding: 12px 30px;
+      font-size: 0.96rem;
+    }
+    opacity: 0;
+    // Not the same fade-up as the text lines — this one grows out of the
+    // last line above it (smaller + higher + invisible, scaling/sliding
+    // down into its resting spot) rather than fading in from its own fixed
+    // position, so it reads as "emerging from Protect through Action" and
+    // inviting the next step, instead of just popping up on its own.
+    transform-origin: top center;
+    animation: ctaEmerge 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    // 3rd line (delay 1.65s + 1.7s duration) finishes settling at ~3.35s —
+    // a short ~0.4s pause after that before the button appears, instead of
+    // the longer 1.5s pause this had before the motto's own animation was
+    // slowed down further.
+    animation-delay: 3s;
+
     &:hover {
       transform: translateY(-1px);
-      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.16);
+    }
+  }
+
+  // Respect reduced-motion: show everything in its final state immediately
+  // instead of skipping straight to opacity:0 with no animation to resolve it.
+  @media (prefers-reduced-motion: reduce) {
+    .eyebrow, .hero-line, .cta {
+      animation: none;
+      opacity: 1;
     }
   }
 }
 
+@keyframes heroLineIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ctaEmerge {
+  from {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .section-block {
-  margin-top: 1rem;
+  margin-top: 3rem;
   padding: 0;
 }
 
 .section-header {
-  margin-bottom: 0.6rem;
+  margin-bottom: 1.75rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 0.15rem;
+  gap: 0.4rem;
 
   h2 {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-weight: 700;
-    color: #102f58;
+    color: var(--wiof-ink);
+    font-family: 'Aleo', serif;
+
+    @media (min-width: 768px) {
+      font-size: 2rem;
+    }
   }
 
   p {
     margin: 0;
-    color: #4a5975;
-    font-size: 0.92rem;
+    color: var(--wiof-ink);
+    opacity: 0.75;
+    font-size: 0.95rem;
+  }
+
+  p.eyebrow {
+    opacity: 1;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--wiof-teal);
   }
 }
 
@@ -137,44 +431,44 @@ $page-padding-mobile:  16px;
   }
 }
 
-.impact-row ion-grid {
-  --ion-grid-padding: 0;
-}
-
-.impact-row ion-row {
-  margin: 0 -0.5rem;
-  display: flex;
-  align-items: stretch;
-}
-
-.impact-row ion-col {
-  padding: 0 0.5rem;
-  margin-bottom: 1rem;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
-// Host elements fill the full col height
-.impact-row app-ngo-in-focus,
-.impact-row app-course-in-focus {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  margin: 0;
-  padding: 0;
-}
-
+.this-week-row ion-grid,
+.impact-row ion-grid,
 .bottom-row ion-grid {
   --ion-grid-padding: 0;
 }
 
+.this-week-row ion-row,
+.impact-row ion-row,
 .bottom-row ion-row {
   margin: 0 -0.5rem;
   display: flex;
   align-items: stretch;
 }
 
+// Breaking News and the Poll naturally want very different heights (a
+// fixed-height slider vs. a poll question + options + submit form). Give
+// them one shared height on desktop instead of stretching the whole row
+// to match whichever is taller — Breaking News fills it (its slider grows
+// to match), the poll scrolls internally past it (.polls-container already
+// has overflow:auto), so neither leaves a blank gap or forces the row huge.
+@media (min-width: 768px) {
+  .this-week-row ion-row {
+    height: 460px;
+  }
+
+  // align-items:stretch alone doesn't reliably size ion-col to the row's
+  // height here — the poll's percentage/flex chain resolves against an
+  // indeterminate ancestor during an earlier layout pass and locks in its
+  // full content height before stretch is applied, so the column ends up
+  // matching the poll's unclipped content instead of the row's 460px. A
+  // matching explicit height on the column itself avoids that timing gap.
+  .this-week-row ion-col {
+    height: 460px;
+  }
+}
+
+.this-week-row ion-col,
+.impact-row ion-col,
 .bottom-row ion-col {
   padding: 0 0.5rem;
   margin-bottom: 1rem;
@@ -183,18 +477,27 @@ $page-padding-mobile:  16px;
   min-height: 0;
 }
 
-// Host elements fill the full col height, same as impact-row
+// Host elements fill the full col height
+.this-week-row app-breaking-news,
+.this-week-row app-polls-widget,
+.impact-row app-ngo-in-focus,
+.impact-row app-course-in-focus,
 .bottom-row app-env-calender,
-.bottom-row app-polls-widget {
+.bottom-row app-env-calendar-agenda {
   display: flex;
   flex-direction: column;
   flex: 1;
+  // Flex items default to min-height:auto, which sizes them to their
+  // content's min-content height regardless of the flex-basis — without
+  // this, the poll's option list (unclipped) forced the whole This Week
+  // row to grow past its fixed height and spill into the Explore section.
+  min-height: 0;
   margin: 0;
   padding: 0;
 }
 
 ion-content {
-  --background: #f4f7fb;
+  --background: var(--wiof-ivory);
 }
 
 app-wiof-footer {
@@ -212,15 +515,17 @@ ion-row + ion-row {
 // ── Mobile consistency ────────────────────────────────────────────
 @media (max-width: 767px) {
   .section-block {
-    margin-top: 0.5rem;
+    margin-top: 2rem;
     padding: 0.25rem 0;
   }
 
+  .this-week-row ion-row,
   .impact-row ion-row,
   .bottom-row ion-row {
     margin: 0;
   }
 
+  .this-week-row ion-col,
   .impact-row ion-col,
   .bottom-row ion-col {
     padding: 0;
@@ -232,6 +537,7 @@ ion-row + ion-row {
   }
 
   .section-block + .section-block {
-    margin-top: 0.5rem;
+    margin-top: 2rem;
   }
 }
+

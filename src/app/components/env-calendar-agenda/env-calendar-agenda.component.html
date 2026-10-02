@@ -1,0 +1,44 @@
+<ion-card class="agenda-wrapper">
+  <ion-card-header class="agenda-header">
+    <ion-card-title class="agenda-title">Coming Up</ion-card-title>
+  </ion-card-header>
+  <ion-card-content class="agenda-content">
+    <div class="skeleton skeleton-card" *ngIf="isLoading"></div>
+    <div class="skeleton skeleton-card" *ngIf="isLoading"></div>
+
+    <ng-container *ngIf="!isLoading">
+      <div class="agenda-day">
+        <div class="agenda-day-heading">
+          <span class="agenda-day-label">Today</span>
+          <span class="agenda-day-date">{{ todayLabel }}</span>
+        </div>
+        <ul class="agenda-list" *ngIf="today.length; else noToday">
+          <li class="agenda-item" *ngFor="let day of today" (click)="openOccasion(today, $event)">
+            <span class="agenda-dot"></span>
+            <span class="agenda-item-text">{{ day.occasion }}</span>
+          </li>
+        </ul>
+        <ng-template #noToday>
+          <p class="agenda-empty">Nothing on the calendar today.</p>
+        </ng-template>
+      </div>
+
+      <div class="agenda-section-label" *ngIf="upcomingDays.length">Upcoming this week</div>
+
+      <div class="agenda-day" *ngFor="let day of upcomingDays">
+        <div class="agenda-day-heading">
+          <span class="agenda-day-label">{{ day.label }}</span>
+          <span class="agenda-day-date">{{ day.date }}</span>
+        </div>
+        <ul class="agenda-list">
+          <li class="agenda-item" *ngFor="let occasion of day.occasions" (click)="openOccasion(day.occasions, $event)">
+            <span class="agenda-dot"></span>
+            <span class="agenda-item-text">{{ occasion.occasion }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <p class="agenda-empty" *ngIf="!upcomingDays.length">Nothing else scheduled this week.</p>
+    </ng-container>
+  </ion-card-content>
+</ion-card>

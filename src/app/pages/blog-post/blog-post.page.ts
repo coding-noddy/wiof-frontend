@@ -17,6 +17,13 @@ export class BlogPostPage implements OnInit {
   public blogDetails: Observable<Blog>;
   expandedImageSrc: string | null = null;
   expandedImageAlt = '';
+  // Each element ('air', 'earth', ...) is its own literal top-level route
+  // (element/air, element/earth, ...), not a shared element/:element param
+  // route — there is no route param to read here. Parsed straight from the
+  // URL instead, the same approach take-action.page.ts already uses for
+  // this exact situation.
+  element = '';
+
   constructor(
     private route: ActivatedRoute,
     private blogService: BlogService,
@@ -25,6 +32,9 @@ export class BlogPostPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    const urlSegments = this.route.snapshot['_routerState'].url.split('/');
+    this.element = urlSegments[2] || '';
+
     this.route.paramMap.subscribe((params) => {
       if (params.has('blogId')) {
         const blogParam = params.get('blogId');
@@ -108,9 +118,14 @@ export class BlogPostPage implements OnInit {
     if (!htmlContent) {
       return 1000; // Default per design: 5-minute estimated read
     }
-    // Strip HTML tags and count words
-    const textContent = htmlContent.replace(/<[^>]*>/g, '');
-    const words = textContent.split(/\s+/).filter(word => word.length > 0);
+    // Split on tags rather than deleting them: the text between tags is only
+    // counted, never rendered, and treating each tag as a word boundary keeps
+    // "<p>one</p><p>two</p>" from collapsing into a single word.
+    const words = htmlContent
+      .split(/<[^>]*>/)
+      .join(' ')
+      .split(/\s+/)
+      .filter(word => word.length > 0);
     return words.length || 1000;
   }
 

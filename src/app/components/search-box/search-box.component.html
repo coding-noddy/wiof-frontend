@@ -1,0 +1,16 @@
+<div class="search-field">
+  <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+  <input
+    type="search"
+    class="search-input"
+    [placeholder]="placeholder"
+    [attr.aria-label]="ariaLabel"
+    autocomplete="off"
+    [ngModel]="value"
+    (ngModelChange)="onInput($event)"
+    (keydown.escape)="clear()"
+  />
+  <button type="button" class="search-clear" *ngIf="value" (click)="clear()" aria-label="Clear search">
+    <ion-icon name="close-circle"></ion-icon>
+  </button>
+</div>

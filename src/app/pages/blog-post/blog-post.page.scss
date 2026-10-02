@@ -1,7 +1,7 @@
 @import '../../wiof-custom-theming.scss';
 
 ion-content {
-  --background: #f8fafb;
+  --background: var(--wiof-ivory);
 }
 
 // ── Wrapper ──────────────────────────────────────────────────────
@@ -102,12 +102,53 @@ ion-content {
   padding: 1.5rem 1.25rem 3rem;
 }
 
-// ── Meta top (back button + read time) ───────────────────────────
+// ── Meta top (read time) — no longer shares this row with a back button,
+// now that navigation is the breadcrumb above the hero ────────────────
 .blog-meta-top {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-bottom: 1rem;
+}
+
+.page-breadcrumb-bar {
+  width: 100%;
+  padding: 1.1rem 1.25rem;
+  background: var(--wiof-warm-white);
+  border-top: 1.5px solid var(--wiof-border);
+  border-bottom: 1.5px solid var(--wiof-border);
+
+  @media (min-width: 768px) {
+    padding: 1.1rem 6vw;
+  }
+}
+
+.breadcrumb {
+  font-size: 0.9rem;
+  color: var(--wiof-ink);
+
+  a {
+    color: var(--wiof-ink);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .sep {
+    margin: 0 0.5rem;
+    opacity: 0.5;
+  }
+
+  .current {
+    font-weight: 700;
+    display: inline;
+    // Long blog titles as the final crumb — clip rather than wrap the bar
+    // to multiple lines.
+    max-width: 60vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+  }
 }
 
 .blog-read-time {
@@ -115,7 +156,7 @@ ion-content {
   align-items: center;
   gap: 4px;
   font-size: 0.85rem;
-  color: rgba(0, 0, 0, 0.5);
+  color: rgba(43, 36, 32, 0.55);
   font-weight: 500;
 
   ion-icon { font-size: 1rem; }
@@ -123,10 +164,10 @@ ion-content {
 
 // ── Title ────────────────────────────────────────────────────────
 .blog-title {
-  font-size: 2rem;
+  font-size: 2.25rem;
   font-weight: 800;
-  color: #10263c;
-  line-height: 1.25;
+  color: var(--wiof-ink);
+  line-height: 1.2;
   margin: 0 0 1rem;
 
   @media (max-width: 600px) {
@@ -163,7 +204,7 @@ ion-content {
 
 .blog-date {
   font-size: 0.82rem;
-  color: rgba(0, 0, 0, 0.5);
+  color: rgba(43, 36, 32, 0.55);
 }
 
 // ── Share button ─────────────────────────────────────────────────
@@ -173,9 +214,9 @@ ion-content {
   gap: 5px;
   padding: 6px 14px;
   border-radius: 999px;
-  border: 1.5px solid rgba(0, 0, 0, 0.12);
-  background: rgba(0, 0, 0, 0.03);
-  color: #2d2d2d;
+  border: 1.5px solid var(--wiof-warm-grey);
+  background: var(--wiof-warm-white);
+  color: var(--wiof-ink);
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
@@ -184,15 +225,14 @@ ion-content {
   ion-icon { font-size: 1rem; }
 
   &:hover {
-    background: rgba(0, 0, 0, 0.06);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    background: var(--wiof-ivory);
   }
 }
 
 // ── Divider ──────────────────────────────────────────────────────
 .blog-divider {
   border: none;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 1px solid var(--wiof-border);
   margin: 1.5rem 0;
 }
 
@@ -200,20 +240,20 @@ ion-content {
 .blog-content {
   font-size: 1.05rem;
   line-height: 1.85;
-  color: #2d3748;
+  color: rgba(43, 36, 32, 0.85);
   text-align: justify;
 
   // Style inline HTML content from CMS (::ng-deep needed: content is injected via [innerHTML])
   ::ng-deep {
     p { margin-bottom: 1.25rem; }
-    h2, h3, h4 { margin-top: 1.5rem; margin-bottom: 0.75rem; color: #10263c; }
+    h2, h3, h4 { margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--wiof-ink); }
     img { max-width: 100%; border-radius: 12px; margin: 1rem 0; }
-    a { color: $home-color-dark; font-weight: 600; }
+    a { color: var(--wiof-teal); font-weight: 600; }
     blockquote {
-      border-left: 4px solid $home-color;
+      border-left: 4px solid var(--wiof-marigold);
       padding-left: 1rem;
       margin: 1.5rem 0;
-      color: #4a5568;
+      color: rgba(43, 36, 32, 0.75);
       font-style: italic;
     }
     ul, ol { padding-left: 1.5rem; margin-bottom: 1.25rem; }
@@ -260,21 +300,22 @@ ion-content {
 
 // ── About author ─────────────────────────────────────────────────
 .blog-about-author {
-  background: rgba(0, 0, 0, 0.03);
-  border-radius: 14px;
+  background: var(--wiof-warm-white);
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  border-radius: 18px;
   padding: 1.25rem;
 
   h4 {
     margin: 0 0 0.5rem;
     font-size: 1rem;
     font-weight: 700;
-    color: #10263c;
+    color: var(--wiof-ink);
   }
 
   p {
     margin: 0;
     font-size: 0.92rem;
-    color: #475569;
+    color: rgba(43, 36, 32, 0.75);
     line-height: 1.7;
     text-align: justify;
   }

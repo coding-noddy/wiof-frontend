@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
+import { expandCollapseAnimation } from 'src/app/util/expand-collapse-animation';
 
 interface EQFact {
   text: string;
@@ -10,7 +11,8 @@ interface EQFact {
 @Component({
   selector: 'app-eq-widget',
   templateUrl: './eq-widget.component.html',
-  styleUrls: ['./eq-widget.component.scss']
+  styleUrls: ['./eq-widget.component.scss'],
+  animations: [expandCollapseAnimation]
 })
 export class EQWidgetComponent implements OnInit, OnDestroy {
 

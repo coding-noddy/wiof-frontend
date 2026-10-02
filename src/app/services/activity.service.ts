@@ -11,7 +11,7 @@ import { QualityReadEntry, EqHistoryEntry, PollHistoryEntry, VideoWatchHistoryEn
 
 export interface ActivityLogInput {
   userId: string;
-  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage' | 'daily_visit';
+  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage' | 'daily_visit' | 'action_completed';
   contentId?: string;
   widgetName?: string;
   score?: number;
@@ -29,7 +29,7 @@ export interface ActivityLogInput {
 export interface ActivityLogEntry {
   id?: string;
   userId: string;
-  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage' | 'daily_visit';
+  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage' | 'daily_visit' | 'action_completed';
   /** Schema version of this entry's shape — see ActivityService.SCHEMA_VERSION.
    *  Lets a future change to the event shape tell old and new entries apart
    *  instead of guessing from which optional fields happen to be present. */
@@ -59,6 +59,11 @@ export interface EngagementMetrics {
   lastEqScore: number | null;
   lastEqDate: Date | null;
   lastBlogReadDate: Date | null;
+  /** Take Action counters, maintained by onUserActionWritten (functions/index.js). */
+  totalActionsCompleted: number;
+  uniqueActionsCompleted: number;
+  actionsByElement: { [element: string]: number };
+  lastActionAt: Date | null;
 }
 
 /**
@@ -198,6 +203,34 @@ export class ActivityService {
       await this.writeDedupedEntry(`${userId}_daily_visit_${calendarDay}`, logEntry);
     } catch (error) {
       console.warn('Daily visit logging failed:', error);
+    }
+  }
+
+  /**
+   * Logs an action_completed analytics event. Deliberately NOT deduped,
+   * unlike blog_read/video_view/daily_visit: a DAILY repeat action completed
+   * 30 times should show 30 analytics events even though user_actions
+   * itself only ever holds one evolving doc per user+action. This is purely
+   * an analytics signal — user_actions (via UserActionService) remains the
+   * product source of truth for completion (Section 17 of the architecture
+   * doc); this event firing or failing never affects it.
+   * Failures are silently swallowed — they never disrupt the user experience.
+   */
+  async logActionCompleted(userId: string, actionId: string): Promise<void> {
+    try {
+      const calendarDay = toCalendarDay(new Date());
+      const logEntry: Omit<ActivityLogEntry, 'id'> = {
+        userId,
+        activityType: 'action_completed',
+        schemaVersion: ActivityService.SCHEMA_VERSION,
+        contentId: actionId,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        calendarDay
+      };
+
+      await this.firestore.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
+    } catch (error) {
+      console.warn('Action completed logging failed:', error);
     }
   }
 
@@ -414,7 +447,11 @@ export class ActivityService {
           pollsVoted: doc?.pollsVoted || 0,
           lastEqScore: doc?.lastEqScore ?? null,
           lastEqDate: doc?.lastEqDate?.toDate ? doc.lastEqDate.toDate() : null,
-          lastBlogReadDate: doc?.lastBlogReadDate?.toDate ? doc.lastBlogReadDate.toDate() : null
+          lastBlogReadDate: doc?.lastBlogReadDate?.toDate ? doc.lastBlogReadDate.toDate() : null,
+          totalActionsCompleted: doc?.totalActionsCompleted || 0,
+          uniqueActionsCompleted: doc?.uniqueActionsCompleted || 0,
+          actionsByElement: doc?.actionsByElement || {},
+          lastActionAt: doc?.lastActionAt?.toDate ? doc.lastActionAt.toDate() : null
         } as EngagementMetrics))
       );
   }

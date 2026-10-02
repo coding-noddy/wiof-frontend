@@ -31,11 +31,30 @@ export class SettingsPage implements OnDestroy {
     ELEMENTS.SPIRIT
   ];
 
+  // Brand color per element — teal at start/middle/end, marigold for Energy,
+  // brown for Earth (same rule used by life-elements/onboarding-overlay).
+  private readonly elementColorClasses: { [element: string]: string } = {
+    [ELEMENTS.EARTH]: 'color-brown',
+    [ELEMENTS.ENERGY]: 'color-marigold',
+    [ELEMENTS.AIR]: 'color-teal',
+    [ELEMENTS.WATER]: 'color-teal',
+    [ELEMENTS.SPIRIT]: 'color-teal'
+  };
+
+  elementColorClass(element: string): string {
+    return this.elementColorClasses[element] || 'color-teal';
+  }
+
   // Reactive form
   profileForm: FormGroup = new FormGroup({
-    displayName: new FormControl('', [
+    firstName: new FormControl('', [
       Validators.required,
-      Validators.maxLength(100),
+      Validators.maxLength(50),
+      noWhitespaceOnlyValidator
+    ]),
+    lastName: new FormControl('', [
+      Validators.required,
+      Validators.maxLength(50),
       noWhitespaceOnlyValidator
     ]),
     preferredElements: new FormControl([], [
@@ -110,9 +129,19 @@ export class SettingsPage implements OnDestroy {
       .subscribe({
         next: (profile) => {
           if (profile) {
-            // Populate form fields
+            // firstName/lastName didn't exist before this feature shipped —
+            // every profile created before then has only displayName (a
+            // single Google-provided full name). Back the split fields out
+            // of it the first time this page loads for that account rather
+            // than requiring a backend migration; once the user saves, the
+            // profile has real firstName/lastName and this path never
+            // triggers again for them.
+            const { firstName, lastName } = this.splitDisplayName(
+              profile.firstName, profile.lastName, profile.displayName
+            );
             this.profileForm.patchValue({
-              displayName: profile.displayName || '',
+              firstName,
+              lastName,
               preferredElements: profile.preferredElements || []
             });
 
@@ -135,6 +164,28 @@ export class SettingsPage implements OnDestroy {
           this.isLoading = false;
         }
       });
+  }
+
+  /**
+   * Resolves the form's starting firstName/lastName values: the real
+   * fields if the profile already has them, otherwise a best-effort split
+   * of the legacy single-field displayName (first word -> firstName, the
+   * rest -> lastName) so an existing user sees their name pre-filled
+   * instead of a blank form the first time they visit post-launch.
+   */
+  private splitDisplayName(
+    firstName: string | undefined,
+    lastName: string | undefined,
+    displayName: string | undefined
+  ): { firstName: string; lastName: string } {
+    if (firstName || lastName) {
+      return { firstName: firstName || '', lastName: lastName || '' };
+    }
+    const parts = (displayName || '').trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) {
+      return { firstName: '', lastName: '' };
+    }
+    return { firstName: parts[0], lastName: parts.slice(1).join(' ') };
   }
 
   /**
@@ -163,8 +214,10 @@ export class SettingsPage implements OnDestroy {
   }
 
   /**
-   * Validates the form, trims the display name, and saves both the
-   * display name and preferred elements to Firestore.
+   * Validates the form, trims the name fields, and saves firstName/lastName
+   * (plus the derived displayName, kept in sync for every other screen that
+   * still reads it — header, avatar dropdown, admin users list) and
+   * preferred elements to Firestore.
    */
   async onSave(): Promise<void> {
     if (this.profileForm.invalid) {
@@ -174,10 +227,16 @@ export class SettingsPage implements OnDestroy {
     this.isSaving = true;
 
     try {
-      const trimmedName = (this.profileForm.get('displayName')!.value as string).trim();
+      const trimmedFirstName = (this.profileForm.get('firstName')!.value as string).trim();
+      const trimmedLastName = (this.profileForm.get('lastName')!.value as string).trim();
+      const displayName = `${trimmedFirstName} ${trimmedLastName}`.trim();
       const selectedElements = this.profileForm.get('preferredElements')!.value as string[];
 
-      const sanitizedPayload = this.userProfileService.sanitizeUpdate({ displayName: trimmedName });
+      const sanitizedPayload = this.userProfileService.sanitizeUpdate({
+        firstName: trimmedFirstName,
+        lastName: trimmedLastName,
+        displayName
+      });
 
       await this.userProfileService.updateProfile(this.lastUid!, sanitizedPayload);
       await this.userProfileService.updatePreferredElements(this.lastUid!, selectedElements);
@@ -277,11 +336,51 @@ export class SettingsPage implements OnDestroy {
     this.previousElements = [...newValue];
   }
 
+  /** Returns true if `element` is currently one of the selected preferences. */
+  isElementSelected(element: string): boolean {
+    const selected: string[] = this.profileForm.get('preferredElements')!.value || [];
+    return selected.includes(element);
+  }
+
+  /**
+   * Pill-toggle equivalent of onElementsChange: adds/removes one element,
+   * enforcing the same min-1/max-5 rules the select used to enforce via
+   * isElementDisabled + the empty-selection revert above.
+   */
+  toggleElement(element: string): void {
+    const control = this.profileForm.get('preferredElements')!;
+    const current: string[] = control.value || [];
+    const isSelected = current.includes(element);
+
+    if (isSelected) {
+      if (current.length <= 1) {
+        return;
+      }
+      const next = current.filter((e) => e !== element);
+      control.setValue(next);
+      this.previousElements = [...next];
+    } else {
+      if (current.length >= 5) {
+        return;
+      }
+      const next = [...current, element];
+      control.setValue(next);
+      this.previousElements = [...next];
+    }
+  }
+
   /**
    * Returns the fallback initial shown when no profile photo is available.
    */
+  /** Live "First Last" preview shown beside the avatar while editing. */
+  get fullNamePreview(): string {
+    const first = (this.profileForm.get('firstName')!.value as string) || '';
+    const last = (this.profileForm.get('lastName')!.value as string) || '';
+    return `${first} ${last}`.trim();
+  }
+
   get avatarInitial(): string {
-    const name = (this.profileForm.get('displayName')!.value as string) || '';
+    const name = (this.profileForm.get('firstName')!.value as string) || '';
     if (name.trim().length > 0) {
       return name.trim().charAt(0).toUpperCase();
     }

@@ -1,4 +1,9 @@
-<nav class="section-nav" *ngIf="sections?.length > 0" [ngClass]="'theme-' + element">
+<nav
+  class="section-nav"
+  *ngIf="sections?.length > 0"
+  [ngClass]="'theme-' + element"
+  [class.section-nav-hidden]="!visible"
+>
   <div class="nav-scroll">
     <button
       *ngFor="let item of sections"

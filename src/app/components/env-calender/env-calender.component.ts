@@ -1,13 +1,29 @@
 import { Component, OnInit } from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { ModalController } from '@ionic/angular';
 import { EnvDay } from '../../models/env-cal-data';
 import { EnvcalService } from '../../services/envcal-service';
 import { EnvCalDialogComponent } from '../env-cal-dialog/env-cal-dialog.component';
+import { buildModalZoomAnimation } from '../../util/modal-zoom-animation';
 
 @Component({
   selector: 'app-env-calender',
   templateUrl: './env-calender.component.html',
-  styleUrls: ['./env-calender.component.scss']
+  styleUrls: ['./env-calender.component.scss'],
+  animations: [
+    // Re-runs on every monthKey change (prev/next both produce a new number),
+    // sliding the already-updated grid in from the direction the user
+    // navigated toward — a "changing slide" feel instead of a flat snap.
+    trigger('monthSlide', [
+      transition('* => *', [
+        style({ transform: 'translateX({{ enterX }}%)', opacity: 0 }),
+        animate(
+          '280ms cubic-bezier(0.22, 1, 0.36, 1)',
+          style({ transform: 'translateX(0%)', opacity: 1 })
+        )
+      ], { params: { enterX: 28 } })
+    ])
+  ]
 })
 export class EnvCalenderComponent implements OnInit {
   todayDate = new Date();
@@ -26,6 +42,7 @@ export class EnvCalenderComponent implements OnInit {
   }[] = [];
   EnvDays: EnvDay[];
   isLoading: boolean = false;
+  slideDirection: 'next' | 'prev' = 'next';
   months = [
     'January',
     'February',
@@ -82,8 +99,20 @@ export class EnvCalenderComponent implements OnInit {
   }
 
   changeMonth(delta: number) {
+    this.slideDirection = delta >= 0 ? 'next' : 'prev';
     const nextDate = new Date(this.currentYear, this.currentMonth + delta, 1);
     this.loadMonth(nextDate.getMonth(), nextDate.getFullYear());
+  }
+
+  get monthKey(): number {
+    return this.currentYear * 12 + this.currentMonth;
+  }
+
+  get monthSlideState() {
+    return {
+      value: this.monthKey,
+      params: { enterX: this.slideDirection === 'next' ? 28 : -28 }
+    };
   }
 
   renderCalendar() {
@@ -128,12 +157,19 @@ export class EnvCalenderComponent implements OnInit {
     this.occasionForDialog = null;
   }
 
-  async openOccasionDialog(occasion) {
+  async openOccasionDialog(occasion, event?: MouseEvent) {
+    // Capture the clicked day cell's position so the modal can zoom out from
+    // it on open and shrink back into it on close, instead of a generic fade.
+    const originEl = event?.currentTarget as HTMLElement;
+    const originRect = originEl?.getBoundingClientRect();
+
     const modal = await this.modalCtrl.create({
       component: EnvCalDialogComponent,
       componentProps: { occasionDetails: occasion },
       cssClass: 'env-cal-modal',
-      backdropDismiss: true
+      backdropDismiss: true,
+      enterAnimation: (baseEl) => buildModalZoomAnimation(baseEl, originRect, false),
+      leaveAnimation: (baseEl) => buildModalZoomAnimation(baseEl, originRect, true)
     });
     await modal.present();
   }

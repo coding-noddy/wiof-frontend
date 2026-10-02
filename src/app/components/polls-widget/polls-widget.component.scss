@@ -1,127 +1,311 @@
 @import '../../wiof-custom-theming.scss';
 
 .wiof-poll-card {
-  background-color: #fff;
+  background-color: var(--wiof-warm-white);
   height: 100%;
+  // Default flex is "0 1 auto" with min-height:auto, so without this the
+  // card just sized to its own content (all poll options unclipped) and
+  // overflowed past the space app-polls-widget was given, instead of
+  // filling it and letting .polls-container scroll internally.
+  flex: 1;
+  min-height: 0;
   margin: 0 !important;
   display: flex;
   flex-direction: column;
   border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.08);
+  border: 1.5px solid var(--wiof-brown-tint-40);
 }
 
-.wiof-polls-widget-card-header {
-  background-color: $home-color;
-  border-bottom: white 2px solid;
-  color: $dark-color;
+// ── Header — identity badge on warm-white, matching Breaking News'
+// header treatment instead of a solid marigold bar (marigold is an accent
+// colour only per brand guidelines, never a background fill).
+.poll-header {
+  display: flex;
+  align-items: center;
+  padding: 0.9rem 1.25rem;
+  background: var(--wiof-warm-white);
+  border-bottom: 1.5px solid var(--wiof-border);
+}
+
+.poll-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--wiof-teal);
+
+  ion-icon {
+    font-size: 1.05rem;
+  }
+}
+
+// ion-card-content is a plain block by default, so it sizes to its
+// content's height rather than filling the remaining card height — that
+// left .polls-container's height:100% with nothing definite to resolve
+// against, so its overflow:auto never kicked in and the option list just
+// grew the whole card. Chaining flex + min-height:0 here makes the fixed
+// card height (from .wiof-poll-card) actually reach .polls-container.
+// The scroll owner for the whole card body: previously only
+// .polls-container (the pre-vote form) had its own overflow:auto — the
+// post-vote state (.poll-voted-indicator + app-poll-result, both direct
+// children here) had no scroll fallback of its own, so once someone
+// voted, the confirmation banner plus the full results panel (repeated
+// question + a result bar per option) routinely ran taller than the
+// card's fixed height and got silently clipped by .wiof-poll-card's
+// overflow:hidden — "too big" was really "cut off with no way to see the
+// rest". Making this the single scroll owner covers every child state.
+ion-card-content.wiof-polls-widget-card-background {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  overflow-y: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--wiof-teal-tint-20) transparent;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--wiof-teal-tint-20);
+    border-radius: 999px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
 }
 
 .polls-container {
   background-color: transparent;
-  padding: 12px;
-  border-radius: 8px;
-  height: 100%;
-  overflow: auto;
+  padding: 1.1rem 1.25rem;
+  flex: 1;
+  min-height: 0;
+  // Scrolling is now owned by the parent ion-card-content above (which
+  // this container doesn't wrap in the voted state) — no independent
+  // overflow/scrollbar here to avoid a confusing nested scroll area.
 }
 
 .poll-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0.9rem;
+  height: 100%;
+  min-height: 0;
 }
 
-.poll-question .question-label {
-  font-size: 12px;
-  color: $dark-color;
-  font-weight: 600;
+// A long question used to scroll in a small fixed-height box — the actual
+// question (routinely the very last sentence of a multi-sentence lead-in,
+// per the real production content) got scrolled out of view *by default*,
+// with only a faint fade/scrollbar hinting there was more to see. Clamped
+// preview + an explicit "Read full question" toggle instead: nothing is
+// silently hidden, and there's no way to miss that more text exists.
+.poll-question-wrap {
+  // flex-shrink: 0, not 1 — as the only sibling here without a fixed size
+  // (options-list and the footer are both flex-shrink:0 already), this was
+  // the one thing the flexbox algorithm could squash to make everything
+  // fit its allotted space. But shrinking it doesn't shrink the *text*
+  // inside (overflow:visible, so the clamp/expand still needs its full
+  // natural height) — it just paints past its own squashed box straight
+  // over the options below. flex-shrink:0 keeps this at its real content
+  // height always; .polls-container's own overflow:auto (further up the
+  // chain) is what actually handles a genuinely-too-tall expanded question.
+  flex: 0 0 auto;
 }
 
-.poll-question .question-text {
-  font-size: 15px;
-  margin-top: 6px;
-  margin-bottom: 6px;
-  color: $home-text-color;
+.question-text {
+  // global.scss's sitewide reset (`*:not(ion-icon) { font-family: "Noto
+  // Sans" !important }`) targets this <p> directly — without !important
+  // here too, this Aleo declaration is silently dead and the question
+  // renders in the body font instead of the intended brand serif.
+  font-family: 'Aleo', serif !important;
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--wiof-ink);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  &.expanded {
+    display: block;
+    -webkit-line-clamp: unset;
+    overflow: visible;
+  }
+}
+
+.question-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.35rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--wiof-teal);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+
+  ion-icon {
+    font-size: 0.85rem;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .poll-options-list {
-  display: grid;
-  gap: 10px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
 }
 
 .poll-option {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
   cursor: pointer;
 }
 
 .poll-option input[type='radio'] {
-  display: none;
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
-.option-body {
-  background: linear-gradient(180deg, #ffffff 0%, #f8f9ff 100%);
-  border-radius: 12px;
-  padding: 12px 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border: 1px solid rgba($dark-color, 0.06);
-  transition: box-shadow 0.18s ease, transform 0.12s ease, border-color 0.12s ease;
-}
-
-.poll-option:hover .option-body {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 30px rgba(33, 49, 92, 0.04);
-}
-
-.poll-option input[type='radio']:checked + .option-body {
-  border-color: $home-color;
-  box-shadow: 0 4px 16px rgba(33, 49, 92, 0.08);
+// Custom radio indicator — a simple bordered dot that fills teal when
+// its sibling input is checked (input is visually hidden above, not
+// display:none, so the sibling-combinator + focus-visible below still work).
+.option-radio {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  background: var(--wiof-warm-white);
+  position: relative;
+  transition: border-color 0.15s ease;
 
   &::after {
-    content: '✓';
+    content: '';
     position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 22px;
-    height: 22px;
+    inset: 3px;
     border-radius: 50%;
-    background: $home-color;
-    color: #fff;
-    font-size: 0.7rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: var(--wiof-teal);
+    transform: scale(0);
+    transition: transform 0.15s ease;
   }
 }
 
+.poll-option input[type='radio']:checked ~ .option-radio {
+  border-color: var(--wiof-teal);
+
+  &::after { transform: scale(1); }
+}
+
+.poll-option input[type='radio']:focus-visible ~ .option-radio {
+  outline: 2px solid var(--wiof-teal-tint-20);
+  outline-offset: 2px;
+}
+
 .option-body {
-  position: relative;
+  flex: 1;
+  min-width: 0;
+  background: var(--wiof-ivory);
+  border-radius: 12px;
+  padding: 0.65rem 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border: 1.5px solid transparent;
+  transition: box-shadow 0.18s ease, transform 0.12s ease, border-color 0.12s ease, background 0.15s ease;
+}
+
+.poll-option:hover .option-body {
+  transform: translateY(-1px);
+}
+
+.poll-option input[type='radio']:checked ~ .option-body {
+  background: rgba(33, 153, 159, 0.08);
+  border-color: var(--wiof-teal-tint-40);
 }
 
 .option-text {
-  color: $dark-color;
+  color: var(--wiof-ink);
   font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.option-meta {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: stretch;
+  width: 34%;
+}
+
+.option-percent {
+  font-weight: 700;
+  color: var(--wiof-teal);
+  font-size: 0.78rem;
+  text-align: right;
+}
+
+.option-progress {
+  display: block;
+  background: rgba(43, 36, 32, 0.08);
+  height: 6px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.option-progress-fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--wiof-teal-tint-20), var(--wiof-teal));
+  transition: width 0.5s ease;
 }
 
 .poll-footer {
+  flex-shrink: 0;
   display: flex;
   gap: 12px;
   align-items: center;
   justify-content: space-between;
-  margin-top: 6px;
+  margin-top: auto;
+  padding-top: 0.3rem;
 }
 
 .poll-widget-name-input {
+  // Was $font-size-medium (18px) — an input at that size, with no
+  // min-width:0, has a browser-enforced intrinsic minimum content width
+  // wide enough that it wouldn't actually shrink to its 55% flex-basis on
+  // the card's real width. The oversized, non-shrinking input pushed
+  // .cta-and-error (and the submit button inside it) to the right, past
+  // the card's edge, clipped by .wiof-poll-card's overflow:hidden.
   flex: 1 1 55%;
+  min-width: 0;
   border-radius: 8px;
-  border: 1px solid rgba($dark-color, 0.08);
-  padding: 10px 12px;
-  height: 42px;
-  font-size: $font-size-medium;
-  background-color: $light-color;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  padding: 8px 12px;
+  height: 38px;
+  font-size: 0.85rem;
+  background-color: var(--wiof-warm-white);
 }
 
 .cta-and-error {
@@ -129,42 +313,42 @@
   flex-direction: column;
   align-items: flex-end;
   gap: 8px;
+  // Never shrink the CTA to make room for the email input — the input is
+  // the one that should give up width first (see min-width:0 above).
+  flex-shrink: 0;
 }
 
 .error {
-  color: rgb(243, 124, 124);
+  color: var(--ion-color-danger);
   font-size: 12px;
 }
 
-// Vote button — uses shared .wiof-primary-btn from theming, no override needed here
-
-.option-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: stretch;
-  margin-left: 12px;
-  width: 36%;
-}
-
-.option-percent {
+// Secondary-emphasis CTA (teal) rather than the shared marigold primary
+// button — a poll vote is a repeated, per-card action, not the page's one
+// primary call-to-action (brand guideline: one marigold CTA per page).
+.poll-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 999px;
+  padding: 0.6rem 1.3rem;
+  background: var(--wiof-teal);
+  color: var(--wiof-warm-white);
   font-weight: 700;
-  color: $home-color;
-  font-size: 13px;
-  text-align: right;
-}
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(33, 153, 159, 0.22);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 
-.option-progress {
-  background: rgba(16, 24, 40, 0.04);
-  height: 8px;
-  border-radius: 8px;
-  overflow: hidden;
-}
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(33, 153, 159, 0.3);
+  }
 
-.option-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, $home-color, darken($home-color, 6%));
-  transition: width 0.5s ease;
+  &:active {
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 600px) {
@@ -180,38 +364,51 @@
   .cta-and-error {
     align-items: stretch;
   }
+
+  .poll-submit-btn {
+    width: 100%;
+  }
 }
 
-// Voted indicator styles
+// ── Voted indicator ────────────────────────────────────────────────
+// Was a large vertically-centered block (flex:1, 48px icon, generous
+// padding) that filled the card's whole fixed height on its own — fine
+// when it was the only content, but app-poll-result renders right below
+// it once voted, so the two together made "you voted" read as a giant,
+// mostly-empty banner sitting on top of the real results. A compact
+// horizontal strip (small icon + inline text) reads as a confirmation,
+// not a whole screen, and leaves the results panel to do the rest.
 .poll-voted-indicator {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 24px 16px;
-  text-align: center;
-  gap: 12px;
+  gap: 10px;
+  padding: 0.85rem 1.25rem;
+  text-align: left;
+  flex-shrink: 0;
+  border-bottom: 1.5px solid var(--wiof-border);
 }
 
 .voted-icon {
-  width: 48px;
-  height: 48px;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4caf50, #2e7d32);
-  color: #fff;
-  font-size: 24px;
+  background: var(--wiof-teal);
+  color: var(--wiof-warm-white);
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  ion-icon { font-size: 1.05rem; }
 }
 
 .voted-message {
-  font-size: 15px;
-  color: $dark-color;
-  line-height: 1.5;
+  font-size: 0.88rem;
+  color: var(--wiof-ink);
+  line-height: 1.4;
 
   strong {
-    color: $home-color;
+    color: var(--wiof-teal);
   }
 }

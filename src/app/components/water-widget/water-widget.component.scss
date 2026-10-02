@@ -5,21 +5,26 @@ $w:       $water-color;           // rgb(223,243,255)
 $w-mid:   darken($w, 10%);
 $w-dark:  darken($w, 24%);
 $w-bg:    lighten($w, 3%);
-$radius-card: 20px;
+$radius-card: 18px;
 $radius-item: 14px;
 
 // ── Card shell ───────────────────────────────────────────────────
+// Was $w-bg (lighten($w,3%)) — a near-solid teal wash. Ivory (not pure
+// warm-white) keeps this file's rgba(255,255,255,X) glass-panel inner
+// elements visibly popping against the card instead of blending into white.
 .water-widget-card {
   border-radius: $radius-card;
   overflow: hidden;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.10);
-  background-color: $w-bg;
+  background-color: var(--wiof-ivory);
+  border: 1.5px solid var(--wiof-brown-tint-40);
   display: flex;
   flex-direction: column;
   margin: 0;
 }
 
 // ── Header ───────────────────────────────────────────────────────
+// Solid Water teal — matching the same flat brand color used for Water
+// everywhere else (video/in-focus headers), not a one-off lighten() tint.
 .water-widget-header {
   background-color: $w;
   border-bottom: 2px solid rgba(255, 255, 255, 0.8);
@@ -36,10 +41,24 @@ $radius-item: 14px;
   gap: 0.5rem;
 }
 
+// White text/icon on Water's header, matching video-widget/in-focus-widget's
+// own Water state — every element header goes white except Energy, whose
+// Marigold background stays too light for white text at any usable shade.
 .header-icon {
   font-size: 1.4rem;
-  color: $w-dark;
+  color: $light-color;
   flex-shrink: 0;
+}
+
+// Matches video-widget/in-focus-widget's own header title typography — the
+// sitewide .title-text default (20px Noto Sans, from wiof-custom-theming.scss)
+// reads visibly bigger/heavier than Aleo serif at the same nominal size.
+.title-text {
+  font-family: 'Aleo', serif !important;
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: $light-color;
 }
 
 .about-toggle {
@@ -66,20 +85,22 @@ $radius-item: 14px;
 }
 
 // ── About panel ──────────────────────────────────────────────────
+// Height/overflow during open/close are owned entirely by the
+// expandCollapse animation trigger bound in the template (see
+// src/app/util/expand-collapse-animation.ts) — Angular measures this
+// element's real rendered height via '*' and animates to that exact value.
+// Earlier CSS-only attempts (fixed max-height, then grid-template-rows
+// 0fr/1fr) either guessed the wrong pixel value or forced a full layout
+// recalculation every frame since neither is a compositor-only property;
+// this is the approach Angular itself recommends for "animate to auto
+// height" and is the first of these that's actually smooth.
 .about-panel {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease, padding 0.3s ease;
   background: rgba(255, 255, 255, 0.55);
   border-bottom: 1px solid rgba($w-dark, 0.15);
-
-  &.open {
-    max-height: 120px;
-    padding: 0.75rem 1.1rem;
-  }
 }
 
 .about-text {
+  padding: 0.75rem 1.1rem;
   font-size: 0.88rem;
   color: $dark-color;
   line-height: 1.6;
@@ -94,7 +115,6 @@ $radius-item: 14px;
   border: 1px solid rgba(255, 255, 255, 0.95);
   border-radius: 14px;
   padding: 0.7rem 0.9rem;
-  box-shadow: 0 2px 10px rgba(0, 100, 180, 0.07);
 }
 
 .rainfall-header {
@@ -107,6 +127,10 @@ $radius-item: 14px;
 }
 
 .rainfall-title {
+  // Same "widget section title" role as in-focus-widget's/video-widget's
+  // own title (already Aleo) — not a heading tag, so it needs its own
+  // explicit override to win over global.scss's universal Noto Sans reset.
+  font-family: 'Aleo', serif !important;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -163,7 +187,7 @@ $radius-item: 14px;
   &:hover { border-color: rgba($w-dark, 0.4); }
   &:focus {
     border-color: $w-dark;
-    box-shadow: 0 0 0 3px rgba(0, 100, 180, 0.1);
+    box-shadow: 0 0 0 3px rgba($w-dark, 0.1);
   }
 }
 
@@ -223,7 +247,7 @@ $radius-item: 14px;
 
   &:focus {
     border-color: $w-dark;
-    box-shadow: 0 0 0 3px rgba(0,100,180,.1);
+    box-shadow: 0 0 0 3px rgba($w-dark, .1);
   }
 }
 
@@ -419,7 +443,6 @@ $radius-item: 14px;
     background: $w-dark;
     border-color: $w-dark;
     color: #fff;
-    box-shadow: 0 4px 12px rgba(0, 80, 160, 0.18);
   }
 }
 
@@ -443,11 +466,9 @@ $radius-item: 14px;
   color: $dark-color;
   position: relative;
   transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
   &:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 24px rgba(0, 100, 180, 0.12);
     background: rgba(255, 255, 255, 0.95);
 
     .water-item-external { opacity: 1; }
@@ -497,6 +518,11 @@ $radius-item: 14px;
   width: 28px;
   height: 28px;
   object-fit: contain;
+  // These are plain black-line-on-transparent PNGs, not colorable SVGs —
+  // forces them fully black then flips black->white, so they read as a
+  // clean white icon against the blue circle instead of a dark line that
+  // barely stood out.
+  filter: brightness(0) invert(1);
 }
 
 .water-item-label {

@@ -1,6 +1,11 @@
 <div class="wiof-env-calendar-dialog">
   <div *ngIf="occasionDetails; else loading">
-    <swiper-container #swiperCal [attr.slides-per-view]="1" [attr.space-between]="10">
+    <swiper-container
+      #swiperCal
+      [attr.slides-per-view]="1"
+      [attr.space-between]="10"
+      (swiperslidechange)="activeIndex = swiperCal.swiper.activeIndex"
+    >
       <swiper-slide *ngFor="let occasn of occasionDetails.occasion; let i = index">
         <ion-card class="occasion-card">
 
@@ -53,6 +58,13 @@
               <a class="wiof-primary-link" target="_blank" [href]="occasn.link">
                 Know More
               </a>
+            </div>
+            <div class="occasion-dots" *ngIf="showNavigation">
+              <span
+                *ngFor="let o of occasionDetails.occasion; let dotIndex = index"
+                class="occasion-dot"
+                [class.active]="dotIndex === activeIndex"
+              ></span>
             </div>
           </ion-card-content>
 

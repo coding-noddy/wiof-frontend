@@ -7,7 +7,11 @@
  * the default WIOF meta tags.
  */
 
-const functions = require('firebase-functions');
+// firebase-functions v5+ points the default export at the v2 API, which
+// doesn't have .region().https.onCall/.firestore.document() — every trigger
+// in this file uses that v1-style API, so import it explicitly to keep them
+// working after the upgrade (see functions/package.json).
+const functions = require('firebase-functions/v1');
 const admin = require('firebase-admin');
 
 admin.initializeApp();
@@ -37,6 +41,10 @@ function isCrawler(userAgent) {
   return CRAWLER_AGENTS.some(agent => userAgent.includes(agent));
 }
 
+// Default share image for this project's own hosting site — never another
+// project's (production must not point crawlers at the staging site).
+const FALLBACK_IMAGE_URL = `https://${process.env.GCLOUD_PROJECT || 'wiof-production'}.web.app/assets/banners/home_banner.jpg`;
+
 /**
  * Get the download URL for a blog image from Firebase Storage
  * Uses the public download URL format (requires Storage rules to allow public read)
@@ -49,7 +57,7 @@ async function getImageUrl(imageName) {
     // Check if file exists
     const [exists] = await file.exists();
     if (!exists) {
-      return 'https://wiof-staging.web.app/assets/banners/home_banner.jpg';
+      return FALLBACK_IMAGE_URL;
     }
 
     // Use the public Firebase Storage URL format (no signed URL needed)
@@ -58,7 +66,7 @@ async function getImageUrl(imageName) {
     return `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodedPath}?alt=media`;
   } catch (e) {
     console.error('Image URL error:', e.message);
-    return 'https://wiof-staging.web.app/assets/banners/home_banner.jpg'; // fallback
+    return FALLBACK_IMAGE_URL;
   }
 }
 
@@ -135,6 +143,11 @@ function generateMetaHtml(blog, imageUrl, originalUrl) {
  */
 const REGION = process.env.GCLOUD_PROJECT === 'wiof-staging' ? 'asia-south1' : 'us-central1';
 
+// socialMetaTags is the exception: firebase.json's Hosting rewrite is shared
+// by both projects and names a single function region, so this one function
+// lives in the same region everywhere. Keep in sync with firebase.json.
+const SOCIAL_META_TAGS_REGION = 'us-central1';
+
 /**
  * Structured error logging for Cloud Functions — Foundation Hardening Plan
  * v4 §11 ("operational analytics": function failures, failed writes, auth
@@ -200,13 +213,13 @@ function withTriggerErrorLogging(functionName, handler) {
 /**
  * User profile system-managed fields
  * ===================================
- * loginCount, lastLogin, daysVisited, currentStreak and savedBlogsCount are
- * engagement counters, not user preferences — a client that could set them
- * directly could forge its own streak/login history. These four functions
- * are the only path that may write them; firestore.rules denies `create` on
- * `users/{uid}` entirely and excludes these fields from the allowed `update`
- * key set, so the Admin SDK writes below (which bypass rules) are the only
- * way any of these fields change.
+ * loginCount, lastLogin, daysVisited, currentStreak, longestStreak and
+ * savedBlogsCount are engagement counters, not user preferences — a client
+ * that could set them directly could forge its own streak/login history.
+ * These four functions are the only path that may write them; firestore.rules
+ * denies `create` on `users/{uid}` entirely and excludes these fields from
+ * the allowed `update` key set, so the Admin SDK writes below (which bypass
+ * rules) are the only way any of these fields change.
  */
 
 /** Mirrors user-profile.service.ts's toCalendarDay() — kept in sync manually since this runs in a separate Node runtime. */
@@ -263,6 +276,7 @@ exports.createUserProfile = functions
       loginCount: 1,
       daysVisited: 1,
       currentStreak: 1,
+      longestStreak: 1,
       savedBlogsCount: 0
     });
 
@@ -328,8 +342,14 @@ exports.recordUserVisit = functions
 
       if (today !== lastDay) {
         const daysDiff = diffCalendarDays(today, lastDay);
+        // Computed as a plain number (not FieldValue.increment) because
+        // longestStreak needs the actual resulting value to compare against —
+        // safe here since we already hold `profile` from this same transaction's
+        // read, so there's no lost-update race to guard against.
+        const newStreak = daysDiff === 1 ? (profile.currentStreak || 0) + 1 : 1;
         update.daysVisited = admin.firestore.FieldValue.increment(1);
-        update.currentStreak = daysDiff === 1 ? admin.firestore.FieldValue.increment(1) : 1;
+        update.currentStreak = newStreak;
+        update.longestStreak = Math.max(profile.longestStreak || 0, newStreak);
       }
 
       tx.update(userRef, update);
@@ -406,6 +426,7 @@ exports.resetEngagementData = functions
       loginCount: 0,
       daysVisited: 0,
       currentStreak: 0,
+      longestStreak: 0,
       savedBlogsCount: 0,
       lastLogin: admin.firestore.FieldValue.serverTimestamp()
     });
@@ -529,14 +550,88 @@ exports.onActivityLogCreated = functions
     return null;
   }));
 
+const KNOWN_ELEMENTS = new Set(['air', 'water', 'earth', 'energy', 'spirit']);
+
+/**
+ * Maintains the Take Action counters on `user_metrics/{uid}`
+ * (totalActionsCompleted, uniqueActionsCompleted, actionsByElement,
+ * lastActionAt) from `user_actions` writes — the client never increments
+ * these directly (user_metrics is write:false for clients; see
+ * onActivityLogCreated above for why this is the established pattern here).
+ *
+ * user_actions is an evolving doc (unlike activity_log's write-once events),
+ * so this is an onWrite trigger keyed off completionCount rather than an
+ * onCreate: a "completion event" is any write where completionCount
+ * increased — covers both a first-ever completion (create or IN_PROGRESS ->
+ * COMPLETE update) and a repeat completion. Each write credits exactly one
+ * completion (firestore.rules only allow completionCount to step by +1).
+ */
+exports.onUserActionWritten = functions
+  .region(REGION)
+  .firestore.document('user_actions/{docId}')
+  .onWrite(withTriggerErrorLogging('onUserActionWritten', async (change) => {
+    if (!change.after.exists) {
+      return null; // no client delete path exists; nothing to reconcile
+    }
+
+    const after = change.after.data() || {};
+    const before = change.before.exists ? change.before.data() : null;
+    const uid = after.userId;
+    if (!uid) {
+      return null;
+    }
+
+    const beforeCount = (before && before.completionCount) || 0;
+    const afterCount = after.completionCount || 0;
+    if (afterCount <= beforeCount) {
+      return null; // not a new completion (e.g. just an IN_PROGRESS start)
+    }
+    // firestore.rules only let a client write +1 per completion; capping
+    // here too means a rules regression (or a hand-edited doc) can never
+    // credit more than one completion per write.
+    const delta = 1;
+
+    const update = {
+      totalActionsCompleted: admin.firestore.FieldValue.increment(delta),
+      lastActionAt: admin.firestore.FieldValue.serverTimestamp()
+    };
+
+    // Unique count only grows on an action's very first completion, not on
+    // DAILY repeats of an action already completed before.
+    if (beforeCount === 0) {
+      update.uniqueActionsCompleted = admin.firestore.FieldValue.increment(1);
+    }
+
+    // A nested map, not `actionsByElement.${element}` keys: set() with merge
+    // treats a dotted key as one literal field name, not a path (only
+    // update() reads dots as paths), and the app reads the nested map.
+    const elements = Array.isArray(after.elementIdsSnapshot) ? after.elementIdsSnapshot : [];
+    const byElement = {};
+    new Set(elements).forEach((element) => {
+      if (KNOWN_ELEMENTS.has(element)) {
+        byElement[element] = admin.firestore.FieldValue.increment(delta);
+      }
+    });
+    if (Object.keys(byElement).length > 0) {
+      update.actionsByElement = byElement;
+    }
+
+    await db.collection('user_metrics').doc(uid).set(update, { merge: true });
+    return null;
+  }));
+
 /**
  * One-time admin-triggered backfill: recomputes user_metrics for every user
- * from the full activity_log history. Needed because onActivityLogCreated
- * only aggregates events created after it was deployed. Unlike the trigger,
- * this dedupes blog_read/video_view by contentId explicitly (via a Set)
- * rather than relying on one-create-per-key, since historical data predates
- * today's deterministic-ID dedup fix and could in rare cases already contain
- * a race-condition duplicate from the old query-before-write pattern.
+ * from the full activity_log + user_actions history. Needed because
+ * onActivityLogCreated/onUserActionWritten only aggregate events from the
+ * point they were deployed onward — this catches anything that happened
+ * before that (including onUserActionWritten's own late deployment, which
+ * left every pre-existing Take Action completion uncounted). Unlike the
+ * triggers, this dedupes blog_read/video_view by contentId explicitly (via
+ * a Set) rather than relying on one-create-per-key, since historical data
+ * predates today's deterministic-ID dedup fix and could in rare cases
+ * already contain a race-condition duplicate from the old
+ * query-before-write pattern.
  * Admin-gated via the `admins` collection, checked with the Admin SDK.
  */
 exports.backfillUserMetrics = functions
@@ -551,7 +646,10 @@ exports.backfillUserMetrics = functions
       throw new functions.https.HttpsError('permission-denied', 'Admin privileges required.');
     }
 
-    const snapshot = await db.collection('activity_log').get();
+    const [activitySnapshot, actionsSnapshot] = await Promise.all([
+      db.collection('activity_log').get(),
+      db.collection('user_actions').get()
+    ]);
     const perUser = new Map();
 
     const isNewer = (a, b) => {
@@ -560,12 +658,7 @@ exports.backfillUserMetrics = functions
       return a.toMillis() > b.toMillis();
     };
 
-    snapshot.forEach((doc) => {
-      const entry = doc.data();
-      const uid = entry.userId;
-      if (!uid) {
-        return;
-      }
+    const getUser = (uid) => {
       if (!perUser.has(uid)) {
         perUser.set(uid, {
           blogsRead: new Set(),
@@ -574,10 +667,23 @@ exports.backfillUserMetrics = functions
           pollsVoted: 0,
           lastEqScore: null,
           lastEqDate: null,
-          lastBlogReadDate: null
+          lastBlogReadDate: null,
+          totalActionsCompleted: 0,
+          uniqueActionsCompleted: 0,
+          actionsByElement: {},
+          lastActionAt: null
         });
       }
-      const u = perUser.get(uid);
+      return perUser.get(uid);
+    };
+
+    activitySnapshot.forEach((doc) => {
+      const entry = doc.data();
+      const uid = entry.userId;
+      if (!uid) {
+        return;
+      }
+      const u = getUser(uid);
 
       switch (entry.activityType) {
         case 'blog_read':
@@ -602,22 +708,57 @@ exports.backfillUserMetrics = functions
       }
     });
 
+    // Mirrors onUserActionWritten's own counting rules: totalActionsCompleted
+    // sums every completion (DAILY repeats included), uniqueActionsCompleted
+    // only counts an action once regardless of repeat completions.
+    actionsSnapshot.forEach((doc) => {
+      const entry = doc.data();
+      const uid = entry.userId;
+      const completionCount = entry.completionCount || 0;
+      if (!uid || completionCount <= 0) {
+        return;
+      }
+      const u = getUser(uid);
+      u.totalActionsCompleted += completionCount;
+      u.uniqueActionsCompleted += 1;
+      if (isNewer(entry.lastCompletedAt, u.lastActionAt)) {
+        u.lastActionAt = entry.lastCompletedAt;
+      }
+      const elements = Array.isArray(entry.elementIdsSnapshot) ? entry.elementIdsSnapshot : [];
+      elements.forEach((element) => {
+        if (typeof element === 'string' && element) {
+          u.actionsByElement[element] = (u.actionsByElement[element] || 0) + completionCount;
+        }
+      });
+    });
+
     const uids = Array.from(perUser.keys());
     let batch = db.batch();
     let opCount = 0;
 
     for (const uid of uids) {
       const u = perUser.get(uid);
-      batch.set(db.collection('user_metrics').doc(uid), {
-        blogsRead: u.blogsRead.size,
-        videosWatched: u.videosWatched.size,
-        videosCompleted: u.videosCompleted,
-        pollsVoted: u.pollsVoted,
-        lastEqScore: u.lastEqScore,
-        lastEqDate: u.lastEqDate,
-        lastBlogReadDate: u.lastBlogReadDate,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp()
-      });
+      // merge:true — this doc is also written incrementally by
+      // onActivityLogCreated/onUserActionWritten; a plain set() here would
+      // wipe out any field this backfill doesn't itself compute.
+      batch.set(
+        db.collection('user_metrics').doc(uid),
+        {
+          blogsRead: u.blogsRead.size,
+          videosWatched: u.videosWatched.size,
+          videosCompleted: u.videosCompleted,
+          pollsVoted: u.pollsVoted,
+          lastEqScore: u.lastEqScore,
+          lastEqDate: u.lastEqDate,
+          lastBlogReadDate: u.lastBlogReadDate,
+          totalActionsCompleted: u.totalActionsCompleted,
+          uniqueActionsCompleted: u.uniqueActionsCompleted,
+          actionsByElement: u.actionsByElement,
+          lastActionAt: u.lastActionAt,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        },
+        { merge: true }
+      );
       opCount++;
       if (opCount === 450) {
         await batch.commit();
@@ -776,7 +917,7 @@ exports.checkSubscriberExists = functions
   }));
 
 exports.socialMetaTags = functions
-  .region(REGION)
+  .region(SOCIAL_META_TAGS_REGION)
   .runWith({ memory: '256MB', timeoutSeconds: 30 })
   .https.onRequest(async (req, res) => {
   const userAgent = req.headers['user-agent'] || '';
@@ -790,7 +931,10 @@ exports.socialMetaTags = functions
       const indexUrl = `https://${req.hostname}/index.html`;
       https.get(indexUrl, (proxyRes) => {
         res.set('Content-Type', 'text/html');
-        res.set('Cache-Control', 'public, max-age=600');
+        // Browsers always revalidate (max-age=0) so nobody keeps an index.html
+        // pointing at hashed bundles a newer deploy removed; the CDN still
+        // caches it (s-maxage), and Hosting purges that cache on every deploy.
+        res.set('Cache-Control', 'public, max-age=0, s-maxage=600');
         proxyRes.pipe(res);
       }).on('error', () => {
         res.status(500).send('Error loading page');

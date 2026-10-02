@@ -103,6 +103,16 @@ describe('users/{userId}', () => {
     );
   });
 
+  it('lets the owner update firstName/lastName (Settings page name split)', async () => {
+    await seed((db) => db.collection('users').doc('alice').set(validProfile('alice')));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertSucceeds(
+      db.collection('users').doc('alice').update({
+        firstName: 'Alice', lastName: 'Updated', displayName: 'Alice Updated'
+      })
+    );
+  });
+
   it('denies the owner changing their own role via update', async () => {
     await seed((db) => db.collection('users').doc('alice').set(validProfile('alice')));
     const db = testEnv.authenticatedContext('alice').firestore();
@@ -554,6 +564,529 @@ describe('Subscriptions/{id}', () => {
     });
     const db = testEnv.authenticatedContext('root').firestore();
     await assertSucceeds(db.collection('Subscriptions').get());
+  });
+});
+
+describe('actions/{actionId} (Take Action catalogue — same isAdmin() gate as Blogs)', () => {
+  it('lets anyone, including unauthenticated, read the catalogue', async () => {
+    await seed((db) => db.collection('actions').doc('switch-off-lights').set({ title: 'Switch Off Lights', isActive: true }));
+    const db = testEnv.unauthenticatedContext().firestore();
+    await assertSucceeds(db.collection('actions').doc('switch-off-lights').get());
+  });
+
+  it('lets anyone read a deactivated action too — existing user_actions history must still resolve it', async () => {
+    await seed((db) => db.collection('actions').doc('old-action').set({ title: 'Old Action', isActive: false }));
+    const db = testEnv.unauthenticatedContext().firestore();
+    await assertSucceeds(db.collection('actions').doc('old-action').get());
+  });
+
+  it('denies a non-admin write', async () => {
+    const db = testEnv.authenticatedContext('mallory').firestore();
+    await assertFails(db.collection('actions').doc('hacked-action').set({ title: 'Hacked' }));
+  });
+
+  it('lets an admin create and edit an action', async () => {
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    const db = testEnv.authenticatedContext('root').firestore();
+    await assertSucceeds(db.collection('actions').doc('new-action').set({ title: 'New Action', isActive: true }));
+  });
+
+  it('lets an admin deactivate (not delete) an action', async () => {
+    await seed(async (db) => {
+      await db.collection('admins').doc('root').set({ role: 'admin' });
+      await db.collection('actions').doc('action-1').set({ title: 'Action 1', isActive: true });
+    });
+    const db = testEnv.authenticatedContext('root').firestore();
+    await assertSucceeds(db.collection('actions').doc('action-1').update({ isActive: false }));
+  });
+});
+
+describe('hero_videos/{slotId} (admin-managed hero video per element page)', () => {
+  const valid = { title: 'Rediscover our Planet Earth', videoId: 'ghkQoJoipbM' };
+
+  it('lets anyone, including unauthenticated, read a slot', async () => {
+    await seed((db) => db.collection('hero_videos').doc('earth').set(valid));
+    const db = testEnv.unauthenticatedContext().firestore();
+    await assertSucceeds(db.collection('hero_videos').doc('earth').get());
+  });
+
+  it('denies a non-admin write', async () => {
+    const db = testEnv.authenticatedContext('mallory').firestore();
+    await assertFails(db.collection('hero_videos').doc('earth').set(valid));
+  });
+
+  it('lets an admin set a known slot', async () => {
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    const db = testEnv.authenticatedContext('root').firestore();
+    await assertSucceeds(db.collection('hero_videos').doc('our-purpose').set(valid));
+  });
+
+  it('denies an admin write to an unknown slot id', async () => {
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    const db = testEnv.authenticatedContext('root').firestore();
+    await assertFails(db.collection('hero_videos').doc('home').set(valid));
+  });
+
+  it('denies a full URL instead of an 11-char video ID', async () => {
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    const db = testEnv.authenticatedContext('root').firestore();
+    await assertFails(
+      db.collection('hero_videos').doc('earth').set({ ...valid, videoId: 'https://youtu.be/ghkQoJoipbM' })
+    );
+  });
+
+  it('denies an empty title', async () => {
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    const db = testEnv.authenticatedContext('root').firestore();
+    await assertFails(db.collection('hero_videos').doc('earth').set({ ...valid, title: '' }));
+  });
+});
+
+describe('user_actions/{userActionId} (product source of truth for completion)', () => {
+  // Mirrors toCalendarDay() in activity.service.ts (client-local date).
+  function calendarDay(offsetDays = 0) {
+    const d = new Date();
+    d.setDate(d.getDate() + offsetDays);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  function seedAction(db, id, overrides = {}) {
+    const data = {
+      title: id,
+      isActive: true,
+      repeatType: 'REPEATABLE',
+      elementIds: ['earth', 'water'],
+      version: 2,
+      ...overrides
+    };
+    Object.keys(data).forEach((k) => data[k] === undefined && delete data[k]);
+    return db.collection('actions').doc(id).set(data);
+  }
+
+  function seedGuard(db, actionId, day, uid = 'alice') {
+    return db.collection('user_action_completions').doc(`${uid}_${actionId}_${day}`).set({
+      userId: uid, actionId, calendarDay: day, createdAt: new Date()
+    });
+  }
+
+  // The exact create shape UserActionService.startAction() writes.
+  function validStart(overrides = {}) {
+    return {
+      userId: 'alice',
+      actionId: 'action-1',
+      status: 'IN_PROGRESS',
+      startedAt: serverTimestamp(),
+      completedAt: null,
+      completionCount: 0,
+      lastCompletedAt: null,
+      completionMethod: 'SELF_REPORTED',
+      elementIdsSnapshot: ['earth', 'water'],
+      actionVersion: 2,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+      ...overrides
+    };
+  }
+
+  // The exact create shape UserActionService.writeCompletion() writes.
+  function validComplete(overrides = {}) {
+    return validStart({
+      status: 'COMPLETE',
+      completedAt: serverTimestamp(),
+      completionCount: 1,
+      lastCompletedAt: serverTimestamp(),
+      ...overrides
+    });
+  }
+
+  // Already-stored doc state, for update tests (seeded with rules disabled).
+  function storedDoc(overrides = {}) {
+    return {
+      userId: 'alice',
+      actionId: 'action-1',
+      status: 'COMPLETE',
+      startedAt: new Date(),
+      completedAt: new Date(),
+      completionCount: 1,
+      lastCompletedAt: new Date(),
+      completionMethod: 'SELF_REPORTED',
+      elementIdsSnapshot: ['earth', 'water'],
+      actionVersion: 2,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      ...overrides
+    };
+  }
+
+  // The exact merge-update UserActionService.writeCompletion() falls back to.
+  function completionUpdate(overrides = {}) {
+    return {
+      status: 'COMPLETE',
+      completedAt: serverTimestamp(),
+      completionCount: firebase.firestore.FieldValue.increment(1),
+      lastCompletedAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+      ...overrides
+    };
+  }
+
+  const ref = (db) => db.collection('user_actions').doc('alice_action-1');
+
+  // ── create ──
+
+  it('lets a user start an action (IN_PROGRESS, count 0)', async () => {
+    await seed((db) => seedAction(db, 'action-1'));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertSucceeds(ref(db).set(validStart()));
+  });
+
+  it('lets a user one-tap complete a REPEATABLE action (count 1)', async () => {
+    await seed((db) => seedAction(db, 'action-1'));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertSucceeds(ref(db).set(validComplete()));
+  });
+
+  it('accepts a stale-but-real actionVersion (page loaded before an admin edit)', async () => {
+    await seed((db) => seedAction(db, 'action-1'));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertSucceeds(ref(db).set(validComplete({ actionVersion: 1 })));
+  });
+
+  it('accepts actionVersion 1 for a catalogue entry with no version field', async () => {
+    await seed((db) => seedAction(db, 'action-1', { version: undefined }));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertSucceeds(ref(db).set(validComplete({ actionVersion: 1 })));
+  });
+
+  it('denies creating a user_action for another user', async () => {
+    await seed((db) => seedAction(db, 'action-1'));
+    const db = testEnv.authenticatedContext('mallory').firestore();
+    await assertFails(ref(db).set(validStart()));
+  });
+
+  it('denies a create with a forged completionCount (metrics inflation)', async () => {
+    await seed((db) => seedAction(db, 'action-1'));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(ref(db).set(validComplete({ completionCount: 1000000 })));
+  });
+
+  it('denies a started (IN_PROGRESS) create with a non-zero count', async () => {
+    await seed((db) => seedAction(db, 'action-1'));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(ref(db).set(validStart({ completionCount: 5 })));
+  });
+
+  it('denies a create whose elementIdsSnapshot is not from the catalogue entry', async () => {
+    await seed((db) => seedAction(db, 'action-1'));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(ref(db).set(validComplete({ elementIdsSnapshot: ['earth', 'water', 'air', 'energy', 'spirit'] })));
+  });
+
+  it('denies a create with an actionVersion ahead of the catalogue entry', async () => {
+    await seed((db) => seedAction(db, 'action-1'));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(ref(db).set(validComplete({ actionVersion: 99 })));
+  });
+
+  it('denies a create for a nonexistent action', async () => {
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(ref(db).set(validComplete()));
+  });
+
+  it('denies a create for a deactivated action', async () => {
+    await seed((db) => seedAction(db, 'action-1', { isActive: false }));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(ref(db).set(validComplete()));
+  });
+
+  it('denies a create at a doc ID other than {uid}_{actionId}', async () => {
+    await seed((db) => seedAction(db, 'action-1'));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(db.collection('user_actions').doc('alice_action-1-copy').set(validComplete()));
+  });
+
+  it('denies a create with a non-server timestamp (anti-backdating)', async () => {
+    await seed((db) => seedAction(db, 'action-1'));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(ref(db).set(validComplete({ completedAt: new Date() })));
+    await assertFails(ref(db).set(validStart({ createdAt: new Date(), updatedAt: new Date() })));
+  });
+
+  it('denies a create with an extra, unlisted field', async () => {
+    await seed((db) => seedAction(db, 'action-1'));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(ref(db).set(validComplete({ bonusPoints: 500 })));
+  });
+
+  it("denies the service's full-doc set() over an existing record (that's what routes it to the update fallback)", async () => {
+    await seed(async (db) => {
+      await seedAction(db, 'action-1');
+      await ref(db).set(storedDoc());
+    });
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(ref(db).set(validComplete()));
+  });
+
+  // ── read ──
+
+  it("denies reading another user's action record", async () => {
+    await seed((db) => ref(db).set(storedDoc()));
+    const db = testEnv.authenticatedContext('mallory').firestore();
+    await assertFails(ref(db).get());
+  });
+
+  it('lets an admin read any user_action', async () => {
+    await seed(async (db) => {
+      await ref(db).set(storedDoc());
+      await db.collection('admins').doc('root').set({ role: 'admin' });
+    });
+    const db = testEnv.authenticatedContext('root').firestore();
+    await assertSucceeds(ref(db).get());
+  });
+
+  // ── update ──
+
+  it('lets the owner complete a started action (IN_PROGRESS -> COMPLETE, 0 -> 1)', async () => {
+    await seed(async (db) => {
+      await seedAction(db, 'action-1');
+      await ref(db).set(storedDoc({ status: 'IN_PROGRESS', completedAt: null, lastCompletedAt: null, completionCount: 0 }));
+    });
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertSucceeds(ref(db).set(completionUpdate(), { merge: true }));
+  });
+
+  it('lets the owner repeat-complete a REPEATABLE action (+1)', async () => {
+    await seed(async (db) => {
+      await seedAction(db, 'action-1');
+      await ref(db).set(storedDoc({ completionCount: 4 }));
+    });
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertSucceeds(ref(db).set(completionUpdate(), { merge: true }));
+  });
+
+  it('lets the owner repeat-complete an OCCASIONAL action (+1)', async () => {
+    await seed(async (db) => {
+      await seedAction(db, 'action-1', { repeatType: 'OCCASIONAL' });
+      await ref(db).set(storedDoc());
+    });
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertSucceeds(ref(db).set(completionUpdate(), { merge: true }));
+  });
+
+  it('denies jumping completionCount by more than 1', async () => {
+    await seed(async (db) => {
+      await seedAction(db, 'action-1');
+      await ref(db).set(storedDoc());
+    });
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(ref(db).set(completionUpdate({ completionCount: 50 }), { merge: true }));
+  });
+
+  it('denies lowering completionCount (the lower-then-raise inflation loop)', async () => {
+    await seed(async (db) => {
+      await seedAction(db, 'action-1');
+      await ref(db).set(storedDoc({ completionCount: 3 }));
+    });
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(ref(db).set(completionUpdate({ completionCount: 0 }), { merge: true }));
+  });
+
+  it('denies a second completion of a ONCE action', async () => {
+    await seed(async (db) => {
+      await seedAction(db, 'action-1', { repeatType: 'ONCE' });
+      await ref(db).set(storedDoc());
+    });
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(ref(db).set(completionUpdate(), { merge: true }));
+  });
+
+  it('denies completing an action that has since been deactivated', async () => {
+    await seed(async (db) => {
+      await seedAction(db, 'action-1', { isActive: false });
+      await ref(db).set(storedDoc());
+    });
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(ref(db).set(completionUpdate(), { merge: true }));
+  });
+
+  it('denies changing actionId, elementIdsSnapshot or actionVersion on update', async () => {
+    await seed(async (db) => {
+      await seedAction(db, 'action-1');
+      await ref(db).set(storedDoc());
+    });
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(ref(db).set(completionUpdate({ actionId: 'different-action' }), { merge: true }));
+    await assertFails(ref(db).set(completionUpdate({ elementIdsSnapshot: ['earth', 'water', 'air', 'energy', 'spirit'] }), { merge: true }));
+    await assertFails(ref(db).set(completionUpdate({ actionVersion: 1 }), { merge: true }));
+  });
+
+  it('denies status regressing from COMPLETE back to IN_PROGRESS', async () => {
+    await seed(async (db) => {
+      await seedAction(db, 'action-1');
+      await ref(db).set(storedDoc());
+    });
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(ref(db).set(completionUpdate({ status: 'IN_PROGRESS' }), { merge: true }));
+  });
+
+  it('denies an update with a client-chosen completedAt/updatedAt', async () => {
+    await seed(async (db) => {
+      await seedAction(db, 'action-1');
+      await ref(db).set(storedDoc());
+    });
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(ref(db).set(completionUpdate({ completedAt: new Date() }), { merge: true }));
+    await assertFails(ref(db).set(completionUpdate({ updatedAt: new Date() }), { merge: true }));
+  });
+
+  it("denies another user updating alice's action record", async () => {
+    await seed(async (db) => {
+      await seedAction(db, 'action-1');
+      await ref(db).set(storedDoc());
+    });
+    const db = testEnv.authenticatedContext('mallory').firestore();
+    await assertFails(ref(db).set(completionUpdate(), { merge: true }));
+  });
+
+  // ── DAILY ──
+
+  it("lets a DAILY action's first completion through when today's guard was claimed", async () => {
+    const today = calendarDay();
+    await seed(async (db) => {
+      await seedAction(db, 'action-1', { repeatType: 'DAILY' });
+      await seedGuard(db, 'action-1', today);
+    });
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertSucceeds(ref(db).set(validComplete({ lastCompletionDay: today })));
+  });
+
+  it('denies a DAILY completion with no claimed guard doc', async () => {
+    await seed((db) => seedAction(db, 'action-1', { repeatType: 'DAILY' }));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(ref(db).set(validComplete({ lastCompletionDay: calendarDay() })));
+    await assertFails(ref(db).set(validComplete()));
+  });
+
+  it("lets a DAILY action repeat on a new day with that day's guard", async () => {
+    const today = calendarDay();
+    await seed(async (db) => {
+      await seedAction(db, 'action-1', { repeatType: 'DAILY' });
+      await ref(db).set(storedDoc({ lastCompletionDay: calendarDay(-1) }));
+      await seedGuard(db, 'action-1', today);
+    });
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertSucceeds(ref(db).set(completionUpdate({ lastCompletionDay: today }), { merge: true }));
+  });
+
+  it('lets a pre-hardening DAILY doc (no lastCompletionDay yet) repeat with a guard', async () => {
+    const today = calendarDay();
+    await seed(async (db) => {
+      await seedAction(db, 'action-1', { repeatType: 'DAILY' });
+      await ref(db).set(storedDoc());
+      await seedGuard(db, 'action-1', today);
+    });
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertSucceeds(ref(db).set(completionUpdate({ lastCompletionDay: today }), { merge: true }));
+  });
+
+  it("denies replaying the same day's guard for a second DAILY increment", async () => {
+    const today = calendarDay();
+    await seed(async (db) => {
+      await seedAction(db, 'action-1', { repeatType: 'DAILY' });
+      await ref(db).set(storedDoc({ lastCompletionDay: today }));
+      await seedGuard(db, 'action-1', today);
+    });
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(ref(db).set(completionUpdate({ lastCompletionDay: today }), { merge: true }));
+  });
+
+  it('denies a DAILY increment pointing at a far-future day', async () => {
+    const future = calendarDay(30);
+    await seed(async (db) => {
+      await seedAction(db, 'action-1', { repeatType: 'DAILY' });
+      await ref(db).set(storedDoc({ lastCompletionDay: calendarDay(-1) }));
+      await seedGuard(db, 'action-1', future);
+    });
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(ref(db).set(completionUpdate({ lastCompletionDay: future }), { merge: true }));
+  });
+
+  it('denies any client delete — no delete path needed in V1', async () => {
+    await seed((db) => ref(db).set(storedDoc()));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(ref(db).delete());
+  });
+});
+
+describe('user_action_completions/{docId} (per-day dedup guard for DAILY actions)', () => {
+  function calendarDay(offsetDays = 0) {
+    const d = new Date();
+    d.setDate(d.getDate() + offsetDays);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+  const today = calendarDay();
+  const guardId = `alice_action-1_${today}`;
+
+  function validGuard(overrides = {}) {
+    return {
+      userId: 'alice',
+      actionId: 'action-1',
+      calendarDay: today,
+      createdAt: serverTimestamp(),
+      ...overrides
+    };
+  }
+
+  it('lets a user claim their own completion slot for today', async () => {
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertSucceeds(db.collection('user_action_completions').doc(guardId).set(validGuard()));
+  });
+
+  it('denies claiming a completion slot for another user', async () => {
+    const db = testEnv.authenticatedContext('mallory').firestore();
+    await assertFails(db.collection('user_action_completions').doc(guardId).set(validGuard()));
+  });
+
+  it('denies a non-server createdAt', async () => {
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(db.collection('user_action_completions').doc(guardId).set(validGuard({ createdAt: new Date() })));
+  });
+
+  it("denies pre-claiming a future day's slot", async () => {
+    const future = calendarDay(30);
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(
+      db.collection('user_action_completions').doc(`alice_action-1_${future}`).set(validGuard({ calendarDay: future }))
+    );
+  });
+
+  it("denies a doc ID that doesn't match {uid}_{actionId}_{calendarDay}", async () => {
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(db.collection('user_action_completions').doc('alice_whatever').set(validGuard()));
+  });
+
+  it('denies a second claim at the same deterministic ID — this is the per-day dedup guarantee', async () => {
+    await seed((db) => db.collection('user_action_completions').doc(guardId).set(validGuard({ createdAt: new Date() })));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(db.collection('user_action_completions').doc(guardId).set(validGuard()));
+  });
+
+  it("denies reading another user's completion guard doc", async () => {
+    await seed((db) => db.collection('user_action_completions').doc(guardId).set(validGuard({ createdAt: new Date() })));
+    const db = testEnv.authenticatedContext('mallory').firestore();
+    await assertFails(db.collection('user_action_completions').doc(guardId).get());
+  });
+
+  it('denies any update — fully immutable like activity_log', async () => {
+    await seed((db) => db.collection('user_action_completions').doc(guardId).set(validGuard({ createdAt: new Date() })));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(db.collection('user_action_completions').doc(guardId).update({ calendarDay: '2026-10-02' }));
+  });
+
+  it('denies any delete', async () => {
+    await seed((db) => db.collection('user_action_completions').doc(guardId).set(validGuard({ createdAt: new Date() })));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(db.collection('user_action_completions').doc(guardId).delete());
   });
 });
 

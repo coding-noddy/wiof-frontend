@@ -10,31 +10,74 @@
 .video-widget-card {
   border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
-  background: #000;
+  background: #fff;
+  border: 1px solid rgba(166, 135, 93, 0.16);
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
 // ── Header bar — element colored, like coffee conversation & in-focus ─────────
+// Untagged default stays warm-white (no element to represent — every real
+// usage always passes [element], this is an unreachable fallback). Energy
+// uses raw Marigold with ink text, not white: brand guidelines reserve
+// Marigold as an accent, but a solid fill paired with dark ink text is the
+// one established exception already used for take-action-detail's Energy
+// header — ink-on-Marigold has good contrast, unlike white-on-Marigold.
 .video-widget-header {
-  padding: 0.65rem 1rem;
-  border-bottom: 2px solid white;
-  background-color: $home-color;
+  padding: 0.9rem 1.1rem;
+  border-bottom: 1px solid rgba(43, 36, 32, 0.10);
+  background-color: var(--wiof-warm-white);
   color: $dark-color;
 
-  &.wiof-earth  { background-color: $earth-color; }
-  &.wiof-water  { background-color: $water-color; }
-  &.wiof-fire   { background-color: $energy-color; }
-  &.wiof-air    { background-color: $air-color; }
-  &.wiof-spirit { background-color: $spirit-color; }
+  // Flat colors (not the old rgba(..., 0.9-0.95) dilution) so this header
+  // is pixel-identical to the same element's color on every other widget
+  // header in the app (aqi/water/eq/food-ph/energy-widget) — the earlier
+  // per-file alpha variation was exactly why colors looked slightly
+  // different between widgets tagged to the same element.
+  // White text on every element except Energy (Marigold stays too light for
+  // white text to pass contrast at any usable shade — ink is the only
+  // option there). .video-widget-title sets its own explicit color (same
+  // specificity, declared later in this file), so each state needs its own
+  // nested override to actually win over that default.
+  &.wiof-earth {
+    background-color: $earth-color;
+    color: $light-color;
+    .video-widget-title { color: $light-color; }
+  }
+  &.wiof-water {
+    background-color: $water-color;
+    color: $light-color;
+    .video-widget-title { color: $light-color; }
+  }
+  // Was .wiof-fire — leftover from before the Fire->Energy rename. The
+  // class actually applied at runtime is `wiof-${element}`, and `element`
+  // is always 'energy' now, so .wiof-fire never matched: this header was
+  // silently falling back to the default warm-white instead of Marigold
+  // on the Energy page, while energy-widget (no class dependency) showed
+  // the correct color right next to it.
+  &.wiof-energy { background-color: $energy-color; color: $dark-color; }
+  &.wiof-air {
+    background-color: $air-color;
+    color: $light-color;
+    .video-widget-title { color: $light-color; }
+  }
+  &.wiof-spirit {
+    background-color: $spirit-color;
+    color: $light-color;
+
+    .video-widget-title { color: $light-color; }
+  }
   &.wiof-config { background-color: $dark-color; color: $light-color; }
 }
 
 .video-widget-title {
-  font-size: 1.1rem;
-  font-weight: 600;
+  // Not a heading tag (a <span>), so it needs its own explicit override to
+  // win over global.scss's universal Noto Sans reset.
+  font-family: 'Aleo', serif !important;
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   color: $dark-color;
 
   .wiof-config & {
@@ -46,6 +89,7 @@
   width: 100%;
   flex: 1;
   min-height: 280px;
+  background: linear-gradient(180deg, #f3efe8 0%, #f8f4ee 100%);
 }
 
 .video-player {
@@ -54,4 +98,15 @@
   min-height: 280px;
   border: none;
   display: block;
+  background: #000;
+}
+
+// Shown in the header for the brief moment before the hero video doc loads.
+.title-skeleton {
+  display: inline-block;
+  width: 60%;
+  height: 1.08rem;
+  border-radius: 6px;
+  vertical-align: middle;
+  opacity: 0.6;
 }

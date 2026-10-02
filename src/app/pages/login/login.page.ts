@@ -14,7 +14,7 @@ export class LoginPage implements OnInit, OnDestroy {
   email: string;
   password: string;
   error: string;
-  wiofLogo: string = '../../assets/logo.png';
+  wiofLogo: string = '../../assets/brand/logos/WIOF-full-logo.png';
   destroy$: Subject<boolean> = new Subject();
   private isLoggingIn = false;
 

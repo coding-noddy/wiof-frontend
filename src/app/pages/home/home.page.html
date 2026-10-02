@@ -1,56 +1,74 @@
 <!-- home.page.html -->
 <app-header></app-header>
-<app-subscribe [page]="'home'"></app-subscribe>
-<app-social-share style="z-index: 2"></app-social-share>
-<app-concent-popup *ngIf="viewConsentPopup" (accepted)="onAccept()"></app-concent-popup>
+<app-subscribe [page]="'home'"></app-subscribe><app-concent-popup *ngIf="viewConsentPopup" (accepted)="onAccept()"></app-concent-popup>
 
 <ion-content>
-  <div class="page-container">
-    <!-- Banner / Hero Section -->
-    <section class="hero">
-      <div class="hero-copy">
-        <p class="eyebrow">World is One Family</p>
-        <h1>
-          Inspire through Creativity<br />
-          Enlighten through Knowledge<br />
-          Protect through Action
-        </h1>
-        <!-- <p class="hero-text">
-          Discover stories, courses, and conversations that empower you to act for people and the planet.
-        </p> -->
-        <button class="cta" (click)="scrollToElements()">Discover More</button>
-      </div>
-    </section>
+  <!-- Banner / Hero Section — intentionally full-bleed, outside .page-container -->
+  <section class="hero">
+    <div class="hero-scrim"></div>
+    <div class="hero-copy">
+      <p class="eyebrow">World is One Family</p>
+      <h1>
+        <span class="hero-line">
+          <span class="hero-highlight">Inspire</span>
+          <span class="hero-lead">through</span>
+          <span class="hero-highlight">Creativity</span>
+        </span>
+        <span class="hero-line">
+          <span class="hero-highlight">Enlighten</span>
+          <span class="hero-lead">through</span>
+          <span class="hero-highlight">Knowledge</span>
+        </span>
+        <span class="hero-line">
+          <span class="hero-highlight">Protect</span>
+          <span class="hero-lead">through</span>
+          <span class="hero-highlight">Action</span>
+        </span>
+      </h1>
+      <button class="cta" (click)="scrollToElements()">Explore WIOF <ion-icon name="arrow-forward-outline"></ion-icon></button>
+    </div>
+  </section>
 
+  <div class="page-container">
     <app-life-elements></app-life-elements>
 
     <!-- Coffee Conversation -->
     <section class="section-block conversation-section">
-      <!-- <div class="section-header">
-        <h2>Coffee Conversation</h2>
-        <p>Watch the latest conversation and engage with insights from the WIOF community.</p>
-      </div> -->
       <app-coffee-conversation
         [coffeeConvList]="coffeeConversations$ | async"
         [fromHomePage]="true">
       </app-coffee-conversation>
     </section>
 
-    <!-- Breaking News -->
-    <section class="section-block">
-      <!-- <div class="section-header">
-        <h2>Breaking News</h2>
-        <p>Latest updates and important stories from the WIOF community.</p>
-      </div> -->
-      <app-breaking-news [newsList]="newsList$ | async"></app-breaking-news>
+    <!-- Continue Your Journey / Guest Invite -->
+    <section class="section-block journey-section">
+      <app-home-journey-panel></app-home-journey-panel>
     </section>
 
-    <!-- Impact & Learn -->
+    <!-- This Week: Breaking News (2/3) + Poll (1/3) -->
+    <section class="section-block this-week-row">
+      <div class="section-header">
+        <p class="eyebrow">Happening now</p>
+        <h2>This Week</h2>
+      </div>
+      <ion-grid>
+        <ion-row>
+          <ion-col size-xs="12" size-md="8">
+            <app-breaking-news [newsList]="newsList$ | async"></app-breaking-news>
+          </ion-col>
+          <ion-col size-xs="12" size-md="4">
+            <app-polls-widget></app-polls-widget>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </section>
+
+    <!-- Explore: NGO In Focus + Course In Focus -->
     <section class="section-block impact-row">
-      <!-- <div class="section-header">
-        <h2>Impact & Learn</h2>
-        <p>Discover stories of action alongside key courses for meaningful learning.</p>
-      </div> -->
+      <div class="section-header">
+        <p class="eyebrow">Get curious</p>
+        <h2>Explore</h2>
+      </div>
       <ion-grid>
         <ion-row>
           <ion-col size-xs="12" size-md="6">
@@ -63,15 +81,19 @@
       </ion-grid>
     </section>
 
-    <!-- Calendar and Polls -->
+    <!-- Environment Calendar + Today/Tomorrow agenda -->
     <section class="section-block bottom-row">
+      <div class="section-header">
+        <p class="eyebrow">Get involved</p>
+        <h2>Environment Calendar</h2>
+      </div>
       <ion-grid>
         <ion-row>
-          <ion-col size-xs="12" size-md="6">
+          <ion-col size-xs="12" size-md="8">
             <app-env-calender></app-env-calender>
           </ion-col>
-          <ion-col size-xs="12" size-md="6">
-            <app-polls-widget></app-polls-widget>
+          <ion-col size-xs="12" size-md="4">
+            <app-env-calendar-agenda></app-env-calendar-agenda>
           </ion-col>
         </ion-row>
       </ion-grid>

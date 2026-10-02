@@ -1,27 +1,14 @@
 <div class="blog-slider-section" *ngIf="blogList && blogList.length > 0">
 
-  <!-- Inline actions (list view / take action) -->
-  <div class="blog-slider-actions">
-    <a
-      [routerLink]="['blogs']"
-      class="action-link"
-      title="View all blogs"
-      aria-label="View all blogs"
-    >
-      View All <ion-icon name="arrow-forward-outline"></ion-icon>
-    </a>
-  </div>
-
   <!-- Slider -->
   <div *ngIf="blogList; else loading" class="slider-wrap">
     <swiper-container
       #swiperRef
-      [attr.slides-per-view]="4"
       [attr.space-between]="10"
       [attr.free-mode]="true"
-        breakpoints='{"0":{"slidesPerView":1},"600":{"slidesPerView":2},"767":{"slidesPerView":3},"1024":{"slidesPerView":4}}'
+      breakpoints='{"0":{"slidesPerView":1},"600":{"slidesPerView":2},"767":{"slidesPerView":3},"1024":{"slidesPerView":4}}'
     >
-      <swiper-slide *ngFor="let blog of blogList">
+      <swiper-slide *ngFor="let blog of displayList">
         <app-blog-card [blog]="blog" [element]="element"></app-blog-card>
       </swiper-slide>
     </swiper-container>
@@ -32,6 +19,19 @@
     <button class="swiper-nav-btn next" (click)="swiperRef.swiper.slideNext()" *ngIf="showNavigator()">
       <ion-icon name="chevron-forward"></ion-icon>
     </button>
+  </div>
+
+  <!-- Trailing action, below the cards -->
+  <div class="blog-slider-actions">
+    <a
+      [routerLink]="['blogs']"
+      class="view-more-link"
+      title="Explore more {{ element }} blogs"
+      attr.aria-label="Explore more {{ element }} blogs"
+    >
+      Explore More {{ element | titlecase }} Blogs
+      <ion-icon name="arrow-forward-outline"></ion-icon>
+    </a>
   </div>
 
   <ng-template #loading>

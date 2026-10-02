@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { first } from 'rxjs/operators';
 import { ActivityService } from 'src/app/services/activity.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { expandCollapseAnimation } from 'src/app/util/expand-collapse-animation';
 
 interface EnergyResult {
   kgsOfCO2: number;
@@ -34,7 +35,8 @@ const KM_PER_L_SUV   = 12;
 @Component({
   selector: 'app-energy-widget',
   templateUrl: './energy-widget.component.html',
-  styleUrls: ['./energy-widget.component.scss']
+  styleUrls: ['./energy-widget.component.scss'],
+  animations: [expandCollapseAnimation]
 })
 export class EnergyWidgetComponent implements OnInit, OnDestroy {
 

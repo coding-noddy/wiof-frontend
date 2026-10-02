@@ -13,7 +13,7 @@
   </div>
 
   <!-- ── About panel ─────────────────────────────────────────── -->
-  <div class="about-panel" [class.open]="about">
+  <div class="about-panel" [@expandCollapse]="about ? 'expanded' : 'collapsed'">
     <p class="about-text">
       Air Quality Index (AQI) simplifies complex pollutant data into a single value.
       Check real-time air quality for Indian cities or search any location globally.

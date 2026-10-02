@@ -1,118 +1,404 @@
 @import '../../wiof-custom-theming.scss';
 
-.landing-circle-img {
-  border-radius: 50%;
-
+// ── Shared icon badge ────────────────────────────────────────────────────────
+// The icon_*.svg assets already draw their own full badge (circle + border +
+// element lines, with a filled `_selected` variant for the active state) —
+// this must render at 100%, not sit inside another bordered/filled circle,
+// or you get a circle nested inside a circle with an odd ring of padding.
+%element-icon-base {
+  display: inline-block;
   background-repeat: no-repeat;
-  background-size: contain;
-  height: 110px;
-  width: 110px;
-  margin: auto;
-  transition: 0.8s;
-  outline: none;
-  // transition-delay: 0.2s;
-  cursor: pointer;
+  background-position: center;
+  background-size: 100%;
+  flex-shrink: 0;
 
-  &.earth {
-    background-image: url('/assets/icons/icon_earth.svg');
-    box-shadow: 1px 1px 5px 1px $earth-color;
-    &.active {
-      box-shadow: 1px 1px 12px 10px $earth-color;
-      background-image: url('/assets/icons/icon_earth_selected.svg');
-    }
-    &:hover {
-      box-shadow: 1px 1px 12px 10px $earth-color;
-    }
-  }
+  &.icon-air    { background-image: url('/assets/icons/icon_air.svg'); }
+  &.icon-energy { background-image: url('/assets/icons/icon_energy.svg'); }
+  &.icon-water  { background-image: url('/assets/icons/icon_water.svg'); }
+  &.icon-earth  { background-image: url('/assets/icons/icon_earth.svg'); }
+  &.icon-spirit { background-image: url('/assets/icons/icon_spirit.svg'); }
 
-  &.water {
-    background-image: url('/assets/icons/icon_water.svg');
-
-    box-shadow: 1px 1px 5px 1px $water-color;
-    &.active {
-      box-shadow: 1px 1px 12px 10px $water-color;
-      background-image: url('/assets/icons/icon_water_selected.svg');
-    }
-    &:hover {
-      box-shadow: 1px 1px 12px 10px $water-color;
-    }
-    &.clicked {
-      background-image: url('/assets/icons/icon_water_selected.svg');
-    }
-  }
-
-  &.energy {
-    background-image: url('/assets/icons/icon_energy.svg');
-    box-shadow: 1px 1px 5px 1px $energy-color;
-    &.active {
-      box-shadow: 1px 1px 12px 10px $energy-color;
-      background-image: url('/assets/icons/icon_energy_selected.svg');
-    }
-    &:hover {
-      box-shadow: 1px 1px 12px 10px $energy-color;
-    }
-  }
-
-  &.air {
-    background-image: url('/assets/icons/icon_air.svg');
-    box-shadow: 1px 1px 5px 1px $air-color;
-    &.active {
-      box-shadow: 1px 1px 12px 10px $air-color;
-      background-image: url('/assets/icons/icon_air_selected.svg');
-    }
-    &:hover {
-      box-shadow: 1px 1px 12px 10px $air-color;
-    }
-  }
-
-  &.spirit {
-    background-image: url('/assets/icons/icon_spirit.svg');
-    box-shadow: 1px 1px 5px 1px $spirit-color;
-    &.active {
-      box-shadow: 1px 1px 12px 10px $spirit-color;
-      background-image: url('/assets/icons/icon_spirit_selected.svg');
-    }
-    &:hover {
-      box-shadow: 1px 1px 12px 10px $spirit-color;
-    }
-  }
-
-  &:hover {
-    opacity: 0.8;
-    cursor: pointer;
+  &.active {
+    &.icon-air    { background-image: url('/assets/icons/icon_air_selected.svg'); }
+    &.icon-energy { background-image: url('/assets/icons/icon_energy_selected.svg'); }
+    &.icon-water  { background-image: url('/assets/icons/icon_water_selected.svg'); }
+    &.icon-earth  { background-image: url('/assets/icons/icon_earth_selected.svg'); }
+    &.icon-spirit { background-image: url('/assets/icons/icon_spirit_selected.svg'); }
   }
 }
 
-.landing-circle-label {
-  margin-top: 10px;
-  color: #505050;
+// Per-element border/accent colors — teal at start/middle/end, brown for
+// Earth, marigold for Energy (matches life-elements' brand ordering rule).
+@mixin element-color($property, $alpha: 1) {
+  &.color-teal     { #{$property}: rgba($water-color, $alpha); }
+  &.color-marigold { #{$property}: rgba($energy-color, $alpha); }
+  &.color-brown    { #{$property}: rgba($earth-color, $alpha); }
+}
+
+// ── Cards variant (home page) ───────────────────────────────────────────────
+.elements-intro {
   text-align: center;
-  cursor: pointer;
-  //transition: 0.8s;
+  margin: 0 0 1.75rem;
+  font-size: 0.95rem;
+  color: $dark-color;
+}
+
+.elements-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 20px;
+
+  @media (max-width: 991px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: 575px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.element-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  padding: 32px 16px;
+  border-radius: 20px;
+  background: $light-color;
+  border: 1.5px solid;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  @include element-color(border-color, 0.55);
+
   &:hover {
-    color: #000000;
+    transform: translateY(-2px);
+  }
+
+  &.active {
+    @include element-color(border-color, 1);
+  }
+
+  // Icon, name and description stay in normal flow, above the motif —
+  // icon leads as it does on every other card on the site (Breaking News,
+  // Food pH, etc.), so this section scans the same way.
+  .element-icon,
+  .element-name,
+  .element-desc {
+    position: relative;
+    z-index: 1;
+  }
+
+  // Grounded line-vocabulary motif — a horizon strip behind the text, low
+  // opacity so it reads as texture, not a second graphic competing with it.
+  .element-motif {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 68px;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0.22;
+    transition: opacity 0.25s ease, transform 0.35s ease;
+  }
+
+  // `@include element-color(color, 1)` here would compile to
+  // `.element-card .element-motif.color-teal` — matching only if the
+  // color-* class sat on .element-motif itself. It's actually on
+  // .element-card (this element), so every motif silently fell back to the
+  // same inherited default instead of its own theme color. Scoping the
+  // color-* class to the ancestor and targeting the motif as a descendant
+  // fixes that.
+  &.color-teal .element-motif     { color: var(--wiof-teal); }
+  &.color-marigold .element-motif { color: var(--wiof-marigold); }
+  &.color-brown .element-motif    { color: var(--wiof-brown); }
+
+  &:hover .element-motif {
+    opacity: 0.4;
+    transform: translateY(-4px);
+  }
+
+  .motif-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .element-icon {
+    @extend %element-icon-base;
+    width: 64px;
+    height: 64px;
+  }
+
+  .element-name {
+    // !important: this is a <span>, and global.scss's sitewide reset
+    // (`*:not(ion-icon) { font-family: "Noto Sans" !important }`) targets it
+    // directly — without !important here this Aleo declaration is dead and
+    // the element name silently renders in the body font.
+    font-family: 'Aleo', serif !important;
+    font-size: 20px;
+    font-weight: 700;
+    color: $dark-color;
+  }
+
+  .element-desc {
+    font-size: 14px;
+    line-height: 1.5;
+    color: $dark-color;
+    opacity: 0.68;
+  }
+
+  // ── Per-element hover motifs ──────────────────────────────────────────────
+  // Each element gets its own hover behaviour drawn from the brand guide's
+  // elemental vocabulary (terrain / waves / wind / rays / concentric
+  // circles) rather than one generic hover effect for all five.
+
+  // Air — wind: the icon drifts on a breeze, with two thin streak lines
+  // sliding past it.
+  &:hover .icon-air {
+    animation: elem-air-drift 1.6s ease-in-out infinite;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      left: -10%;
+      width: 55%;
+      height: 2px;
+      border-radius: 999px;
+      background: var(--wiof-teal);
+      opacity: 0;
+      animation: elem-air-streak 1.4s ease-in-out infinite;
+    }
+
+    &::before { top: 28%; animation-delay: 0s; }
+    &::after  { top: 62%; animation-delay: 0.35s; }
+  }
+
+  // Water — waves: a ring ripples outward from the icon and fades.
+  &:hover .icon-water {
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid var(--wiof-teal);
+      opacity: 0.7;
+      animation: elem-ripple 1.5s ease-out infinite;
+    }
+  }
+
+  // Earth — terrain: the icon settles rather than floating (a small vertical
+  // press, not a squash — scaleY alone turned the circular icon into a
+  // flattened oval mid-animation), and two small sprouts grow up from the
+  // base, echoing "grounds us, connects us to place" instead of leaving
+  // Earth as the one element with no accompanying motif like the other four.
+  &:hover .icon-earth {
+    animation: elem-earth-settle 1.8s ease-in-out infinite;
+    transform-origin: bottom center;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      width: 2px;
+      height: 0;
+      border-radius: 999px;
+      background: var(--wiof-brown);
+      animation: elem-earth-sprout 1.8s ease-in-out infinite;
+    }
+
+    &::before { left: 36%; animation-delay: 0s; }
+    &::after  { left: 58%; animation-delay: 0.3s; }
+  }
+
+  // Energy — rays: the icon pulses with a warm glow, like light building.
+  &:hover .icon-energy {
+    animation: elem-energy-pulse 1.3s ease-in-out infinite;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -18%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 194, 111, 0.45) 0%, rgba(255, 194, 111, 0) 70%);
+      animation: elem-energy-glow 1.3s ease-in-out infinite;
+      z-index: -1;
+    }
+  }
+
+  // Spirit — concentric circles: rings expand outward from the centre,
+  // staggered, echoing reflection/expansion rather than a single ripple.
+  // Already distinct enough from Water's one ring — left as is.
+  &:hover .icon-spirit {
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1.5px solid var(--wiof-teal);
+      opacity: 0;
+      animation: elem-ripple 2s ease-out infinite;
+    }
+
+    &::after { animation-delay: 0.7s; }
+  }
+}
+
+@keyframes elem-air-drift {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(4px); }
+}
+
+@keyframes elem-air-streak {
+  0%   { opacity: 0; transform: translateX(-20%); }
+  40%  { opacity: 0.8; }
+  100% { opacity: 0; transform: translateX(120%); }
+}
+
+@keyframes elem-ripple {
+  0%   { transform: scale(0.85); opacity: 0.7; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes elem-earth-settle {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(2px); }
+}
+
+@keyframes elem-earth-sprout {
+  0%   { height: 0; opacity: 0; }
+  55%  { height: 13px; opacity: 0.9; }
+  100% { height: 0; opacity: 0; }
+}
+
+@keyframes elem-earth-sprout-sm {
+  0%   { height: 0; opacity: 0; }
+  55%  { height: 5px; opacity: 0.9; }
+  100% { height: 0; opacity: 0; }
+}
+
+@keyframes elem-energy-pulse {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50%      { transform: scale(1.06); filter: brightness(1.15); }
+}
+
+@keyframes elem-energy-glow {
+  0%, 100% { opacity: 0.6; transform: scale(0.9); }
+  50%      { opacity: 1; transform: scale(1.1); }
+}
+
+// ── Pills variant (element pages — compact switcher) ────────────────────────
+.elements-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  padding: 0.75rem 0;
+}
+
+.element-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px 8px 10px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  color: $dark-color;
+  text-decoration: none;
+  background: $light-color;
+  border: 1.5px solid;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  @include element-color(border-color, 1);
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &.active {
+    @include element-color(background-color, 1);
+    border-color: transparent;
+  }
+
+  .pill-icon {
+    @extend %element-icon-base;
+    width: 20px;
+    height: 20px;
+    position: relative;
+  }
+
+  // Same elemental hover motifs as the card grid, scaled down for the pill.
+  &:hover .icon-air {
+    animation: elem-air-drift 1.6s ease-in-out infinite;
+  }
+
+  &:hover .icon-water::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1.5px solid var(--wiof-teal);
+    opacity: 0.7;
+    animation: elem-ripple 1.5s ease-out infinite;
+  }
+
+  // Same settle + sprouts as the card grid, scaled down for the 20px icon.
+  &:hover .icon-earth {
+    animation: elem-earth-settle 1.8s ease-in-out infinite;
+    transform-origin: bottom center;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      width: 1px;
+      height: 0;
+      border-radius: 999px;
+      background: var(--wiof-brown);
+      animation: elem-earth-sprout-sm 1.8s ease-in-out infinite;
+    }
+
+    &::before { left: 36%; animation-delay: 0s; }
+    &::after  { left: 58%; animation-delay: 0.3s; }
+  }
+
+  &:hover .icon-energy {
+    animation: elem-energy-pulse 1.3s ease-in-out infinite;
+  }
+
+  &:hover .icon-spirit::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1.5px solid var(--wiof-teal);
+    opacity: 0;
+    animation: elem-ripple 2s ease-out infinite;
   }
 }
 
 /* Using SCSS variables to store breakpoints */
-$breakpoint-desktop: 1024px;
 $breakpoint-tablet: 767px;
 
-@media (max-width: $breakpoint-desktop) {
-  .landing-circle-img {
-    height: 100px;
-    width: 100px;
-  }
-}
 @media (max-width: $breakpoint-tablet) {
-  .landing-circle-img {
-    height: 80px;
-    width: 80px;
-  }
-  .landing-circle-label {
-    font-size: 100%;
-  }
-  .wiof-read-more {
-    display: none;
+  .element-card {
+    padding: 24px 12px;
+
+    .element-icon {
+      width: 52px;
+      height: 52px;
+    }
   }
 }

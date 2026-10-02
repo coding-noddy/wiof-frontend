@@ -1,0 +1,25 @@
+@import './design-tokens';
+
+.wiof-page { background: var(--wiof-ivory); color: var(--wiof-ink); min-height: 100%; }
+.wiof-shell { width: min(calc(100% - 32px), var(--wiof-content-max)); margin-inline: auto; }
+.wiof-display { @include wiof-display; }
+.wiof-body { @include wiof-body; }
+
+.wiof-card { background: var(--wiof-warm-white); border: 1px solid var(--wiof-border); border-radius: var(--wiof-radius-md); box-shadow: var(--wiof-shadow-sm); }
+.wiof-card--lift { transition: transform .2s ease, box-shadow .2s ease; }
+.wiof-card--lift:hover { transform: translateY(-2px); box-shadow: var(--wiof-shadow-md); }
+
+.wiof-btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:44px; padding:0 18px; border:0; border-radius:12px; font:600 14px/1 'Noto Sans',sans-serif; cursor:pointer; text-decoration:none; }
+.wiof-btn:focus-visible { @include wiof-focus; }
+.wiof-btn--primary { background:var(--wiof-marigold); color:var(--wiof-ink); }
+.wiof-btn--secondary { background:var(--wiof-teal); color:#fff; }
+.wiof-btn--quiet { background:transparent; color:var(--wiof-teal-s40); border:1px solid var(--wiof-border); }
+
+.wiof-chip { display:inline-flex; align-items:center; gap:6px; padding:7px 10px; border-radius:var(--wiof-radius-pill); background:var(--wiof-ivory); color:var(--wiof-teal-s40); border:1px solid var(--wiof-border); font:600 12px/1 'Noto Sans',sans-serif; }
+.wiof-divider { height:1px; background:var(--wiof-border); }
+.wiof-eyebrow { color:var(--wiof-teal-s20); font:700 12px/1.2 'Noto Sans',sans-serif; letter-spacing:.08em; text-transform:uppercase; }
+.wiof-heading { margin:0; color:var(--wiof-teal-s40); font:700 clamp(28px,4vw,48px)/1.08 'Aleo',Georgia,serif; }
+.wiof-copy { color:var(--wiof-muted); font:400 16px/1.65 'Noto Sans',system-ui,sans-serif; }
+.wiof-empty { padding:48px 24px; text-align:center; background:var(--wiof-warm-white); border:1px dashed var(--wiof-border); border-radius:var(--wiof-radius-md); }
+
+@media (prefers-reduced-motion: reduce) { .wiof-card--lift { transition:none; } .wiof-card--lift:hover { transform:none; } }

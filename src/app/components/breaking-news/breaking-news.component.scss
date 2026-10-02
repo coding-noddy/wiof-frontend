@@ -3,26 +3,74 @@
 .breaking-news-container {
   border-radius: 18px;
   overflow: hidden;
-  background: #fff;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+  background: var(--wiof-warm-white);
+  border: 1.5px solid var(--wiof-brown-tint-40);
   margin: 0 !important;
   width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 
-  .wiof-slider-header {
-    border-bottom: white 2px solid;
-    background-color: $home-color;
-    color: $dark-color;
+  // ── Header — identity badge instead of a solid colour-block bar.
+  // Marigold is an accent only per brand guidelines, never a background fill,
+  // so the header reads as a warm-white surface with a small "live" marker.
+  .bn-header {
+    display: flex;
+    align-items: center;
+    padding: 0.9rem 1.25rem;
+    background: var(--wiof-warm-white);
+    border-bottom: 1.5px solid var(--wiof-border);
+  }
+
+  .bn-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--wiof-teal);
+  }
+
+  .bn-badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--wiof-marigold);
+    box-shadow: 0 0 0 0 rgba(255, 194, 111, 0.6);
+    animation: bn-pulse 2s infinite;
+  }
+
+  @keyframes bn-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(255, 194, 111, 0.55); }
+    70%  { box-shadow: 0 0 0 7px rgba(255, 194, 111, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 194, 111, 0); }
   }
 
   .breaking-news-content {
     padding: 0 !important;
-    background: $home-color-light;
+    background: var(--wiof-warm-white);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
     --padding-top: 0;
     --padding-bottom: 0;
     --padding-start: 0;
     --padding-end: 0;
   }
 
+  .bn-body {
+    position: relative;
+  }
+
+  // Swiper measures its own container's height on init and sizes its
+  // slides to match — fighting that with a dynamic flex-fill chain (rather
+  // than a fixed height) made it mis-measure and render blank. `auto` here
+  // plus `height:100%` on .news-card (below) — now that the ancestor chain
+  // up through home.page.scss gives this card a real, definite height —
+  // is what lets the slide fill the available space correctly.
   :host ::ng-deep .breaking-news-slides ion-slide,
   :host ::ng-deep .breaking-news-slides .swiper-wrapper,
   :host ::ng-deep .breaking-news-slides .swiper-slide {
@@ -37,39 +85,27 @@
     padding: 0;
   }
 
-  .breaking-news-container {
-    margin: 0;
-  }
-
   .news-card {
     display: flex;
     flex-direction: row;
-    gap: 1rem;
     align-items: stretch;
-    border-radius: 0;
-    overflow: hidden;
-    background: transparent;
-    box-shadow: none;
-    transition: transform 0.2s ease;
-    height: 260px;
+    height: 360px;
     width: 100%;
     min-width: 100%;
     margin: 0;
   }
 
-  .news-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
-  }
-
+  // ── Media panel — framed/inset image instead of edge-to-edge, a small
+  // date pill floating on it rather than a separate row for the date.
   .media-panel {
-    flex: 0 0 33.3333%;
-    max-width: 33.3333%;
-    min-width: 33.3333%;
+    flex: 0 0 36%;
+    max-width: 36%;
+    min-width: 36%;
     position: relative;
     overflow: hidden;
-    background: #eef4fb;
-    height: 100%;
+    border-radius: 14px;
+    margin: 1rem 0 1rem 1.1rem;
+    background: var(--wiof-ivory);
   }
 
   .news-media {
@@ -84,62 +120,186 @@
     inset: 0;
   }
 
+  .news-date-badge {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    padding: 4px 11px;
+    border-radius: 999px;
+    background: rgba(43, 36, 32, 0.7);
+    color: var(--wiof-warm-white);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
   .detail-panel {
-    flex: 1 1 66.6667%;
-    min-width: 66.6667%;
+    flex: 1 1 64%;
+    min-width: 0;
     min-height: 0;
-    height: 100%;
-    padding: 1.5rem;
+    padding: 1.15rem 1.25rem 1.1rem 1rem;
     display: flex;
     flex-direction: column;
   }
 
-  .news-date {
-    margin: 0 0 0.75rem 0;
-    color: #5a7188;
-    font-size: 0.92rem;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-  }
-
   .news-headline {
-    margin: 0 0 1rem 0;
-    font-size: 1.35rem;
-    line-height: 1.15;
-    color: #10263c;
+    margin: 0 0 0.5rem 0;
+    font-family: 'Aleo', serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    line-height: 1.2;
+    color: var(--wiof-ink);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .news-content {
-    color: #475569;
-    line-height: 1.7;
-    overflow-y: auto;
-    flex: 1 1 auto;
-    margin-bottom: 1.25rem;
-    min-height: 0;
-    padding-right: 0.25rem;
+    color: rgba(43, 36, 32, 0.72);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 0.85rem;
   }
 
+  .news-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: auto;
+    align-self: flex-start;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: var(--wiof-teal);
+    color: var(--wiof-warm-white);
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-decoration: none;
+    box-shadow: 0 8px 18px rgba(33, 153, 159, 0.22);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, gap 0.18s ease;
 
-  .news-marquee {
-    min-height: 52px;
-    background: #eef6ff;
-    padding: 0 1rem;
+    ion-icon {
+      font-size: 1rem;
+      transition: transform 0.18s ease;
+    }
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(33, 153, 159, 0.3);
+
+      ion-icon { transform: translateX(2px); }
+    }
+  }
+
+  // ── Nav arrows — same size/style contract as the sitewide .swiper-nav-btn
+  // (see wiof-custom-theming.scss) — this card uses its own class only
+  // because it isn't a real swiper instance, not because the arrow should
+  // look or size any differently.
+  .bn-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
-    font-weight: 600;
-    color: #134b7a;
-    font-size: 0.95rem;
-    white-space: nowrap;
+    justify-content: center;
+    background: rgba(255, 252, 246, 0.88);
+    color: var(--wiof-ink);
+    border: 1px solid rgba(43, 36, 32, 0.08);
+    box-shadow: 0 6px 16px rgba(43, 36, 32, 0.16);
+    z-index: 10;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+
+    ion-icon { font-size: 20px; }
+
+    &:hover {
+      background: var(--wiof-warm-white);
+      transform: translateY(-50%) scale(1.06);
+    }
   }
 
-  .news-marquee div {
+  // Both arrows anchor to the outer card edges — mirrors of each other —
+  // not to the media/detail column boundary in between.
+  .bn-nav-btn.prev { left: 10px; }
+  .bn-nav-btn.next { right: 10px; }
+
+  @media (max-width: 767px) {
+    .bn-nav-btn {
+      width: 32px;
+      height: 32px;
+
+      ion-icon { font-size: 16px; }
+    }
+
+    .bn-nav-btn.prev { left: 6px; }
+    .bn-nav-btn.next { right: 6px; }
+  }
+
+  // ── Ticker — a labelled strip instead of an unlabeled scrolling bar.
+  .news-marquee {
+    flex-shrink: 0;
+    min-height: 44px;
+    background: var(--wiof-ivory);
+    border-top: 1.5px solid var(--wiof-border);
+    padding: 0 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  .news-marquee-label {
+    flex-shrink: 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--wiof-brown);
+    padding-right: 0.85rem;
+    border-right: 1.5px solid var(--wiof-border);
+  }
+
+  .news-marquee-track {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .news-marquee-content {
     display: inline-block;
     width: max-content;
     padding-left: 100%;
     animation: marquee 18s linear infinite;
+    font-weight: 600;
+    color: var(--wiof-ink);
+    font-size: 0.88rem;
+    white-space: nowrap;
+
+    span {
+      &::after {
+        content: '\25CF';
+        margin: 0 0.85rem;
+        font-size: 0.5rem;
+        vertical-align: middle;
+        color: var(--wiof-brown);
+      }
+
+      &:last-child::after {
+        content: '';
+        margin: 0;
+      }
+    }
   }
 
-  .news-marquee div:hover {
+  .news-marquee-track:hover .news-marquee-content {
     animation-play-state: paused;
   }
 
@@ -147,27 +307,6 @@
     0% { transform: translateX(0); }
     100% { transform: translateX(-100%); }
   }
-
-  .swiper-button-prev,
-  .swiper-button-next {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.16);
-    position: absolute;
-    top: calc(50% - 22px);
-    z-index: 10;
-    cursor: pointer;
-    transition: background 0.2s ease;
-  }
-
-  .swiper-button-prev:hover,
-  .swiper-button-next:hover {
-    background: rgba(0, 0, 0, 0.24);
-  }
-
-  .swiper-button-prev { left: 12px; }
-  .swiper-button-next { right: 12px; }
 
   .loading-wrap {
     display: flex;
@@ -180,26 +319,23 @@
     .news-card {
       flex-direction: column;
       height: auto;
-      max-height: none;
     }
 
-    .media-panel,
-    .detail-panel {
-      max-width: 100%;
-      min-width: 100%;
-      flex: none;
-      height: auto;
-    }
-
+    // width: calc(100% - 2rem), not 100% — min-width: 100% (of the 356px-wide
+    // parent) plus the 1rem margin on each side added another 32px on top,
+    // overflowing the card by that much (silently clipped by the card's own
+    // overflow: hidden — the image LOOKED cut off because it actually was).
     .media-panel {
-      min-height: 180px;
-      max-height: 220px;
+      width: calc(100% - 2rem);
+      max-width: calc(100% - 2rem);
+      flex: none;
+      margin: 1rem 1rem 0;
+      height: 180px;
     }
 
-    .news-media {
-      height: 100%;
-      min-height: 180px;
-      max-height: 220px;
+    .detail-panel {
+      padding: 1rem;
+      min-width: unset;
     }
 
     .video-wrap {
@@ -210,18 +346,10 @@
     .video-wrap .news-media {
       position: absolute;
       inset: 0;
-      min-height: unset;
-      max-height: unset;
     }
 
-    .detail-panel {
-      padding: 1rem;
-      min-width: unset;
-    }
-
-    .breaking-news-slides {
-      padding: 0.75rem;
+    .news-marquee-label {
+      display: none;
     }
   }
 }
-

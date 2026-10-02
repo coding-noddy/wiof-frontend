@@ -1,0 +1,223 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin-dashboard/manage-take-action"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isEditMode ? 'Edit Action' : 'New Action' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="admin-form-page">
+    <nav class="breadcrumb">
+      <a routerLink="/admin-dashboard">Dashboard</a>
+      <span class="separator">/</span>
+      <a routerLink="/admin-dashboard/manage-take-action">Take Action</a>
+      <span class="separator">/</span>
+      <span class="current">{{ isEditMode ? 'Edit' : 'New' }}</span>
+    </nav>
+
+    <div class="form-header">
+      <h1>{{ isEditMode ? 'Edit Action' : 'Create New Action' }}</h1>
+      <div class="form-actions">
+        <button class="btn-secondary" routerLink="/admin-dashboard/manage-take-action">Cancel</button>
+        <button class="btn-primary" (click)="onSubmit()" [disabled]="!addActionForm.valid || isSaving">
+          <ion-icon name="checkmark-outline"></ion-icon> {{ isEditMode ? 'Update' : 'Create' }}
+        </button>
+      </div>
+    </div>
+
+    <form [formGroup]="addActionForm">
+      <!-- Basic Info -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="document-text-outline"></ion-icon> Basic Information</div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="floating">Title *</ion-label>
+            <ion-input formControlName="title"></ion-input>
+          </ion-item>
+        </div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="floating">Short Description *</ion-label>
+            <ion-textarea formControlName="shortDescription" rows="2" auto-grow="true"></ion-textarea>
+          </ion-item>
+        </div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="floating">Full Description *</ion-label>
+            <ion-textarea formControlName="description" rows="4" auto-grow="true"></ion-textarea>
+          </ion-item>
+        </div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="stacked">Instructions (one per line)</ion-label>
+            <ion-textarea formControlName="instructions" rows="4" auto-grow="true" placeholder="Identify lights that are not needed.&#10;Switch them off when leaving the room."></ion-textarea>
+          </ion-item>
+        </div>
+      </div>
+
+      <!-- Taxonomy -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="pricetags-outline"></ion-icon> Taxonomy</div>
+        <div class="form-row full-width">
+          <label class="preferred-elements-label">
+            <ion-icon name="options-outline" aria-hidden="true"></ion-icon>
+            Elements *
+          </label>
+          <div class="element-pill-row">
+            <button
+              type="button"
+              *ngFor="let element of elementsList"
+              class="element-toggle-pill"
+              [class.active]="isElementSelected(element)"
+              (click)="toggleElement(element)"
+            >{{ element | titlecase }}</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <ion-item>
+            <ion-label position="floating">Categories (comma separated)</ion-label>
+            <ion-input formControlName="categories" placeholder="energy-saving, daily-habit"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Tags (comma separated)</ion-label>
+            <ion-input formControlName="tags" placeholder="energy, home, daily"></ion-input>
+          </ion-item>
+        </div>
+      </div>
+
+      <!-- Behavior -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="settings-outline"></ion-icon> Behavior</div>
+        <div class="form-row">
+          <ion-item>
+            <ion-label position="floating">Action Type *</ion-label>
+            <ion-select formControlName="actionType">
+              <ion-select-option [value]="type" *ngFor="let type of actionTypes">{{ type }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Repeat Type *</ion-label>
+            <ion-select formControlName="repeatType">
+              <ion-select-option [value]="type" *ngFor="let type of repeatTypes">{{ type }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </div>
+        <div class="form-row">
+          <ion-item>
+            <ion-label position="floating">Completion Type *</ion-label>
+            <ion-select formControlName="completionType">
+              <ion-select-option [value]="type" *ngFor="let type of completionTypes">{{ type }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Difficulty *</ion-label>
+            <ion-select formControlName="difficulty">
+              <ion-select-option [value]="d" *ngFor="let d of difficulties">{{ d | enumLabel }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </div>
+        <div class="form-row">
+          <ion-item>
+            <ion-label position="floating">Estimated Duration (minutes) *</ion-label>
+            <ion-input type="number" formControlName="estimatedDurationMinutes"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Display Order</ion-label>
+            <ion-input type="number" formControlName="displayOrder"></ion-input>
+          </ion-item>
+        </div>
+      </div>
+
+      <!-- Presentation -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="image-outline"></ion-icon> Presentation</div>
+        <div class="form-row">
+          <ion-item>
+            <ion-label position="floating">Icon Name</ion-label>
+            <ion-input formControlName="iconName" placeholder="leaf-outline"></ion-input>
+            <ion-note slot="helper">Any Ionicons name, e.g. leaf-outline, water-outline.</ion-note>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">YouTube URL</ion-label>
+            <ion-input formControlName="mediaUrl" placeholder="https://www.youtube.com/embed/..."></ion-input>
+          </ion-item>
+        </div>
+        <div class="form-row">
+          <ion-item lines="none">
+            <ion-checkbox slot="start" formControlName="isActive"></ion-checkbox>
+            <ion-label>Active (visible to users)</ion-label>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-checkbox slot="start" formControlName="isFeatured"></ion-checkbox>
+            <ion-label>Featured</ion-label>
+          </ion-item>
+        </div>
+      </div>
+
+      <!-- Safety & Accessibility -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="warning-outline"></ion-icon> Safety &amp; Accessibility</div>
+        <ion-note class="form-card-note">
+          Real guardrails shown to users (e.g. "Never unplug medical devices") — not decorative. Leave blank if genuinely none apply.
+        </ion-note>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="stacked">Safety Notes (one per line)</ion-label>
+            <ion-textarea formControlName="safetyNotes" rows="3" auto-grow="true" placeholder="Never unplug medical devices, safety equipment, or anything that must remain powered."></ion-textarea>
+          </ion-item>
+        </div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="stacked">Accessibility Notes (one per line)</ion-label>
+            <ion-textarea formControlName="accessibilityNotes" rows="2" auto-grow="true" placeholder="Users should adapt or choose another action where mobility, health, safety, or access make this unsuitable."></ion-textarea>
+          </ion-item>
+        </div>
+      </div>
+
+      <!-- Evidence -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon name="shield-checkmark-outline"></ion-icon> Evidence (optional)</div>
+        <ion-note class="form-card-note">
+          Sourcing for this action's claim — so it's never presented as if WIOF independently verified or officially endorsed it. Leave Evidence Level blank to omit entirely.
+        </ion-note>
+        <div class="form-row">
+          <ion-item>
+            <ion-label position="floating">Evidence Level</ion-label>
+            <ion-select formControlName="evidenceLevel">
+              <ion-select-option value="">None</ion-select-option>
+              <ion-select-option [value]="level" *ngFor="let level of evidenceLevels">{{ level | enumLabel }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Reviewed Date</ion-label>
+            <ion-input formControlName="evidenceReviewedAt" placeholder="2026-10-01"></ion-input>
+          </ion-item>
+        </div>
+        <div class="form-row">
+          <ion-item>
+            <ion-label position="floating">Source Organization</ion-label>
+            <ion-input formControlName="evidenceSourceOrganization" placeholder="U.S. Environmental Protection Agency"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Source Title</ion-label>
+            <ion-input formControlName="evidenceSourceTitle" placeholder="What You Can Do About Climate Change"></ion-input>
+          </ion-item>
+        </div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="floating">Source URL</ion-label>
+            <ion-input formControlName="evidenceSourceUrl" placeholder="https://..."></ion-input>
+          </ion-item>
+        </div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="floating">Rationale</ion-label>
+            <ion-textarea formControlName="evidenceRationale" rows="2" auto-grow="true"></ion-textarea>
+          </ion-item>
+        </div>
+      </div>
+    </form>
+  </div>
+</ion-content>

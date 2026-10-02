@@ -6,7 +6,7 @@ import { AuthService } from '../services/auth.service';
 import { UiUtilService } from '../util/UiUtilService';
 
 /**
- * Guard for public user routes (e.g., /my-journey, /my-saved).
+ * Guard for public user routes (e.g., /my-journey, /my-library).
  * Redirects unauthenticated users to /home and shows a sign-in prompt toast.
  * Distinct from AuthGuard which redirects to /login for admin access.
  */

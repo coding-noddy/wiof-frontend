@@ -7,6 +7,7 @@ import { Food, FoodDataService } from '../../services/food-data.service';
 import { NutritionService, NutritionData } from '../../services/nutrition.service';
 import { ActivityService } from 'src/app/services/activity.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { expandCollapseAnimation } from 'src/app/util/expand-collapse-animation';
 
 interface CategoryChip {
   key: string;
@@ -24,7 +25,8 @@ interface PhFact {
 @Component({
   selector: 'app-food-ph-indicator',
   templateUrl: './food-ph-indicator.component.html',
-  styleUrls: ['./food-ph-indicator.component.scss']
+  styleUrls: ['./food-ph-indicator.component.scss'],
+  animations: [expandCollapseAnimation]
 })
 export class FoodPhIndicatorComponent implements OnInit, OnDestroy {
 

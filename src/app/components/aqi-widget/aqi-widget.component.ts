@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { map, debounceTime, switchMap, takeUntil, filter, first } from 'rxjs/operators';
 import { ActivityService } from 'src/app/services/activity.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { expandCollapseAnimation } from 'src/app/util/expand-collapse-animation';
 
 interface AQIFact {
   text: string;
@@ -14,7 +15,8 @@ interface AQIFact {
 @Component({
   selector: 'app-aqi-widget',
   templateUrl: './aqi-widget.component.html',
-  styleUrls: ['./aqi-widget.component.scss']
+  styleUrls: ['./aqi-widget.component.scss'],
+  animations: [expandCollapseAnimation]
 })
 export class AqiWidgetComponent implements OnInit, OnDestroy {
 

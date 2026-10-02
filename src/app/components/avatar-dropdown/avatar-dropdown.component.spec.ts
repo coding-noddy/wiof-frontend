@@ -157,9 +157,9 @@ describe('AvatarDropdownComponent', () => {
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/my-journey']);
     });
 
-    it('should navigate to /my-saved when Saved is clicked', () => {
-      component.navigateTo('/my-saved');
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/my-saved']);
+    it('should navigate to /my-library when My Library is clicked', () => {
+      component.navigateTo('/my-library');
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/my-library']);
     });
 
     it('should navigate to /settings when Settings is clicked', () => {

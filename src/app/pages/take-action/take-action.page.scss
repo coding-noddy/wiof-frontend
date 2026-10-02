@@ -1,63 +1,195 @@
 @import '../../wiof-custom-theming.scss';
 
-.wiof-take-action {
-  padding: 20px;
-  margin-bottom: 350px;
-  color: rgb(209, 161, 74);
+.page-breadcrumb-bar {
+  width: 100%;
+  padding: 1.1rem 1.25rem;
+  background: var(--wiof-warm-white);
+  border-top: 1.5px solid var(--wiof-border);
+  border-bottom: 1.5px solid var(--wiof-border);
+
+  @media (min-width: 768px) {
+    padding: 1.1rem 6vw;
+  }
+}
+
+.breadcrumb {
+  font-size: 0.9rem;
+  color: var(--wiof-ink);
+
+  a {
+    color: var(--wiof-ink);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .sep {
+    margin: 0 0.5rem;
+    opacity: 0.5;
+  }
+
+  .current {
+    font-weight: 700;
+  }
+}
+
+.hub-hero {
+  padding: 2rem 1.25rem 0.5rem;
+  text-align: center;
+
+  @media (min-width: 768px) {
+    padding: 2.5rem 6vw 0.5rem;
+  }
+}
+
+.eyebrow {
+  margin: 0 0 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--wiof-brown);
 }
 
 .take-action-title {
-  padding: 10px;
+  margin: 0 0 0.75rem;
+  color: var(--wiof-ink);
+  font-size: 1.9rem;
+  font-weight: 800;
+}
+
+.hub-intro {
+  max-width: 640px;
   margin: 0 auto;
-  color: $dark-color;
-  display: inline-block;
-  font-size: x-large;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--wiof-ink);
+  opacity: 0.78;
 }
 
-.back-button {
-  padding: 5px;
-  float: right;
+.hub-search {
+  padding: 1.25rem 1.25rem 0;
+
+  @media (min-width: 768px) {
+    padding: 1.5rem 6vw 0;
+  }
 }
 
-.element-buttons {
+.hub-section {
+  padding: 1.5rem 1.25rem;
+
+  @media (min-width: 768px) {
+    padding: 1.75rem 6vw;
+  }
+}
+
+.section-heading {
+  margin: 0 0 1.1rem;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--wiof-ink);
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.1rem;
+}
+
+.tab-action-grid {
+  margin-top: 1.25rem;
+}
+
+.skeleton-action-card {
+  height: 190px;
+  border-radius: 18px;
+}
+
+.empty-note {
+  margin: 1rem 0 0;
+  font-size: 0.88rem;
+  color: var(--wiof-ink);
+  opacity: 0.65;
+}
+
+.category-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.category-pill {
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  background: var(--wiof-warm-white);
+  color: var(--wiof-ink);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  cursor: pointer;
+
+  &.active {
+    background: var(--wiof-teal);
+    border-color: var(--wiof-teal);
+    color: var(--wiof-warm-white);
+  }
+}
+
+.recent-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1rem;
+    border-radius: 14px;
+    border: 1.5px solid var(--wiof-brown-tint-40);
+    background: var(--wiof-warm-white);
+
+    ion-icon {
+      color: var(--wiof-teal);
+      font-size: 1.1rem;
+    }
+  }
+
+  .recent-title {
+    flex: 1;
+    font-weight: 600;
+    color: var(--wiof-ink);
+  }
+
+  .recent-date {
+    font-size: 0.78rem;
+    opacity: 0.6;
+  }
+}
+
+.guest-cta {
   text-align: center;
+  color: var(--wiof-ink);
+  opacity: 0.75;
+  font-size: 0.9rem;
 }
 
-.take-action-content-container {
-  min-height: 45vh;
+@media (max-width: 991px) {
+  .action-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
-.take-action-toolbar-container {
-  margin-top: 10px;
+@media (max-width: 575px) {
+  .action-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
-.tab-image {
-  height: 40px;
-  padding-right: 10px;
-}
-
-.tab-label {
-  font-size: 18px;
-}
-
-.take-action-wrapper ::ng-deep .mat-tab-label {
-  padding: 30px;
-  min-width: 100px;
-}
-
-.take-action-wrapper ::ng-deep .mat-tab-label-active {
-  border-radius: 1rem 1rem 0 0;
-  box-shadow: 5px 10px 25px grey;
-  opacity: 1;
-  border: 1px solid lightgrey;
-  border-bottom: none;
-}
-
-.take-action-wrapper ::ng-deep .mat-tab-label-container {
-  margin: 0 1rem;
-  padding-top: 1rem;
-}
-
-.take-action-wrapper ::ng-deep .mat-ink-bar {
-  visibility: hidden !important;
-}
+// Element switching now reuses <app-life-elements variant="pills"> directly
+// (navigate=false mode) — same order/colors/hover animation as the home
+// page and every element page, no bespoke tab styling to maintain here.

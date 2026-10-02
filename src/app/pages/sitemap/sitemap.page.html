@@ -1,7 +1,13 @@
 <app-header></app-header>
 <ion-content>
-  <app-back-button></app-back-button>
-  <h1 class="wiof-take-action">Sitemap</h1>
+  <div class="page-breadcrumb-bar">
+    <div class="breadcrumb">
+      <a routerLink="/home">Home</a>
+      <span class="sep">/</span>
+      <span class="current">Sitemap</span>
+    </div>
+  </div>
+  <h1 class="sitemap-title">Sitemap</h1>
   <!-- <div *ngIf="(blogDetails | async) as blog">
 
   <ion-text

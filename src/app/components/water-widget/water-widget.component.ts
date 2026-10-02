@@ -6,6 +6,7 @@ import { takeUntil, debounceTime, switchMap, first } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { ActivityService } from 'src/app/services/activity.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { expandCollapseAnimation } from 'src/app/util/expand-collapse-animation';
 
 interface WaterItem {
   name: string;
@@ -29,7 +30,8 @@ interface City {
 @Component({
   selector: 'app-water-widget',
   templateUrl: './water-widget.component.html',
-  styleUrls: ['./water-widget.component.scss']
+  styleUrls: ['./water-widget.component.scss'],
+  animations: [expandCollapseAnimation]
 })
 export class WaterWidgetComponent implements OnInit, OnDestroy {
 

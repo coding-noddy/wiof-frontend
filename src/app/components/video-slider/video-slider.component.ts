@@ -8,6 +8,12 @@ import {
 import { VIDEO_SLIDER_OPTIONS } from 'src/app/app.constants';
 import { Video } from 'src/app/models/Video';
 
+// Element pages only ever need a taste of recent content, not the full
+// catalogue — "Explore More Videos" is the actual path to everything else,
+// so the slider itself stays capped at the 10 most recent regardless of
+// how many videos the element playlist actually has.
+const SLIDER_ITEM_LIMIT = 10;
+
 @Component({
   selector: 'app-video-slider',
   templateUrl: './video-slider.component.html',
@@ -19,6 +25,10 @@ export class VideoSliderComponent implements OnInit, AfterViewInit {
   videoSliderClass: string;
   width: number;
   slideOpts = VIDEO_SLIDER_OPTIONS;
+
+  get displayList(): Array<Video> {
+    return (this.videoList || []).slice(0, SLIDER_ITEM_LIMIT);
+  }
 
   constructor() {}
 
@@ -40,18 +50,19 @@ export class VideoSliderComponent implements OnInit, AfterViewInit {
   }
 
   showNavigator() {
+    const count = this.displayList.length;
     if (this.width >= 1024) {
       // slidesPerView: 4
-      return this.videoList.length >= 5;
+      return count >= 5;
     } else if (this.width < 1024 && this.width >= 767) {
       // slidesPerView: 3
-      return this.videoList.length >= 4;
+      return count >= 4;
     } else if (this.width < 767 && this.width >= 480) {
       // slidesPerView: 2
-      return this.videoList.length >= 3;
+      return count >= 3;
     } else if (this.width < 480) {
       // slidesPerView: 1
-      return this.videoList.length >= 2;
+      return count >= 2;
     }
   }
 }

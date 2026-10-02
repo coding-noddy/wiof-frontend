@@ -3,20 +3,28 @@
 $a: $air-color;
 $a-dark: darken($a, 24%);
 $a-mid: darken($a, 12%);
-$radius-card: 20px;
+$radius-card: 18px;
 
 // ── Card shell ───────────────────────────────────────────────────
+// Was lighten($a, 5%) — a near-solid teal-tint wash across the whole card,
+// the PO's "too dark" complaint. Ivory (not pure warm-white) keeps the
+// translucent-white "glass panel" inner elements (search bar, city chips,
+// etc. — rgba(255,255,255,X) throughout this file) visibly popping against
+// the card instead of blending into a pure-white background.
 .aqi-widget-card {
   border-radius: $radius-card;
   overflow: hidden;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.10);
-  background-color: lighten($a, 5%);
+  background-color: var(--wiof-ivory);
+  border: 1.5px solid var(--wiof-brown-tint-40);
   display: flex;
   flex-direction: column;
   margin: 0;
 }
 
 // ── Header ───────────────────────────────────────────────────────
+// Solid Air (teal-tint-20) — the widget's identity strip, matching the
+// same flat brand color used for Air everywhere else (video/in-focus
+// headers), not a one-off lighten() tint unique to this file.
 .aqi-widget-header {
   background-color: $a;
   border-bottom: 2px solid rgba(255, 255, 255, 0.8);
@@ -33,9 +41,23 @@ $radius-card: 20px;
   gap: 0.5rem;
 }
 
+// White text/icon on Air's header, matching video-widget/in-focus-widget's
+// own Air state — every element header goes white except Energy, whose
+// Marigold background stays too light for white text at any usable shade.
 .header-icon {
   font-size: 1.4rem;
-  color: $a-dark;
+  color: $light-color;
+}
+
+// Matches video-widget/in-focus-widget's own header title typography — the
+// sitewide .title-text default (20px Noto Sans, from wiof-custom-theming.scss)
+// reads visibly bigger/heavier than Aleo serif at the same nominal size.
+.title-text {
+  font-family: 'Aleo', serif !important;
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: $light-color;
 }
 
 .about-toggle {
@@ -62,20 +84,22 @@ $radius-card: 20px;
 }
 
 // ── About panel ──────────────────────────────────────────────────
+// Height/overflow during open/close are owned entirely by the
+// expandCollapse animation trigger bound in the template (see
+// src/app/util/expand-collapse-animation.ts) — Angular measures this
+// element's real rendered height via '*' and animates to that exact value.
+// Earlier CSS-only attempts (fixed max-height, then grid-template-rows
+// 0fr/1fr) either guessed the wrong pixel value or forced a full layout
+// recalculation every frame since neither is a compositor-only property;
+// this is the approach Angular itself recommends for "animate to auto
+// height" and is the first of these that's actually smooth.
 .about-panel {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease, padding 0.3s ease;
   background: rgba(255, 255, 255, 0.55);
   border-bottom: 1px solid rgba($a-dark, 0.15);
-
-  &.open {
-    max-height: 120px;
-    padding: 0.75rem 1.1rem;
-  }
 }
 
 .about-text {
+  padding: 0.75rem 1.1rem;
   font-size: 0.85rem;
   color: $dark-color;
   line-height: 1.6;

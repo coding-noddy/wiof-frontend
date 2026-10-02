@@ -3,24 +3,71 @@
 <ion-content>
   <div class="blogs-page" [ngClass]="element">
 
-    <!-- Header -->
-    <div class="blogs-header" [ngClass]="element">
-      <h1 class="header-title">{{ category }} Blogs</h1>
-      <div class="header-actions">
-        <a
-          [routerLink]="['take-action']"
-          class="action-link"
-          title="Go to Take Action"
-          aria-label="Go to Take Action"
-        >
-          <ion-icon name="trail-sign-outline"></ion-icon>
-        </a>
-        <app-back-button></app-back-button>
+    <div class="element-switcher-bar">
+      <div class="breadcrumb">
+        <a routerLink="/home">Home</a>
+        <span class="sep">/</span>
+        <a [routerLink]="['/element', element]">{{ category }}</a>
+        <span class="sep">/</span>
+        <span class="current">Blogs</span>
       </div>
+      <app-life-elements [element]="element" variant="pills" linkSuffix="blogs"></app-life-elements>
+    </div>
+
+    <!-- Header -->
+    <div class="blogs-header">
+      <p class="header-eyebrow">Explore</p>
+      <h1 class="header-title">{{ category }} Blogs</h1>
+    </div>
+
+    <div class="list-search" [hidden]="blogList === null">
+      <app-search-box
+        #searchBox
+        [placeholder]="'Search ' + category + ' blogs by title, author or topic'"
+        ariaLabel="Search blogs"
+        (queryChange)="onSearchChange($event)"
+      ></app-search-box>
+    </div>
+
+    <!-- Search results -->
+    <div *ngIf="blogList !== null && isSearching" class="blogs-grid-wrap" aria-live="polite">
+      <h2 class="results-heading">
+        {{ searchResults.length }} {{ searchResults.length === 1 ? 'result' : 'results' }} in {{ category }}
+      </h2>
+      <div class="blogs-grid" *ngIf="searchResults.length">
+        <ion-grid>
+          <ion-row>
+            <ion-col size="12" size-sm="6" size-md="4" size-lg="3" *ngFor="let blog of searchResults">
+              <app-blog-card [blog]="blog" [element]="element"></app-blog-card>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+
+      <ng-container *ngIf="otherElementResults.length">
+        <h2 class="results-heading other-heading">
+          {{ otherElementResults.length }} {{ otherElementResults.length === 1 ? 'match' : 'matches' }} in other elements
+        </h2>
+        <div class="blogs-grid">
+          <ion-grid>
+            <ion-row>
+              <ion-col size="12" size-sm="6" size-md="4" size-lg="3" *ngFor="let match of otherElementResults">
+                <app-blog-card [blog]="match.blog" [element]="match.element"></app-blog-card>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+      </ng-container>
+
+      <p class="search-note" *ngIf="otherElementsLoading">Searching other elements…</p>
+      <p class="search-note" *ngIf="!otherElementsLoading && !searchResults.length && !otherElementResults.length">
+        No blogs match “{{ searchQuery.trim() }}”. Try a different word, or
+        <button type="button" class="wiof-link-button" (click)="searchBox.clear()">see all {{ category }} blogs</button>.
+      </p>
     </div>
 
     <!-- Blog grid -->
-    <div *ngIf="blogs | async as blogList; else loading" class="blogs-grid-wrap">
+    <div *ngIf="blogList !== null && !isSearching; else maybeLoading" class="blogs-grid-wrap">
       <div class="blogs-grid" *ngIf="blogList.length > 0">
         <ion-grid>
           <ion-row>
@@ -37,11 +84,15 @@
         </ion-grid>
       </div>
 
-      <div *ngIf="blogList && blogList.length === 0" class="no-content">
+      <div *ngIf="blogList.length === 0" class="no-content">
         <ion-icon name="newspaper-outline"></ion-icon>
         <p>No blogs found under <strong>{{ category }}</strong> category.</p>
       </div>
     </div>
+
+    <ng-template #maybeLoading>
+      <ng-container *ngIf="blogList === null" [ngTemplateOutlet]="loading"></ng-container>
+    </ng-template>
 
     <ng-template #loading>
       <div class="blogs-loading">

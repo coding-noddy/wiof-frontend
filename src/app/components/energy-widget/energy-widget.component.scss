@@ -5,24 +5,33 @@ $e:      $energy-color;           // rgb(255,235,184)
 $e-mid:  darken($e, 12%);
 $e-dark: darken($e, 28%);
 $e-bg:   lighten($e, 3%);
-$radius-card: 20px;
+$radius-card: 18px;
 $radius-item: 14px;
 
 // ── Card shell ───────────────────────────────────────────────────
+// Was $e-bg (lighten($e,3%)) — a near-solid Marigold wash across the whole
+// card. Ivory (not pure warm-white) keeps this file's glass-panel inner
+// elements visibly popping against the card instead of blending into white.
 .energy-widget-card {
   border-radius: $radius-card;
   overflow: hidden;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.10);
-  background-color: $e-bg;
+  background-color: var(--wiof-ivory);
+  border: 1.5px solid var(--wiof-brown-tint-40);
   display: flex;
   flex-direction: column;
   margin: 0;
 }
 
 // ── Header ───────────────────────────────────────────────────────
+// Solid Marigold — matching the same flat brand color used for Energy
+// everywhere else (video/in-focus headers). Marigold stays an accent for
+// page-level CTAs/backgrounds, but a header strip paired with dark ink
+// text ($e-dark icon, ink title below) is the one established exception
+// used throughout the app (take-action-detail, video/in-focus Energy
+// headers) — ink-on-Marigold has good contrast, unlike white-on-Marigold.
 .energy-widget-header {
   background-color: $e;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.8);
+  border-bottom: 1.5px solid var(--wiof-border);
   padding: 0.9rem 1.1rem;
   display: flex;
   align-items: center;
@@ -39,6 +48,16 @@ $radius-item: 14px;
 .header-icon {
   font-size: 1.4rem;
   color: $e-dark;
+}
+
+// Matches video-widget/in-focus-widget's own header title typography — the
+// sitewide .title-text default (20px Noto Sans, from wiof-custom-theming.scss)
+// reads visibly bigger/heavier than Aleo serif at the same nominal size.
+.title-text {
+  font-family: 'Aleo', serif !important;
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 // ── About panel ──────────────────────────────────────────────────
@@ -65,20 +84,22 @@ $radius-item: 14px;
   }
 }
 
+// Height/overflow during open/close are owned entirely by the
+// expandCollapse animation trigger bound in the template (see
+// src/app/util/expand-collapse-animation.ts) — Angular measures this
+// element's real rendered height via '*' and animates to that exact value.
+// Earlier CSS-only attempts (fixed max-height, then grid-template-rows
+// 0fr/1fr) either guessed the wrong pixel value or forced a full layout
+// recalculation every frame since neither is a compositor-only property;
+// this is the approach Angular itself recommends for "animate to auto
+// height" and is the first of these that's actually smooth.
 .about-panel {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease, padding 0.3s ease;
   background: rgba(255, 255, 255, 0.55);
   border-bottom: 1px solid rgba($e-dark, 0.15);
-
-  &.open {
-    max-height: 120px;
-    padding: 0.75rem 1.1rem;
-  }
 }
 
 .about-text {
+  padding: 0.75rem 1.1rem;
   font-size: 0.88rem;
   color: $dark-color;
   line-height: 1.6;
@@ -244,7 +265,6 @@ $radius-item: 14px;
   border-radius: $radius-item;
   padding: 0.85rem 1rem;
   margin-bottom: 0.85rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .co2-header {
@@ -352,7 +372,6 @@ $radius-item: 14px;
   border: 1px solid rgba(255, 255, 255, 0.95);
   border-radius: 12px;
   padding: 0.65rem 0.75rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 .equiv-icon {

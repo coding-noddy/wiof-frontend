@@ -1,6 +1,6 @@
 {
   "name": "wiof_frontend",
-  "version": "4.0.3",
+  "version": "5.0.3",
   "author": "Ionic Framework",
   "homepage": "https://ionicframework.com/",
   "scripts": {
@@ -25,7 +25,12 @@
     "predeploy:functions:staging": "npm run test:rules",
     "deploy:functions:staging": "firebase deploy --only functions --project wiof-staging",
     "predeploy:functions:prod": "npm run test:rules",
-    "deploy:functions:prod": "firebase deploy --only functions --project wiof-production"
+    "deploy:functions:prod": "firebase deploy --only functions --project wiof-production",
+    "predeploy:backend:staging": "npm run test:rules",
+    "deploy:backend:staging": "firebase deploy --only firestore:rules,firestore:indexes,storage,functions --project wiof-staging",
+    "predeploy:backend:prod": "npm run test:rules",
+    "deploy:backend:prod": "firebase deploy --only firestore:rules,firestore:indexes,storage,functions --project wiof-production",
+    "verify:take-action": "node scripts/verify-take-action-catalogue.js"
   },
   "private": true,
   "description": "An Ionic project",

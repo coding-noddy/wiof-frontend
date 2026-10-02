@@ -179,6 +179,32 @@ const routes: Routes = [
     ] 
   },
   {
+    path: 'manage-take-action',
+    children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import('./take-action/manage-take-action/manage-take-action.module').then(
+            (m) => m.ManageTakeActionPageModule
+          )
+      },
+      {
+        path: 'take-action/:mode',
+        loadChildren: () =>
+          import('./take-action/add-take-action/add-take-action.module').then(
+            (m) => m.AddTakeActionPageModule
+          )
+      }
+    ]
+  },
+  {
+    path: 'hero-videos',
+    loadChildren: () =>
+      import('./hero-videos/hero-videos.module').then(
+        (m) => m.HeroVideosPageModule
+      )
+  },
+  {
     path: 'subscribers',
     loadChildren: () =>
       import('./subscribers/subscribers.module').then(

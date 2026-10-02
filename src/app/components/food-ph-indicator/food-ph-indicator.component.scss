@@ -4,7 +4,18 @@
    Design Tokens
 ========================================================== */
 
-$card-radius: 24px;
+// This widget belongs to the same family as AQI/Water/Energy widgets (an
+// interactive data-lookup tool, not an editorial content card like Breaking
+// News/Poll/NGO). As of 2026-10-01 that whole family (AQI/Water/Energy/EQ/
+// this one) moved to a lighter ivory card + softened-tint header — the
+// "bold solid fill" version was product-feedback'd as too heavy/dark across
+// the board. Variable names still mirror the siblings' ($a/$a-dark in
+// aqi-widget, $w/$w-dark in water-widget, $e/$e-dark in energy-widget) so
+// the pattern stays traceable across all five files.
+$f: $earth-color;
+$f-dark: darken($f, 24%);
+
+$card-radius: 18px;
 $panel-radius: 22px;
 $input-radius: 18px;
 
@@ -45,21 +56,25 @@ $panel-shadow:
 
   border-radius: $card-radius;
 
-  background: lighten($earth-color, 12%);
-
-  box-shadow: $card-shadow;
+  // Ivory (not pure warm-white) keeps this file's glass-panel inner
+  // elements visibly popping against the card instead of blending into
+  // white — same reasoning as the AQI/Water/Energy/EQ siblings.
+  background-color: var(--wiof-ivory);
+  border: 1.5px solid var(--wiof-brown-tint-40);
 }
 
 /* ==========================================================
    Header
 ========================================================== */
 
+// Solid Earth brown — matching the same flat brand color used for Earth
+// everywhere else (video/in-focus headers), not a one-off lighten() tint.
 .wiof-food-ph-widget-card-header {
-  padding: 1rem 1.4rem;
+  padding: 0.9rem 1.1rem;
 
-  background: $earth-color;
+  background-color: $f;
 
-  border-bottom: 1px solid rgba(255,255,255,.65);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.8);
 }
 
 .food-ph-widget-header {
@@ -75,50 +90,72 @@ $panel-shadow:
   gap: .75rem;
 }
 
+// White text/icon on Earth's header, matching video-widget/in-focus-widget's
+// own Earth state — every element header goes white except Energy, whose
+// Marigold background stays too light for white text at any usable shade.
 .header-icon {
-  font-size: 1.45rem;
-  color: darken($earth-color, 38%);
+  font-size: 1.4rem;
+  color: $light-color;
 }
 
 .title-text {
-  color: $dark-color;
+  color: $light-color;
 
-  font-size: clamp(1rem,1.3vw,1.25rem);
+  // Matches video-widget/in-focus-widget's own header title typography
+  // exactly, not just the font-size — this span had no font-family set, so
+  // it fell back to the sitewide Noto Sans reset instead of Aleo serif.
+  // Noto Sans Bold at the same pixel size reads visibly heavier/bigger
+  // than Aleo Bold, which is why it still looked oversized after only
+  // matching the font-size number.
+  font-family: 'Aleo', serif !important;
+  font-size: 1.08rem;
   font-weight: 700;
-  letter-spacing: .2px;
+  letter-spacing: -0.02em;
 }
 
 /* ==========================================================
    About Button
 ========================================================== */
 
+// A translucent white pill floating on the now-solid header, matching
+// AQI/Water/Energy's own about-toggle exactly — not a teal-tinted pill,
+// which only made sense against a warm-white header.
+// This was the real source of the oversized header: padding .55rem 1rem
+// (8.8px/16px) and font-size .9rem with no icon-size control made this
+// button the tallest element in the row via align-items:center — taller
+// than the icon, taller than the title, and (since video-widget's header
+// has no button at all) much taller than video-widget's header beside it.
+// Matches AQI/Water/EQ/Energy's own compact about-toggle exactly.
 .about-toggle {
   display: inline-flex;
   align-items: center;
-  gap: .45rem;
+  gap: 4px;
 
-  padding: .55rem 1rem;
+  padding: 4px 12px;
 
-  border: 1px solid rgba(255,255,255,.9);
+  border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 999px;
 
-  background: rgba(255,255,255,.72);
+  background: rgba(255, 255, 255, 0.6);
 
   color: $dark-color;
-  font-size: .9rem;
+  font-size: 0.82rem;
   font-weight: 600;
 
   cursor: pointer;
+  white-space: nowrap;
 
   transition:
     background $transition-normal,
     box-shadow $transition-normal,
     transform $transition-fast;
+
+  ion-icon { font-size: 1rem; }
 }
 
 .about-toggle:hover {
 
-  background: rgba(255,255,255,.96);
+  background: rgba(255, 255, 255, 0.9);
 
   transform: translateY(-2px);
 
@@ -152,70 +189,32 @@ $panel-shadow:
    About Panel
 ========================================================== */
 
+// Same single-paragraph pattern as AQI/Water/Energy widgets' own about-panel
+// (see e.g. water-widget.component.scss) — this was previously the only
+// widget with its own title + bulleted fact-list structure instead. The
+// translucent-white background matches their about-panel too, now that it
+// sits on the Brown wash rather than a warm-white card.
+// Height/overflow during open/close are owned entirely by the
+// expandCollapse animation trigger bound in the template (see
+// src/app/util/expand-collapse-animation.ts) — Angular measures this
+// element's real rendered height via '*' and animates to that exact value.
+// Earlier CSS-only attempts (fixed max-height, then grid-template-rows
+// 0fr/1fr) either guessed the wrong pixel value or forced a full layout
+// recalculation every frame since neither is a compositor-only property;
+// this is the approach Angular itself recommends for "animate to auto
+// height" and is the first of these that's actually smooth.
 .about-panel {
-  overflow: hidden;
-  max-height: 0;
-  background: rgba(255,255,255,.55);
-  border-bottom: 1px solid rgba(0,0,0,.06);
-  transition:
-    max-height .3s ease,
-    padding .3s ease;
+  background: rgba(255, 255, 255, 0.55);
+  border-bottom: 1px solid rgba($f-dark, 0.15);
 }
 
-.about-panel.open {
-  max-height: 160px;
+.about-text {
   padding: 0.75rem 1.1rem;
-}
-
-.about-content {
-  display: flex;
-  flex-direction: column;
-  gap: .8rem;
-}
-
-.about-title {
   margin: 0;
-
+  font-size: 0.88rem;
   color: $dark-color;
-
-  font-size: 1rem;
-  font-weight: 700;
-}
-
-.about-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.about-list li {
-  position: relative;
-
-  padding-left: 1.5rem;
-
-  margin-bottom: .55rem;
-
-  color: rgba(0,0,0,.74);
-
-  font-size: .92rem;
-
   line-height: 1.6;
-}
-
-.about-list li::before {
-  content: "✓";
-
-  position: absolute;
-
-  left: 0;
-
-  color: darken($earth-color, 18%);
-
-  font-weight: 700;
-}
-
-.about-list li:last-child {
-  margin-bottom: 0;
+  text-align: justify;
 }
 
 /* ==========================================================
@@ -270,7 +269,7 @@ $panel-shadow:
   }
 
   &:hover {
-    border-color: rgba(118, 155, 76, 0.45);
+    border-color: rgba($f-dark, 0.45);
     background: white;
   }
 }
@@ -309,11 +308,11 @@ $panel-shadow:
   .cat-item-emoji { font-size: 1rem; }
 
   &:hover {
-    background: rgba(118, 155, 76, 0.1);
+    background: rgba($f-dark, 0.1);
   }
 
   &.active {
-    background: rgba(118, 155, 76, 0.15);
+    background: rgba($f-dark, 0.15);
     font-weight: 700;
   }
 }
@@ -324,9 +323,9 @@ $panel-shadow:
   gap: 4px;
   padding: 0 12px;
   border-radius: 12px;
-  border: 1px solid rgba(118,155,76,.3);
-  background: rgba(118,155,76,.08);
-  color: darken($earth-color, 20%);
+  border: 1px solid rgba($f-dark, .3);
+  background: rgba($f-dark, .08);
+  color: $f-dark;
   font-size: .8rem;
   font-weight: 600;
   height: 36px;
@@ -337,8 +336,8 @@ $panel-shadow:
   ion-icon { font-size: .9rem; }
 
   &:hover {
-    background: rgba(118,155,76,.15);
-    border-color: rgba(118,155,76,.5);
+    background: rgba($f-dark, .15);
+    border-color: rgba($f-dark, .5);
     box-shadow: 0 2px 8px rgba(0,0,0,.06);
   }
 }
@@ -414,15 +413,15 @@ $panel-shadow:
   gap: .5rem;
   margin-top: .85rem;
   padding: .65rem .75rem;
-  background: rgba(118,155,76,.08);
-  border: 1px solid rgba(118,155,76,.18);
+  background: rgba($f-dark, .08);
+  border: 1px solid rgba($f-dark, .18);
   border-radius: 12px;
   animation: fadeUp .3s ease;
 }
 
 .tip-icon {
   font-size: 1rem;
-  color: darken($earth-color, 20%);
+  color: $f-dark;
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -450,11 +449,12 @@ $panel-shadow:
 ========================================================== */
 
 .food-ph-meter-panel {
-  background: $panel-background;
-  border: 1px solid rgba(255,255,255,.5);
+  // Translucent white floating on the Brown wash — matches AQI's pollutant
+  // tiles (rgba(255,255,255,.7)) and Water's rainfall-card
+  // (rgba(255,255,255,.72), rgba(255,255,255,.95) border) exactly.
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.95);
   border-radius: $panel-radius;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   padding: 0;
   overflow: hidden;
   // Fixed height so left side never grows
@@ -513,7 +513,7 @@ $panel-shadow:
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: rgba(255,255,255,.65);
+  background: var(--wiof-warm-white);
   border: 1px solid rgba(0,0,0,.08);
   border-radius: 999px;
   padding: 4px 12px;
@@ -553,7 +553,7 @@ $panel-shadow:
   gap: 5px;
   font-size: .82rem;
   font-weight: 600;
-  color: darken($earth-color, 20%);
+  color: $f-dark;
   text-decoration: none;
   transition: opacity .15s ease;
 
@@ -579,11 +579,10 @@ $panel-shadow:
 }
 
 .food-ph-input-area {
-  background: $panel-background;
-  border: 1px solid rgba(255,255,255,.5);
+  // See .food-ph-meter-panel — same translucent-white-on-Brown-wash panel.
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.95);
   border-radius: $panel-radius;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   padding: 1rem;
   overflow: visible;
   position: relative;
@@ -599,7 +598,7 @@ $panel-shadow:
 
 //   transform: translateY(-2px);
 
-//   border-color: rgba(118,155,76,.18);
+//   border-color: rgba($f-dark, .18);
 
 //   box-shadow: $panel-shadow;
 // }
@@ -667,7 +666,7 @@ $panel-shadow:
 }
 
 .select-food-input:hover {
-  border-color: rgba(118, 155, 76, 0.45);
+  border-color: rgba($f-dark, 0.45);
 }
 
 .select-food-input:focus {
@@ -675,15 +674,15 @@ $panel-shadow:
 
   background: white;
 
-  border-color: rgba(118, 155, 76, 0.9);
+  border-color: rgba($f-dark, 0.9);
 
   transform: translateY(-1px);
 
-  box-shadow: 0 0 0 5px rgba(118, 155, 76, 0.12);
+  box-shadow: 0 0 0 5px rgba($f-dark, 0.12);
 }
 
 .food-search-wrapper:focus-within .search-icon {
-  color: rgba(118, 155, 76, 0.9);
+  color: rgba($f-dark, 0.9);
 }
 
 /* ==========================================================
@@ -723,9 +722,9 @@ $panel-shadow:
 }
 
 .clear-btn:hover {
-  background: rgba(118, 155, 76, 0.12);
+  background: rgba($f-dark, 0.12);
 
-  color: darken($earth-color, 20%);
+  color: $f-dark;
 }
 
 .clear-btn:active {
@@ -769,7 +768,7 @@ $panel-shadow:
 
 .random-btn:hover{
 
-  background:rgba(118,155,76,.12);
+  background:rgba($f-dark, .12);
 
 }
 */
@@ -938,11 +937,11 @@ input:focus-visible {
 
 .about-toggle:focus-visible,
 .clear-btn:focus-visible {
-  box-shadow: 0 0 0 4px rgba(118, 155, 76, 0.2);
+  box-shadow: 0 0 0 4px rgba($f-dark, 0.2);
 }
 
 .select-food-input:focus-visible {
-  box-shadow: 0 0 0 5px rgba(118, 155, 76, 0.14);
+  box-shadow: 0 0 0 5px rgba($f-dark, 0.14);
 }
 
 /* ==========================================================
@@ -1083,8 +1082,8 @@ input:focus-visible {
 ========================================================== */
 
 .nutrition-card {
-  background: rgba(118,155,76,.06);
-  border: 1px solid rgba(118,155,76,.15);
+  background: rgba($f-dark, .06);
+  border: 1px solid rgba($f-dark, .15);
   border-radius: 12px;
   padding: .6rem .75rem;
   margin-top: .5rem;
@@ -1100,7 +1099,7 @@ input:focus-visible {
 .nutrition-title {
   font-size: .72rem;
   font-weight: 700;
-  color: darken($earth-color, 20%);
+  color: $f-dark;
   text-transform: uppercase;
   letter-spacing: .04em;
 }
@@ -1108,15 +1107,15 @@ input:focus-visible {
 .nutrition-source {
   font-size: .65rem;
   font-weight: 600;
-  color: darken($earth-color, 20%);
-  background: rgba(118,155,76,.1);
+  color: $f-dark;
+  background: rgba($f-dark, .1);
   padding: 2px 8px;
   border-radius: 999px;
   text-decoration: none;
   transition: background .15s ease, color .15s ease;
 
   &:hover {
-    background: rgba(118,155,76,.2);
+    background: rgba($f-dark, .2);
     color: darken($earth-color, 30%);
   }
 }
@@ -1157,10 +1156,12 @@ input:focus-visible {
    Fact Strip (same pattern as water/energy widgets)
 ========================================================== */
 
+// Translucent white, matching AQI's/Water's own fact-strip exactly (not the
+// solid Ivory fill this used to have against a warm-white card).
 .fact-strip {
   margin: 0;
-  background: rgba(255,255,255,.6);
-  border-top: 1px solid rgba(0,0,0,.06);
+  background: rgba(255, 255, 255, 0.6);
+  border-top: 1px solid rgba($f-dark, 0.12);
   border-radius: 0 0 $card-radius $card-radius;
   padding: .6rem .75rem;
   display: flex;
@@ -1186,7 +1187,7 @@ input:focus-visible {
 
 .fact-icon {
   font-size: 1rem;
-  color: darken($earth-color, 20%);
+  color: $f-dark;
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -1232,7 +1233,7 @@ input:focus-visible {
   gap: 3px;
   font-size: .68rem;
   font-weight: 600;
-  color: darken($earth-color, 20%);
+  color: $f-dark;
   text-decoration: none;
   opacity: .8;
   transition: opacity .15s ease;
@@ -1250,7 +1251,7 @@ input:focus-visible {
   padding: 0;
   font-size: .68rem;
   font-weight: 600;
-  color: darken($earth-color, 20%);
+  color: $f-dark;
   cursor: pointer;
   opacity: .75;
   margin-left: auto;
@@ -1287,7 +1288,7 @@ input:focus-visible {
 .fact-counter {
   font-size: .65rem;
   font-weight: 600;
-  color: darken($earth-color, 20%);
+  color: $f-dark;
   min-width: 28px;
   text-align: center;
 }
@@ -1328,14 +1329,12 @@ input:focus-visible {
   padding: 0.6rem 0.5rem;
   border-radius: 14px;
   background: linear-gradient(180deg,#ffffff,#f8faf6);
-  border: 1px solid rgba(118,155,76,.18);
-  box-shadow: 0 4px 12px rgba(0,0,0,.04);
+  border: 1px solid rgba($f-dark, .18);
   transition: all .25s ease;
 }
 
 .summary-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(0,0,0,.08);
 }
 
 .summary-item span {
@@ -1400,7 +1399,7 @@ input:focus-visible {
 .status-chip.verified { background: rgba(46,125,50,.12); color: #2e7d32; }
 .status-chip.approximate { background: rgba(245,124,0,.12); color: #ef6c00; }
 .status-chip.estimated { background: rgba(198,40,40,.12); color: #c62828; }
-.detail-badge { background: rgba(118,155,76,.12); color: darken($earth-color,18%); }
+.detail-badge { background: rgba($f-dark, .12); color: darken($earth-color,18%); }
 
 /* Confidence Stars */
 .confidence-stars {

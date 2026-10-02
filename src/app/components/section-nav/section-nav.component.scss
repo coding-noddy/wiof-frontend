@@ -1,21 +1,23 @@
 @import '../../wiof-custom-theming.scss';
 
-// ── Nav bar — always visible below header ─────────────────────────────────────
+// ── Nav bar — sits below the header, at the top of the page, always visible.
 .section-nav {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #fffaf0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  padding: 0.4rem 1rem;
+  background: #FFFCF6;
+  border-bottom: 1.5px solid var(--wiof-border);
+  padding: 0.5rem 1rem;
   width: 100%;
+  max-height: 64px;
+  overflow: hidden;
 }
 
 .nav-scroll {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.35rem;
+  gap: 0.4rem;
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -28,26 +30,27 @@
 
 .nav-item {
   flex-shrink: 0;
-  border: none;
-  background: rgba(0, 0, 0, 0.04);
-  padding: 0.4rem 0.9rem;
+  border: 1.5px solid transparent;
+  background: transparent;
+  padding: 0.42rem 0.9rem;
   font-size: 0.82rem;
-  font-weight: 600;
-  color: #475569;
+  font-weight: 700;
+  color: $dark-color;
   border-radius: 999px;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   white-space: nowrap;
 
   &:hover {
-    background: rgba($home-color, 0.12);
-    color: $home-color-dark;
+    background: rgba(166, 135, 93, 0.08);
+    border-color: rgba(166, 135, 93, 0.18);
+    color: $dark-color;
   }
 
   &.active {
     background: $home-color;
-    color: #fff;
-    box-shadow: 0 3px 10px rgba($home-color, 0.3);
+    color: $dark-color;
+    border-color: rgba(43, 36, 32, 0.08);
   }
 
   &.disabled {
@@ -58,40 +61,41 @@
 }
 
 // ── Element theme colors for active pill ──────────────────────────────────────
+// Matches the element-switcher pills' own palette (life-elements.component's
+// .element-pill.active): full-saturation element color as the background with
+// plain $dark-color text, not a heavily darkened per-element text tint — that
+// read as muddy/too-dark next to the switcher pills right above this bar. Air,
+// Water and Spirit all share the same plain teal ($water-color) there too,
+// rather than three separate tint/shade variants.
 .theme-earth .nav-item.active {
   background: $earth-color;
-  color: darken($earth-color, 40%);
-  box-shadow: 0 3px 10px rgba($earth-color, 0.4);
+  color: $dark-color;
 }
 .theme-earth .nav-item:hover { background: rgba($earth-color, 0.15); color: darken($earth-color, 30%); }
 
 .theme-water .nav-item.active {
-  background: darken($water-color, 10%);
-  color: darken($water-color, 50%);
-  box-shadow: 0 3px 10px rgba($water-color, 0.4);
+  background: $water-color;
+  color: $dark-color;
 }
-.theme-water .nav-item:hover { background: rgba($water-color, 0.2); color: darken($water-color, 40%); }
+.theme-water .nav-item:hover { background: rgba($water-color, 0.15); color: darken($water-color, 30%); }
 
-.theme-fire .nav-item.active {
+.theme-energy .nav-item.active {
   background: $energy-color;
-  color: darken($energy-color, 40%);
-  box-shadow: 0 3px 10px rgba($energy-color, 0.4);
+  color: $dark-color;
 }
-.theme-fire .nav-item:hover { background: rgba($energy-color, 0.15); color: darken($energy-color, 30%); }
+.theme-energy .nav-item:hover { background: rgba($energy-color, 0.15); color: darken($energy-color, 30%); }
 
 .theme-air .nav-item.active {
-  background: $air-color;
-  color: darken($air-color, 40%);
-  box-shadow: 0 3px 10px rgba($air-color, 0.4);
+  background: $water-color;
+  color: $dark-color;
 }
-.theme-air .nav-item:hover { background: rgba($air-color, 0.15); color: darken($air-color, 30%); }
+.theme-air .nav-item:hover { background: rgba($water-color, 0.15); color: darken($water-color, 30%); }
 
 .theme-spirit .nav-item.active {
-  background: $spirit-color;
-  color: darken($spirit-color, 40%);
-  box-shadow: 0 3px 10px rgba($spirit-color, 0.4);
+  background: $water-color;
+  color: $dark-color;
 }
-.theme-spirit .nav-item:hover { background: rgba($spirit-color, 0.15); color: darken($spirit-color, 30%); }
+.theme-spirit .nav-item:hover { background: rgba($water-color, 0.15); color: darken($water-color, 30%); }
 
 // ── Responsive ────────────────────────────────────────────────────────────────
 @media (max-width: 767px) {

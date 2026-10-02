@@ -26,6 +26,12 @@ export class VideoPostPage implements OnInit, OnDestroy {
   videoThumbnail: string = '';
   destroy$: Subject<boolean> = new Subject();
   showFullVideoDescription: boolean = true;
+  // Each element ('air', 'earth', ...) is its own literal top-level route
+  // (element/air, element/earth, ...), not a shared element/:element param
+  // route — there is no route param to read here. Parsed straight from the
+  // URL instead, the same approach take-action.page.ts already uses for
+  // this exact situation.
+  element = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -36,6 +42,9 @@ export class VideoPostPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    const urlSegments = this.route.snapshot['_routerState'].url.split('/');
+    this.element = urlSegments[2] || '';
+
     this.route.paramMap.subscribe((params) => {
       if (params.has('videoId')) {
         this.id = params.get('videoId');

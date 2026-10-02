@@ -1,36 +1,112 @@
 <app-header></app-header>
 <ion-content class="take-action-wrapper">
-  <ion-row>
-    <ion-col>
-      <h1 class="take-action-title">Take Action</h1>
-      <app-back-button class="back-button"></app-back-button>
-    </ion-col>
-  </ion-row>
-  <mat-tab-group
-    [selectedIndex]="elemetTabIndex"
-    (selectedTabChange)="onSelectTab($event)"
-  >
-    <mat-tab *ngFor="let action of actions" [ngClass]="selectedElement">
-      <ng-template mat-tab-label>
-        <img
-          *ngIf="!isSelectedTab(action.tab.title)"
-          [src]="action.tab.image"
-          class="tab-image"
-          alt=""
-        />
-        <img
-          *ngIf="isSelectedTab(action.tab.title)"
-          [src]="action.tab.selectedImage"
-          class="tab-image"
-          alt=""
-        />
-        <span class="tab-label">{{ action.tab.title }}</span>
-      </ng-template>
-      <app-take-action-content
-        [actionData]="action"
-        [selectedElement]="selectedElement"
-      ></app-take-action-content>
-    </mat-tab>
-  </mat-tab-group>
+  <div class="page-breadcrumb-bar">
+    <div class="breadcrumb">
+      <a routerLink="/home">Home</a>
+      <span class="sep">/</span>
+      <span class="current">Take Action</span>
+    </div>
+  </div>
+
+  <section class="hub-hero">
+    <p class="eyebrow">Protect Through Action</p>
+    <h1 class="take-action-title">Small actions, meaningful change</h1>
+    <p class="hub-intro">
+      Browse what WIOF's community is doing for the planet, pick something you can do today,
+      and track your own progress over time.
+    </p>
+  </section>
+
+  <section class="hub-section" *ngIf="isLoading">
+    <h2 class="section-heading"><span class="skeleton skeleton-text-short"></span></h2>
+    <div class="action-grid">
+      <div class="skeleton skeleton-action-card" *ngFor="let i of [1,2,3,4]"></div>
+    </div>
+  </section>
+
+  <div class="hub-search" [hidden]="isLoading || !allActions.length">
+    <app-search-box
+      #searchBox
+      placeholder="Search actions, e.g. water, plastic, energy"
+      ariaLabel="Search actions"
+      (queryChange)="onSearchChange($event)"
+    ></app-search-box>
+  </div>
+
+  <section class="hub-section" *ngIf="!isLoading && isSearching" aria-live="polite">
+    <h2 class="section-heading">
+      {{ searchResults.length }} {{ searchResults.length === 1 ? 'result' : 'results' }} for “{{ searchQuery.trim() }}”
+    </h2>
+    <div class="action-grid" *ngIf="searchResults.length">
+      <app-take-action-card *ngFor="let action of searchResults" [action]="action"></app-take-action-card>
+    </div>
+    <p class="empty-note" *ngIf="!searchResults.length">
+      No actions match “{{ searchQuery.trim() }}”. Try a different word, or
+      <button type="button" class="wiof-link-button" (click)="searchBox.clear()">browse by element</button>.
+    </p>
+  </section>
+
+  <ng-container *ngIf="!isLoading && !isSearching">
+    <section class="hub-section" *ngIf="featuredActions.length">
+      <h2 class="section-heading">Featured Actions</h2>
+      <div class="action-grid">
+        <app-take-action-card *ngFor="let action of featuredActions" [action]="action"></app-take-action-card>
+      </div>
+    </section>
+
+    <section class="hub-section">
+      <h2 class="section-heading">Browse by Element</h2>
+
+      <app-life-elements
+        variant="pills"
+        [element]="selectedElement"
+        [navigate]="false"
+        (elementSelect)="selectElement($event)"
+      ></app-life-elements>
+
+      <div class="action-grid tab-action-grid" *ngIf="activeElementTab?.actions?.length">
+        <app-take-action-card *ngFor="let action of activeElementTab.actions" [action]="action"></app-take-action-card>
+      </div>
+      <p class="empty-note" *ngIf="!activeElementTab?.actions?.length">
+        No actions yet for {{ selectedElement | titlecase }} — check back soon.
+      </p>
+    </section>
+
+    <section class="hub-section" *ngIf="categories.length">
+      <h2 class="section-heading">Browse by Category</h2>
+      <div class="category-pill-row">
+        <button type="button" class="category-pill" [class.active]="!selectedCategory" (click)="selectCategory('')">All</button>
+        <button
+          type="button"
+          *ngFor="let category of categories"
+          class="category-pill"
+          [class.active]="selectedCategory === category"
+          (click)="selectCategory(category)"
+        >{{ category }}</button>
+      </div>
+      <div class="action-grid">
+        <app-take-action-card *ngFor="let action of categoryFilteredActions" [action]="action"></app-take-action-card>
+      </div>
+    </section>
+  </ng-container>
+
+  <section class="hub-section" *ngIf="isAuthenticated">
+    <h2 class="section-heading">Recently Completed</h2>
+    <p class="empty-note" *ngIf="!myActionsLoading && !recentlyCompleted.length">
+      You haven't completed any actions yet — pick one above to get started.
+    </p>
+    <ul class="recent-list" *ngIf="recentlyCompleted.length">
+      <li *ngFor="let item of recentlyCompleted">
+        <ion-icon name="checkmark-circle"></ion-icon>
+        <span class="recent-title">{{ getActionTitle(item.actionId) }}</span>
+        <span class="recent-date" *ngIf="item.lastCompletedAt?.toDate">{{ item.lastCompletedAt.toDate() | date:'mediumDate' }}</span>
+      </li>
+    </ul>
+  </section>
+
+  <section class="hub-section guest-cta" *ngIf="!isAuthenticated">
+    <p>Sign in to save your progress and see your own action history here.</p>
+  </section>
+
   <app-wiof-footer></app-wiof-footer>
 </ion-content>

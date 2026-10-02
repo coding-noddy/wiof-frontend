@@ -1,38 +1,15 @@
 <div class="video-slider-section" *ngIf="videoList && videoList.length > 0">
 
-  <!-- Actions -->
-  <div class="video-slider-actions">
-    <a
-      [routerLink]="['videos']"
-      class="action-link"
-      title="View all videos"
-      aria-label="View all videos"
-    >
-      View All <ion-icon name="arrow-forward-outline"></ion-icon>
-    </a>
-  </div>
-
   <!-- Slider -->
   <div *ngIf="videoList; else loading" class="slider-wrap">
     <swiper-container
       #swiperRef
-      [attr.slides-per-view]="4"
       [attr.space-between]="10"
       [attr.free-mode]="true"
       breakpoints='{"0":{"slidesPerView":1},"480":{"slidesPerView":2},"767":{"slidesPerView":3},"1024":{"slidesPerView":4}}'
     >
-      <swiper-slide *ngFor="let video of videoList">
-        <div class="video-card" [routerLink]="['video', video.url]">
-          <div class="video-image-wrap">
-            <img [src]="video.thumbnail" [alt]="video.title" class="video-image" />
-            <div class="play-overlay">
-              <ion-icon name="play-circle"></ion-icon>
-            </div>
-          </div>
-          <div class="video-body">
-            <h3 class="video-title">{{ video.title }}</h3>
-          </div>
-        </div>
+      <swiper-slide *ngFor="let video of displayList">
+        <app-video-card [video]="video" [element]="element"></app-video-card>
       </swiper-slide>
     </swiper-container>
 
@@ -42,6 +19,19 @@
     <button class="swiper-nav-btn next" (click)="swiperRef.swiper.slideNext()" *ngIf="showNavigator()">
       <ion-icon name="chevron-forward"></ion-icon>
     </button>
+  </div>
+
+  <!-- Trailing action, below the cards -->
+  <div class="video-slider-actions">
+    <a
+      [routerLink]="['videos']"
+      class="view-more-link"
+      title="Explore more {{ element }} videos"
+      attr.aria-label="Explore more {{ element }} videos"
+    >
+      Explore More {{ element | titlecase }} Videos
+      <ion-icon name="arrow-forward-outline"></ion-icon>
+    </a>
   </div>
 
   <ng-template #loading>

@@ -5,9 +5,14 @@
     "staging" or "prod"
 .PARAMETER SkipBranch
     Skip release branch creation
+.PARAMETER Backend
+    Also deploy Firestore rules + indexes, Storage rules and Cloud Functions
+    to the same project, before Hosting. Without it, only Hosting is deployed
+    (backend changes are NOT picked up by a Hosting deploy).
 .EXAMPLE
     .\deploy.ps1 -Target staging
     .\deploy.ps1 -Target prod
+    .\deploy.ps1 -Target prod -Backend
     .\deploy.ps1 -Target staging -SkipBranch
 #>
 
@@ -16,7 +21,9 @@ param(
     [ValidateSet("staging", "prod")]
     [string]$Target,
 
-    [switch]$SkipBranch
+    [switch]$SkipBranch,
+
+    [switch]$Backend
 )
 
 $ErrorActionPreference = "Stop"
@@ -98,7 +105,6 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host "      Build successful." -ForegroundColor Green
 
 # Step 5: Deploy
-Write-Host "[5/6] Deploying hosting to Firebase ($firebaseProject)..." -ForegroundColor Yellow
 # Prefer the nvm-managed firebase (latest), fall back to AppData, then PATH
 $nvmFirebase = "C:\nvm4w\nodejs\firebase.cmd"
 $appDataFirebase = Join-Path $env:APPDATA "npm\firebase.cmd"
@@ -109,6 +115,30 @@ if (Test-Path $nvmFirebase) {
 } else {
     $globalFirebase = "firebase"
 }
+
+# Backend first, so the new Hosting build never runs against old rules or
+# functions. Same explicit --project as Hosting - never the .firebaserc default.
+# Two passes: functions + indexes are additive (the live, older app never
+# calls them), so they go first and take the slow 5-10 minutes; rules are
+# what the live app actually depends on, so they go last, right before
+# Hosting, keeping the old-app-on-new-rules window to about a minute.
+if ($Backend) {
+    Write-Host "[5/6] Deploying functions + Firestore indexes to $firebaseProject..." -ForegroundColor Yellow
+    & $globalFirebase deploy --only functions,firestore:indexes --project $firebaseProject
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "[x] Functions/indexes deployment FAILED - rules and Hosting were NOT deployed." -ForegroundColor Red
+        exit 1
+    }
+    Write-Host "[5/6] Deploying Firestore + Storage rules to $firebaseProject..." -ForegroundColor Yellow
+    & $globalFirebase deploy --only firestore:rules,storage --project $firebaseProject
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "[x] Rules deployment FAILED - Hosting was NOT deployed." -ForegroundColor Red
+        exit 1
+    }
+    Write-Host "      Backend deployed." -ForegroundColor Green
+}
+
+Write-Host "[5/6] Deploying hosting to Firebase ($firebaseProject)..." -ForegroundColor Yellow
 & $globalFirebase deploy --only hosting --project $firebaseProject
 if ($LASTEXITCODE -ne 0) {
     Write-Host "[x] Deployment FAILED!" -ForegroundColor Red
@@ -141,3 +171,9 @@ if ($Target -eq "staging") {
 Write-Host "  Branch: $branchName" -ForegroundColor Cyan
 Write-Host "  Tag: $tagName" -ForegroundColor Cyan
 Write-Host ""
+if (-not $Backend) {
+    Write-Host "  [!] Hosting only. Firestore rules/indexes, Storage rules and Cloud" -ForegroundColor Yellow
+    Write-Host "      Functions were NOT deployed. If this release changes any of them," -ForegroundColor Yellow
+    Write-Host "      re-run with -Backend (or: npm run deploy:backend:$Target)." -ForegroundColor Yellow
+    Write-Host ""
+}

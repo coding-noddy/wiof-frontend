@@ -1,0 +1,200 @@
+@import '../../wiof-custom-theming.scss';
+
+.eyebrow {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--wiof-teal);
+}
+
+h2 {
+  margin: 0.4rem 0 0;
+  font-size: 1.4rem;
+  color: var(--wiof-ink);
+}
+
+// ── Logged-in state ────────────────────────────────────────────────
+.journey-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.journey-link {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--wiof-teal);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--wiof-ink);
+  }
+}
+
+.journey-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.journey-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1.15rem;
+  background: var(--wiof-warm-white);
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  border-radius: 16px;
+  text-decoration: none;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.journey-card-button {
+  width: 100%;
+  border-width: 1.5px;
+  appearance: none;
+}
+
+.card-title {
+  // !important: this is a <span>, and global.scss's sitewide reset
+  // (`*:not(ion-icon) { font-family: "Noto Sans" !important }`) targets it
+  // directly — without !important here this Aleo declaration is dead and
+  // the title silently renders in the body font.
+  font-family: 'Aleo', serif !important;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--wiof-ink);
+  line-height: 1.3;
+}
+
+.card-meta {
+  font-size: 0.82rem;
+  color: var(--wiof-ink);
+  opacity: 0.65;
+}
+
+.journey-cards .skeleton-card {
+  height: 118px;
+  border: 1.5px solid transparent;
+}
+
+// ── Guest state ────────────────────────────────────────────────────
+.guest-panel {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.75rem;
+  padding: 1.75rem 2rem;
+  background: var(--wiof-warm-white);
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  border-radius: 18px;
+}
+
+.guest-copy {
+  flex: 1 1 320px;
+}
+
+.guest-text {
+  margin-top: 0.6rem;
+  max-width: 520px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--wiof-ink);
+  opacity: 0.75;
+}
+
+.guest-error {
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--ion-color-danger, #eb445a);
+}
+
+.guest-features {
+  display: flex;
+  gap: 1.5rem;
+  flex-shrink: 0;
+}
+
+.guest-feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  width: 84px;
+
+  ion-icon {
+    font-size: 1.4rem;
+    color: var(--wiof-warm-grey);
+  }
+
+  span {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-align: center;
+    color: var(--wiof-ink);
+    opacity: 0.75;
+  }
+}
+
+.guest-signin {
+  flex-shrink: 0;
+  min-width: 140px;
+}
+
+@media (max-width: 991px) {
+  .journey-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .journey-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .guest-panel {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  // .guest-copy's flex-basis (320px, meant for the row layout on desktop)
+  // doesn't get reset for the column layout above — the browser was still
+  // giving it a 320px-wide box even on a narrower phone screen, pushing its
+  // title/body text out past the card's own right edge and under the
+  // fixed "Subscribe" ribbon on the right side of the screen.
+  .guest-copy {
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  // Same overflow, different cause: three fixed 84px-wide items plus 1.5rem
+  // gaps (~300px total) don't fit a narrow phone's content width, and
+  // flex-shrink:0 let them spill out past the card instead of shrinking —
+  // the "Your streak" label was the one landing under the ribbon.
+  .guest-features {
+    justify-content: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .guest-feature {
+    width: auto;
+    min-width: 60px;
+    flex: 0 1 auto;
+  }
+}

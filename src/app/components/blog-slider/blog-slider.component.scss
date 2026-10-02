@@ -5,33 +5,30 @@
   width: 100%;
 }
 
-// ── Actions row ───────────────────────────────────────────────────────────────
+// ── Actions row — trails the cards instead of floating above them ───────────
+// Left-aligned, matching "Explore More Actions" (element-take-action-teaser)
+// instead of trailing off to the right.
 .blog-slider-actions {
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 0.6rem;
+  justify-content: flex-start;
+  margin-top: 1rem;
 }
 
-.action-link {
+// Matches the "Explore More Actions" link's own plain-text treatment
+// (element-take-action-teaser.component.scss) instead of the previous
+// marigold pill-button look, for one consistent "explore more" convention
+// across Blogs/Videos/Actions.
+.view-more-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.4rem;
   font-size: 0.88rem;
   font-weight: 600;
-  color: $home-color-dark;
+  color: var(--wiof-teal);
   text-decoration: none;
-  padding: 0.35rem 0.75rem;
-  border-radius: 999px;
-  background: rgba($home-color, 0.1);
-  transition: background 0.2s ease, transform 0.15s ease;
-
-  ion-icon {
-    font-size: 0.9rem;
-  }
 
   &:hover {
-    background: rgba($home-color, 0.2);
-    transform: translateX(2px);
+    text-decoration: underline;
   }
 }
 

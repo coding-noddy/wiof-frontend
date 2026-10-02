@@ -13,7 +13,7 @@
   </div>
 
   <!-- ── About panel ─────────────────────────────────────────── -->
-  <div class="about-panel" [class.open]="about">
+  <div class="about-panel" [@expandCollapse]="about ? 'expanded' : 'collapsed'">
     <p class="about-text">
       Emotional intelligence (EQ) is the ability to understand, use, and manage your emotions
       in positive ways. This test uses the TMMS-24 scale — a validated instrument measuring

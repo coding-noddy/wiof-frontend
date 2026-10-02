@@ -1,69 +1,86 @@
-<ion-row class="ion-align-items-center">
-  <ion-col class="ion-padding" size-xs="12">
-    <p style="text-align: center">
-      Choose any of the elements
-      <span class="wiof-read-more"
-        >to get to know more about how our actions are impacting the environment
-        and what can we do to help</span
-      >
-    </p>
-  </ion-col>
-  <ion-col class="ion-padding" size-xs="4" size-sm="2" offset-sm="1">
-    <div
-      class="ion-text-center landing-circle-img earth"
-      [ngClass]="{ active: isSelectedElement('earth') }"
-      [routerLink]="['/element', 'earth']"
-    ></div>
-    <h4 class="landing-circle-label" [routerLink]="['/element', 'earth']">
-      Earth
-    </h4>
-  </ion-col>
+<!-- Home page: spacious card grid -->
+<div class="elements-cards" *ngIf="variant === 'cards'">
+  <p class="elements-intro">
+    Every choice you make ripples through Air, Water, Earth, Energy, and Spirit — pick an
+    element to see how, and what you can do to help.
+  </p>
+  <div class="elements-grid">
+    <a
+      *ngFor="let el of elements"
+      class="element-card"
+      [ngClass]="'color-' + el.colorClass"
+      [class.active]="isSelectedElement(el.slug)"
+      [routerLink]="['/element', el.slug]"
+    >
+      <!-- Icon leads, as every other icon-badge on the site does — the
+           line-vocabulary motif sits behind/below it as brand texture,
+           not something the icon needs to be artfully anchored into. -->
+      <span class="element-icon" [ngClass]="'icon-' + el.slug" [class.active]="isSelectedElement(el.slug)"></span>
+      <span class="element-name">{{ el.name }}</span>
+      <span class="element-desc">{{ el.description }}</span>
 
-  <ion-col class="ion-padding" size-xs="4" size-sm="2">
-    <div
-      class="ion-text-center landing-circle-img energy"
-      [ngClass]="{ active: isSelectedElement('energy') }"
-      [routerLink]="['/element', 'energy']"
-    ></div>
-    <h4 class="landing-circle-label" [routerLink]="['/element', 'energy']">
-      Energy
-    </h4>
-  </ion-col>
+      <div class="element-motif" [ngSwitch]="el.slug" aria-hidden="true">
+        <!-- Wind: directional gust streaks (each a mostly-straight stroke
+             that hooks at one end), not a repeating wave crest — Water
+             already owns that shape, and the brand file draws these two
+             apart on purpose (waves describe a surface; wind moves
+             through open space). -->
+        <svg *ngSwitchCase="'air'" class="motif-svg" viewBox="0 0 300 100" preserveAspectRatio="none">
+          <path d="M0,20 L185,20 C202,20 202,6 190,4" />
+          <path d="M25,52 L165,52 C181,52 181,66 169,68" />
+          <path d="M0,84 L120,84 C134,84 134,72 125,70" />
+        </svg>
+        <svg *ngSwitchCase="'water'" class="motif-svg" viewBox="0 0 300 100" preserveAspectRatio="none">
+          <path d="M0,40 Q25,25 50,40 T100,40 T150,40 T200,40 T250,40 T300,40" />
+          <path d="M0,65 Q25,50 50,65 T100,65 T150,65 T200,65 T250,65 T300,65" />
+          <path d="M0,90 Q25,75 50,90 T100,90 T150,90 T200,90 T250,90 T300,90" />
+        </svg>
+        <!-- Terrain: bold *contour-like* lines — the brand file's own word
+             for Earth's vocabulary, meaning smooth topographic-map curves
+             tracing a hillside, not a sharp zigzag mountain silhouette (the
+             earlier version used straight line-to segments only, which read
+             as angular peaks rather than contour lines, and was the one
+             motif out of five that wasn't curve-based). Two layered,
+             irregularly-humped curves so it still reads as rolling
+             terrain rather than Water's tighter, evenly-repeating waves. -->
+        <svg *ngSwitchCase="'earth'" class="motif-svg" viewBox="0 0 300 100" preserveAspectRatio="none">
+          <path d="M0,55 Q45,25 95,45 Q145,65 195,35 Q245,15 300,45" />
+          <path d="M0,80 Q55,55 110,78 Q165,100 220,72 Q265,50 300,75" />
+        </svg>
+        <svg *ngSwitchCase="'energy'" class="motif-svg" viewBox="0 0 300 100" preserveAspectRatio="none">
+          <line x1="300" y1="100" x2="220" y2="20" />
+          <line x1="300" y1="100" x2="255" y2="10" />
+          <line x1="300" y1="100" x2="300" y2="5" />
+          <line x1="300" y1="100" x2="180" y2="55" />
+          <line x1="300" y1="100" x2="150" y2="90" />
+        </svg>
+        <svg *ngSwitchCase="'spirit'" class="motif-svg" viewBox="0 0 300 100" preserveAspectRatio="none">
+          <circle cx="150" cy="100" r="20" />
+          <circle cx="150" cy="100" r="45" />
+          <circle cx="150" cy="100" r="70" />
+          <circle cx="150" cy="100" r="95" />
+        </svg>
+      </div>
+    </a>
+  </div>
+</div>
 
-  <ion-col class="ion-padding" size-xs="4" size-sm="2">
-    <div
-      class="ion-text-center landing-circle-img air"
-      [ngClass]="{ active: isSelectedElement('air') }"
-      [routerLink]="['/element', 'air']"
-    ></div>
-    <h4 class="landing-circle-label" [routerLink]="['/element', 'air']">Air</h4>
-  </ion-col>
-
-  <ion-col
-    class="ion-padding"
-    size-xs="5"
-    size-sm="2"
-    offset-xs="1"
-    offset-sm="0"
+<!-- Element pages: compact switcher pills -->
+<div class="elements-pills" *ngIf="variant === 'pills'" [attr.role]="navigate ? null : 'tablist'">
+  <a
+    *ngFor="let el of elements"
+    class="element-pill"
+    [ngClass]="'color-' + el.colorClass"
+    [class.active]="isSelectedElement(el.slug)"
+    [routerLink]="navigate ? pillLink(el.slug) : null"
+    [attr.role]="navigate ? null : 'tab'"
+    [attr.aria-selected]="navigate ? null : isSelectedElement(el.slug)"
+    [attr.tabindex]="navigate ? null : 0"
+    (click)="onPillClick($event, el.slug)"
+    (keydown.enter)="onPillClick($event, el.slug)"
+    (keydown.space)="onPillClick($event, el.slug)"
   >
-    <div
-      class="ion-text-center landing-circle-img water"
-      [ngClass]="{ active: isSelectedElement('water') }"
-      [routerLink]="['/element', 'water']"
-    ></div>
-    <h4 class="landing-circle-label" [routerLink]="['/element', 'water']">
-      Water
-    </h4>
-  </ion-col>
-
-  <ion-col class="ion-padding" size-xs="5" size-sm="2">
-    <div
-      class="ion-text-center landing-circle-img spirit"
-      [ngClass]="{ active: isSelectedElement('spirit') }"
-      [routerLink]="['/element', 'spirit']"
-    ></div>
-    <h4 class="landing-circle-label" [routerLink]="['/element', 'spirit']">
-      Spirit
-    </h4>
-  </ion-col>
-</ion-row>
+    <span class="pill-icon" [ngClass]="'icon-' + el.slug"></span>
+    {{ el.name }}
+  </a>
+</div>

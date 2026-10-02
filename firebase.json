@@ -8,13 +8,21 @@
     ],
     "rewrites": [
       {
+        "source": "/element/*/blog/**",
+        "function": {
+          "functionId": "socialMetaTags",
+          "region": "us-central1"
+        }
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
     ]
   },
   "firestore": {
-    "rules": "firestore.rules"
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
   },
   "storage": {
     "rules": "storage.rules"

@@ -9,27 +9,62 @@
 .in-focus-strip {
   border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
-  background: #000;
+  background: var(--wiof-warm-white);
+  border: 1.5px solid var(--wiof-brown-tint-40);
   position: relative;
 }
 
 // ── Header bar ────────────────────────────────────────────────────────────────
+// Untagged default stays warm-white (no element to represent — every real
+// usage always passes [element], this is an unreachable fallback). Energy
+// uses raw Marigold with ink text, not white: brand guidelines reserve
+// Marigold as an accent, but a solid fill paired with dark ink text is the
+// one established exception already used for take-action-detail's Energy
+// header — ink-on-Marigold has good contrast, unlike white-on-Marigold.
 .in-focus-header {
-  padding: 0.6rem 1rem;
-  border-bottom: 2px solid white;
-  background-color: $home-color;
+  padding: 0.9rem 1.1rem;
+  border-bottom: 1px solid rgba(43, 36, 32, 0.10);
+  background-color: var(--wiof-warm-white);
 
-  &.wiof-earth  { background-color: $earth-color; }
-  &.wiof-water  { background-color: $water-color; }
-  &.wiof-fire   { background-color: $energy-color; }
-  &.wiof-air    { background-color: $air-color; }
-  &.wiof-spirit { background-color: $spirit-color; }
+  // Flat colors (not the old rgba(..., 0.9-0.95) dilution) so this header
+  // is pixel-identical to the same element's color on every other widget
+  // header in the app (aqi/water/eq/food-ph/energy-widget). White text on
+  // every element except Energy (Marigold stays too light for white text
+  // to pass contrast at any usable shade — ink is the only option there).
+  // .in-focus-header-title sets its own explicit color (same specificity,
+  // declared later in this file), so each state needs its own nested
+  // override to actually win over that default.
+  &.wiof-earth {
+    background-color: $earth-color;
+    .in-focus-header-title { color: $light-color; }
+  }
+  &.wiof-water {
+    background-color: $water-color;
+    .in-focus-header-title { color: $light-color; }
+  }
+  // Was .wiof-fire — leftover from before the Fire->Energy rename; the
+  // class actually applied at runtime is `wiof-${element}` ('energy'), so
+  // this rule never matched and silently fell back to warm-white instead
+  // of Marigold on the Energy page.
+  &.wiof-energy { background-color: $energy-color; color: $dark-color; }
+  &.wiof-air {
+    background-color: $air-color;
+    .in-focus-header-title { color: $light-color; }
+  }
+  &.wiof-spirit {
+    background-color: $spirit-color;
+
+    .in-focus-header-title { color: $light-color; }
+  }
 }
 
 .in-focus-header-title {
-  font-size: 1.1rem;
-  font-weight: 600;
+  // Not a heading tag (a <span>), so it needs its own explicit override to
+  // win over global.scss's universal Noto Sans reset.
+  font-family: 'Aleo', serif !important;
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   color: $dark-color;
 }
 
@@ -64,12 +99,12 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 0.75rem 1.1rem;
+  padding: 0.8rem 1rem 0.9rem;
   background: linear-gradient(
     0deg,
-    rgba(0, 0, 0, 0.82) 0%,
-    rgba(0, 0, 0, 0.55) 60%,
-    rgba(0, 0, 0, 0) 100%
+    rgba(43, 36, 32, 0.82) 0%,
+    rgba(43, 36, 32, 0.58) 60%,
+    rgba(43, 36, 32, 0) 100%
   );
   color: #fff;
   pointer-events: none;
@@ -77,16 +112,16 @@
 
 .caption-title {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   font-weight: 700;
-  line-height: 1.3;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  line-height: 1.35;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 
 .caption-desc {
   margin: 0.3rem 0 0;
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.88);
   line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -99,22 +134,23 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 8px 18px rgba(43, 36, 32, 0.14);
+  border: 1px solid rgba(43, 36, 32, 0.06);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 10;
-  color: #10263c;
+  color: $dark-color;
   font-size: 1.1rem;
   transition: box-shadow 0.2s ease, transform 0.15s ease;
 
   &:hover {
-    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 10px 22px rgba(43, 36, 32, 0.18);
     transform: translateY(-50%) scale(1.08);
   }
 }

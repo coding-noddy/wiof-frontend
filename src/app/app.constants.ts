@@ -183,9 +183,58 @@ export const FIREBASE_COLLECTION = {
   ACTIVITY_LOG: 'activity_log',
   USER_SAVED_CONTENT: 'user_saved_content',
   POLL_RESULTS: 'poll_results',
-  USER_METRICS: 'user_metrics'
+  USER_METRICS: 'user_metrics',
+  ACTIONS: 'actions',
+  USER_ACTIONS: 'user_actions',
+  USER_ACTION_COMPLETIONS: 'user_action_completions',
+  HERO_VIDEOS: 'hero_videos'
 };
 
+export const ACTION_TYPE = {
+  PERSONAL: 'PERSONAL',
+  NATURE: 'NATURE',
+  COMMUNITY: 'COMMUNITY',
+  EVENT: 'EVENT'
+};
+
+export const COMPLETION_TYPE = {
+  SELF_REPORTED: 'SELF_REPORTED'
+};
+
+export const REPEAT_TYPE = {
+  ONCE: 'ONCE',
+  DAILY: 'DAILY',
+  // No per-period dedup guard (unlike DAILY) — the user can mark these done
+  // again any time. OCCASIONAL is the same mechanic as REPEATABLE; it exists
+  // as a separate value only to convey a lighter expected cadence to the
+  // user, not a different completion rule.
+  REPEATABLE: 'REPEATABLE',
+  OCCASIONAL: 'OCCASIONAL'
+};
+
+export const ACTION_DIFFICULTY = {
+  VERY_EASY: 'VERY_EASY',
+  EASY: 'EASY',
+  MODERATE: 'MODERATE'
+};
+
+export const EVIDENCE_LEVEL = {
+  OFFICIAL_SUPPORT: 'OFFICIAL_SUPPORT',
+  WIDELY_ACCEPTED: 'WIDELY_ACCEPTED',
+  WIOF_CURATED: 'WIOF_CURATED'
+};
+
+export const USER_ACTION_STATUS = {
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETE: 'COMPLETE'
+};
+
+// Built-in defaults for the hero video widget (VideoWidgetComponent). The
+// live values are admin-managed in the `hero_videos` collection (Admin ->
+// Hero Videos); these are only the fallback for when a slot's doc is
+// missing or the read fails, and the source scripts/seed-hero-videos.js
+// copied from. Keys are the widget's `element` input, uppercased; CONFIG
+// is the Our Purpose page.
 export const VIDEO_PLAYER_TITLES = {
   AIR: 'The Current Deadly Killer in the Air',
   WATER: 'Water : The most precious resource',
@@ -203,6 +252,21 @@ export const VIDEO_PLAYER_VIDEOS = {
   SPIRIT: 'CEqoCcacR3Y',
   CONFIG: 'SYWb9hNX-1s'
 };
+
+/**
+ * The fixed set of hero video slots, one Firestore doc each in
+ * `hero_videos`, keyed by `id`. `widgetKey` is the VideoWidgetComponent
+ * `element` input that renders the slot (Our Purpose passes 'config').
+ * firestore.rules allow-lists these same ids.
+ */
+export const HERO_VIDEO_SLOTS = [
+  { id: 'air', widgetKey: 'air', label: 'Air', location: 'Air element page' },
+  { id: 'water', widgetKey: 'water', label: 'Water', location: 'Water element page' },
+  { id: 'earth', widgetKey: 'earth', label: 'Earth', location: 'Earth element page' },
+  { id: 'energy', widgetKey: 'energy', label: 'Energy', location: 'Energy element page' },
+  { id: 'spirit', widgetKey: 'spirit', label: 'Spirit', location: 'Spirit element page' },
+  { id: 'our-purpose', widgetKey: 'config', label: 'Our Purpose', location: 'Our Purpose page' }
+];
 
 // TODO try to find another way
 export const PAGE_CATEGORY_MAP = {
@@ -272,7 +336,8 @@ export const ITEMS = {
   NEWS: 'News',
   COURSE_IN_FOCUS: 'Course in focus',
   NGO_IN_FOCUS: 'NGO in focus',
-  ABOUT_US:'About us Profile'
+  ABOUT_US:'About us Profile',
+  TAKE_ACTION: 'Action'
 };
 
 export const UI_MESSAGES = {
@@ -299,7 +364,13 @@ export const UI_MESSAGES = {
   CONFIRM_DELETE_PRIMARY_CTA: 'Yes',
   CONFIRM_DELETE_SECONDARY_CTA: 'No',
   SAVE_IN_PROGRESS: 'Saving $ITEM...',
-  DELETE_IN_PROGRESS: 'Deleting $ITEM...'
+  DELETE_IN_PROGRESS: 'Deleting $ITEM...',
+  CONFIRM_DEACTIVATE_ITEM_DESC: 'Are you sure you want to deactivate this $ITEM? It will no longer be shown to users, but existing history referencing it is preserved.',
+  CONFIRM_DEACTIVATE_PRIMARY_CTA: 'Yes',
+  CONFIRM_DEACTIVATE_SECONDARY_CTA: 'No',
+  DEACTIVATE_IN_PROGRESS: 'Deactivating $ITEM...',
+  SUCCESS_DEACTIVATE_ITEM_DESC: '$ITEM deactivated successfully!',
+  FAILURE_DEACTIVATE_ITEM_DESC: 'Uh oh! Failed to deactivate $ITEM. Please try again.'
 };
 
 export const AVG_WORD_READ_PER_MIN = 250;

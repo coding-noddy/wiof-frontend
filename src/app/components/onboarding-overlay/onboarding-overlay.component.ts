@@ -1,19 +1,28 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, AfterViewInit, HostListener, ViewChild, ElementRef } from '@angular/core';
 
 @Component({
   selector: 'app-onboarding-overlay',
   templateUrl: './onboarding-overlay.component.html',
   styleUrls: ['./onboarding-overlay.component.scss']
 })
-export class OnboardingOverlayComponent implements OnInit {
+export class OnboardingOverlayComponent implements OnInit, AfterViewInit {
   visible = false;
 
+  @ViewChild('closeBtn') closeBtn?: ElementRef<HTMLButtonElement>;
+
+  // Same order, colors and taglines as life-elements.component.html and
+  // continue-journey-banner's ELEMENT_TAGLINES — one voice across the app.
   readonly elements = [
-    { name: 'Earth', description: 'Grounding practices for physical wellness', icon: 'leaf-outline', color: '#4caf50' },
-    { name: 'Water', description: 'Emotional balance and mental clarity', icon: 'water-outline', color: '#2196f3' },
-    { name: 'Air', description: 'Breathwork and mindfulness', icon: 'cloud-outline', color: '#90a4ae' },
-    { name: 'Energy', description: 'Vitality and sustainable living', icon: 'flash-outline', color: '#ff9800' },
-    { name: 'Spirit', description: 'Purpose, connection, and inner wisdom', icon: 'sparkles-outline', color: '#9c27b0' }
+    { name: 'Air', description: 'Moves. Connects. Carries change.', icon: 'cloud-outline', color: '#21999F' },
+    // Marigold-shade-20 (#CC9B59), not raw Marigold (#FFC26F) — this value
+    // is used for both the icon color and the background tint (via
+    // color-mix below), and raw Marigold is light enough that icon-on-its-
+    // own-8%-tint failed contrast (~1.5:1). Every other element's color is
+    // dark enough that this isn't an issue; Energy alone needed the shade.
+    { name: 'Energy', description: 'Illuminates. Reveals. Activates action.', icon: 'flash-outline', color: '#CC9B59' },
+    { name: 'Water', description: 'Flows. Adapts. Sustains life.', icon: 'water-outline', color: '#21999F' },
+    { name: 'Earth', description: 'Grounds us. Connects us to place.', icon: 'leaf-outline', color: '#A6875D' },
+    { name: 'Spirit', description: 'Reflects. Expands. Deepens understanding.', icon: 'sparkles-outline', color: '#21999F' }
   ];
 
   readonly features = [
@@ -27,6 +36,16 @@ export class OnboardingOverlayComponent implements OnInit {
 
   ngOnInit(): void {
     this.visible = this.shouldShowOverlay();
+  }
+
+  ngAfterViewInit(): void {
+    if (this.visible) {
+      // Ionic's gesture controller (used by the home page's sliders) blurs
+      // whatever is focused during its own init, shortly after mount — a
+      // focus set any earlier gets silently stolen back. 1s clears it
+      // reliably and is still well inside the entrance animation window.
+      setTimeout(() => this.closeBtn?.nativeElement.focus(), 1000);
+    }
   }
 
   @HostListener('document:keydown.escape')

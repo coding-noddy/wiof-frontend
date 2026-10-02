@@ -12,16 +12,26 @@
   padding: 0;
   border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
-  background: #fff;
+  // This is a genuine overlay (renders inside a modal), one of the
+  // documented exceptions to "no shadow by default" — !important because
+  // it opts back in over global.scss's `ion-card { box-shadow: none
+  // !important }` reset, which any non-!important shadow here would lose to.
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18) !important;
+  background: var(--wiof-warm-white);
   width: 100%;
   display: flex;
   flex-direction: column;
 }
 
 // ── Header ────────────────────────────────────────────────────────────────────
+// Earthy Brown, not Marigold — matches the Environment Calendar section's
+// agenda card, and brand guidelines reserve Marigold for the one primary
+// CTA per page, never a background fill.
 .occasion-card-header {
-  background-color: $home-color;
+  // Raw $earth-color behind warm-white text (.occasion-name below) was
+  // ~3.3:1, below AA's 4.5:1 for normal text — the shade-20 step clears it
+  // (~4.8:1).
+  background-color: var(--wiof-brown-shade-20);
   padding: 0.85rem 1rem 0.75rem;
   position: relative;
 }
@@ -49,9 +59,12 @@
   flex: 1;                  // takes all remaining space between badge and button
   min-width: 0;             // allows text to wrap instead of overflowing
   margin: 0;
+  // Not a heading tag, so it needs its own explicit override to win over
+  // global.scss's universal `* { font-family: "Noto Sans" !important }` reset.
+  font-family: 'Aleo', serif !important;
   font-size: 1rem;
   font-weight: 700;
-  color: $dark-color;
+  color: $light-color;
   line-height: 1.3;
   word-break: break-word;
 }
@@ -174,12 +187,15 @@
 .occasion-body {
   padding: 1rem !important;
   overflow-y: auto;
-  max-height: 180px;      // scroll if description is long, keeps modal compact
+  // No fixed cap — flex:1 lets it fill whatever space the card has (so
+  // short descriptions don't leave a blank gap below); the outer modal's
+  // --max-height: 90vh is still the real ceiling for very long text.
   flex: 1;
 
   p {
     margin: 0 0 0.75rem;
-    color: #475569;
+    // Tinted ink, not a cool slate-gray — matches Breaking News' secondary text.
+    color: rgba(43, 36, 32, 0.72);
     line-height: 1.7;
     font-size: 0.92rem;
     text-align: left;
@@ -197,18 +213,36 @@
   align-items: center;
   justify-content: center;
   height: 200px;
-  background: #fff;
+  background: var(--wiof-warm-white);
   border-radius: 18px;
+}
+
+// ── Pagination dots ─────────────────────────────────────────────────────────
+.occasion-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding-top: 0.65rem;
+}
+
+.occasion-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--wiof-brown-tint-40);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+
+  &.active {
+    background: var(--wiof-teal);
+    transform: scale(1.35);
+  }
 }
 
 // ── Responsive ───────────────────────────────────────────────────────────────
 @media (max-width: 480px) {
   .occasion-image-wrap {
     height: 160px;
-  }
-
-  .occasion-body {
-    max-height: 140px;
   }
 
   .occasion-name {

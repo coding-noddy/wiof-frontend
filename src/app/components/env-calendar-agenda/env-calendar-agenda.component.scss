@@ -1,0 +1,118 @@
+@import '../../wiof-custom-theming.scss';
+
+.agenda-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 520px;
+  margin: 0 !important;
+  background-color: var(--wiof-warm-white);
+  border-radius: 18px;
+  overflow: hidden;
+  // Matches the Environment Calendar card's outer border, sitting right
+  // next to it in the same row — the pair now reads as two consistently
+  // framed cards instead of the calendar alone having a visible edge.
+  border: 1.5px solid var(--wiof-brown-tint-40);
+}
+
+.agenda-header {
+  background-color: var(--wiof-brown);
+  border-bottom: 2px solid var(--wiof-warm-white);
+}
+
+.agenda-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--wiof-warm-white);
+}
+
+.agenda-content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1rem 1.1rem;
+  overflow-y: auto;
+}
+
+.agenda-section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wiof-teal);
+  margin: -0.5rem 0 -0.75rem;
+}
+
+.agenda-day-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.agenda-day-label {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--wiof-ink);
+}
+
+.agenda-day-date {
+  font-size: 0.78rem;
+  color: var(--wiof-ink);
+  opacity: 0.6;
+}
+
+.agenda-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.agenda-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  color: var(--wiof-ink);
+  line-height: 1.4;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 0.2rem 0.35rem;
+  margin: 0 -0.35rem;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgba(166, 135, 93, 0.1);
+  }
+
+  .agenda-item-text {
+    text-decoration-color: transparent;
+    transition: text-decoration-color 0.15s ease;
+  }
+
+  &:hover .agenda-item-text {
+    text-decoration: underline;
+    text-decoration-color: currentColor;
+  }
+}
+
+.agenda-dot {
+  flex-shrink: 0;
+  margin-top: 0.4rem;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--wiof-teal);
+}
+
+.agenda-empty {
+  font-size: 0.85rem;
+  color: var(--wiof-ink);
+  opacity: 0.55;
+  margin: 0;
+}

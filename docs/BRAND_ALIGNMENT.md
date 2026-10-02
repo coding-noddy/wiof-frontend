@@ -88,6 +88,26 @@ Marigold fails accessibility, which this same phase is supposed to gate on.
 Small in scope, but exactly the kind of thing I'd want to see rendered
 before calling it done, not just calculate contrast ratios blind.
 
+## Documented exceptions (intentional deviations — don't "fix" these)
+
+- **Environment Calendar family** (calendar grid, "Coming Up" agenda, event
+  dialog) uses a solid Brown header bar instead of the warm-white badge
+  header convention used elsewhere (Breaking News, Poll, NGO, Course-in-Focus,
+  Coffee Conversation). Reconfirmed intentional with the product owner
+  2026-09-14 — its own distinct section identity, not inconsistency.
+- **Energy element** uses Marigold as a full-surface fill on its own
+  hero/identity surfaces (element hero, widget header) — the one deliberate
+  exception to "Marigold is never a background fill," since Energy's brand
+  color IS Marigold in the five-element triad (Air/Water/Spirit = Teal,
+  Earth = Brown, Energy = Marigold).
+- **Primary/secondary CTA pill buttons get a tinted glow** matching their own
+  fill color (header sign-in button, login submit button, Coffee
+  Conversation's CTA) — a soft `box-shadow` in the button's own color, not a
+  generic grey shadow. Confirmed present and consistent across all three
+  (2026-10-02 pre-production audit) — kept as a deliberate exception to the
+  "no box-shadow on page-flow elements" rule, scoped specifically to a
+  page's one primary/secondary CTA pill, not page-flow cards/sections.
+
 ## Suggested next step
 
 Once you're back with time to look at a running app (or in a session with

@@ -7,6 +7,7 @@ import { HomePageRoutingModule } from './home-routing.module';
 import { HomePage } from './home.page';
 import { NgoInFocusComponent } from '../../components/ngo/ngo-in-focus.component';
 import { CourseInFocusComponent } from '../../components/course-in-focus/course-in-focus.component';
+import { NgoDetailDialogComponent } from '../../components/ngo-detail-dialog/ngo-detail-dialog.component';
 
 @NgModule({
   imports: [
@@ -16,7 +17,7 @@ import { CourseInFocusComponent } from '../../components/course-in-focus/course-
     HomePageRoutingModule,
     AppCommonModule
   ],
-  declarations: [HomePage, NgoInFocusComponent, CourseInFocusComponent],
+  declarations: [HomePage, NgoInFocusComponent, CourseInFocusComponent, NgoDetailDialogComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class HomePageModule {}

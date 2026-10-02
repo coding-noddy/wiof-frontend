@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   ELEMENT_BLOG_CATEGORY,
@@ -14,7 +14,7 @@ import { Video } from '../../models/Video';
 import { InFocus } from 'src/app/models/InFocus';
 import { InFocusService } from 'src/app/services/in-focus.service';
 
-import { SectionNavItem } from 'src/app/components/section-nav/section-nav.component';
+import { SectionNavComponent, SectionNavItem } from 'src/app/components/section-nav/section-nav.component';
 
 @Component({
   selector: 'app-spirit',
@@ -22,6 +22,8 @@ import { SectionNavItem } from 'src/app/components/section-nav/section-nav.compo
   styleUrls: ['./spirit.page.scss']
 })
 export class SpiritPage implements OnInit {
+  @ViewChild(SectionNavComponent) sectionNav?: SectionNavComponent;
+
   blogs$: Observable<Blog[]>;
   videos$: Observable<Video[]>;
   inFocuses$: Observable<InFocus[]>;
@@ -30,6 +32,7 @@ export class SpiritPage implements OnInit {
 
   pageSections: SectionNavItem[] = [
     { label: 'Featured', sectionId: 'spirit-featured-video' },
+    { label: 'Take Action', sectionId: 'spirit-take-action' },
     { label: 'In Focus', sectionId: 'spirit-in-focus' },
     { label: 'Conversations', sectionId: 'spirit-conversations' },
     { label: 'Blogs', sectionId: 'spirit-blogs' },
@@ -63,5 +66,9 @@ export class SpiritPage implements OnInit {
       const item = this.pageSections.find(s => s.sectionId === 'spirit-videos');
       if (item) item.disabled = !videos || videos.length === 0;
     });
+  }
+
+  onContentScroll() {
+    this.sectionNav?.handleScroll();
   }
 }
