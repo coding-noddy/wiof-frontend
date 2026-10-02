@@ -102,14 +102,21 @@ export class ActionService {
           const { id, ...data } = action;
           return this.actionCollection.doc(id).update({
             ...data,
-            updatedAt: timestamp
+            updatedAt: timestamp,
+            // Bumps on every edit (increment treats a missing field as 0,
+            // so an action's first edit after this feature shipped starts
+            // it at 1 — no backfill needed). Placed after the spread so it
+            // always wins over whatever stale `version` the edit form's
+            // own ActionItem object happened to carry.
+            version: firebase.firestore.FieldValue.increment(1)
           });
         } else {
           const { id, ...data } = action;
           return this.actionCollection.add({
             ...data,
             createdAt: timestamp,
-            updatedAt: timestamp
+            updatedAt: timestamp,
+            version: 1
           });
         }
       })

@@ -174,6 +174,7 @@ ion-content {
     flex-shrink: 0;
     width: 72px;
     height: 72px;
+    position: relative;
     background-repeat: no-repeat;
     background-size: 100%;
 
@@ -182,6 +183,86 @@ ion-content {
     &.icon-water  { background-image: url('/assets/icons/icon_water.svg'); }
     &.icon-earth  { background-image: url('/assets/icons/icon_earth.svg'); }
     &.icon-spirit { background-image: url('/assets/icons/icon_spirit.svg'); }
+
+    // Same per-element motifs as the home page's hover animations
+    // (life-elements.component.scss), but this icon isn't a hover target —
+    // it's a static page-identity graphic, not a clickable nav control —
+    // so it plays automatically on page load instead of waiting for a
+    // hover that will never come. Runs a few cycles then settles rather
+    // than looping forever, so it doesn't keep moving distractingly while
+    // someone reads the hero copy beside it.
+    &.icon-air {
+      animation: hero-elem-air-drift 1.6s ease-in-out 3;
+
+      &::before, &::after {
+        content: '';
+        position: absolute;
+        left: -10%;
+        width: 55%;
+        height: 2px;
+        border-radius: 999px;
+        background: var(--wiof-teal);
+        opacity: 0;
+        animation: hero-elem-air-streak 1.4s ease-in-out 3;
+      }
+      &::before { top: 28%; animation-delay: 0s; }
+      &::after  { top: 62%; animation-delay: 0.35s; }
+    }
+
+    &.icon-water::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid var(--wiof-teal);
+      opacity: 0.7;
+      animation: hero-elem-ripple 1.5s ease-out 3;
+    }
+
+    &.icon-earth {
+      animation: hero-elem-earth-settle 1.8s ease-in-out 3;
+      transform-origin: bottom center;
+
+      &::before, &::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        width: 2px;
+        height: 0;
+        border-radius: 999px;
+        background: var(--wiof-brown);
+        animation: hero-elem-earth-sprout 1.8s ease-in-out 3;
+      }
+      &::before { left: 36%; animation-delay: 0s; }
+      &::after  { left: 58%; animation-delay: 0.3s; }
+    }
+
+    &.icon-energy {
+      animation: hero-elem-energy-pulse 1.3s ease-in-out 3;
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: -18%;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 194, 111, 0.45) 0%, rgba(255, 194, 111, 0) 70%);
+        animation: hero-elem-energy-glow 1.3s ease-in-out 3;
+        z-index: -1;
+      }
+    }
+
+    &.icon-spirit {
+      &::before, &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 1.5px solid var(--wiof-teal);
+        opacity: 0;
+        animation: hero-elem-ripple 2s ease-out 3;
+      }
+      &::after { animation-delay: 0.7s; }
+    }
   }
 
   h1 {
@@ -209,6 +290,54 @@ ion-content {
     font-size: 1rem;
     line-height: 1.6;
     color: var(--wiof-ink);
+  }
+}
+
+// ── Hero icon entrance animations ───────────────────────────────────────────
+// Prefixed hero-elem-* (not reusing life-elements.component.scss's elem-*
+// names) so this stays self-contained — Angular doesn't scope @keyframes
+// identifiers, so reusing the same name would technically work today, but
+// would silently break here if that file's animations ever changed shape.
+@keyframes hero-elem-air-drift {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(4px); }
+}
+
+@keyframes hero-elem-air-streak {
+  0%   { opacity: 0; transform: translateX(-20%); }
+  40%  { opacity: 0.8; }
+  100% { opacity: 0; transform: translateX(120%); }
+}
+
+@keyframes hero-elem-ripple {
+  0%   { transform: scale(0.85); opacity: 0.7; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes hero-elem-earth-settle {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(2px); }
+}
+
+@keyframes hero-elem-earth-sprout {
+  0%   { height: 0; opacity: 0; }
+  55%  { height: 13px; opacity: 0.9; }
+  100% { height: 0; opacity: 0; }
+}
+
+@keyframes hero-elem-energy-pulse {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50%      { transform: scale(1.06); filter: brightness(1.15); }
+}
+
+@keyframes hero-elem-energy-glow {
+  0%, 100% { opacity: 0.6; transform: scale(0.9); }
+  50%      { opacity: 1; transform: scale(1.1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-icon, .hero-icon::before, .hero-icon::after {
+    animation: none !important;
   }
 }
 

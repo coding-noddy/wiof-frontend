@@ -139,7 +139,11 @@ export class UserActionService {
         lastCompletedAt: null,
         completionMethod: 'SELF_REPORTED',
         elementIdsSnapshot: action.elementIds || [],
-        actionVersion: 1,
+        // Preserves whichever catalogue version was actually live when the
+        // user started this action, not a hardcoded 1 — actions seeded or
+        // never-edited before ActionItem.version existed fall back to 1,
+        // Phase 1's implicit untracked baseline.
+        actionVersion: action.version || 1,
         createdAt: now,
         updatedAt: now
       });
@@ -223,7 +227,10 @@ export class UserActionService {
         lastCompletedAt: now,
         completionMethod: 'SELF_REPORTED',
         elementIdsSnapshot: action.elementIds || [],
-        actionVersion: 1,
+        // Same reasoning as startAction() above — preserves the actual
+        // catalogue version completed, falling back to 1 for actions never
+        // edited since versioning was added.
+        actionVersion: action.version || 1,
         createdAt: now,
         updatedAt: now
       });

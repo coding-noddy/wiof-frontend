@@ -45,7 +45,7 @@ const NEW_ACTIONS = [
     shortDescription: 'Wash one suitable load of clothes using the cold-water setting.',
     description: 'For clothes that can safely be washed cold, choose the cold-water setting instead of a hot-water cycle.',
     instructions: ['Check the garment care instructions and choose a load that is suitable for cold washing.', 'Select the cold-water setting and run the load normally.'],
-    elementIds: ['energy', 'earth'],
+    elementIds: ['energy'],
     categories: ['energy-saving'],
     actionType: 'PERSONAL', repeatType: 'REPEATABLE', difficulty: 'EASY', estimatedDurationMinutes: 10,
     iconName: 'water-outline',
@@ -59,7 +59,7 @@ const NEW_ACTIONS = [
     shortDescription: 'Air-dry one suitable load of clothes instead of using a powered dryer.',
     description: 'When practical and appropriate, hang or lay a suitable load of clothes to dry naturally instead of using a powered dryer.',
     instructions: ['Check that the clothes are suitable for air-drying.', 'Hang or lay them in a clean, safe location and allow them to dry naturally.'],
-    elementIds: ['energy', 'earth'],
+    elementIds: ['energy'],
     categories: ['energy-saving'],
     actionType: 'PERSONAL', repeatType: 'REPEATABLE', difficulty: 'EASY', estimatedDurationMinutes: 10,
     iconName: 'sunny-outline',
@@ -73,7 +73,7 @@ const NEW_ACTIONS = [
     shortDescription: 'Identify a household water leak and arrange or complete an appropriate repair.',
     description: 'Address an accessible leaking tap, toilet, pipe, shower, or other household water fixture by making a safe repair or arranging for the appropriate person to repair it.',
     instructions: ['Check accessible household fixtures for a leak.', 'If the repair is simple and safe for you, fix it; otherwise report or arrange it with maintenance, a landlord, building team, or plumber.'],
-    elementIds: ['water', 'earth'],
+    elementIds: ['water'],
     categories: ['water-conservation'],
     actionType: 'PERSONAL', repeatType: 'OCCASIONAL', difficulty: 'EASY', estimatedDurationMinutes: 15,
     iconName: 'water-outline',
@@ -143,7 +143,7 @@ const NEW_ACTIONS = [
     shortDescription: 'Bike one short trip instead of using motorized transport when it is safe and practical.',
     description: 'Choose cycling for a nearby destination when the route, traffic, weather, equipment, and your ability make it a suitable option.',
     instructions: ['Identify a short trip and check that cycling is safe and practical.', 'Complete the trip by bicycle using an appropriate route and normal safety precautions.'],
-    elementIds: ['air', 'energy', 'earth'],
+    elementIds: ['air', 'energy'],
     categories: ['mobility'],
     actionType: 'PERSONAL', repeatType: 'REPEATABLE', difficulty: 'EASY', estimatedDurationMinutes: 20,
     iconName: 'bicycle-outline',
@@ -199,7 +199,7 @@ const NEW_ACTIONS = [
     shortDescription: 'Try about 10 minutes of gentle yoga or movement at a level appropriate for you.',
     description: 'Spend about 10 minutes doing gentle yoga or adapted movement with attention to comfortable movement and awareness rather than performance.',
     instructions: ['Choose a safe space and gentle movements that are appropriate for your ability.', 'Practice for about 10 minutes, adapting or stopping when something does not feel safe or comfortable.'],
-    elementIds: ['spirit', 'earth'],
+    elementIds: ['spirit'],
     categories: ['mindfulness'],
     actionType: 'PERSONAL', repeatType: 'REPEATABLE', difficulty: 'EASY', estimatedDurationMinutes: 10,
     iconName: 'body-outline',
@@ -291,27 +291,48 @@ async function main() {
   console.log(`  No collisions. ${existingIds.size} existing actions found.\n`);
 
   console.log(`Writing ${FULL_ACTIONS.length} new catalogue actions to 'actions'...`);
-  let written = 0;
+  const succeeded = [];
+  const failed = []; // { id, message }
   for (const action of FULL_ACTIONS) {
     const { id, ...data } = action;
     try {
       await db.collection('actions').doc(id).set({
         ...data,
+        version: 1,
         createdAt: FieldValue.serverTimestamp(),
         updatedAt: FieldValue.serverTimestamp(),
         createdBy: 'production-catalogue-v2-new-16-import',
         updatedBy: 'production-catalogue-v2-new-16-import'
       });
       console.log(`  + ${id}`);
-      written++;
+      succeeded.push(id);
     } catch (e) {
       console.error(`  x ${id}: ${e.message}`);
+      failed.push({ id, message: e.message });
     }
   }
 
   const finalSnapshot = await db.collection('actions').where('isActive', '==', true).get();
-  console.log(`\nDone. ${written}/${FULL_ACTIONS.length} new actions written.`);
+
+  console.log('\n--- Summary ---');
+  console.log(`Attempted:  ${FULL_ACTIONS.length}`);
+  console.log(`Successful: ${succeeded.length}`);
+  console.log(`Failed:     ${failed.length}`);
+  if (failed.length > 0) {
+    console.log(`Failed action IDs: ${failed.map((f) => f.id).join(', ')}`);
+    failed.forEach((f) => console.log(`  - ${f.id}: ${f.message}`));
+  }
   console.log(`Total active actions in catalogue now: ${finalSnapshot.size}`);
+
+  if (failed.length > 0) {
+    // A partial seed is not a success — the caller (CI, or whoever ran
+    // this by hand) needs a non-zero exit to actually notice, not just a
+    // log line buried above a "Done" that implied everything worked.
+    console.error(`\nFAILED: ${failed.length}/${FULL_ACTIONS.length} action(s) did not write.`);
+    process.exit(1);
+  }
+
+  console.log('\nDone. All actions written successfully.');
   process.exit(0);
 }
 

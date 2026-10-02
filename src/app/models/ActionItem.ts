@@ -59,6 +59,13 @@ export interface ActionItem {
 
   displayOrder: number;
 
+  // Bumped by ActionService.saveAction() on every admin edit (starts at 1
+  // on create). Optional because every action seeded before this field
+  // existed has none at all — UserActionService treats a missing version
+  // as 1 (Phase 1's implicit, untracked baseline), so this is purely
+  // additive and needs no backfill/migration of existing catalogue docs.
+  version?: number;
+
   createdAt: any;
   updatedAt: any;
   createdBy: string;
