@@ -118,9 +118,14 @@ export class BlogPostPage implements OnInit {
     if (!htmlContent) {
       return 1000; // Default per design: 5-minute estimated read
     }
-    // Strip HTML tags and count words
-    const textContent = htmlContent.replace(/<[^>]*>/g, '');
-    const words = textContent.split(/\s+/).filter(word => word.length > 0);
+    // Split on tags rather than deleting them: the text between tags is only
+    // counted, never rendered, and treating each tag as a word boundary keeps
+    // "<p>one</p><p>two</p>" from collapsing into a single word.
+    const words = htmlContent
+      .split(/<[^>]*>/)
+      .join(' ')
+      .split(/\s+/)
+      .filter(word => word.length > 0);
     return words.length || 1000;
   }
 

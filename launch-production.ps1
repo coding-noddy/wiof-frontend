@@ -115,6 +115,17 @@ if (Should-Run "checks") {
     }
     Write-Host "  git: clean ($(git rev-parse --abbrev-ref HEAD) @ $(git rev-parse --short HEAD))" -ForegroundColor Green
 
+    # Production deploys only from master (the remote's default branch), and
+    # only when it matches origin/master - no unpushed or stale local state.
+    $branch = git rev-parse --abbrev-ref HEAD
+    if ($branch -ne "master") { Stop-Launch "checks" "on branch '$branch' - production deploys only from master (git checkout master)" }
+    git fetch origin master --quiet
+    if ($LASTEXITCODE -ne 0) { Stop-Launch "checks" "could not fetch origin/master to compare" }
+    if ((git rev-parse HEAD) -ne (git rev-parse origin/master)) {
+        Stop-Launch "checks" "local master differs from origin/master - pull or push first so production matches what's on GitHub"
+    }
+    Write-Host "  branch: master, in sync with origin/master" -ForegroundColor Green
+
     # deploy.ps1 switches to release-<version> if it already exists - that
     # would build and ship that branch's old code instead of this one.
     $version = (Get-Content "package.json" -Raw | ConvertFrom-Json).version
@@ -220,7 +231,7 @@ Write-Host "    node scripts/prod-launch.js seed-admins --email them@example.com
 Write-Host ""
 Write-Host "  To roll back: .estore-production.ps1 -Snapshot <the pre-launch kit below>" -ForegroundColor Cyan
 Write-Host "  Rollback kit (pre-launch config + exact commands):" -ForegroundColor Cyan
-Write-Host "    $((Get-ChildItem scriptsackups -Directory -Filter 'prod-config-*' | Sort-Object Name | Select-Object -Last 1).FullName)\ROLLBACK.md" -ForegroundColor Cyan
+Write-Host "    $((Get-ChildItem scripts\backups -Directory -Filter 'prod-config-*' | Sort-Object Name | Select-Object -Last 1).FullName)\ROLLBACK.md" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "  Log: $logFile" -ForegroundColor Cyan
 Stop-Transcript | Out-Null

@@ -16,7 +16,7 @@ Once Phase 0 is done (key saved, Console settings in place, everything committed
 
 [`launch-production.ps1`](../launch-production.ps1) runs Phases 1–3 in 13 steps, in order, and stops at the first failure:
 
-1. Local checks: the key is for wiof-production, the git tree is clean, the Firebase CLI has access, and no `release-<version>` branch or `v<version>-prod` tag exists yet. You then confirm the branch and commit being deployed.
+1. Local checks: the key is for wiof-production, the git tree is clean, you're on `master` in sync with `origin/master`, the Firebase CLI has access, and no `release-<version>` branch or `v<version>-prod` tag exists yet. You then confirm the branch and commit being deployed.
 2. **Prerequisites**, checked by API: Google and email sign-in are enabled, and the non-redirect custom domain is authorized. Then you confirm the OAuth consent screen by hand.
 3. Rules tests.
 4. Preflight.
@@ -39,9 +39,9 @@ The phases below are the same steps, broken out for reference or for running one
 ## Phase 0: Prerequisites (do these before launch day)
 
 ### Code
-- [ ] Commit everything and merge the release branch the way you normally do. `deploy.ps1` builds from the **working tree**: without `-SkipBranch` it creates and checks out `release-<package.json version>` and tags `v<version>-prod`.
+- [ ] Commit everything, merge into **`master`** and push. Production deploys **only from `master`**, the remote's default branch. The launch script refuses any other branch, and refuses if local `master` differs from `origin/master`. (`main` also exists, but it's 79 commits behind and isn't used.) `deploy.ps1` builds from the **working tree**: without `-SkipBranch` it creates and checks out `release-<package.json version>` and tags `v<version>-prod`.
 - [ ] Decide the launch version in `package.json` (the footer shows it). It must not already have a `release-<version>` branch or `v<version>-prod` tag. `deploy.ps1` would switch to that **existing** branch and ship its old code, so the launch script refuses. `5.0.3` is free today.
-- [ ] Be on the branch you intend to ship (normally `main` after merging). `deploy.ps1` branches `release-<version>` from the current commit.
+- [ ] `git checkout master && git pull` before running the script. `deploy.ps1` branches `release-<version>` from the current commit.
 - [ ] `npm run test:rules` passes. This needs Java 21; the deploy scripts run it automatically.
 
 ### Credentials
@@ -178,7 +178,7 @@ This is a live end-to-end Take Action test through the deployed rules and functi
 ## After launch
 
 ### Same day
-- [ ] **Git housekeeping.** `deploy.ps1` left you on `release-<version>`, with the footer version change uncommitted. Commit it, push the branch, and merge it back to `main` the way you normally do. The `v<version>-prod` tag is already pushed.
+- [ ] **Git housekeeping.** `deploy.ps1` left you on `release-<version>`, with the footer version change uncommitted. Commit it, push the branch, and merge it back into `master`. The `v<version>-prod` tag is already pushed.
 - [ ] Delete the extra copy of the production key in your Downloads folder. Keep only `scripts/service-account.prod.json`.
 - [ ] Add any admins who signed in for the first time after launch (`seed-admins --email … --apply`).
 
@@ -199,8 +199,8 @@ Roll back only for **site-wide** breakage: pages not loading, sign-in broken for
 **One command: [`restore-production.ps1`](../restore-production.ps1).**
 
 ```powershell
-.estore-production.ps1                     # lists the saved snapshots
-.estore-production.ps1 -Snapshot scriptsackups\prod-config-<timestamp>
+.\restore-production.ps1                     # lists the saved snapshots
+.\restore-production.ps1 -Snapshot scripts\backups\prod-config-<timestamp>
 ```
 
 It restores a snapshot's **Hosting version and Firestore + Storage rules together**, rules first and the site immediately after. Steps:
