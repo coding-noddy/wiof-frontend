@@ -1,0 +1,66 @@
+:host {
+  display: block;
+}
+
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 0 0.9rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  background: var(--wiof-warm-white);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus-within {
+    border-color: var(--wiof-teal);
+    box-shadow: 0 0 0 3px rgba(33, 153, 159, 0.15);
+  }
+
+  > ion-icon {
+    flex-shrink: 0;
+    font-size: 1.1rem;
+    color: var(--wiof-brown);
+  }
+}
+
+.search-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.7rem 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--wiof-ink);
+  font-size: 0.95rem;
+
+  &::placeholder {
+    color: var(--wiof-ink);
+    opacity: 0.5;
+  }
+
+  // Use our own clear button rather than the browser's native one.
+  &::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+  }
+}
+
+.search-clear {
+  display: flex;
+  padding: 0.25rem;
+  border: none;
+  background: transparent;
+  color: var(--wiof-ink);
+  opacity: 0.5;
+  cursor: pointer;
+
+  ion-icon {
+    font-size: 1.15rem;
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
+}

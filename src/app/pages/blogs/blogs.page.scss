@@ -26,9 +26,9 @@ ion-content {
 
 .header-eyebrow {
   margin: 0 0 0.3rem;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--wiof-teal);
 }
@@ -97,4 +97,30 @@ ion-content {
   @media (max-width: 767px) {
     padding: 0.75rem;
   }
+}
+
+.list-search {
+  padding: 1.25rem 1.5rem 0;
+
+  @media (max-width: 767px) {
+    padding: 1rem 0.75rem 0;
+  }
+}
+
+.results-heading {
+  margin: 0.5rem 0 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--wiof-ink);
+
+  &.other-heading {
+    margin-top: 1.75rem;
+  }
+}
+
+.search-note {
+  margin: 1rem 0 0;
+  font-size: 0.88rem;
+  color: var(--wiof-ink);
+  opacity: 0.7;
 }

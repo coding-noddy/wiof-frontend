@@ -7,6 +7,7 @@ import { UserAction } from 'src/app/models/UserAction';
 import { ActionService } from 'src/app/services/action.service';
 import { UserActionService } from 'src/app/services/user-action.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { searchItems, searchTerms } from 'src/app/util/text-search';
 
 interface ElementTab {
   element: string;
@@ -35,6 +36,12 @@ export class TakeActionPage implements OnInit, OnDestroy {
   selectedCategory = '';
   categoryFilteredActions: ActionItem[] = [];
 
+  // Client-side search over the already-loaded catalogue — no extra
+  // Firestore reads. While a query is active, results replace the
+  // Featured/Browse sections.
+  searchQuery = '';
+  searchResults: ActionItem[] = [];
+
   // Air is first in the canonical element order (ELEMENT_TAB_ORDER, same as
   // LifeElementsComponent's order) — default the tab to it, not Earth.
   selectedElement = ELEMENT_TAB_ORDER[0];
@@ -60,6 +67,7 @@ export class TakeActionPage implements OnInit, OnDestroy {
       this.featuredActions = actions.filter((a) => a.isFeatured).slice(0, 4);
       this.buildElementTabs(actions);
       this.buildCategories(actions);
+      this.applySearch();
       this.isLoading = false;
     });
 
@@ -93,6 +101,26 @@ export class TakeActionPage implements OnInit, OnDestroy {
     this.categoryFilteredActions = this.selectedCategory
       ? this.allActions.filter((a) => (a.categories || []).includes(this.selectedCategory))
       : this.allActions;
+  }
+
+  onSearchChange(query: string): void {
+    this.searchQuery = query;
+    this.applySearch();
+  }
+
+  get isSearching(): boolean {
+    return searchTerms(this.searchQuery).length > 0;
+  }
+
+  /** Every query word must appear in the action's title, short description,
+   *  tags, categories, or elements. Title matches sort first. */
+  private applySearch(): void {
+    this.searchResults = searchItems(
+      this.allActions,
+      this.searchQuery,
+      (a) => a.title,
+      (a) => [a.shortDescription, ...(a.tags || []), ...(a.categories || []), ...(a.elementIds || [])]
+    );
   }
 
   selectElement(element: string): void {

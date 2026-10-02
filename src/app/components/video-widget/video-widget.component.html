@@ -1,10 +1,12 @@
 <div class="video-widget-section">
   <div class="video-widget-card">
     <div class="video-widget-header" [ngClass]="videoPlayerClass">
-      <span class="video-widget-title">{{ videoPlayerTitle }}</span>
+      <span class="video-widget-title" *ngIf="urlSafe; else titleSkeleton">{{ videoPlayerTitle }}</span>
+      <ng-template #titleSkeleton><span class="skeleton title-skeleton"></span></ng-template>
     </div>
     <div class="video-widget-player">
       <iframe
+        *ngIf="urlSafe"
         [title]="videoPlayerTitle"
         class="video-player"
         [src]="urlSafe"

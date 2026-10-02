@@ -5,7 +5,7 @@ $w:       $water-color;           // rgb(223,243,255)
 $w-mid:   darken($w, 10%);
 $w-dark:  darken($w, 24%);
 $w-bg:    lighten($w, 3%);
-$radius-card: 20px;
+$radius-card: 18px;
 $radius-item: 14px;
 
 // ── Card shell ───────────────────────────────────────────────────
@@ -187,7 +187,7 @@ $radius-item: 14px;
   &:hover { border-color: rgba($w-dark, 0.4); }
   &:focus {
     border-color: $w-dark;
-    box-shadow: 0 0 0 3px rgba(0, 100, 180, 0.1);
+    box-shadow: 0 0 0 3px rgba($w-dark, 0.1);
   }
 }
 
@@ -247,7 +247,7 @@ $radius-item: 14px;
 
   &:focus {
     border-color: $w-dark;
-    box-shadow: 0 0 0 3px rgba(0,100,180,.1);
+    box-shadow: 0 0 0 3px rgba($w-dark, .1);
   }
 }
 

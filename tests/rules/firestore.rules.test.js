@@ -103,6 +103,16 @@ describe('users/{userId}', () => {
     );
   });
 
+  it('lets the owner update firstName/lastName (Settings page name split)', async () => {
+    await seed((db) => db.collection('users').doc('alice').set(validProfile('alice')));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertSucceeds(
+      db.collection('users').doc('alice').update({
+        firstName: 'Alice', lastName: 'Updated', displayName: 'Alice Updated'
+      })
+    );
+  });
+
   it('denies the owner changing their own role via update', async () => {
     await seed((db) => db.collection('users').doc('alice').set(validProfile('alice')));
     const db = testEnv.authenticatedContext('alice').firestore();
@@ -588,6 +598,47 @@ describe('actions/{actionId} (Take Action catalogue — same isAdmin() gate as B
     });
     const db = testEnv.authenticatedContext('root').firestore();
     await assertSucceeds(db.collection('actions').doc('action-1').update({ isActive: false }));
+  });
+});
+
+describe('hero_videos/{slotId} (admin-managed hero video per element page)', () => {
+  const valid = { title: 'Rediscover our Planet Earth', videoId: 'ghkQoJoipbM' };
+
+  it('lets anyone, including unauthenticated, read a slot', async () => {
+    await seed((db) => db.collection('hero_videos').doc('earth').set(valid));
+    const db = testEnv.unauthenticatedContext().firestore();
+    await assertSucceeds(db.collection('hero_videos').doc('earth').get());
+  });
+
+  it('denies a non-admin write', async () => {
+    const db = testEnv.authenticatedContext('mallory').firestore();
+    await assertFails(db.collection('hero_videos').doc('earth').set(valid));
+  });
+
+  it('lets an admin set a known slot', async () => {
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    const db = testEnv.authenticatedContext('root').firestore();
+    await assertSucceeds(db.collection('hero_videos').doc('our-purpose').set(valid));
+  });
+
+  it('denies an admin write to an unknown slot id', async () => {
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    const db = testEnv.authenticatedContext('root').firestore();
+    await assertFails(db.collection('hero_videos').doc('home').set(valid));
+  });
+
+  it('denies a full URL instead of an 11-char video ID', async () => {
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    const db = testEnv.authenticatedContext('root').firestore();
+    await assertFails(
+      db.collection('hero_videos').doc('earth').set({ ...valid, videoId: 'https://youtu.be/ghkQoJoipbM' })
+    );
+  });
+
+  it('denies an empty title', async () => {
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    const db = testEnv.authenticatedContext('root').firestore();
+    await assertFails(db.collection('hero_videos').doc('earth').set({ ...valid, title: '' }));
   });
 });
 

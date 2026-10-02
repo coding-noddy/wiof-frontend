@@ -19,7 +19,9 @@ export const ALLOWED_AVATAR_MIME_TYPES = ['image/jpeg', 'image/jpg', 'image/png'
 export const MAX_AVATAR_SIZE_BYTES = 1 * 1024 * 1024;
 
 /** Fields a signed-in user is allowed to edit on their own profile document. */
-const EDITABLE_PROFILE_FIELDS: Array<keyof UserProfile> = ['displayName', 'photoURL', 'preferredElements'];
+const EDITABLE_PROFILE_FIELDS: Array<keyof UserProfile> = [
+  'displayName', 'firstName', 'lastName', 'photoURL', 'preferredElements'
+];
 
 export interface AvatarValidationResult {
   valid: boolean;
@@ -54,6 +56,14 @@ export function getAvatarExtension(file: File): 'jpg' | 'png' {
 export interface UserProfile {
   uid: string;
   displayName: string;           // Max 100 characters
+  // Optional — added after displayName already existed, so every profile
+  // created before this shipped has neither field set yet. Settings backs
+  // them out of the existing displayName on first edit rather than
+  // requiring a backfill; displayName itself stays the source every other
+  // screen (header, avatar dropdown, admin users list) already reads from,
+  // kept in sync as `${firstName} ${lastName}` whenever these are edited.
+  firstName?: string;             // Max 50 characters
+  lastName?: string;              // Max 50 characters
   email: string;
   photoURL: string;
   role: 'admin' | 'public';     // User role for access control
@@ -85,6 +95,23 @@ export class UserProfileService {
     private firestore: AngularFirestore,
     private storage: AngularFireStorage
   ) {}
+
+  /**
+   * First name for display purposes (e.g. "Welcome back, Alice" on the
+   * home page), falling back to the first word of the legacy displayName
+   * for any profile that predates the firstName/lastName fields — most
+   * won't have run through Settings yet to populate them directly.
+   */
+  resolveFirstName(profile: UserProfile | null | undefined): string {
+    if (!profile) {
+      return '';
+    }
+    if (profile.firstName) {
+      return profile.firstName;
+    }
+    const firstWord = (profile.displayName || '').trim().split(/\s+/)[0];
+    return firstWord || '';
+  }
 
   /**
    * Retrieves a user profile by UID.

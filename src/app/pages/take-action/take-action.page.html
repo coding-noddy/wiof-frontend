@@ -24,7 +24,29 @@
     </div>
   </section>
 
-  <ng-container *ngIf="!isLoading">
+  <div class="hub-search" [hidden]="isLoading || !allActions.length">
+    <app-search-box
+      #searchBox
+      placeholder="Search actions, e.g. water, plastic, energy"
+      ariaLabel="Search actions"
+      (queryChange)="onSearchChange($event)"
+    ></app-search-box>
+  </div>
+
+  <section class="hub-section" *ngIf="!isLoading && isSearching" aria-live="polite">
+    <h2 class="section-heading">
+      {{ searchResults.length }} {{ searchResults.length === 1 ? 'result' : 'results' }} for “{{ searchQuery.trim() }}”
+    </h2>
+    <div class="action-grid" *ngIf="searchResults.length">
+      <app-take-action-card *ngFor="let action of searchResults" [action]="action"></app-take-action-card>
+    </div>
+    <p class="empty-note" *ngIf="!searchResults.length">
+      No actions match “{{ searchQuery.trim() }}”. Try a different word, or
+      <button type="button" class="wiof-link-button" (click)="searchBox.clear()">browse by element</button>.
+    </p>
+  </section>
+
+  <ng-container *ngIf="!isLoading && !isSearching">
     <section class="hub-section" *ngIf="featuredActions.length">
       <h2 class="section-heading">Featured Actions</h2>
       <div class="action-grid">

@@ -70,9 +70,9 @@ $accent-color: var(--wiof-teal);
   }
 
   .header-eyebrow {
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--wiof-teal);
     margin: 0;
@@ -366,7 +366,7 @@ ion-content {
   position: fixed;
   inset: 0;
   z-index: 9997;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(43, 36, 32, 0.4);
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
   animation: fadeIn 200ms ease-out;
@@ -381,9 +381,9 @@ ion-content {
   width: 340px;
   max-width: calc(100vw - 2rem);
   padding: 1.75rem;
-  border-radius: 16px;
-  background: #ffffff;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  border-radius: 18px;
+  background: var(--wiof-warm-white);
+  box-shadow: 0 20px 50px rgba(43, 36, 32, 0.18);
   text-align: center;
   animation: modalIn 250ms ease-out;
 }
@@ -408,7 +408,7 @@ ion-content {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: #fef2f2;
+  background: rgba(var(--ion-color-danger-rgb), 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -416,20 +416,20 @@ ion-content {
 
   ion-icon {
     font-size: 1.5rem;
-    color: #dc2626;
+    color: var(--ion-color-danger);
   }
 }
 
 .confirm-title {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--wiof-ink);
   margin: 0 0 0.5rem;
 }
 
 .confirm-text {
   font-size: 0.88rem;
-  color: #64748b;
+  color: var(--wiof-warm-grey);
   margin: 0 0 1.25rem;
   line-height: 1.4;
 }
@@ -443,17 +443,17 @@ ion-content {
 .confirm-cancel {
   padding: 9px 20px;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  background: #fff;
+  border: 1px solid var(--wiof-brown-tint-40);
+  background: var(--wiof-warm-white);
   font-size: 0.88rem;
   font-weight: 600;
-  color: #475569;
+  color: var(--wiof-ink);
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease;
 
   &:hover {
-    background: #f8fafc;
-    border-color: #cbd5e1;
+    background: var(--wiof-ivory);
+    border-color: var(--wiof-brown-tint-20);
   }
 }
 
@@ -461,10 +461,10 @@ ion-content {
   padding: 9px 20px;
   border-radius: 8px;
   border: none;
-  background: #dc2626;
+  background: var(--ion-color-danger);
   font-size: 0.88rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--ion-color-danger-contrast);
   cursor: pointer;
   min-width: 90px;
   display: inline-flex;
@@ -473,7 +473,7 @@ ion-content {
   transition: background 0.15s ease, transform 0.15s ease;
 
   &:hover:not(:disabled) {
-    background: #b91c1c;
+    background: var(--ion-color-danger-shade);
   }
 
   &:disabled {
@@ -484,6 +484,6 @@ ion-content {
   ion-spinner {
     width: 16px;
     height: 16px;
-    color: #fff;
+    color: var(--ion-color-danger-contrast);
   }
 }

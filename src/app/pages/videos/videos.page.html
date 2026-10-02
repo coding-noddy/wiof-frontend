@@ -30,29 +30,56 @@
       <h1 class="header-title">{{ category }} Videos</h1>
     </div>
 
+    <div class="list-search" [hidden]="videosList === null">
+      <app-search-box
+        #searchBox
+        [placeholder]="'Search ' + category + ' videos by title'"
+        ariaLabel="Search videos"
+        (queryChange)="onSearchChange($event)"
+      ></app-search-box>
+    </div>
+
+    <!-- Search results -->
+    <div *ngIf="videosList !== null && isSearching" class="videos-grid-wrap" aria-live="polite">
+      <h2 class="results-heading">
+        {{ searchResults.length }} {{ searchResults.length === 1 ? 'result' : 'results' }} in {{ category }}
+      </h2>
+      <div class="videos-grid" *ngIf="searchResults.length">
+        <ion-grid>
+          <ion-row>
+            <ion-col size="12" size-sm="6" size-md="4" size-lg="3" *ngFor="let video of searchResults">
+              <app-video-card [video]="video" [element]="element"></app-video-card>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+      <p class="search-note" *ngIf="!searchResults.length">
+        No videos match “{{ searchQuery.trim() }}”. Try a different word, or
+        <button type="button" class="wiof-link-button" (click)="searchBox.clear()">see all {{ category }} videos</button>.
+      </p>
+    </div>
+
     <!-- Video grid -->
-    <div *ngIf="videos | async as videosList; else loading" class="videos-grid-wrap">
+    <div *ngIf="videosList !== null && !isSearching; else maybeLoading" class="videos-grid-wrap">
       <div class="videos-grid" *ngIf="videosList.length > 0">
         <ion-grid>
           <ion-row>
-            <ion-col
-              size="12"
-              size-sm="6"
-              size-md="4"
-              size-lg="3"
-              *ngFor="let video of videosList"
-            >
+            <ion-col size="12" size-sm="6" size-md="4" size-lg="3" *ngFor="let video of videosList">
               <app-video-card [video]="video" [element]="element"></app-video-card>
             </ion-col>
           </ion-row>
         </ion-grid>
       </div>
 
-      <div *ngIf="videosList && videosList.length === 0" class="no-content">
+      <div *ngIf="videosList.length === 0" class="no-content">
         <ion-icon name="videocam-off-outline"></ion-icon>
         <p>No videos found under <strong>{{ category }}</strong> category.</p>
       </div>
     </div>
+
+    <ng-template #maybeLoading>
+      <ng-container *ngIf="videosList === null" [ngTemplateOutlet]="loading"></ng-container>
+    </ng-template>
 
     <ng-template #loading>
       <div class="videos-loading">

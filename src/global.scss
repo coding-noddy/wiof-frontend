@@ -166,7 +166,8 @@ ion-content::part(scroll) {
   --max-width: 95vw;
   --height: auto;
   --max-height: 85vh;
-  --border-radius: 16px;
+  --border-radius: 18px;
+  --background: var(--wiof-warm-white);
 }
 
 /* NGO in Focus detail dialog - presented via ModalController (viewport-centered) */
@@ -176,4 +177,18 @@ ion-content::part(scroll) {
   --height: auto;
   --max-height: 90vh;
   --border-radius: 18px;
+  --background: var(--wiof-warm-white);
+}
+
+// Inline text-style button (e.g. "clear search" inside an empty-state
+// sentence on the list pages' search results).
+.wiof-link-button {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--wiof-teal);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
 }

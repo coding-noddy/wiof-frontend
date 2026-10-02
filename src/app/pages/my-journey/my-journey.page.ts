@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Observable, of, Subject } from 'rxjs';
 import { takeUntil, first, catchError, distinctUntilChanged, map, shareReplay } from 'rxjs/operators';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
@@ -67,6 +68,11 @@ export class MyJourneyPage implements OnInit, OnDestroy {
   actionsTakenError = false;
   actionsExpanded = false;
 
+  /** Guards against re-scrolling every time checkLoadingComplete() re-fires
+   *  during the same page visit (loadMetrics/loadSavedContent/loadProfile
+   *  each call it independently). Reset per visit in resetData(). */
+  private hasScrolledToFragment = false;
+
   /** How many rows a history list shows before "See more" — keeps the page
    *  from growing tall with 4+ sections each listing up to 10 items. */
   private static readonly COLLAPSED_LIST_SIZE = 3;
@@ -90,7 +96,8 @@ export class MyJourneyPage implements OnInit, OnDestroy {
     private userProfileService: UserProfileService,
     private userActionService: UserActionService,
     private actionService: ActionService,
-    private storage: AngularFireStorage
+    private storage: AngularFireStorage,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -276,6 +283,7 @@ export class MyJourneyPage implements OnInit, OnDestroy {
     this.actionsExpanded = false;
     this.actionMetaCache = {};
     this.actionStreakCache = {};
+    this.hasScrolledToFragment = false;
   }
 
   /**
@@ -383,11 +391,13 @@ export class MyJourneyPage implements OnInit, OnDestroy {
           this.qualityReads = entries;
           this.qualityReadCount = entries.length;
           this.qualityReadsLoading = false;
+          this.scrollToPendingFragment();
         },
         error: (err) => {
           console.warn('Failed to load quality reads:', err);
           this.qualityReadsLoading = false;
           this.qualityReadsError = true;
+          this.scrollToPendingFragment();
         }
       });
   }
@@ -408,11 +418,13 @@ export class MyJourneyPage implements OnInit, OnDestroy {
         next: (entries) => {
           this.eqHistory = entries;
           this.eqHistoryLoading = false;
+          this.scrollToPendingFragment();
         },
         error: (err) => {
           console.warn('Failed to load EQ history:', err);
           this.eqHistoryLoading = false;
           this.eqHistoryError = true;
+          this.scrollToPendingFragment();
         }
       });
   }
@@ -433,11 +445,13 @@ export class MyJourneyPage implements OnInit, OnDestroy {
         next: (entries) => {
           this.pollHistory = entries;
           this.pollHistoryLoading = false;
+          this.scrollToPendingFragment();
         },
         error: (err) => {
           console.warn('Failed to load poll history:', err);
           this.pollHistoryLoading = false;
           this.pollHistoryError = true;
+          this.scrollToPendingFragment();
         }
       });
   }
@@ -458,11 +472,13 @@ export class MyJourneyPage implements OnInit, OnDestroy {
         next: (entries) => {
           this.videoWatchHistory = entries;
           this.videoWatchHistoryLoading = false;
+          this.scrollToPendingFragment();
         },
         error: (err) => {
           console.warn('Failed to load video watch history:', err);
           this.videoWatchHistoryLoading = false;
           this.videoWatchHistoryError = true;
+          this.scrollToPendingFragment();
         }
       });
   }
@@ -486,11 +502,13 @@ export class MyJourneyPage implements OnInit, OnDestroy {
         next: (history) => {
           this.recentActions = history.filter((a) => a.status === 'COMPLETE').slice(0, 10);
           this.actionsTakenLoading = false;
+          this.scrollToPendingFragment();
         },
         error: (err) => {
           console.warn('Failed to load actions taken:', err);
           this.actionsTakenLoading = false;
           this.actionsTakenError = true;
+          this.scrollToPendingFragment();
         }
       });
   }
@@ -502,6 +520,38 @@ export class MyJourneyPage implements OnInit, OnDestroy {
     if (this.metrics !== null) {
       this.isLoading = false;
     }
+  }
+
+  /**
+   * Arriving here from the home page's journey tiles (e.g. "#eq-history-section")
+   * needs to scroll only once every section above the target has swapped its own
+   * skeleton for real content — each history section loads independently and
+   * resizes when it does, so scrolling as soon as the page-level isLoading flips
+   * (or even on the target section's own load) still drifts as sections further
+   * up the page change height afterwards. Called from every section loader's
+   * next/error branch; only the last one to settle actually triggers the scroll.
+   */
+  private scrollToPendingFragment(): void {
+    if (this.hasScrolledToFragment) {
+      return;
+    }
+    const fragment = this.route.snapshot.fragment;
+    if (!fragment) {
+      return;
+    }
+    const allSectionsSettled =
+      !this.qualityReadsLoading &&
+      !this.eqHistoryLoading &&
+      !this.pollHistoryLoading &&
+      !this.videoWatchHistoryLoading &&
+      !this.actionsTakenLoading;
+    if (!allSectionsSettled) {
+      return;
+    }
+    this.hasScrolledToFragment = true;
+    setTimeout(() => {
+      document.getElementById(fragment)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   }
 
   /**

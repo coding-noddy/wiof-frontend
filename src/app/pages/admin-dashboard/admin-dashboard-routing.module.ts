@@ -198,6 +198,13 @@ const routes: Routes = [
     ]
   },
   {
+    path: 'hero-videos',
+    loadChildren: () =>
+      import('./hero-videos/hero-videos.module').then(
+        (m) => m.HeroVideosPageModule
+      )
+  },
+  {
     path: 'subscribers',
     loadChildren: () =>
       import('./subscribers/subscribers.module').then(

@@ -62,9 +62,8 @@ $transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebar-logo {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  height: 30px;
+  width: auto;
   margin-right: 10px;
 }
 
@@ -73,10 +72,11 @@ $transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   // sets wordmarks in Aleo. Not a heading tag, so it needs the explicit
   // override to win over global.scss's universal Noto Sans reset.
   font-family: 'Aleo', serif !important;
-  color: #fff;
+  color: var(--wiof-warm-white);
   font-size: 1.1rem;
   font-weight: 700;
   white-space: nowrap;
+  opacity: 0.85;
 }
 
 .sidebar-toggle {

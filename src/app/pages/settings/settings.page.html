@@ -56,7 +56,7 @@
         </div>
 
         <div class="avatar-identity">
-          <p class="avatar-display-name">{{ profileForm.get('displayName')!.value || 'Your Profile' }}</p>
+          <p class="avatar-display-name">{{ fullNamePreview || 'Your Profile' }}</p>
           <p class="avatar-email">{{ userEmail }}</p>
         </div>
 
@@ -134,25 +134,37 @@
             <ion-item lines="full">
               <ion-icon name="mail-outline" slot="start" aria-hidden="true"></ion-icon>
               <ion-label position="stacked">Email</ion-label>
-              <ion-label class="read-only-value">{{ userEmail }}</ion-label>
+              <p class="read-only-value">{{ userEmail }}</p>
             </ion-item>
 
             <!-- Read-only Member Since -->
             <ion-item lines="full">
               <ion-icon name="calendar-outline" slot="start" aria-hidden="true"></ion-icon>
               <ion-label position="stacked">Member Since</ion-label>
-              <ion-label class="read-only-value">{{ memberSince }}</ion-label>
+              <p class="read-only-value">{{ memberSince }}</p>
             </ion-item>
 
-            <!-- Display Name -->
+            <!-- First Name -->
             <ion-item lines="full">
               <ion-icon name="create-outline" slot="start" aria-hidden="true"></ion-icon>
-              <ion-label position="stacked">Display Name</ion-label>
+              <ion-label position="stacked">First Name</ion-label>
               <ion-input
-                formControlName="displayName"
+                formControlName="firstName"
                 type="text"
-                maxlength="100"
-                placeholder="Enter your display name"
+                maxlength="50"
+                placeholder="Enter your first name"
+              ></ion-input>
+            </ion-item>
+
+            <!-- Last Name -->
+            <ion-item lines="full">
+              <ion-icon name="create-outline" slot="start" aria-hidden="true"></ion-icon>
+              <ion-label position="stacked">Last Name</ion-label>
+              <ion-input
+                formControlName="lastName"
+                type="text"
+                maxlength="50"
+                placeholder="Enter your last name"
               ></ion-input>
             </ion-item>
 

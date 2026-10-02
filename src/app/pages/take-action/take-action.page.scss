@@ -43,9 +43,9 @@
 
 .eyebrow {
   margin: 0 0 0.4rem;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--wiof-brown);
 }
@@ -64,6 +64,14 @@
   line-height: 1.6;
   color: var(--wiof-ink);
   opacity: 0.78;
+}
+
+.hub-search {
+  padding: 1.25rem 1.25rem 0;
+
+  @media (min-width: 768px) {
+    padding: 1.5rem 6vw 0;
+  }
 }
 
 .hub-section {

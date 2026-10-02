@@ -1,8 +1,8 @@
 <div class="journey-panel" *ngIf="isAuthenticated; else guestPanel">
   <div class="journey-heading">
     <div>
-      <p class="eyebrow">Welcome back</p>
-      <h2>Continue Your Journey</h2>
+      <p class="eyebrow">Continue Your Journey</p>
+      <h2>Welcome back{{ firstName ? ', ' + firstName : '' }}</h2>
     </div>
     <a routerLink="/my-journey" class="journey-link">View My Journey →</a>
   </div>
@@ -25,7 +25,7 @@
       </button>
     </ng-template>
 
-    <a *ngIf="lastEqScore !== null; else noEq" routerLink="/my-journey" class="journey-card">
+    <a *ngIf="lastEqScore !== null; else noEq" routerLink="/my-journey" fragment="eq-history-section" class="journey-card">
       <span class="eyebrow">Your EQ Score</span>
       <span class="card-title">{{ lastEqScore }}</span>
       <span class="card-meta">See your trend on My Journey</span>

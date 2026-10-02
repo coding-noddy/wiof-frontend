@@ -6,6 +6,7 @@ import { ActivityService } from 'src/app/services/activity.service';
 import { SavedContentService } from 'src/app/services/saved-content.service';
 import { ActionService } from 'src/app/services/action.service';
 import { UserActionService } from 'src/app/services/user-action.service';
+import { UserProfileService } from 'src/app/services/user-profile.service';
 
 interface LastActivity {
   type: 'blog' | 'video';
@@ -40,6 +41,10 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
   actionsCompletedCount = 0;
   nextActionTitle: string | null = null;
 
+  // Personalizes "Welcome back" — null while loading/unavailable, in which
+  // case the template falls back to the plain unpersonalized greeting.
+  firstName: string | null = null;
+
   private destroy$ = new Subject<void>();
   private userId: string | null = null;
 
@@ -48,7 +53,8 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
     private activityService: ActivityService,
     private savedContentService: SavedContentService,
     private actionService: ActionService,
-    private userActionService: UserActionService
+    private userActionService: UserActionService,
+    private userProfileService: UserProfileService
   ) {}
 
   ngOnInit(): void {
@@ -91,10 +97,12 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
       // directly, the same source my-journey.page.ts uses for its own count.
       savedIds: this.savedContentService.getSavedContentIds(userId).pipe(first()),
       actions: this.actionService.getActiveActions().pipe(first()),
-      actionHistory: this.userActionService.getUserActionHistory(userId).pipe(first())
+      actionHistory: this.userActionService.getUserActionHistory(userId).pipe(first()),
+      profile: this.userProfileService.getProfile(userId).pipe(first())
     })
       .pipe(takeUntil(this.destroy$))
-      .subscribe(({ reads, videos, metrics, savedIds, actions, actionHistory }) => {
+      .subscribe(({ reads, videos, metrics, savedIds, actions, actionHistory, profile }) => {
+        this.firstName = this.userProfileService.resolveFirstName(profile) || null;
         const candidates: LastActivity[] = [];
         const latestRead = reads[0];
         const latestVideo = videos[0];

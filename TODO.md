@@ -170,6 +170,21 @@
   - Single Firestore collection per element, managed from admin panel
   - AI suggests facts → admin verifies → publishes with source URL
 
+- **[LOW]** "Load more" pagination for Blogs & Videos list pages
+  - Current: both list pages load and render everything in one go. Blogs: one Firestore query
+    per element, no `limit`, plus one Storage `getDownloadURL` call per card for its image.
+    Videos: full playlist via `getAllPlaylistVideos()` (pages through YouTube 50 at a time,
+    capped at 500). Fine at current sizes (Oct 2026 playlists: Air 11, Water 11, Earth 20,
+    Energy 7, Spirit 8 videos).
+  - Trigger: revisit once any element passes ~50–100 blogs or videos
+  - Approach: keep loading the full list into memory (so the client-side search still covers
+    everything), but render the first ~24 and reveal more with a "Load more" button.
+    Unrendered cards don't fetch their image, which also cuts the Storage calls.
+  - Not needed: real Firestore cursor paging (`limit` + `startAfter`) only matters in the
+    thousands, and it would push search server-side (Firestore has no text search → Algolia etc.)
+  - Reference: `src/app/pages/blogs/blogs.page.ts`, `src/app/pages/videos/videos.page.ts`,
+    `src/app/services/youtube-video.service.ts`
+
 - **[LOW]** Embed WRIS map inline (iframe) on water-item click
   - Check if indiawris.gov.in allows iframe embedding (X-Frame-Options)
   - If allowed: clicking a tile opens the map inline with close/expand button

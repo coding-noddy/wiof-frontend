@@ -197,11 +197,23 @@ ion-header {
       color: #fff;
     }
 
-    &.purple { background: linear-gradient(135deg, #667eea, #764ba2); }
-    &.green { background: linear-gradient(135deg, #43e97b, #38f9d7); }
-    &.blue { background: linear-gradient(135deg, #4facfe, #00f2fe); }
-    &.orange { background: linear-gradient(135deg, #fa709a, #fee140); }
-    &.red { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    // On-brand accent gradients, for stats with no specific element meaning
+    // (totals, status/media-type breakdowns) — matches the same 5-gradient
+    // set already used for the dashboard home page's own stat/nav tiles
+    // (admin-dashboard.page.ts's GRADIENT_* constants), kept in sync here.
+    &.accent-teal { background: linear-gradient(135deg, var(--wiof-teal), var(--wiof-teal-shade-40)); }
+    &.accent-brown { background: linear-gradient(135deg, var(--wiof-brown), var(--wiof-brown-shade-40)); }
+    &.accent-marigold { background: linear-gradient(135deg, var(--wiof-marigold), var(--wiof-marigold-shade-20)); }
+    &.accent-teal-tint { background: linear-gradient(135deg, var(--wiof-teal-tint-20), var(--wiof-teal)); }
+    &.accent-brown-tint { background: linear-gradient(135deg, var(--wiof-brown-tint-40), var(--wiof-brown)); }
+
+    // Five-element triad variants, for stats that ARE a specific element's
+    // count (e.g. manage-blog's per-element breakdown tiles) — Air/Water/
+    // Spirit share Teal, Earth is Brown, Energy is Marigold, matching the
+    // triad used everywhere else on the site.
+    &.earth { background: linear-gradient(135deg, var(--wiof-brown), var(--wiof-brown-shade-40)); }
+    &.water, &.air, &.spirit { background: linear-gradient(135deg, var(--wiof-teal), var(--wiof-teal-shade-40)); }
+    &.energy { background: linear-gradient(135deg, var(--wiof-marigold), var(--wiof-marigold-shade-20)); }
   }
 
   .summary-info {

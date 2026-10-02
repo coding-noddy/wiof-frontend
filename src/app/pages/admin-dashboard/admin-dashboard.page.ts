@@ -101,6 +101,13 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
       description: 'Manage the Take Action catalogue'
     },
     {
+      name: 'Hero Videos',
+      route: 'hero-videos',
+      icon: 'play-circle-outline',
+      color: AdminDashboardPage.GRADIENT_TEAL_TINT,
+      description: 'Featured video on each element page and Our Purpose'
+    },
+    {
       name: 'Subscribers',
       route: 'subscribers',
       icon: 'mail-outline',
