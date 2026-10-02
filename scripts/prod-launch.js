@@ -10,14 +10,21 @@
  * docs/PRODUCTION_LAUNCH_RUNBOOK.md — follow that, not this file alone.
  *
  * Steps (run in this order; see the runbook for where the deploy goes):
+ *   prerequisites   read-only check of the Console settings the launch needs
+ *                   (Google + email sign-in enabled, every custom Hosting
+ *                   domain authorized for sign-in); exits 1 if any is missing
  *   preflight       read-only report of production's current state
  *   backup          dump every top-level Firestore collection to
  *                   scripts/backups/prod-<timestamp>/ (gitignored)
+ *   snapshot-config save the DEPLOYED rules, indexes, Hosting version,
+ *                   functions and auth settings + a ready-to-run ROLLBACK.md
+ *                   (scripts/backups/prod-config-<timestamp>/)
  *   seed-admins     write admins/{uid} for the given emails (--email a,b)
  *   seed-content    copy the reviewed 40-action catalogue and the hero
  *                   video slots from staging into production
  *   backfill-polls  rebuild poll_results from the raw Polls votes
  *                   (run AFTER the functions deploy — see runbook)
+ *   wait-indexes    block until every composite index is READY (after deploy)
  *   verify          read-only post-launch checks; exits 1 on any failure
  *   smoke           live end-to-end Take Action test through the deployed
  *                   rules + functions, with throwaway users (cleaned up)
@@ -35,11 +42,14 @@
  * preflight and smoke all need Auth.
  *
  * Usage:
+ *   node scripts/prod-launch.js prerequisites
  *   node scripts/prod-launch.js preflight
  *   node scripts/prod-launch.js backup
+ *   node scripts/prod-launch.js snapshot-config
  *   node scripts/prod-launch.js seed-admins --email you@example.com [--apply]
  *   node scripts/prod-launch.js seed-content [--apply] [--force]
  *   node scripts/prod-launch.js backfill-polls [--apply]
+ *   node scripts/prod-launch.js wait-indexes
  *   node scripts/prod-launch.js verify
  *   node scripts/prod-launch.js smoke --apply
  */
@@ -91,12 +101,24 @@ function loadKey(keyPath, expectedProject, label) {
 }
 
 let prodApp = null;
+let prodCredential = null;
 function prod() {
   if (!prodApp) {
     const key = loadKey(option('--prod-key', path.join(__dirname, 'service-account.prod.json')), PROD_PROJECT, 'production');
-    prodApp = initializeApp({ credential: cert(key) }, 'prod');
+    prodCredential = cert(key);
+    prodApp = initializeApp({ credential: prodCredential }, 'prod');
   }
   return { db: getFirestore(prodApp), auth: getAuth(prodApp) };
+}
+
+/** GET a Google admin REST endpoint as the production service account. */
+async function prodApiGet(url) {
+  prod();
+  const { access_token: token } = await prodCredential.getAccessToken();
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(`${res.status} ${(body.error && body.error.message) || url}`);
+  return body;
 }
 
 let stagingApp = null;
@@ -120,6 +142,66 @@ async function listAllUsers(auth) {
     pageToken = page.pageToken;
   } while (pageToken);
   return users;
+}
+
+// ── prerequisites ───────────────────────────────────────────────────────────
+
+async function prerequisites() {
+  heading('Prerequisites (read-only)');
+  const base = `https://identitytoolkit.googleapis.com/admin/v2/projects/${PROD_PROJECT}`;
+  const results = [];
+  const check = (name, ok, detail = '', fix = '') => {
+    results.push(ok);
+    console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? `  — ${detail}` : ''}`);
+    if (!ok && fix) console.log(`      fix: ${fix}`);
+  };
+
+  const config = await prodApiGet(`${base}/config`);
+  const google = await prodApiGet(`${base}/defaultSupportedIdpConfigs/google.com`).catch(() => ({}));
+  const authorized = config.authorizedDomains || [];
+  const site = await prodApiGet(`https://firebasehosting.googleapis.com/v1beta1/sites/${PROD_PROJECT}/domains`);
+  // Redirect-only domains (e.g. www -> apex) never host a sign-in, so they
+  // don't need to be authorized.
+  const customDomains = (site.domains || []).filter((d) => !d.domainRedirect).map((d) => d.domainName);
+
+  check('Google sign-in enabled', google.enabled === true && !!google.clientId, '',
+    'Firebase Console > Authentication > Sign-in method > Google > Enable (set support email)');
+  check('Email/Password sign-in enabled (admin logins)', !!(config.signIn && config.signIn.email && config.signIn.email.enabled), '',
+    'Firebase Console > Authentication > Sign-in method > Email/Password > Enable');
+  check('custom domains found on Hosting', customDomains.length > 0, customDomains.join(', ') || 'none',
+    'Firebase Console > Hosting > Add custom domain (worldisonefamily.com)');
+  customDomains.forEach((domain) => check(`"${domain}" authorized for sign-in`, authorized.includes(domain), '',
+    `Firebase Console > Authentication > Settings > Authorized domains > Add "${domain}"`));
+
+  console.log('\nCannot be checked by API — confirm manually:');
+  console.log('  - Google Cloud > APIs & Services > OAuth consent screen: Publishing status = "In production"');
+  console.log('  - YouTube API key referrer restrictions (if any) include the production domains');
+
+  const failed = results.filter((ok) => !ok).length;
+  console.log(`\n${results.length - failed}/${results.length} checks passed`);
+  if (failed) process.exit(1);
+}
+
+// ── wait-indexes ────────────────────────────────────────────────────────────
+
+// A first deploy builds every composite index from firestore.indexes.json in
+// the background; queries that need one (My Journey history, the smoke
+// test) fail with failed-precondition until it's READY.
+async function waitIndexes() {
+  heading('Wait for Firestore indexes');
+  const url = `https://firestore.googleapis.com/v1/projects/${PROD_PROJECT}/databases/(default)/collectionGroups/-/indexes`;
+  const deadline = Date.now() + 20 * 60 * 1000;
+  for (;;) {
+    const indexes = ((await prodApiGet(url)).indexes || []).filter((i) => (i.fields || []).length > 1);
+    const pending = indexes.filter((i) => i.state !== 'READY');
+    console.log(`  ${indexes.length - pending.length}/${indexes.length} composite indexes READY`);
+    if (pending.length === 0) return;
+    if (Date.now() > deadline) {
+      console.error('ERROR: indexes still building after 20 minutes — check Firestore > Indexes in the Console.');
+      process.exit(1);
+    }
+    await new Promise((r) => setTimeout(r, 30000));
+  }
 }
 
 // ── preflight ───────────────────────────────────────────────────────────────
@@ -187,8 +269,163 @@ async function backup() {
     total += docs.length;
   }
   console.log(`\n${total} documents written to ${dir}`);
-  console.log('Top-level collections only. For a full managed export (subcollections, restorable), also run:');
+  console.log('Top-level collections only (a readable record, not a one-click restore). For a restorable managed');
+  console.log('export, before deploying: Google Cloud Console > Firestore > Import/Export > Export');
+  console.log(`  (entire database -> gs://${PROD_PROJECT}.appspot.com/firestore-backups/${stamp}), or with gcloud:`);
   console.log(`  gcloud firestore export gs://${PROD_PROJECT}.appspot.com/firestore-backups/${stamp} --project ${PROD_PROJECT}`);
+}
+
+// ── snapshot-config ─────────────────────────────────────────────────────────
+
+// Captures what is actually DEPLOYED (not what git says should be) so the
+// pre-launch state can be restored exactly: rules as live, indexes, the live
+// Hosting version + its config, functions, and auth settings. Writes a
+// self-contained rollback/ folder (its own firebase.json + the old rules) and
+// a ROLLBACK.md with the exact commands for this snapshot.
+function firebaseCli(args) {
+  const out = spawnSync('firebase', args, { shell: true, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+  if (out.status !== 0) throw new Error(`firebase ${args.join(' ')} failed: ${(out.stderr || out.stdout || '').trim().slice(0, 300)}`);
+  return out.stdout;
+}
+
+async function snapshotConfig() {
+  heading('Snapshot deployed configuration (read-only)');
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const dir = path.join(__dirname, 'backups', `prod-config-${stamp}`);
+  const rollbackDir = path.join(dir, 'rollback');
+  fs.mkdirSync(rollbackDir, { recursive: true });
+  const save = (name, content) => {
+    fs.writeFileSync(path.join(dir, name), typeof content === 'string' ? content : JSON.stringify(content, null, 2));
+    console.log(`  saved ${name}`);
+  };
+  const rulesApi = `https://firebaserules.googleapis.com/v1/projects/${PROD_PROJECT}`;
+
+  // 1. Rules, exactly as deployed.
+  const releases = (await prodApiGet(`${rulesApi}/releases`)).releases || [];
+  const rulesFiles = {};
+  for (const [service, release] of [['firestore', 'cloud.firestore'], ['storage', 'firebase.storage/']]) {
+    const rel = releases.find((r) => r.name.split('/releases/')[1].startsWith(release));
+    if (!rel) {
+      console.log(`  (no ${service} rules release found)`);
+      continue;
+    }
+    const ruleset = await prodApiGet(`https://firebaserules.googleapis.com/v1/${rel.rulesetName}`);
+    const content = ruleset.source.files.map((f) => f.content).join('\n');
+    rulesFiles[service] = { release: rel.name, ruleset: rel.rulesetName, updateTime: rel.updateTime };
+    fs.writeFileSync(path.join(rollbackDir, `${service}.rules`), content);
+    console.log(`  saved rollback/${service}.rules  (ruleset ${rel.rulesetName.split('/').pop()}, live since ${rel.updateTime})`);
+  }
+
+  // 2. Indexes, in the deployable firestore.indexes.json format.
+  const indexes = firebaseCli(['firestore:indexes', '--project', PROD_PROJECT]);
+  fs.writeFileSync(path.join(rollbackDir, 'firestore.indexes.json'), indexes);
+  console.log('  saved rollback/firestore.indexes.json');
+
+  // 3. Hosting: live release, its version config (rewrites/headers), and how
+  //    many old versions the site keeps (rollback needs this one kept).
+  const hostingReleases = (await prodApiGet(`https://firebasehosting.googleapis.com/v1beta1/sites/${PROD_PROJECT}/releases?pageSize=10`)).releases || [];
+  const siteConfig = await prodApiGet(`https://firebasehosting.googleapis.com/v1beta1/sites/${PROD_PROJECT}/config`);
+  const live = hostingReleases[0];
+  const liveVersionId = live ? live.version.name.split('/').pop() : null;
+  // Fingerprint of every served file (path + content hash). A restore clones
+  // into a NEW version id, so this is how restore-production.ps1 proves the
+  // live site serves exactly the snapshot's files.
+  let files = [];
+  let pageToken = '';
+  do {
+    const page = await prodApiGet(`https://firebasehosting.googleapis.com/v1beta1/${live.version.name}/files?pageSize=1000${pageToken ? `&pageToken=${pageToken}` : ''}`);
+    files = files.concat((page.files || []).map((f) => `${f.path} ${f.hash}`));
+    pageToken = page.nextPageToken || '';
+  } while (pageToken);
+  const filesFingerprint = require('crypto').createHash('sha256').update(files.sort().join('\n')).digest('hex');
+  save('hosting.json', {
+    liveVersionId,
+    liveFileCount: files.length,
+    liveFilesFingerprint: filesFingerprint,
+    liveRelease: live,
+    recentReleases: hostingReleases.map((r) => ({ version: r.version.name, time: r.releaseTime, type: r.type })),
+    siteConfig
+  });
+
+  // 4. Functions (service account can't list them; the CLI uses your login).
+  const functionsList = firebaseCli(['functions:list', '--project', PROD_PROJECT, '--json']);
+  save('functions.json', functionsList);
+  let functionNames = [];
+  try {
+    const parsed = JSON.parse(functionsList);
+    functionNames = (parsed.result || []).map((f) => `${f.id || f.entryPoint}@${f.region}`);
+  } catch (e) { /* kept raw above */ }
+
+  // 5. Auth settings.
+  const base = `https://identitytoolkit.googleapis.com/admin/v2/projects/${PROD_PROJECT}`;
+  const authConfig = await prodApiGet(`${base}/config`);
+  const google = await prodApiGet(`${base}/defaultSupportedIdpConfigs/google.com`).catch(() => null);
+  save('auth.json', { config: authConfig, googleProvider: google ? { enabled: google.enabled, clientIdSet: !!google.clientId } : 'not configured' });
+
+  // 6. Git reference.
+  const gitHead = spawnSync('git', ['log', '-1', '--format=%H %s'], { encoding: 'utf8' }).stdout.trim();
+  save('meta.json', { project: PROD_PROJECT, takenAt: new Date().toISOString(), lastProdTag: 'v2.0.2-prod', gitHeadAtSnapshot: gitHead, rules: rulesFiles, functions: functionNames });
+
+  // Self-contained rollback project for rules (+ indexes, deliberately not used by default).
+  fs.writeFileSync(path.join(rollbackDir, 'firebase.json'), JSON.stringify({
+    firestore: { rules: 'firestore.rules', indexes: 'firestore.indexes.json' },
+    storage: { rules: 'storage.rules' }
+  }, null, 2));
+
+  const retention = siteConfig.maxVersions ? `keeps the last ${siteConfig.maxVersions} versions` : 'keeps all versions (no limit set)';
+  const rel = path.relative(path.join(__dirname, '..'), dir).replace(/\\/g, '/');
+  fs.writeFileSync(path.join(dir, 'ROLLBACK.md'), `# Rollback to the pre-launch production state
+
+Snapshot of \`${PROD_PROJECT}\` taken ${new Date().toISOString()}.
+
+Roll back **Hosting and rules together** — the old app needs the old rules and vice versa.
+Run every command from the repo root.
+
+## 1. Hosting (the site) — restore version \`${liveVersionId}\`
+
+\`\`\`
+firebase hosting:clone ${PROD_PROJECT}@${liveVersionId} ${PROD_PROJECT}:live
+\`\`\`
+Or: Firebase Console > Hosting > Release history > the release of version ${liveVersionId} > Rollback.
+The site ${retention}${siteConfig.maxVersions ? ' — make sure fewer than that many deploys happen before you need this' : ''}.
+
+## 2. Firestore + Storage rules — exactly as they were live
+
+\`\`\`
+cd ${rel}/rollback
+firebase deploy --only firestore:rules,storage --project ${PROD_PROJECT}
+cd -
+\`\`\`
+(Indexes are saved in rollback/firestore.indexes.json but don't need restoring: extra
+indexes are harmless to the old app, and the CLI never deletes indexes without --force.)
+
+## 3. Cloud Functions — optional
+
+Before launch production ran only: ${functionNames.join(', ') || '(see functions.json)'}.
+The new functions are harmless to the old site (it never calls them), so leaving them is fine.
+To remove them anyway, delete every function not in that list, e.g.:
+\`\`\`
+firebase functions:delete <name> --region us-central1 --project ${PROD_PROJECT} --force
+\`\`\`
+socialMetaTags' new code is compatible with the old site; its pre-launch source is in git at v2.0.2-prod (functions/).
+
+## 4. Auth settings
+
+Pre-launch values are in auth.json. If Google sign-in was disabled before launch
+(googleProvider.enabled = ${google ? google.enabled : false}) and should be again:
+Firebase Console > Authentication > Sign-in method > Google > Disable.
+
+## 5. Data
+
+Firestore data: restore from the Console export taken on launch morning
+(Google Cloud Console > Firestore > Import/Export > Import). The JSON dump in
+scripts/backups/prod-<timestamp>/ is a readable record of every top-level collection.
+Launch only ADDED collections (admins, actions, hero_videos, poll_results, plus new
+user data); the old app ignores them, so a data restore is rarely needed.
+`);
+  console.log('  saved ROLLBACK.md');
+  console.log(`\nSnapshot written to ${dir}`);
+  console.log(`Live Hosting version: ${liveVersionId} (site ${retention})`);
 }
 
 // ── seed-admins ─────────────────────────────────────────────────────────────
@@ -377,6 +614,9 @@ async function smoke() {
   const firebase = rootRequire('firebase/compat/app');
   rootRequire('firebase/compat/auth');
   rootRequire('firebase/compat/firestore');
+  // The denied-write checks below are expected; without this the SDK logs
+  // each one as a PERMISSION_DENIED error, which reads like a real failure.
+  firebase.firestore.setLogLevel('silent');
 
   const envSource = fs.readFileSync(path.join(REPO, 'src', 'environments', 'environment.prod.ts'), 'utf8');
   const apiKey = (envSource.match(/apiKey:\s*"([^"]+)"/) || [])[1];
@@ -525,11 +765,14 @@ async function smoke() {
 // ── main ────────────────────────────────────────────────────────────────────
 
 const STEPS = {
+  prerequisites,
   preflight,
   backup,
+  'snapshot-config': snapshotConfig,
   'seed-admins': seedAdmins,
   'seed-content': seedContent,
   'backfill-polls': backfillPolls,
+  'wait-indexes': waitIndexes,
   verify,
   smoke
 };

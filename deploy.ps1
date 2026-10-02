@@ -118,11 +118,21 @@ if (Test-Path $nvmFirebase) {
 
 # Backend first, so the new Hosting build never runs against old rules or
 # functions. Same explicit --project as Hosting - never the .firebaserc default.
+# Two passes: functions + indexes are additive (the live, older app never
+# calls them), so they go first and take the slow 5-10 minutes; rules are
+# what the live app actually depends on, so they go last, right before
+# Hosting, keeping the old-app-on-new-rules window to about a minute.
 if ($Backend) {
-    Write-Host "[5/6] Deploying backend (Firestore rules + indexes, Storage rules, Functions) to $firebaseProject..." -ForegroundColor Yellow
-    & $globalFirebase deploy --only firestore:rules,firestore:indexes,storage,functions --project $firebaseProject
+    Write-Host "[5/6] Deploying functions + Firestore indexes to $firebaseProject..." -ForegroundColor Yellow
+    & $globalFirebase deploy --only functions,firestore:indexes --project $firebaseProject
     if ($LASTEXITCODE -ne 0) {
-        Write-Host "[x] Backend deployment FAILED - Hosting was NOT deployed." -ForegroundColor Red
+        Write-Host "[x] Functions/indexes deployment FAILED - rules and Hosting were NOT deployed." -ForegroundColor Red
+        exit 1
+    }
+    Write-Host "[5/6] Deploying Firestore + Storage rules to $firebaseProject..." -ForegroundColor Yellow
+    & $globalFirebase deploy --only firestore:rules,storage --project $firebaseProject
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "[x] Rules deployment FAILED - Hosting was NOT deployed." -ForegroundColor Red
         exit 1
     }
     Write-Host "      Backend deployed." -ForegroundColor Green

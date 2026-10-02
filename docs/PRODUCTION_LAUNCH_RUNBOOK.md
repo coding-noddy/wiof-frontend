@@ -6,11 +6,42 @@ This runbook is the one-time sequence to get production onto the current release
 
 ---
 
+## Launch day: one command
+
+Once Phase 0 is done (key saved, Console settings in place, everything committed, managed export taken), pick a **low-traffic time** and run:
+
+```powershell
+.\launch-production.ps1 -AdminEmails "admin1@example.com,admin2@example.com"
+```
+
+[`launch-production.ps1`](../launch-production.ps1) runs Phases 1–3 in 13 steps, in order, and stops at the first failure:
+
+1. Local checks: the key is for wiof-production, the git tree is clean, the Firebase CLI has access, and no `release-<version>` branch or `v<version>-prod` tag exists yet. You then confirm the branch and commit being deployed.
+2. **Prerequisites**, checked by API: Google and email sign-in are enabled, and the non-redirect custom domain is authorized. Then you confirm the OAuth consent screen by hand.
+3. Rules tests.
+4. Preflight.
+5. Backup of the data.
+6. **Snapshot of the deployed configuration**, the rollback kit (see **Rollback**).
+7. Seed admins.
+8. Content: it shows the dry run and asks you to confirm.
+9. **Deploy**: `deploy.ps1` asks you to type `yes`. It deploys functions and indexes, then rules, then Hosting (see Phase 2). Answer yes to the Storage IAM prompt.
+10. Poll backfill.
+11. Wait for indexes.
+12. Verify.
+13. Smoke test.
+
+Everything is logged to `scripts/backups/launch-<timestamp>.log`. After fixing a failure, resume with `-StartAt <step>` (`checks`, `prerequisites`, `tests`, `preflight`, `backup`, `snapshot`, `admins`, `content`, `deploy`, `polls`, `indexes`, `verify`, `smoke`). The script prints the exact resume command when it stops. **Still manual afterwards:** the Phase 3 browser check, adding admins who had no production account before launch, and the **After launch** section.
+
+The phases below are the same steps, broken out for reference or for running one at a time.
+
+---
+
 ## Phase 0: Prerequisites (do these before launch day)
 
 ### Code
 - [ ] Commit everything and merge the release branch the way you normally do. `deploy.ps1` builds from the **working tree**: without `-SkipBranch` it creates and checks out `release-<package.json version>` and tags `v<version>-prod`.
-- [ ] Decide the launch version and bump `package.json` if you want one (the footer shows it).
+- [ ] Decide the launch version in `package.json` (the footer shows it). It must not already have a `release-<version>` branch or `v<version>-prod` tag. `deploy.ps1` would switch to that **existing** branch and ship its old code, so the launch script refuses. `5.0.3` is free today.
+- [ ] Be on the branch you intend to ship (normally `main` after merging). `deploy.ps1` branches `release-<version>` from the current commit.
 - [ ] `npm run test:rules` passes. This needs Java 21; the deploy scripts run it automatically.
 
 ### Credentials
@@ -19,18 +50,32 @@ This runbook is the one-time sequence to get production onto the current release
 - [ ] `firebase login` uses an account with Owner/Editor access on wiof-production.
 
 ### Firebase Console / Google Cloud (wiof-production)
-- [ ] **Authentication → Sign-in method → Google: enable** and set the support email.
+- [ ] **Authentication → Sign-in method → Google: enable** and set the support email. As of 2026-10-02 this is **not yet enabled** in production; `prod-launch.js prerequisites` fails until it is.
 - [ ] Keep **Email/Password** enabled (existing admin accounts use it).
 - [ ] **Authentication → Settings → Authorized domains** include `worldisonefamily.com`, `www.worldisonefamily.com` (if used), `wiof-production.web.app` and `wiof-production.firebaseapp.com`.
 - [ ] **Google Cloud → APIs & Services → OAuth consent screen**: app name *World Is One Family*, support email, authorized domain `worldisonefamily.com`. Set **Publishing status: In production**. While it's "Testing", only listed test users can sign in with Google.
 - [ ] If the YouTube API key in `environment.prod.ts` has HTTP-referrer restrictions, they must include the production domains.
 - [ ] Project is on the **Blaze** plan. It already runs `socialMetaTags`, so it should be.
+- [ ] Recommended: **Google Cloud → Billing → Budgets & alerts**, add a monthly budget with email alerts. Public sign-in and 13 functions make usage less predictable than before.
+
+### People
+- [ ] Tell the admins the launch time. They shouldn't edit content during the deploy (about 15 minutes).
+- [ ] Tell the admins how they'll log in afterwards: the **same email/password as today**. They shouldn't start using "Sign in with Google" with the same Gmail address. Firebase merges the two accounts, so admin rights carry over, but the password login may stop working.
+- [ ] Decide who watches the site for the first 48 hours (see **After launch**).
+
+### Backup (launch day, before running the script)
+- [ ] **Google Cloud Console → Firestore → Import/Export → Export entire database** to `gs://wiof-production.appspot.com/firestore-backups/<date>`. This is the restorable backup. The script's `backup` step writes readable JSON, not a one-click restore. On this machine the `gcloud` CLI is broken (it reports that Python is missing), so use the Console.
 
 ---
 
 ## Phase 1: Prepare data (old site stays live; safe to do hours or days ahead)
 
 The old production app never reads `admins`, `actions`, `hero_videos` or `poll_results`, so writing them now changes nothing for current visitors.
+
+```bash
+node scripts/prod-launch.js prerequisites
+```
+This is read-only. It checks via API that Google and email sign-in are enabled and that each custom Hosting domain (excluding redirect-only ones like `www`) is an authorized sign-in domain. It exits 1 with the exact Console fix if not.
 
 ```bash
 node scripts/prod-launch.js preflight
@@ -43,10 +88,22 @@ node scripts/prod-launch.js backup
 This writes every top-level collection to `scripts/backups/prod-<timestamp>/` (gitignored). For a restorable managed export, also run the `gcloud firestore export …` command the script prints.
 
 ```bash
+node scripts/prod-launch.js snapshot-config
+```
+This is read-only. It saves production's configuration **as actually deployed**, not as git says it should be, to `scripts/backups/prod-config-<timestamp>/`:
+- Firestore and Storage rules (the live rulesets)
+- indexes
+- the live Hosting version ID and its config
+- the functions list
+- auth settings
+
+It also writes a self-contained `rollback/` folder and a `ROLLBACK.md` with the exact commands for that snapshot. A first snapshot was taken on 2026-10-02 (live Hosting version `57ec34a86c70ba1b`), and the launch script takes a fresh one.
+
+```bash
 node scripts/prod-launch.js seed-admins --email admin1@…,admin2@…
 node scripts/prod-launch.js seed-admins --email admin1@…,admin2@… --apply
 ```
-**This is critical.** Today the only production accounts are the admins' email/password logins, so "signed in" has meant "admin". The new rules require an `admins/{uid}` doc instead, for both Firestore content and Storage uploads, because public Google sign-in will create ordinary accounts. Seed every admin who already has a production account now. If an admin only has a Google account and has never signed in to production, they get handled in Phase 3. On staging, the admins are `nmaulavi5@gmail.com` and `sri.shiv@gmail.com`.
+**This is critical.** Today the only production accounts are the admins' email/password logins, so "signed in" has meant "admin". The new rules require an `admins/{uid}` doc instead, for both Firestore content and Storage uploads, because public Google sign-in will create ordinary accounts. Seed every admin who already has a production account now. If an admin only has a Google account and has never signed in to production, they get handled in Phase 3. Production's accounts as of 2026-10-02, all email/password: `nmaulavi5`, `sri.shiv`, `ashleshadighe1106`, `kumawat.krishna87` and `devrajsoni.sustainability` (all `@gmail.com`). Pass the ones who should be admins.
 
 ```bash
 node scripts/prod-launch.js seed-content
@@ -66,15 +123,16 @@ In order, this:
 2. Asks you to type `yes`.
 3. Creates the `release-<version>` branch.
 4. Builds with `--configuration production`.
-5. Deploys the **backend**: Firestore rules and indexes, Storage rules, and all 13 Cloud Functions in us-central1.
-6. Deploys **Hosting** only after the backend succeeds.
-7. Tags `v<version>-prod`.
+5. Deploys **functions and indexes** first: all 13 Cloud Functions in us-central1. This is the slow part, 5–10 minutes. It's safe while the old site is still live, because the old app never calls them.
+6. Deploys **Firestore and Storage rules**.
+7. Deploys **Hosting** immediately after. Any failure stops the later steps.
+8. Tags `v<version>-prod` and pushes the tag.
 
 What to expect:
 - **Storage rules prompt.** The new Storage rules read Firestore (`firestore.exists`) to check admins, so the CLI asks to grant the Storage service account a Firestore IAM role. Answer **yes**, or admin uploads will fail.
 - **Functions take a while.** The first deploy of 12 new functions can take 5–10 minutes. If the CLI asks to enable an API, accept.
 - **Indexes build in the background.** They can take a few minutes after deploy. Until then, My Journey and history queries may error. Check status under Firestore → Indexes.
-- **Ship rules and Hosting together, always.** `-Backend` does that. The new app with the old rules breaks completions and admin pages, and the old app with the new rules breaks admin writes and poll display.
+- **Rules and Hosting ship back to back, always.** `-Backend` does that. Between the rules step and Hosting going live (about a minute), visitors still on the old app can see the poll results and the newsletter duplicate check fail. Admin content editing keeps working, as long as admins are seeded, which happens earlier in the launch.
 
 ---
 
@@ -117,13 +175,51 @@ This is a live end-to-end Take Action test through the deployed rules and functi
 
 ---
 
+## After launch
+
+### Same day
+- [ ] **Git housekeeping.** `deploy.ps1` left you on `release-<version>`, with the footer version change uncommitted. Commit it, push the branch, and merge it back to `main` the way you normally do. The `v<version>-prod` tag is already pushed.
+- [ ] Delete the extra copy of the production key in your Downloads folder. Keep only `scripts/service-account.prod.json`.
+- [ ] Add any admins who signed in for the first time after launch (`seed-admins --email … --apply`).
+
+### First 48 hours
+- [ ] **Function errors:** Google Cloud Console → Logging, filter `severity>=ERROR`, or `jsonPayload.fn="<functionName>"` for one function. See `docs/OPERATIONAL_MONITORING.md`.
+- [ ] **Sign-ups:** Firebase Console → Authentication → Users. New Google accounts should appear with a matching `users/{uid}` profile.
+- [ ] **Usage and cost:** Firebase Console → Usage and billing (Firestore reads, function invocations).
+- [ ] Spot-check that poll results update when someone votes.
+- [ ] Share one more blog link and check that the preview shows the blog's own image.
+
+### Rollback decision
+Roll back only for **site-wide** breakage: pages not loading, sign-in broken for everyone, or admins locked out with no quick fix. Use the table below, and roll back Hosting and rules **together**. Fix anything smaller forward with a normal deploy.
+
+---
+
 ## Rollback
+
+**One command: [`restore-production.ps1`](../restore-production.ps1).**
+
+```powershell
+.estore-production.ps1                     # lists the saved snapshots
+.estore-production.ps1 -Snapshot scriptsackups\prod-config-<timestamp>
+```
+
+It restores a snapshot's **Hosting version and Firestore + Storage rules together**, rules first and the site immediately after. Steps:
+1. It **snapshots the current state first**, so every restore can itself be undone.
+2. It asks you to type `yes`.
+3. It verifies the live site serves exactly the snapshot's files, by comparing a fingerprint of every path and content hash. It also checks the rules match.
+4. It reports, but doesn't change, any differences in Cloud Functions and Google sign-in. Neither breaks the restored site.
+
+- **Roll back after launch:** restore the snapshot `launch-production.ps1` took at its `snapshot` step (the pre-launch state).
+- **Roll forward again:** restore the undo-point snapshot that the rollback printed at the end.
+
+Tested on staging on 2026-10-02: rollback, roll forward and rollback again, each verified. Each snapshot folder also has a `ROLLBACK.md` with the same steps as plain commands, if you'd rather run them by hand. Data is not touched; see the table's **Data** row.
+
+The site keeps all Hosting versions (no retention limit), so old versions stay restorable.
 
 | What | How | Notes |
 |---|---|---|
 | Hosting | Firebase Console → Hosting → Release history → **Rollback** on the previous release | Instant. |
-| Firestore rules | `git show v2.0.2-prod:firestore.rules > firestore.rules` then `firebase deploy --only firestore:rules --project wiof-production` (and `git checkout firestore.rules` afterwards) | **Only together with a Hosting rollback.** The old app needs the old rules, and the new app needs the new ones. |
-| Storage rules | Same pattern with `storage.rules` and `--only storage` | Same pairing rule. |
+| Firestore + Storage rules | From the kit: `cd scripts/backups/prod-config-<ts>/rollback` then `firebase deploy --only firestore:rules,storage --project wiof-production`. These are the live rulesets as captured, not git's copy. | **Only together with a Hosting rollback.** The old app needs the old rules, and the new app needs the new ones. |
 | Cloud Functions | Usually leave them: they're additive and harmless to the old app. To remove one: `firebase functions:delete <name> --region us-central1 --project wiof-production` | |
 | Data | Nothing existing is modified. Phase 1/3 only add `admins`, `actions`, `hero_videos` and `poll_results`, which the old app ignores. Restore from `scripts/backups/prod-<timestamp>/` or the gcloud export if ever needed. | |
 
@@ -135,4 +231,5 @@ This is a live end-to-end Take Action test through the deployed rules and functi
 - **Node.js runtime.** Functions moved from Node 20 (decommissioned 2026-10-30) to **Node 22** on 2026-10-02 and are verified on staging. The production deploy updates the existing `socialMetaTags` in place, and the other 12 functions are created on Node 22.
 - **Blog-page caching.** `socialMetaTags` serves the app page to normal visitors with `Cache-Control: public, max-age=0, s-maxage=600`. The CDN caches it, and Hosting purges that cache on every deploy, while browsers always revalidate. That way no visitor keeps an old page pointing at hashed files a new deploy removed.
 - **App Check** is not configured (deferred; see `docs/PERMISSION_MATRIX.md`).
+- **Indexes:** production's four content-page indexes (In Focus, Course In Focus, NGO In Focus) were created by hand and were missing from `firestore.indexes.json`. They were added on 2026-10-02, in production's exact format, and verified with a staging deploy. Staging still has two hand-made `activity_log` indexes that aren't in the file. The CLI only reports them; it never deletes without `--force`.
 - `config` and the legacy `admin` collection exist on staging with no rules match. Nothing in the app reads them: the Privacy Policy page's `config` read is commented out.
