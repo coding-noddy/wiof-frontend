@@ -167,14 +167,16 @@ export class UserActionService {
    * source of truth (Section 17).
    */
   async completeAction(userId: string, action: ActionItem): Promise<void> {
+    let calendarDay: string | null = null;
     if (action.repeatType === REPEAT_TYPE.DAILY) {
-      const alreadyCompletedToday = !(await this.tryClaimDailyCompletion(userId, action.id));
+      calendarDay = toCalendarDay(new Date());
+      const alreadyCompletedToday = !(await this.tryClaimDailyCompletion(userId, action.id, calendarDay));
       if (alreadyCompletedToday) {
         return;
       }
     }
 
-    await this.writeCompletion(userId, action);
+    await this.writeCompletion(userId, action, calendarDay);
     void this.activityService.logActionCompleted(userId, action.id);
   }
 
@@ -186,8 +188,7 @@ export class UserActionService {
    * interfering with user_actions' own update rule.
    * Returns true if this call claimed the slot (i.e. not a duplicate).
    */
-  private async tryClaimDailyCompletion(userId: string, actionId: string): Promise<boolean> {
-    const calendarDay = toCalendarDay(new Date());
+  private async tryClaimDailyCompletion(userId: string, actionId: string, calendarDay: string): Promise<boolean> {
     const docId = `${userId}_${actionId}_${calendarDay}`;
     try {
       await this.firestore.firestore
@@ -208,7 +209,12 @@ export class UserActionService {
     }
   }
 
-  private async writeCompletion(userId: string, action: ActionItem): Promise<void> {
+  /**
+   * calendarDay is set only for DAILY actions: firestore.rules require a
+   * DAILY completion to name the day whose user_action_completions guard it
+   * just claimed (lastCompletionDay), and to move that day strictly forward.
+   */
+  private async writeCompletion(userId: string, action: ActionItem, calendarDay: string | null): Promise<void> {
     const ref = this.firestore.firestore
       .collection(FIREBASE_COLLECTION.USER_ACTIONS)
       .doc(this.docId(userId, action.id));
@@ -225,6 +231,7 @@ export class UserActionService {
         completedAt: now,
         completionCount: 1,
         lastCompletedAt: now,
+        ...(calendarDay ? { lastCompletionDay: calendarDay } : {}),
         completionMethod: 'SELF_REPORTED',
         elementIdsSnapshot: action.elementIds || [],
         // Same reasoning as startAction() above — preserves the actual
@@ -246,6 +253,7 @@ export class UserActionService {
           completedAt: now,
           completionCount: firebase.firestore.FieldValue.increment(1),
           lastCompletedAt: now,
+          ...(calendarDay ? { lastCompletionDay: calendarDay } : {}),
           updatedAt: now
         },
         { merge: true }

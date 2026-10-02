@@ -41,6 +41,10 @@ function isCrawler(userAgent) {
   return CRAWLER_AGENTS.some(agent => userAgent.includes(agent));
 }
 
+// Default share image for this project's own hosting site — never another
+// project's (production must not point crawlers at the staging site).
+const FALLBACK_IMAGE_URL = `https://${process.env.GCLOUD_PROJECT || 'wiof-production'}.web.app/assets/banners/home_banner.jpg`;
+
 /**
  * Get the download URL for a blog image from Firebase Storage
  * Uses the public download URL format (requires Storage rules to allow public read)
@@ -53,7 +57,7 @@ async function getImageUrl(imageName) {
     // Check if file exists
     const [exists] = await file.exists();
     if (!exists) {
-      return 'https://wiof-staging.web.app/assets/banners/home_banner.jpg';
+      return FALLBACK_IMAGE_URL;
     }
 
     // Use the public Firebase Storage URL format (no signed URL needed)
@@ -62,7 +66,7 @@ async function getImageUrl(imageName) {
     return `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodedPath}?alt=media`;
   } catch (e) {
     console.error('Image URL error:', e.message);
-    return 'https://wiof-staging.web.app/assets/banners/home_banner.jpg'; // fallback
+    return FALLBACK_IMAGE_URL;
   }
 }
 
@@ -138,6 +142,11 @@ function generateMetaHtml(blog, imageUrl, originalUrl) {
  * Firestore location), us-central1 (default) for production.
  */
 const REGION = process.env.GCLOUD_PROJECT === 'wiof-staging' ? 'asia-south1' : 'us-central1';
+
+// socialMetaTags is the exception: firebase.json's Hosting rewrite is shared
+// by both projects and names a single function region, so this one function
+// lives in the same region everywhere. Keep in sync with firebase.json.
+const SOCIAL_META_TAGS_REGION = 'us-central1';
 
 /**
  * Structured error logging for Cloud Functions — Foundation Hardening Plan
@@ -541,6 +550,8 @@ exports.onActivityLogCreated = functions
     return null;
   }));
 
+const KNOWN_ELEMENTS = new Set(['air', 'water', 'earth', 'energy', 'spirit']);
+
 /**
  * Maintains the Take Action counters on `user_metrics/{uid}`
  * (totalActionsCompleted, uniqueActionsCompleted, actionsByElement,
@@ -552,8 +563,8 @@ exports.onActivityLogCreated = functions
  * so this is an onWrite trigger keyed off completionCount rather than an
  * onCreate: a "completion event" is any write where completionCount
  * increased — covers both a first-ever completion (create or IN_PROGRESS ->
- * COMPLETE update) and a DAILY action's repeat completions, each counted by
- * the actual delta rather than assuming it's always exactly 1.
+ * COMPLETE update) and a repeat completion. Each write credits exactly one
+ * completion (firestore.rules only allow completionCount to step by +1).
  */
 exports.onUserActionWritten = functions
   .region(REGION)
@@ -572,10 +583,13 @@ exports.onUserActionWritten = functions
 
     const beforeCount = (before && before.completionCount) || 0;
     const afterCount = after.completionCount || 0;
-    const delta = afterCount - beforeCount;
-    if (delta <= 0) {
+    if (afterCount <= beforeCount) {
       return null; // not a new completion (e.g. just an IN_PROGRESS start)
     }
+    // firestore.rules only let a client write +1 per completion; capping
+    // here too means a rules regression (or a hand-edited doc) can never
+    // credit more than one completion per write.
+    const delta = 1;
 
     const update = {
       totalActionsCompleted: admin.firestore.FieldValue.increment(delta),
@@ -588,12 +602,19 @@ exports.onUserActionWritten = functions
       update.uniqueActionsCompleted = admin.firestore.FieldValue.increment(1);
     }
 
+    // A nested map, not `actionsByElement.${element}` keys: set() with merge
+    // treats a dotted key as one literal field name, not a path (only
+    // update() reads dots as paths), and the app reads the nested map.
     const elements = Array.isArray(after.elementIdsSnapshot) ? after.elementIdsSnapshot : [];
-    elements.forEach((element) => {
-      if (typeof element === 'string' && element) {
-        update[`actionsByElement.${element}`] = admin.firestore.FieldValue.increment(delta);
+    const byElement = {};
+    new Set(elements).forEach((element) => {
+      if (KNOWN_ELEMENTS.has(element)) {
+        byElement[element] = admin.firestore.FieldValue.increment(delta);
       }
     });
+    if (Object.keys(byElement).length > 0) {
+      update.actionsByElement = byElement;
+    }
 
     await db.collection('user_metrics').doc(uid).set(update, { merge: true });
     return null;
@@ -896,7 +917,7 @@ exports.checkSubscriberExists = functions
   }));
 
 exports.socialMetaTags = functions
-  .region(REGION)
+  .region(SOCIAL_META_TAGS_REGION)
   .runWith({ memory: '256MB', timeoutSeconds: 30 })
   .https.onRequest(async (req, res) => {
   const userAgent = req.headers['user-agent'] || '';
@@ -910,7 +931,10 @@ exports.socialMetaTags = functions
       const indexUrl = `https://${req.hostname}/index.html`;
       https.get(indexUrl, (proxyRes) => {
         res.set('Content-Type', 'text/html');
-        res.set('Cache-Control', 'public, max-age=600');
+        // Browsers always revalidate (max-age=0) so nobody keeps an index.html
+        // pointing at hashed bundles a newer deploy removed; the CDN still
+        // caches it (s-maxage), and Hosting purges that cache on every deploy.
+        res.set('Cache-Control', 'public, max-age=0, s-maxage=600');
         proxyRes.pipe(res);
       }).on('error', () => {
         res.status(500).send('Error loading page');

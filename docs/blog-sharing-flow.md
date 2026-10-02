@@ -157,6 +157,9 @@ firebase deploy --project wiof-staging
 |------|---------|
 | `functions/index.js` | Cloud Function — serves OG meta tags to crawlers |
 | `firebase.json` | Rewrite rule routing blog URLs to the function |
+
+**Region:** `firebase.json` is shared by staging and production, and its rewrite names one function region, so `socialMetaTags` is pinned to `us-central1` in both projects (`SOCIAL_META_TAGS_REGION` in `functions/index.js`). The two must stay in sync. Every other function follows the per-project `REGION`. From #21 (2026-08-29) until 2026-10-02 the rewrite was missing, and shared links silently showed the default WIOF preview. Check after any hosting change:
+`curl -s -A "facebookexternalhit/1.1" https://<host>/element/<element>/blog/<slug> | grep og:`
 | `src/app/components/blog-card/` | Share button on blog cards (Web Share API) |
 | `src/app/pages/blog-post/` | Share button on blog detail page |
 | `src/app/models/Blog.ts` | Blog model with `slug` field + `generateSlug()` |

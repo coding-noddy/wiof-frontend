@@ -164,6 +164,34 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // A calendar day string ('YYYY-MM-DD', the client's local date) that is
+    // plausibly "today" somewhere on Earth right now. UTC offsets run from
+    // -12h to +14h, so local-day midnight (read as UTC) always falls within
+    // (now - 2d, now + 1d).
+    function isPlausibleCalendarDay(day) {
+      return day is string
+        && day.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && timestamp.date(int(day.split('-')[0]), int(day.split('-')[1]), int(day.split('-')[2]))
+             > request.time - duration.value(2, 'd')
+        && timestamp.date(int(day.split('-')[0]), int(day.split('-')[1]), int(day.split('-')[2]))
+             < request.time + duration.value(1, 'd');
+    }
+
+    function actionDoc(actionId) {
+      return get(/databases/$(database)/documents/actions/$(actionId)).data;
+    }
+
+    // A DAILY completion must point at that day's user_action_completions
+    // guard doc (already claimed by the client, one per day), and the day
+    // must move strictly forward so one guard can't be replayed for many
+    // increments.
+    function isValidDailyCompletion(actionId, previousDay) {
+      let day = request.resource.data.lastCompletionDay;
+      return isPlausibleCalendarDay(day)
+        && day > previousDay
+        && exists(/databases/$(database)/documents/user_action_completions/$(request.auth.uid + '_' + actionId + '_' + day));
+    }
+
     match /user_actions/{userActionId} {
       // Owner or admin can read. No `list` beyond a user's own docs: every
       // query the client issues already filters by userId, so this is
@@ -171,25 +199,70 @@ service cloud.firestore {
       allow read: if isAdmin()
         || (isAuthenticated() && resource.data.userId == request.auth.uid);
 
+      // onUserActionWritten derives user_metrics from completionCount and
+      // elementIdsSnapshot, so neither may be client-chosen: a new doc starts
+      // at exactly 0 (started) or 1 (completed), its element snapshot and
+      // version must come from the live catalogue entry, and the doc ID is
+      // pinned to {uid}_{actionId} so there is one doc per user per action.
       allow create: if isAuthenticated()
         && request.resource.data.userId == request.auth.uid
+        && userActionId == request.auth.uid + '_' + request.resource.data.actionId
+        && request.resource.data.keys().hasOnly([
+             'userId', 'actionId', 'status', 'startedAt', 'completedAt', 'completionCount',
+             'lastCompletedAt', 'lastCompletionDay', 'completionMethod', 'elementIdsSnapshot',
+             'actionVersion', 'createdAt', 'updatedAt'])
+        && actionDoc(request.resource.data.actionId).isActive == true
+        && request.resource.data.elementIdsSnapshot is list
+        && request.resource.data.elementIdsSnapshot.hasOnly(actionDoc(request.resource.data.actionId).elementIds)
+        // <= rather than == so a page loaded just before an admin edit can
+        // still complete the version the user actually saw.
+        && request.resource.data.actionVersion is int
+        && request.resource.data.actionVersion >= 1
+        && request.resource.data.actionVersion <= actionDoc(request.resource.data.actionId).get('version', 1)
+        && request.resource.data.completionMethod == 'SELF_REPORTED'
+        && request.resource.data.startedAt == request.time
         && request.resource.data.createdAt == request.time
-        && request.resource.data.updatedAt == request.time;
+        && request.resource.data.updatedAt == request.time
+        && (
+          (request.resource.data.status == 'IN_PROGRESS'
+            && request.resource.data.completionCount == 0
+            && request.resource.data.completedAt == null
+            && request.resource.data.lastCompletedAt == null
+            && request.resource.data.get('lastCompletionDay', null) == null)
+          || (request.resource.data.status == 'COMPLETE'
+            && request.resource.data.completionCount == 1
+            && request.resource.data.completedAt == request.time
+            && request.resource.data.lastCompletedAt == request.time
+            && ((actionDoc(request.resource.data.actionId).repeatType == 'DAILY'
+                  && isValidDailyCompletion(request.resource.data.actionId, ''))
+                || (actionDoc(request.resource.data.actionId).repeatType != 'DAILY'
+                  && request.resource.data.get('lastCompletionDay', null) == null)))
+        );
 
-      // Unlike activity_log (fully immutable), a user_action's status
-      // legitimately advances client-side (IN_PROGRESS -> COMPLETE, and
-      // repeat DAILY completions bump completionCount in place). Only the
-      // owner may update, only these fields may change, updatedAt must be
-      // server-stamped, and status may never regress from COMPLETE back to
-      // IN_PROGRESS.
+      // Every client update is exactly one completion: status ends COMPLETE,
+      // completionCount goes up by exactly 1 (never set, never lowered — the
+      // Cloud Function counts positive deltas, so a lower-then-raise cycle
+      // would otherwise inflate user_metrics), completion timestamps are
+      // server-stamped, and the action's repeatType is respected: ONCE can
+      // only complete once, DAILY once per guarded calendar day.
+      // userId/actionId/elementIdsSnapshot/actionVersion/createdAt are
+      // immutable after create (not in the affectedKeys allow-list).
       allow update: if isAuthenticated()
         && resource.data.userId == request.auth.uid
-        && request.resource.data.userId == request.auth.uid
-        && request.resource.data.actionId == resource.data.actionId
-        && request.resource.data.updatedAt == request.time
         && request.resource.data.diff(resource.data).affectedKeys()
-             .hasOnly(['status', 'completedAt', 'completionCount', 'lastCompletedAt', 'updatedAt'])
-        && (request.resource.data.status == 'COMPLETE' || resource.data.status != 'COMPLETE');
+             .hasOnly(['status', 'completedAt', 'completionCount', 'lastCompletedAt', 'lastCompletionDay', 'updatedAt'])
+        && request.resource.data.status == 'COMPLETE'
+        && request.resource.data.completionCount == resource.data.get('completionCount', 0) + 1
+        && request.resource.data.completedAt == request.time
+        && request.resource.data.lastCompletedAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && actionDoc(resource.data.actionId).isActive == true
+        && (actionDoc(resource.data.actionId).repeatType != 'ONCE'
+              || resource.data.get('completionCount', 0) == 0)
+        && ((actionDoc(resource.data.actionId).repeatType == 'DAILY'
+              && isValidDailyCompletion(resource.data.actionId, resource.data.get('lastCompletionDay', '')))
+            || (actionDoc(resource.data.actionId).repeatType != 'DAILY'
+              && request.resource.data.get('lastCompletionDay', null) == resource.data.get('lastCompletionDay', null)));
 
       allow delete: if false; // no client delete path needed in V1
     }
@@ -203,8 +276,16 @@ service cloud.firestore {
     match /user_action_completions/{docId} {
       allow read: if isAdmin()
         || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      // The doc ID must be exactly {uid}_{actionId}_{calendarDay} (that's what
+      // makes it a per-day dedup key), and the day must be plausibly today —
+      // otherwise a client could pre-claim guards for future days and use
+      // them to unlock extra DAILY completions in user_actions.
       allow create: if isAuthenticated()
         && request.resource.data.userId == request.auth.uid
+        && request.resource.data.keys().hasOnly(['userId', 'actionId', 'calendarDay', 'createdAt'])
+        && request.resource.data.actionId is string
+        && isPlausibleCalendarDay(request.resource.data.calendarDay)
+        && docId == request.auth.uid + '_' + request.resource.data.actionId + '_' + request.resource.data.calendarDay
         && request.resource.data.createdAt == request.time;
       allow update: if false;
       allow delete: if false;

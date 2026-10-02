@@ -5,9 +5,14 @@
     "staging" or "prod"
 .PARAMETER SkipBranch
     Skip release branch creation
+.PARAMETER Backend
+    Also deploy Firestore rules + indexes, Storage rules and Cloud Functions
+    to the same project, before Hosting. Without it, only Hosting is deployed
+    (backend changes are NOT picked up by a Hosting deploy).
 .EXAMPLE
     .\deploy.ps1 -Target staging
     .\deploy.ps1 -Target prod
+    .\deploy.ps1 -Target prod -Backend
     .\deploy.ps1 -Target staging -SkipBranch
 #>
 
@@ -16,7 +21,9 @@ param(
     [ValidateSet("staging", "prod")]
     [string]$Target,
 
-    [switch]$SkipBranch
+    [switch]$SkipBranch,
+
+    [switch]$Backend
 )
 
 $ErrorActionPreference = "Stop"
@@ -98,7 +105,6 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host "      Build successful." -ForegroundColor Green
 
 # Step 5: Deploy
-Write-Host "[5/6] Deploying hosting to Firebase ($firebaseProject)..." -ForegroundColor Yellow
 # Prefer the nvm-managed firebase (latest), fall back to AppData, then PATH
 $nvmFirebase = "C:\nvm4w\nodejs\firebase.cmd"
 $appDataFirebase = Join-Path $env:APPDATA "npm\firebase.cmd"
@@ -109,6 +115,20 @@ if (Test-Path $nvmFirebase) {
 } else {
     $globalFirebase = "firebase"
 }
+
+# Backend first, so the new Hosting build never runs against old rules or
+# functions. Same explicit --project as Hosting - never the .firebaserc default.
+if ($Backend) {
+    Write-Host "[5/6] Deploying backend (Firestore rules + indexes, Storage rules, Functions) to $firebaseProject..." -ForegroundColor Yellow
+    & $globalFirebase deploy --only firestore:rules,firestore:indexes,storage,functions --project $firebaseProject
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "[x] Backend deployment FAILED - Hosting was NOT deployed." -ForegroundColor Red
+        exit 1
+    }
+    Write-Host "      Backend deployed." -ForegroundColor Green
+}
+
+Write-Host "[5/6] Deploying hosting to Firebase ($firebaseProject)..." -ForegroundColor Yellow
 & $globalFirebase deploy --only hosting --project $firebaseProject
 if ($LASTEXITCODE -ne 0) {
     Write-Host "[x] Deployment FAILED!" -ForegroundColor Red
@@ -141,3 +161,9 @@ if ($Target -eq "staging") {
 Write-Host "  Branch: $branchName" -ForegroundColor Cyan
 Write-Host "  Tag: $tagName" -ForegroundColor Cyan
 Write-Host ""
+if (-not $Backend) {
+    Write-Host "  [!] Hosting only. Firestore rules/indexes, Storage rules and Cloud" -ForegroundColor Yellow
+    Write-Host "      Functions were NOT deployed. If this release changes any of them," -ForegroundColor Yellow
+    Write-Host "      re-run with -Backend (or: npm run deploy:backend:$Target)." -ForegroundColor Yellow
+    Write-Host ""
+}

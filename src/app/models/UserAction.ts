@@ -28,6 +28,9 @@ export interface UserAction {
   completedAt: any;
   completionCount: number;
   lastCompletedAt: any;
+  // DAILY actions only: the local calendar day ('YYYY-MM-DD') of the latest
+  // completion, matching its user_action_completions guard doc.
+  lastCompletionDay?: string;
   completionMethod: 'SELF_REPORTED';
 
   // Snapshot of the action's taxonomy at the time of this record, so an

@@ -8,6 +8,13 @@
     ],
     "rewrites": [
       {
+        "source": "/element/*/blog/**",
+        "function": {
+          "functionId": "socialMetaTags",
+          "region": "us-central1"
+        }
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

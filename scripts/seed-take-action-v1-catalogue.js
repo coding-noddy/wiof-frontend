@@ -459,6 +459,11 @@ const ACTIONS = [
   }
 ];
 
+// Superseded in the final 40-action catalogue (see
+// verify-take-action-catalogue.js). Kept in ACTIONS so a re-run doesn't lose
+// the record users' history points at, but always written inactive.
+const SUPERSEDED_IDS = ['avoid-unnecessary-single-use-items'];
+
 // Finish each record with the shared fields every action carries.
 const FULL_ACTIONS = ACTIONS.map((a) => ({
   ...a,
@@ -466,7 +471,7 @@ const FULL_ACTIONS = ACTIONS.map((a) => ({
   completionType: 'SELF_REPORTED',
   media: null,
   accessibilityNotes: ACCESSIBILITY_STANDARD,
-  isActive: true
+  isActive: !SUPERSEDED_IDS.includes(a.id)
 }));
 
 // Superseded by this catalogue — deactivated, not deleted, so any existing

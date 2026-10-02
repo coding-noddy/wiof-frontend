@@ -3,10 +3,11 @@ import {
   AngularFirestore,
   AngularFirestoreCollection
 } from '@angular/fire/compat/firestore';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import { Observable, from } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 import { ActionItem } from '../models/ActionItem';
 import { FIREBASE_COLLECTION } from '../app.constants';
 import { AdminWriteGuardService } from './admin-write-guard.service';
@@ -20,7 +21,8 @@ export class ActionService {
 
   constructor(
     public database: AngularFirestore,
-    private adminWriteGuard: AdminWriteGuardService
+    private adminWriteGuard: AdminWriteGuardService,
+    private afAuth: AngularFireAuth
   ) {
     this.actionCollection = this.database.collection(FIREBASE_COLLECTION.ACTIONS);
   }
@@ -97,12 +99,14 @@ export class ActionService {
   saveAction(action: ActionItem) {
     const timestamp = firebase.firestore.FieldValue.serverTimestamp();
     return from(
-      this.adminWriteGuard.assertAdmin().then((): any => {
+      this.adminWriteGuard.assertAdmin().then(async (): Promise<any> => {
+        const editor = await this.currentEditor();
         if (action.id) {
-          const { id, ...data } = action;
+          const { id, createdAt, createdBy, ...data } = action;
           return this.actionCollection.doc(id).update({
             ...data,
             updatedAt: timestamp,
+            updatedBy: editor,
             // Bumps on every edit (increment treats a missing field as 0,
             // so an action's first edit after this feature shipped starts
             // it at 1 — no backfill needed). Placed after the spread so it
@@ -116,6 +120,8 @@ export class ActionService {
             ...data,
             createdAt: timestamp,
             updatedAt: timestamp,
+            createdBy: editor,
+            updatedBy: editor,
             version: 1
           });
         }
@@ -130,13 +136,21 @@ export class ActionService {
    */
   deactivateAction(actionId: string) {
     return from(
-      this.adminWriteGuard.assertAdmin().then(() =>
+      this.adminWriteGuard.assertAdmin().then(async () =>
         this.actionCollection.doc(actionId).update({
           isActive: false,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedBy: await this.currentEditor()
         })
       )
     );
+  }
+
+  /** Audit identity for createdBy/updatedBy — same convention as
+   *  HeroVideoService.saveHeroVideo(). */
+  private async currentEditor(): Promise<string> {
+    const user = await this.afAuth.authState.pipe(first()).toPromise();
+    return user?.email || user?.uid || '';
   }
 
   setViewEditModeAction(action: ActionItem) {
