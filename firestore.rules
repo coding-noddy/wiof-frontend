@@ -36,7 +36,7 @@ service cloud.firestore {
     // profile documents may not have every field (e.g. 'role'), and reading a
     // missing map key directly throws and denies the whole request.
     function isValidOwnProfileUpdate() {
-      let allowedKeys = ['displayName', 'photoURL', 'preferredElements'];
+      let allowedKeys = ['displayName', 'firstName', 'lastName', 'photoURL', 'preferredElements'];
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(allowedKeys)
         && request.resource.data.get('role', null) == resource.data.get('role', null)
         && request.resource.data.get('uid', null) == resource.data.get('uid', null)
@@ -134,6 +134,23 @@ service cloud.firestore {
       // covers any new field names.
       allow read: if isOwner(uid) || isAdmin();
       allow write: if false;
+    }
+
+    // ─── Hero Videos ────────────────────────────────────────────────────────
+    // One doc per fixed VideoWidgetComponent slot (HERO_VIDEO_SLOTS in
+    // app.constants.ts). Public read; admin-only write, restricted to the
+    // known slot ids and an 11-char YouTube video ID so a typo can't create
+    // a stray slot or store a full URL the widget can't embed.
+
+    match /hero_videos/{slotId} {
+      allow read: if true;
+      allow create, update: if isAdmin()
+        && slotId in ['air', 'water', 'earth', 'energy', 'spirit', 'our-purpose']
+        && request.resource.data.videoId is string
+        && request.resource.data.videoId.matches('^[A-Za-z0-9_-]{11}$')
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0;
+      allow delete: if isAdmin();
     }
 
     // ─── Take Action ────────────────────────────────────────────────────────
