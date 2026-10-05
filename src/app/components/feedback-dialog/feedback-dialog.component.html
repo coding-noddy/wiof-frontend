@@ -1,0 +1,77 @@
+<div class="feedback-modal-shell">
+  <div class="feedback-modal-header">
+    <div>
+      <h2 class="feedback-title">Share your feedback</h2>
+      <p class="feedback-subtitle">Spotted an issue or have an idea? Tell us, we read every message.</p>
+    </div>
+    <button class="modal-close-btn" (click)="close()" aria-label="Close">
+      <ion-icon name="close"></ion-icon>
+    </button>
+  </div>
+
+  <form class="feedback-modal-body" [formGroup]="feedbackForm" (ngSubmit)="submit()">
+    <fieldset class="feedback-field">
+      <legend class="field-label">What is it about?</legend>
+      <div class="category-grid" role="radiogroup">
+        <button
+          type="button"
+          *ngFor="let c of categories"
+          class="category-chip"
+          role="radio"
+          [attr.aria-checked]="feedbackForm.value.category === c.value"
+          [class.selected]="feedbackForm.value.category === c.value"
+          (click)="selectCategory(c.value)"
+        >
+          <ion-icon [name]="c.icon"></ion-icon>
+          <span>{{ c.label }}</span>
+        </button>
+      </div>
+    </fieldset>
+
+    <div class="feedback-field">
+      <label class="field-label" for="feedback-message">Your feedback <span class="required">*</span></label>
+      <textarea
+        id="feedback-message"
+        formControlName="message"
+        rows="4"
+        [attr.maxlength]="limits.MESSAGE_MAX"
+        placeholder="Tell us what's on your mind. For an issue, tell us what you were trying to do and what went wrong."
+      ></textarea>
+      <div class="field-meta">
+        <span
+          class="field-error"
+          *ngIf="feedbackForm.controls.message.touched && feedbackForm.controls.message.invalid"
+        >
+          Please write at least {{ limits.MESSAGE_MIN }} characters.
+        </span>
+        <span class="char-count">{{ messageLength }} / {{ limits.MESSAGE_MAX }}</span>
+      </div>
+    </div>
+
+    <div class="feedback-row">
+      <div class="feedback-field">
+        <label class="field-label" for="feedback-name">Name <span class="optional">(optional)</span></label>
+        <input id="feedback-name" type="text" formControlName="name" [attr.maxlength]="limits.NAME_MAX" />
+      </div>
+      <div class="feedback-field">
+        <label class="field-label" for="feedback-email">Email <span class="optional">(optional)</span></label>
+        <input id="feedback-email" type="email" formControlName="email" placeholder="If you want a reply" />
+        <span
+          class="field-error"
+          *ngIf="feedbackForm.controls.email.touched && feedbackForm.controls.email.invalid"
+        >
+          Please enter a valid email.
+        </span>
+      </div>
+    </div>
+
+    <div class="feedback-actions">
+      <p class="feedback-note">We also note which page you were on.</p>
+      <button type="button" class="wiof-secondary-btn" (click)="close()">Cancel</button>
+      <button type="submit" class="wiof-primary-btn" [disabled]="submitting">
+        <ion-icon name="send-outline"></ion-icon>
+        {{ submitting ? 'Sending…' : 'Send feedback' }}
+      </button>
+    </div>
+  </form>
+</div>

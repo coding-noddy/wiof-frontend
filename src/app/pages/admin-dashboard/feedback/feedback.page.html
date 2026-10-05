@@ -1,0 +1,127 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Feedback</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="admin-page">
+    <nav class="breadcrumb">
+      <a routerLink="/admin-dashboard">Dashboard</a>
+      <span class="separator">/</span>
+      <span class="current">Feedback</span>
+    </nav>
+
+    <div class="admin-page-header">
+      <div>
+        <h1>Website Feedback</h1>
+        <p class="header-meta">Improvements, issues and suggestions sent from the site footer</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-secondary" (click)="loadFeedback()">
+          <ion-icon name="refresh-outline"></ion-icon> Refresh
+        </button>
+        <button class="btn-primary" (click)="generateExcel()" [disabled]="!filteredFeedback.length">
+          <ion-icon name="download-outline"></ion-icon> Export Excel
+        </button>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-icon accent-teal"><ion-icon name="chatbubbles-outline"></ion-icon></div>
+        <div class="summary-info">
+          <span class="summary-value">{{ summary.total }}</span>
+          <span class="summary-label">Total Feedback</span>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon accent-marigold"><ion-icon name="mail-unread-outline"></ion-icon></div>
+        <div class="summary-info">
+          <span class="summary-value">{{ summary.new }}</span>
+          <span class="summary-label">New</span>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon accent-brown"><ion-icon name="bug-outline"></ion-icon></div>
+        <div class="summary-info">
+          <span class="summary-value">{{ summary.issues }}</span>
+          <span class="summary-label">Issues Reported</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+      <select class="filter-select" [(ngModel)]="categoryFilter" (ngModelChange)="applyFilters()" aria-label="Filter by category">
+        <option value="">All categories</option>
+        <option *ngFor="let c of categories" [value]="c.value">{{ c.label }}</option>
+      </select>
+      <select class="filter-select" [(ngModel)]="statusFilter" (ngModelChange)="applyFilters()" aria-label="Filter by status">
+        <option value="">All statuses</option>
+        <option *ngFor="let s of statuses" [value]="s">{{ s | titlecase }}</option>
+      </select>
+      <span class="filter-count">{{ filteredFeedback.length }} of {{ summary.total }} shown</span>
+    </div>
+
+    <!-- Table -->
+    <div class="admin-table-card" *ngIf="filteredFeedback.length > 0">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Category</th>
+            <th>Feedback</th>
+            <th>From</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let f of filteredFeedback">
+            <td><span class="cell-date">{{ (toDate(f.createdAt) | date: 'd MMM y, h:mm a') || '—' }}</span></td>
+            <td><span class="cell-category">{{ categoryLabel(f.category) }}</span></td>
+            <td class="message-cell">
+              <p class="feedback-message" [class.expanded]="expandedId === f.id" (click)="toggleExpand(f.id)">{{ f.message }}</p>
+              <a *ngIf="f.pageUrl" class="cell-link page-link" [href]="f.pageUrl" target="_blank" rel="noopener">{{ f.pageUrl }}</a>
+            </td>
+            <td>
+              <span class="cell-title">{{ f.name || 'Anonymous' }}</span>
+              <a *ngIf="f.email" class="cell-subtitle email-link" [href]="'mailto:' + f.email">{{ f.email }}</a>
+            </td>
+            <td>
+              <select
+                class="status-select"
+                [ngClass]="f.status"
+                [ngModel]="f.status"
+                (ngModelChange)="changeStatus(f, $event)"
+                aria-label="Feedback status"
+              >
+                <option *ngFor="let s of statuses" [value]="s">{{ s | titlecase }}</option>
+              </select>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button class="action-btn delete" title="Delete" (click)="deleteFeedback(f)">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="admin-table-card" *ngIf="!loading && filteredFeedback.length === 0">
+      <div class="empty-state">
+        <ion-icon name="chatbubbles-outline"></ion-icon>
+        <h3>No feedback {{ summary.total ? 'matches these filters' : 'yet' }}</h3>
+        <p>Feedback visitors send from the site footer will appear here.</p>
+      </div>
+    </div>
+  </div>
+</ion-content>

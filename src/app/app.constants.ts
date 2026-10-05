@@ -187,7 +187,8 @@ export const FIREBASE_COLLECTION = {
   ACTIONS: 'actions',
   USER_ACTIONS: 'user_actions',
   USER_ACTION_COMPLETIONS: 'user_action_completions',
-  HERO_VIDEOS: 'hero_videos'
+  HERO_VIDEOS: 'hero_videos',
+  FEEDBACK: 'Feedback'
 };
 
 export const ACTION_TYPE = {
@@ -370,7 +371,8 @@ export const UI_MESSAGES = {
   CONFIRM_DEACTIVATE_SECONDARY_CTA: 'No',
   DEACTIVATE_IN_PROGRESS: 'Deactivating $ITEM...',
   SUCCESS_DEACTIVATE_ITEM_DESC: '$ITEM deactivated successfully!',
-  FAILURE_DEACTIVATE_ITEM_DESC: 'Uh oh! Failed to deactivate $ITEM. Please try again.'
+  FAILURE_DEACTIVATE_ITEM_DESC: 'Uh oh! Failed to deactivate $ITEM. Please try again.',
+  SUCCESS_FEEDBACK: 'Thank you! Your feedback has been sent to the WIOF team.'
 };
 
 export const AVG_WORD_READ_PER_MIN = 250;

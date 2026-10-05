@@ -567,6 +567,75 @@ describe('Subscriptions/{id}', () => {
   });
 });
 
+describe('Feedback/{id}', () => {
+  function validFeedback(overrides = {}) {
+    return {
+      category: 'issue',
+      message: 'The blog page does not load on my phone.',
+      pageUrl: 'https://worldisonefamily.com/home',
+      userAgent: 'test-agent',
+      status: 'new',
+      createdAt: serverTimestamp(),
+      ...overrides
+    };
+  }
+
+  it('lets an anonymous visitor submit feedback', async () => {
+    const db = testEnv.unauthenticatedContext().firestore();
+    await assertSucceeds(db.collection('Feedback').add(validFeedback({ name: 'Alice', email: 'alice@test.com' })));
+  });
+
+  it('accepts every current category', async () => {
+    const db = testEnv.unauthenticatedContext().firestore();
+    for (const category of ['issue', 'idea', 'content', 'other']) {
+      await assertSucceeds(db.collection('Feedback').add(validFeedback({ category })));
+    }
+  });
+
+  it('lets a signed-in user submit feedback tagged with their own uid', async () => {
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertSucceeds(db.collection('Feedback').add(validFeedback({ userId: 'alice' })));
+  });
+
+  it("denies tagging feedback with someone else's uid", async () => {
+    const db = testEnv.authenticatedContext('mallory').firestore();
+    await assertFails(db.collection('Feedback').add(validFeedback({ userId: 'alice' })));
+  });
+
+  it('denies an unknown category, an unexpected field, or a too-short/too-long message', async () => {
+    const db = testEnv.unauthenticatedContext().firestore();
+    await assertFails(db.collection('Feedback').add(validFeedback({ category: 'spam' })));
+    await assertFails(db.collection('Feedback').add(validFeedback({ category: 'improvement' })));
+    await assertFails(db.collection('Feedback').add(validFeedback({ phone: '555-0100' })));
+    await assertFails(db.collection('Feedback').add(validFeedback({ message: 'short' })));
+    await assertFails(db.collection('Feedback').add(validFeedback({ message: 'x'.repeat(2001) })));
+  });
+
+  it('denies a submission pre-marked as resolved or with a client-chosen timestamp', async () => {
+    const db = testEnv.unauthenticatedContext().firestore();
+    await assertFails(db.collection('Feedback').add(validFeedback({ status: 'resolved' })));
+    await assertFails(db.collection('Feedback').add(validFeedback({ createdAt: new Date('2020-01-01') })));
+  });
+
+  it('denies a non-admin read or status change', async () => {
+    await seed((db) => db.collection('Feedback').doc('f1').set({ ...validFeedback(), createdAt: new Date() }));
+    const db = testEnv.authenticatedContext('mallory').firestore();
+    await assertFails(db.collection('Feedback').get());
+    await assertFails(db.collection('Feedback').doc('f1').update({ status: 'resolved' }));
+  });
+
+  it('lets an admin list, triage and delete feedback', async () => {
+    await seed(async (db) => {
+      await db.collection('Feedback').doc('f1').set({ ...validFeedback(), createdAt: new Date() });
+      await db.collection('admins').doc('root').set({ role: 'admin' });
+    });
+    const db = testEnv.authenticatedContext('root').firestore();
+    await assertSucceeds(db.collection('Feedback').orderBy('createdAt', 'desc').get());
+    await assertSucceeds(db.collection('Feedback').doc('f1').update({ status: 'reviewed' }));
+    await assertSucceeds(db.collection('Feedback').doc('f1').delete());
+  });
+});
+
 describe('actions/{actionId} (Take Action catalogue — same isAdmin() gate as Blogs)', () => {
   it('lets anyone, including unauthenticated, read the catalogue', async () => {
     await seed((db) => db.collection('actions').doc('switch-off-lights').set({ title: 'Switch Off Lights', isActive: true }));

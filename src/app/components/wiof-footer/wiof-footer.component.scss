@@ -136,6 +136,30 @@
   margin: 0 0 0.9rem;
 }
 
+// Sits directly under the newsletter button (no separate heading/copy) so
+// this column stays the same height as the link columns beside it.
+.footer-feedback-btn {
+  display: flex;
+  margin-top: 0.75rem;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--wiof-teal);
+  background: transparent;
+  color: var(--wiof-teal-shade-20);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: var(--wiof-teal);
+    color: var(--wiof-warm-white);
+  }
+}
+
 .footer-bottom {
   display: flex;
   align-items: center;

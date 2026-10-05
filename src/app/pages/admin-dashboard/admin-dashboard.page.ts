@@ -115,6 +115,13 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
       description: 'View and export subscriber list'
     },
     {
+      name: 'Feedback',
+      route: 'feedback',
+      icon: 'chatbubbles-outline',
+      color: AdminDashboardPage.GRADIENT_MARIGOLD,
+      description: 'Review and export website feedback'
+    },
+    {
       name: 'Registered Users',
       route: 'users',
       icon: 'people-outline',
