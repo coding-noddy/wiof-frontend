@@ -180,6 +180,16 @@ ion-content::part(scroll) {
   --background: var(--wiof-warm-white);
 }
 
+/* Site feedback form - presented via ModalController from the footer */
+.feedback-modal {
+  --width: 560px;
+  --max-width: 95vw;
+  --height: auto;
+  --max-height: 90vh;
+  --border-radius: 18px;
+  --background: var(--wiof-warm-white);
+}
+
 // Inline text-style button (e.g. "clear search" inside an empty-state
 // sentence on the list pages' search results).
 .wiof-link-button {

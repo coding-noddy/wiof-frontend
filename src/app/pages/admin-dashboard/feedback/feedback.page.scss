@@ -1,0 +1,75 @@
+@import '../admin-shared';
+
+.message-cell {
+  max-width: 420px;
+}
+
+.feedback-message {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  cursor: pointer;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  &.expanded {
+    display: block;
+  }
+}
+
+.page-link {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.75rem;
+  max-width: 420px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.email-link {
+  display: block;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.status-select {
+  padding: 4px 8px;
+  border-radius: 20px;
+  border: 1px solid $border-color;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: $card-bg;
+  color: $text-primary;
+  cursor: pointer;
+  outline: none;
+
+  &.new {
+    background: rgba(245, 158, 11, 0.1);
+    color: $warning;
+    border-color: rgba(245, 158, 11, 0.4);
+  }
+
+  &.reviewed {
+    background: $accent-light;
+    color: $accent;
+    border-color: $accent;
+  }
+
+  &.resolved {
+    background: rgba(16, 185, 129, 0.1);
+    color: $success;
+    border-color: rgba(16, 185, 129, 0.4);
+  }
+}
+
+.btn-primary[disabled] {
+  opacity: 0.5;
+  cursor: default;
+}

@@ -362,6 +362,42 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+    match /Feedback/{id} {
+      // Site feedback form (footer, every public page). Anyone may submit;
+      // only admins may read/triage. status must start as 'new' and
+      // createdAt must be the server time, so a client cannot backdate a
+      // submission or pre-mark it resolved. userId, when present, must be
+      // the caller's own uid. Field limits mirror FEEDBACK_LIMITS in
+      // src/app/models/Feedback.ts.
+      // A signed-in user may read back only the feedback tagged with their
+      // own uid (My Feedback page) — a list query must be constrained to
+      // userId == their uid or it is denied.
+      allow get, list: if isAdmin()
+        || isAuthenticated() && resource.data.get('userId', null) == request.auth.uid;
+      allow create: if request.resource.data.keys().hasOnly([
+          'category', 'message', 'name', 'email', 'pageUrl', 'userAgent',
+          'userId', 'status', 'createdAt'
+        ])
+        && request.resource.data.keys().hasAll(['category', 'message', 'status', 'createdAt'])
+        && request.resource.data.category in ['issue', 'idea', 'content', 'other']
+        && request.resource.data.message is string
+        && request.resource.data.message.size() >= 10
+        && request.resource.data.message.size() <= 2000
+        && request.resource.data.status == 'new'
+        && request.resource.data.createdAt == request.time
+        && (!('name' in request.resource.data)
+          || request.resource.data.name is string && request.resource.data.name.size() <= 100)
+        && (!('email' in request.resource.data)
+          || request.resource.data.email is string && request.resource.data.email.size() <= 254)
+        && (!('pageUrl' in request.resource.data)
+          || request.resource.data.pageUrl is string && request.resource.data.pageUrl.size() <= 500)
+        && (!('userAgent' in request.resource.data)
+          || request.resource.data.userAgent is string && request.resource.data.userAgent.size() <= 500)
+        && (!('userId' in request.resource.data)
+          || isAuthenticated() && request.resource.data.userId == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+
     match /Polls/{id} {
       // Raw vote documents carry email/IP alongside the selected option, so
       // they are admin-only to read — never publicly listable or gettable.

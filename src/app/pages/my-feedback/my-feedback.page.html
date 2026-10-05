@@ -1,0 +1,71 @@
+<app-header></app-header>
+
+<ion-content>
+  <div class="page-breadcrumb-bar">
+    <div class="breadcrumb">
+      <a routerLink="/home">Home</a>
+      <span class="sep">/</span>
+      <span class="current">My Feedback</span>
+    </div>
+  </div>
+
+  <div class="my-feedback-page">
+    <div class="page-header">
+      <div class="header-title-group">
+        <p class="header-eyebrow">Your voice</p>
+        <h1 class="header-title">My Feedback</h1>
+        <p class="header-copy">Everything you've sent us while signed in, and where it stands.</p>
+      </div>
+      <button class="wiof-primary-btn" *ngIf="!isLoading && feedbackItems.length > 0" (click)="openFeedback($event)">
+        <ion-icon name="add-outline"></ion-icon>
+        Share new feedback
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="feedback-list">
+      <div class="feedback-card skeleton-card" *ngFor="let i of [1, 2, 3]">
+        <div class="skeleton" style="height: 14px; width: 30%; margin-bottom: 0.75rem"></div>
+        <div class="skeleton" style="height: 14px; width: 90%; margin-bottom: 0.4rem"></div>
+        <div class="skeleton" style="height: 14px; width: 60%"></div>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="errorMessage && !isLoading" class="error-state">
+      <ion-icon name="cloud-offline-outline"></ion-icon>
+      <p>{{ errorMessage }}</p>
+      <button class="retry-btn" (click)="loadFeedback()">
+        <ion-icon name="refresh-outline"></ion-icon>
+        Try Again
+      </button>
+    </div>
+
+    <!-- Empty -->
+    <div *ngIf="!isLoading && !errorMessage && feedbackItems.length === 0" class="empty-state">
+      <ion-icon name="chatbubbles-outline"></ion-icon>
+      <h2>No feedback yet</h2>
+      <p>Found an issue or have an idea? Send it to us and you can follow its status here.</p>
+      <button class="explore-btn" (click)="openFeedback($event)">Share feedback</button>
+    </div>
+
+    <!-- List -->
+    <div *ngIf="!isLoading && !errorMessage && feedbackItems.length > 0" class="feedback-list">
+      <article class="feedback-card" *ngFor="let f of feedbackItems">
+        <header class="card-top">
+          <span class="card-category">
+            <ion-icon [name]="categoryIcon(f.category)"></ion-icon>
+            {{ categoryLabel(f.category) }}
+          </span>
+          <span class="status-pill" [ngClass]="f.status">{{ statusLabels[f.status] || f.status }}</span>
+        </header>
+        <p class="card-message">{{ f.message }}</p>
+        <footer class="card-meta">
+          Sent {{ (toDate(f.createdAt) | date: 'd MMM y, h:mm a') || 'just now' }}
+        </footer>
+      </article>
+    </div>
+  </div>
+
+  <app-wiof-footer></app-wiof-footer>
+</ion-content>

@@ -27,6 +27,7 @@ import { VideoSliderComponent } from './components/video-slider/video-slider.com
 import { VideoWidgetComponent } from './components/video-widget/video-widget.component';
 import { WaterWidgetComponent } from './components/water-widget/water-widget.component';
 import { WiofFooterComponent } from './components/wiof-footer/wiof-footer.component';
+import { FeedbackDialogComponent } from './components/feedback-dialog/feedback-dialog.component';
 import { SearchBoxComponent } from './components/search-box/search-box.component';
 import { WiofSpinnerComponent } from './components/wiof-spinner/wiof-spinner.component';
 import { VideoCardComponent } from './components/video-card/video-card.component';
@@ -52,6 +53,7 @@ const COMPONENTS = [
   HeaderComponent,
   LifeElementsComponent,
   WiofFooterComponent,
+  FeedbackDialogComponent,
   VideoSliderComponent,
   BlogSliderComponent,
   BlogCardComponent,

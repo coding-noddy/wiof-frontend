@@ -1,0 +1,234 @@
+@import '../../wiof-custom-theming.scss';
+
+// Presented inside an ion-modal (sized via the `.feedback-modal` cssClass
+// in global.scss) — no overlay/backdrop here, Ionic already provides one.
+.feedback-modal-shell {
+  background: var(--wiof-warm-white);
+  color: var(--wiof-ink);
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.feedback-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem 0.75rem;
+  // shade-20 rather than raw teal keeps warm-white text above AA contrast.
+  background-color: var(--wiof-teal-shade-20);
+  flex-shrink: 0;
+}
+
+.feedback-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: $light-color;
+}
+
+.feedback-subtitle {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: $light-color;
+  opacity: 0.9;
+}
+
+.modal-close-btn {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.15);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.18s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+}
+
+.feedback-modal-body {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  padding: 1.15rem 1.25rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.feedback-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  border: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1.5px solid var(--wiof-border);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--wiof-ink);
+    font: inherit;
+    font-size: 0.92rem;
+    outline: none;
+    transition: border-color 0.15s ease;
+
+    &:focus {
+      border-color: var(--wiof-teal);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 90px;
+  }
+}
+
+.field-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0;
+  margin-bottom: 0.1rem;
+
+  .required {
+    color: #b42318;
+  }
+
+  .optional {
+    font-weight: 400;
+    opacity: 0.6;
+  }
+}
+
+// A <legend> is not a flex item of its fieldset, so the field's `gap`
+// doesn't apply to it — space it from the chips explicitly.
+legend.field-label {
+  margin-bottom: 0.6rem;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.category-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.75rem;
+  border: 1.5px solid var(--wiof-border);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--wiof-ink);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  ion-icon {
+    font-size: 1.1rem;
+    color: var(--wiof-teal);
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    border-color: var(--wiof-teal-tint-40);
+  }
+
+  &.selected {
+    border-color: var(--wiof-teal);
+    background: rgba(33, 153, 159, 0.08);
+  }
+}
+
+.feedback-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.field-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.char-count {
+  margin-left: auto;
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+.field-error {
+  font-size: 0.78rem;
+  color: #b42318;
+}
+
+.feedback-note {
+  margin: 0 auto 0 0;
+  font-size: 0.78rem;
+  opacity: 0.65;
+}
+
+// Note sits on the same row as the buttons (saves a full row of height).
+.feedback-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.6rem;
+
+  button {
+    margin: 0;
+    gap: 0.4rem;
+    cursor: pointer;
+  }
+
+  .wiof-secondary-btn {
+    border-radius: 999px;
+    padding: 0.55rem 1rem;
+    font-weight: 700;
+    font-size: 0.94rem;
+    border-color: var(--wiof-border);
+  }
+
+  button[disabled] {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+@media (max-width: 575px) {
+  .category-grid,
+  .feedback-row {
+    grid-template-columns: 1fr;
+  }
+
+  .feedback-actions {
+    flex-wrap: wrap;
+  }
+
+  .feedback-note {
+    flex-basis: 100%;
+  }
+
+  .feedback-actions button {
+    flex: 1;
+  }
+}

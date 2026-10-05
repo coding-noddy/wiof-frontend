@@ -212,6 +212,13 @@ const routes: Routes = [
       )
   },
   {
+    path: 'feedback',
+    loadChildren: () =>
+      import('./feedback/feedback.module').then(
+        (m) => m.FeedbackPageModule
+      )
+  },
+  {
     path: 'users',
     loadChildren: () =>
       import('./users/users.module').then(

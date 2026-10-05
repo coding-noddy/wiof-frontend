@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { ModalController } from '@ionic/angular';
 import { SubscribePanelService } from 'src/app/services/subscribe-panel.service';
+import { FeedbackDialogComponent } from 'src/app/components/feedback-dialog/feedback-dialog.component';
 
 declare const require: any;
 
@@ -27,12 +29,19 @@ export class WiofFooterComponent implements OnInit {
     "Checkout this amazing website Worldisonefamily.com..!! " + window.location.href
   )}`;
 
-  constructor(private subscribePanel: SubscribePanelService) {}
+  constructor(
+    private subscribePanel: SubscribePanelService,
+    private modalCtrl: ModalController
+  ) {}
 
   ngOnInit() {}
 
   openNewsletter(): void {
     this.subscribePanel.open();
+  }
+
+  openFeedback(event?: MouseEvent): void {
+    FeedbackDialogComponent.present(this.modalCtrl, event);
   }
 }
 
