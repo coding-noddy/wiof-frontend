@@ -66,7 +66,11 @@
     </div>
 
     <div class="feedback-actions">
-      <p class="feedback-note">We also note which page you were on.</p>
+      <p class="feedback-note">
+        We also note which page you were on.
+        <ng-container *ngIf="isSignedIn">Track it under <strong>My Feedback</strong>.</ng-container>
+        <ng-container *ngIf="!isSignedIn">Sign in to track its status.</ng-container>
+      </p>
       <button type="button" class="wiof-secondary-btn" (click)="close()">Cancel</button>
       <button type="submit" class="wiof-primary-btn" [disabled]="submitting">
         <ion-icon name="send-outline"></ion-icon>

@@ -156,6 +156,14 @@ const routes: Routes = [
     canActivate: [PublicUserGuard]
   },
   {
+    path: 'my-feedback',
+    loadChildren: () =>
+      import('./pages/my-feedback/my-feedback.module').then(
+        (m) => m.MyFeedbackPageModule
+      ),
+    canActivate: [PublicUserGuard]
+  },
+  {
     // Kept for bookmarks/old links/SEO, same pattern as the aboutus/discover-more
     // redirects from the our-team/our-purpose rename.
     path: 'my-saved',

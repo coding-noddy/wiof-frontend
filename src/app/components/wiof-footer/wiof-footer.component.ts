@@ -3,7 +3,6 @@ import { environment } from 'src/environments/environment';
 import { ModalController } from '@ionic/angular';
 import { SubscribePanelService } from 'src/app/services/subscribe-panel.service';
 import { FeedbackDialogComponent } from 'src/app/components/feedback-dialog/feedback-dialog.component';
-import { buildModalZoomAnimation } from 'src/app/util/modal-zoom-animation';
 
 declare const require: any;
 
@@ -41,16 +40,8 @@ export class WiofFooterComponent implements OnInit {
     this.subscribePanel.open();
   }
 
-  async openFeedback(event?: MouseEvent): Promise<void> {
-    const originRect = (event?.currentTarget as HTMLElement)?.getBoundingClientRect();
-    const modal = await this.modalCtrl.create({
-      component: FeedbackDialogComponent,
-      cssClass: 'feedback-modal',
-      backdropDismiss: true,
-      enterAnimation: (baseEl) => buildModalZoomAnimation(baseEl, originRect, false),
-      leaveAnimation: (baseEl) => buildModalZoomAnimation(baseEl, originRect, true)
-    });
-    await modal.present();
+  openFeedback(event?: MouseEvent): void {
+    FeedbackDialogComponent.present(this.modalCtrl, event);
   }
 }
 

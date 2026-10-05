@@ -17,6 +17,13 @@ export const LEGACY_FEEDBACK_CATEGORY_LABELS: Record<string, string> = {
 
 export const FEEDBACK_STATUSES: FeedbackStatus[] = ['new', 'reviewed', 'resolved'];
 
+// What a signed-in user sees for their own feedback on My Feedback.
+export const FEEDBACK_STATUS_USER_LABELS: Record<FeedbackStatus, string> = {
+  new: 'Received',
+  reviewed: 'In review',
+  resolved: 'Resolved'
+};
+
 // Field limits — keep in sync with the Feedback/{id} create rule in firestore.rules.
 export const FEEDBACK_LIMITS = {
   MESSAGE_MIN: 10,

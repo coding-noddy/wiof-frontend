@@ -617,6 +617,33 @@ describe('Feedback/{id}', () => {
     await assertFails(db.collection('Feedback').add(validFeedback({ createdAt: new Date('2020-01-01') })));
   });
 
+  it("lets a signed-in user read their own feedback, but not anyone else's", async () => {
+    await seed(async (db) => {
+      await db.collection('Feedback').doc('mine').set({ ...validFeedback({ userId: 'alice' }), createdAt: new Date() });
+      await db.collection('Feedback').doc('theirs').set({ ...validFeedback({ userId: 'bob' }), createdAt: new Date() });
+      await db.collection('Feedback').doc('anon').set({ ...validFeedback(), createdAt: new Date() });
+    });
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertSucceeds(db.collection('Feedback').where('userId', '==', 'alice').get());
+    await assertSucceeds(db.collection('Feedback').doc('mine').get());
+    await assertFails(db.collection('Feedback').doc('theirs').get());
+    await assertFails(db.collection('Feedback').doc('anon').get());
+    await assertFails(db.collection('Feedback').where('userId', '==', 'bob').get());
+    await assertFails(db.collection('Feedback').get());
+  });
+
+  it('denies a user changing the status of their own feedback', async () => {
+    await seed((db) => db.collection('Feedback').doc('mine').set({ ...validFeedback({ userId: 'alice' }), createdAt: new Date() }));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(db.collection('Feedback').doc('mine').update({ status: 'resolved' }));
+  });
+
+  it('denies an anonymous read', async () => {
+    await seed((db) => db.collection('Feedback').doc('f1').set({ ...validFeedback(), createdAt: new Date() }));
+    const db = testEnv.unauthenticatedContext().firestore();
+    await assertFails(db.collection('Feedback').get());
+  });
+
   it('denies a non-admin read or status change', async () => {
     await seed((db) => db.collection('Feedback').doc('f1').set({ ...validFeedback(), createdAt: new Date() }));
     const db = testEnv.authenticatedContext('mallory').firestore();

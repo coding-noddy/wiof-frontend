@@ -32,6 +32,24 @@ export class FeedbackService {
     return from(this.feedbackCollection.add(doc));
   }
 
+  /**
+   * A signed-in user's own feedback, newest first. Filtered on userId only
+   * (the rules allow a list query only when it is constrained to the
+   * caller's uid) and sorted here, so no composite index is needed.
+   */
+  getMyFeedback(userId: string): Observable<Feedback[]> {
+    return this.database
+      .collection<Feedback>(FIREBASE_COLLECTION.FEEDBACK, (ref) => ref.where('userId', '==', userId))
+      .get()
+      .pipe(
+        map((snapshot) =>
+          snapshot.docs
+            .map((doc) => ({ ...(doc.data() as Feedback), id: doc.id }))
+            .sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0))
+        )
+      );
+  }
+
   /** Admin-only (see firestore.rules). */
   getAllFeedback(): Observable<Feedback[]> {
     return this.database

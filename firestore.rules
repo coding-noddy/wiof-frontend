@@ -369,7 +369,11 @@ service cloud.firestore {
       // submission or pre-mark it resolved. userId, when present, must be
       // the caller's own uid. Field limits mirror FEEDBACK_LIMITS in
       // src/app/models/Feedback.ts.
-      allow get, list: if isAdmin();
+      // A signed-in user may read back only the feedback tagged with their
+      // own uid (My Feedback page) — a list query must be constrained to
+      // userId == their uid or it is denied.
+      allow get, list: if isAdmin()
+        || isAuthenticated() && resource.data.get('userId', null) == request.auth.uid;
       allow create: if request.resource.data.keys().hasOnly([
           'category', 'message', 'name', 'email', 'pageUrl', 'userAgent',
           'userId', 'status', 'createdAt'

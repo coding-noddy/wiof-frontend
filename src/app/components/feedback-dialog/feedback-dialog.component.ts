@@ -7,6 +7,7 @@ import { FEEDBACK_CATEGORIES, FEEDBACK_LIMITS, FeedbackCategory } from 'src/app/
 import { AuthService } from 'src/app/services/auth.service';
 import { FeedbackService } from 'src/app/services/feedback.service';
 import { UiUtilService } from 'src/app/util/UiUtilService';
+import { buildModalZoomAnimation } from 'src/app/util/modal-zoom-animation';
 
 /**
  * Site feedback form — opened from the footer on every public page via
@@ -23,7 +24,26 @@ export class FeedbackDialogComponent implements OnInit {
   categories = FEEDBACK_CATEGORIES;
   limits = FEEDBACK_LIMITS;
   submitting = false;
+  isSignedIn = false;
   private userId: string;
+
+  /**
+   * Opens the dialog — shared by the footer and the My Feedback page.
+   * Resolves true when feedback was actually sent (so callers can refresh).
+   */
+  static async present(modalCtrl: ModalController, event?: MouseEvent): Promise<boolean> {
+    const originRect = (event?.currentTarget as HTMLElement)?.getBoundingClientRect();
+    const modal = await modalCtrl.create({
+      component: FeedbackDialogComponent,
+      cssClass: 'feedback-modal',
+      backdropDismiss: true,
+      enterAnimation: (baseEl) => buildModalZoomAnimation(baseEl, originRect, false),
+      leaveAnimation: (baseEl) => buildModalZoomAnimation(baseEl, originRect, true)
+    });
+    await modal.present();
+    const { data } = await modal.onDidDismiss();
+    return !!data?.submitted;
+  }
 
   feedbackForm = new FormGroup({
     category: new FormControl<FeedbackCategory>('issue', [Validators.required]),
@@ -46,6 +66,7 @@ export class FeedbackDialogComponent implements OnInit {
   ngOnInit() {
     this.authService.currentUser$.pipe(first()).subscribe((user) => {
       if (!user) return;
+      this.isSignedIn = true;
       this.userId = user.uid;
       this.feedbackForm.patchValue({
         name: user.displayName || '',
@@ -84,7 +105,7 @@ export class FeedbackDialogComponent implements OnInit {
         () => {
           this.submitting = false;
           this.uiUtil.presentToast(UI_MESSAGES.SUCCESS_FEEDBACK, 'success');
-          this.close();
+          this.modalCtrl.dismiss({ submitted: true });
         },
         () => {
           this.submitting = false;
