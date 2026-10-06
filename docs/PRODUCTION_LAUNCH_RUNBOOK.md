@@ -1,6 +1,6 @@
 # Production Launch Runbook (one-time)
 
-Production (`wiof-production`) was last deployed at **v2.0.2-prod on 2026-08-12**. Since then, 28 commits have added sign-in and the engagement layer, the `admins` model, 12 new Cloud Functions, the hardened Firestore/Storage rules, composite indexes, hero videos, Take Action, search and site feedback (footer form, admin Feedback page, My Feedback). None of that backend has ever been deployed to production. Today production runs only `socialMetaTags`, the 2026-08 hosting build, and the old rules. Production has no public sign-in yet; the only accounts are admins using email/password, and the old rules treat *any* signed-in account as allowed to write content. After this launch, the public can sign in with Google, so admin rights must come from the `admins` collection instead.
+Production (`wiof-production`) was last deployed at **v2.0.2-prod on 2026-08-12**. Since then, 28 commits have added sign-in and the engagement layer, the `admins` model, 12 new Cloud Functions, the hardened Firestore/Storage rules, composite indexes, hero videos, Take Action, search, site feedback (footer form, admin Feedback page, My Feedback) and a separate Home category for Coffee Conversations. None of that backend has ever been deployed to production. Today production runs only `socialMetaTags`, the 2026-08 hosting build, and the old rules. Production has no public sign-in yet; the only accounts are admins using email/password, and the old rules treat *any* signed-in account as allowed to write content. After this launch, the public can sign in with Google, so admin rights must come from the `admins` collection instead.
 
 This runbook is the one-time sequence to get production onto the current release. Data steps use [`scripts/prod-launch.js`](../scripts/prod-launch.js). Every step of that script that writes is a **dry run unless you pass `--apply`**, so run each step once without it and read the output first.
 
@@ -30,7 +30,7 @@ Once Phase 0 is done (key saved, Console settings in place, everything committed
 12. Verify.
 13. Smoke test.
 
-Everything is logged to `scripts/backups/launch-<timestamp>.log`. After fixing a failure, resume with `-StartAt <step>` (`checks`, `prerequisites`, `tests`, `preflight`, `backup`, `snapshot`, `admins`, `content`, `deploy`, `polls`, `indexes`, `verify`, `smoke`). The script prints the exact resume command when it stops. **Still manual afterwards:** the Phase 3 browser check, adding admins who had no production account before launch, and the **After launch** section.
+Everything is logged to `scripts/backups/launch-<timestamp>.log`. After fixing a failure, resume with `-StartAt <step>` (`checks`, `prerequisites`, `tests`, `preflight`, `backup`, `snapshot`, `admins`, `content`, `deploy`, `polls`, `indexes`, `verify`, `smoke`). The script prints the exact resume command when it stops. **Not run by the script:** the Home Coffee Conversation migration (`node scripts/migrate-home-coffee-conversation.js prod --apply`, see Phase 1). Run it any time before launch, or right after; the home page falls back safely until then. **Still manual afterwards:** the Phase 3 browser check, adding admins who had no production account before launch, and the **After launch** section.
 
 The phases below are the same steps, broken out for reference or for running one at a time.
 
@@ -40,7 +40,7 @@ The phases below are the same steps, broken out for reference or for running one
 
 ### Code
 - [ ] Commit everything, merge into **`master`** and push. Production deploys **only from `master`**, the remote's default branch. The launch script refuses any other branch, and refuses if local `master` differs from `origin/master`. (`main` also exists, but it's 79 commits behind and isn't used.) `deploy.ps1` builds from the **working tree**: without `-SkipBranch` it creates and checks out `release-<package.json version>` and tags `v<version>-prod`.
-- [ ] Decide the launch version in `package.json` (the footer shows it). It must not already have a `release-<version>` branch or `v<version>-prod` tag. `deploy.ps1` would switch to that **existing** branch and ship its old code, so the launch script refuses. As of 2026-10-06 `package.json` is at `5.1.1` and it's free: only the `v5.1.0-staging` and `v5.1.1-staging` tags exist, with no `release-5.1.x` branch or `-prod` tag.
+- [ ] Decide the launch version in `package.json` (the footer shows it). It must not already have a `release-<version>` branch or `v<version>-prod` tag. `deploy.ps1` would switch to that **existing** branch and ship its old code, so the launch script refuses. As of 2026-10-06 `package.json` is at `5.2.0` and it's free: only the `v5.1.0-staging`, `v5.1.1-staging` and `v5.2.0-staging` tags exist, with no `release-5.x` branch or `-prod` tag.
 - [ ] `git checkout master && git pull` before running the script. `deploy.ps1` branches `release-<version>` from the current commit.
 - [ ] `npm run test:rules` passes. This needs Java 21; the deploy scripts run it automatically.
 
