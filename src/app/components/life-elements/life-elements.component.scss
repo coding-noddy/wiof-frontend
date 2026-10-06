@@ -1,8 +1,10 @@
 @import '../../wiof-custom-theming.scss';
 
 // ── Shared icon badge ────────────────────────────────────────────────────────
-// The icon_*.svg assets already draw their own full badge (circle + border +
-// element lines, with a filled `_selected` variant for the active state) —
+// The icon_*.png assets (240px renders of the icon_*.svg masters — PNG per
+// brand direction, 2026-10-06) already draw their own full badge (circle +
+// border + element lines, with a filled `_selected` variant for the active
+// state) —
 // this must render at 100%, not sit inside another bordered/filled circle,
 // or you get a circle nested inside a circle with an odd ring of padding.
 %element-icon-base {
@@ -12,18 +14,18 @@
   background-size: 100%;
   flex-shrink: 0;
 
-  &.icon-air    { background-image: url('/assets/icons/icon_air.svg'); }
-  &.icon-energy { background-image: url('/assets/icons/icon_energy.svg'); }
-  &.icon-water  { background-image: url('/assets/icons/icon_water.svg'); }
-  &.icon-earth  { background-image: url('/assets/icons/icon_earth.svg'); }
-  &.icon-spirit { background-image: url('/assets/icons/icon_spirit.svg'); }
+  &.icon-air    { background-image: url('/assets/icons/icon_air.png'); }
+  &.icon-energy { background-image: url('/assets/icons/icon_energy.png'); }
+  &.icon-water  { background-image: url('/assets/icons/icon_water.png'); }
+  &.icon-earth  { background-image: url('/assets/icons/icon_earth.png'); }
+  &.icon-spirit { background-image: url('/assets/icons/icon_spirit.png'); }
 
   &.active {
-    &.icon-air    { background-image: url('/assets/icons/icon_air_selected.svg'); }
-    &.icon-energy { background-image: url('/assets/icons/icon_energy_selected.svg'); }
-    &.icon-water  { background-image: url('/assets/icons/icon_water_selected.svg'); }
-    &.icon-earth  { background-image: url('/assets/icons/icon_earth_selected.svg'); }
-    &.icon-spirit { background-image: url('/assets/icons/icon_spirit_selected.svg'); }
+    &.icon-air    { background-image: url('/assets/icons/icon_air_selected.png'); }
+    &.icon-energy { background-image: url('/assets/icons/icon_energy_selected.png'); }
+    &.icon-water  { background-image: url('/assets/icons/icon_water_selected.png'); }
+    &.icon-earth  { background-image: url('/assets/icons/icon_earth_selected.png'); }
+    &.icon-spirit { background-image: url('/assets/icons/icon_spirit_selected.png'); }
   }
 }
 
@@ -48,12 +50,36 @@
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 20px;
 
+  // Tablet/mobile: the five cards don't divide evenly into rows (3+2,
+  // 2+2+1), and a plain grid leaves the short last row hanging left. Doubling
+  // the column count and spanning each card across 2 keeps every card the
+  // same width while letting the last row start half a card in, so it sits
+  // centered under the row above.
   @media (max-width: 991px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+
+    .element-card {
+      grid-column: span 2;
+    }
+
+    // Row 2 (cards 4–5): shift right by half a card.
+    .element-card:nth-child(4) {
+      grid-column: 2 / span 2;
+    }
   }
 
   @media (max-width: 575px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    // Undo the tablet offset — card 4 starts row 2 normally here.
+    .element-card:nth-child(4) {
+      grid-column: span 2;
+    }
+
+    // Row 3 (card 5, alone): centered.
+    .element-card:nth-child(5) {
+      grid-column: 2 / span 2;
+    }
   }
 }
 
