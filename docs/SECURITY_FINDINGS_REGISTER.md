@@ -35,5 +35,6 @@ current rules — link to `PERMISSION_MATRIX.md` for that.
 | 3 | `users.role` field cleanup | — | Inert leftover from the pre-`admins`-collection design; optional, tracked in memory (`cleanup_users_role_field.md`) |
 | 4 | Account deletion (distinct from engagement reset) | P0 §5.2 | Explicitly future work per the plan; no target date |
 | 5 | Phase E — IA/taxonomy/onboarding | P1 §13-15 | Separate phase, sequenced after Brand Alignment, not started |
+| 6 | Public `Feedback` create has no rate limit / bot check (added 2026-10-05, v5.1.0) | P0 §4.3 | Accepted for launch. Rules validate every field and length, force `status: 'new'` and a server timestamp, and allow `userId` only as the caller's own uid, so spam can only add junk rows that admins can see and delete. They can't read, alter or attribute anything else. The same gap applies to `Subscriptions` and `Polls`. Closes with App Check (item 1); add reCAPTCHA or a Cloud Function rate limit sooner if spam appears |
 
 "Resolved" means implemented and deployed to **staging**; production promotion still follows the plan's staging-first gate before going live.
