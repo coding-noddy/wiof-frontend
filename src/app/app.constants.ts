@@ -278,6 +278,15 @@ export const PAGE_CATEGORY_MAP = {
   spirit: 'Spirit'
 };
 
+// Coffee Conversations shown on the home page are kept in their own
+// category, separate from the five element pages, so the home feature can
+// be changed without touching any element page.
+export const COFFEE_CONVERSATION_HOME_CATEGORY = 'Home';
+export const COFFEE_CONVERSATION_CATEGORIES = [
+  COFFEE_CONVERSATION_HOME_CATEGORY,
+  ...Object.values(PAGE_CATEGORY_MAP)
+];
+
 /**
  * Normalizes a stored category/element value for lowercase comparison,
  * mapping the legacy 'fire' identifier (used before the Energy rename) to

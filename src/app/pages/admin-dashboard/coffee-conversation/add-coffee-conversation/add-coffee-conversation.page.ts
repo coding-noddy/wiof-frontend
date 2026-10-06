@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, throwError } from 'rxjs';
 import { catchError, takeUntil } from 'rxjs/operators';
-import { PAGE_CATEGORY_MAP, UI_MESSAGES, ITEMS } from 'src/app/app.constants';
+import { COFFEE_CONVERSATION_CATEGORIES, UI_MESSAGES, ITEMS } from 'src/app/app.constants';
 import { CoffeeConversation } from 'src/app/models/CoffeeConversation';
 import { CoffeeConversationService } from 'src/app/services/coffee-conversation.service';
 import { AppUtilService } from 'src/app/util/AppUtilService';
@@ -22,7 +22,7 @@ export class AddCoffeeConversationPage implements OnInit {
   destroy$: Subject<boolean> = new Subject();
   imageToDisplay: string;
   imageToSave: any;
-  categories: string[] = Object.values(PAGE_CATEGORY_MAP);
+  categories: string[] = COFFEE_CONVERSATION_CATEGORIES;
 
   pageContent = {
     addCoffeeConversationTitle: 'Add Coffee Conversation',
