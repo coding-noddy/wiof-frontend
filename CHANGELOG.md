@@ -5,6 +5,29 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+> Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
+
+## [5.1.1] - 2026-10-05
+
+### Added
+- **My Feedback page** (`/my-feedback`, avatar menu): signed-in users see the feedback they've sent, newest first, with status *Received* / *In review* / *Resolved*, refreshed on every visit
+- The feedback popup tells signed-in users where to track their feedback, and signed-out users that signing in lets them track it
+
+### Security
+- Firestore rules: a signed-in user can read only `Feedback` docs carrying their own uid; status changes stay admin-only
+
+## [5.1.0] - 2026-10-05
+
+### Added
+- **Website feedback form:** a *Share feedback* button in the footer of every public page opens a popup with the category (Report an issue / Idea or suggestion / Content feedback / Something else), a message, and optional name and email (prefilled when signed in). The page URL is recorded automatically
+- **Admin → Feedback page:** totals, category/status filters, status triage (New / Reviewed / Resolved), delete, and Excel export
+- New `Feedback` Firestore collection with field-validated public create and admin-only management, plus rules tests
+
+### Deploy notes
+- Needs a **backend** deploy (Firestore rules) alongside Hosting. Without it, feedback submissions and My Feedback fail
+
+---
+
 ## [1.0.11] - 2026-07-18
 
 ### Added

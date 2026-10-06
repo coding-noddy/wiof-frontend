@@ -1,6 +1,6 @@
 # Production Launch Runbook (one-time)
 
-Production (`wiof-production`) was last deployed at **v2.0.2-prod on 2026-08-12**. Since then, 28 commits have added sign-in and the engagement layer, the `admins` model, 12 new Cloud Functions, the hardened Firestore/Storage rules, composite indexes, hero videos, Take Action and search. None of that backend has ever been deployed to production. Today production runs only `socialMetaTags`, the 2026-08 hosting build, and the old rules. Production has no public sign-in yet; the only accounts are admins using email/password, and the old rules treat *any* signed-in account as allowed to write content. After this launch, the public can sign in with Google, so admin rights must come from the `admins` collection instead.
+Production (`wiof-production`) was last deployed at **v2.0.2-prod on 2026-08-12**. Since then, 28 commits have added sign-in and the engagement layer, the `admins` model, 12 new Cloud Functions, the hardened Firestore/Storage rules, composite indexes, hero videos, Take Action, search and site feedback (footer form, admin Feedback page, My Feedback). None of that backend has ever been deployed to production. Today production runs only `socialMetaTags`, the 2026-08 hosting build, and the old rules. Production has no public sign-in yet; the only accounts are admins using email/password, and the old rules treat *any* signed-in account as allowed to write content. After this launch, the public can sign in with Google, so admin rights must come from the `admins` collection instead.
 
 This runbook is the one-time sequence to get production onto the current release. Data steps use [`scripts/prod-launch.js`](../scripts/prod-launch.js). Every step of that script that writes is a **dry run unless you pass `--apply`**, so run each step once without it and read the output first.
 
@@ -40,7 +40,7 @@ The phases below are the same steps, broken out for reference or for running one
 
 ### Code
 - [ ] Commit everything, merge into **`master`** and push. Production deploys **only from `master`**, the remote's default branch. The launch script refuses any other branch, and refuses if local `master` differs from `origin/master`. (`main` also exists, but it's 79 commits behind and isn't used.) `deploy.ps1` builds from the **working tree**: without `-SkipBranch` it creates and checks out `release-<package.json version>` and tags `v<version>-prod`.
-- [ ] Decide the launch version in `package.json` (the footer shows it). It must not already have a `release-<version>` branch or `v<version>-prod` tag. `deploy.ps1` would switch to that **existing** branch and ship its old code, so the launch script refuses. `5.0.3` is free today.
+- [ ] Decide the launch version in `package.json` (the footer shows it). It must not already have a `release-<version>` branch or `v<version>-prod` tag. `deploy.ps1` would switch to that **existing** branch and ship its old code, so the launch script refuses. As of 2026-10-06 `package.json` is at `5.1.1` and it's free: only the `v5.1.0-staging` and `v5.1.1-staging` tags exist, with no `release-5.1.x` branch or `-prod` tag.
 - [ ] `git checkout master && git pull` before running the script. `deploy.ps1` branches `release-<version>` from the current commit.
 - [ ] `npm run test:rules` passes. This needs Java 21; the deploy scripts run it automatically.
 
@@ -172,6 +172,9 @@ This is a live end-to-end Take Action test through the deployed rules and functi
 - [ ] Share a blog link on WhatsApp: the preview shows the blog's own title and image.
 - [ ] Admin: dashboard opens for an admin and **not** for a normal user. Edit a blog, upload an image, edit a Take Action, change a hero video.
 - [ ] Search on Blogs / Videos / Take Action.
+- [ ] **Feedback, as a guest:** footer → *Share feedback*, send one. The popup says "Sign in to track its status" and closes with a thank-you toast.
+- [ ] **Feedback, signed in:** send one. Name and email are prefilled, and it appears under avatar menu → **My Feedback** as *Received*.
+- [ ] **Feedback, admin:** Dashboard → **Feedback** lists both entries. Set the signed-in one to *Resolved*, then check that My Feedback shows *Resolved*. Export Excel downloads a file. Delete the two test entries afterwards.
 
 ---
 
@@ -221,7 +224,7 @@ The site keeps all Hosting versions (no retention limit), so old versions stay r
 | Hosting | Firebase Console → Hosting → Release history → **Rollback** on the previous release | Instant. |
 | Firestore + Storage rules | From the kit: `cd scripts/backups/prod-config-<ts>/rollback` then `firebase deploy --only firestore:rules,storage --project wiof-production`. These are the live rulesets as captured, not git's copy. | **Only together with a Hosting rollback.** The old app needs the old rules, and the new app needs the new ones. |
 | Cloud Functions | Usually leave them: they're additive and harmless to the old app. To remove one: `firebase functions:delete <name> --region us-central1 --project wiof-production` | |
-| Data | Nothing existing is modified. Phase 1/3 only add `admins`, `actions`, `hero_videos` and `poll_results`, which the old app ignores. Restore from `scripts/backups/prod-<timestamp>/` or the gcloud export if ever needed. | |
+| Data | Nothing existing is modified. Phase 1/3 only add `admins`, `actions`, `hero_videos` and `poll_results`, which the old app ignores. Restore from `scripts/backups/prod-<timestamp>/` or the gcloud export if ever needed. | `Feedback` docs that visitors send after launch are kept in Firestore through a rollback. The old app has no feedback screens, so nobody can see them until you roll forward. If the rollback will last a while, run `node scripts/prod-launch.js backup` first so you have a copy. |
 
 ---
 
@@ -231,5 +234,6 @@ The site keeps all Hosting versions (no retention limit), so old versions stay r
 - **Node.js runtime.** Functions moved from Node 20 (decommissioned 2026-10-30) to **Node 22** on 2026-10-02 and are verified on staging. The production deploy updates the existing `socialMetaTags` in place, and the other 12 functions are created on Node 22.
 - **Blog-page caching.** `socialMetaTags` serves the app page to normal visitors with `Cache-Control: public, max-age=0, s-maxage=600`. The CDN caches it, and Hosting purges that cache on every deploy, while browsers always revalidate. That way no visitor keeps an old page pointing at hashed files a new deploy removed.
 - **App Check** is not configured (deferred; see `docs/PERMISSION_MATRIX.md`).
+- **Site feedback has no rate limit.** Anyone can create `Feedback` docs. The rules validate every field: category, message length 10–2000, `status` forced to `new`, server timestamp, and `userId` only as the sender's own uid. Nothing stops repeated submissions, though. If spam shows up, delete it from Dashboard → Feedback; the long-term fix is App Check (see `docs/SECURITY_FINDINGS_REGISTER.md`). The collection is created by the first submission. It needs no seed data and no new index, because My Feedback filters on `userId` only and sorts in the browser.
 - **Indexes:** production's four content-page indexes (In Focus, Course In Focus, NGO In Focus) were created by hand and were missing from `firestore.indexes.json`. They were added on 2026-10-02, in production's exact format, and verified with a staging deploy. Staging still has two hand-made `activity_log` indexes that aren't in the file. The CLI only reports them; it never deletes without `--force`.
 - `config` and the legacy `admin` collection exist on staging with no rules match. Nothing in the app reads them: the Privacy Policy page's `config` read is commented out.
