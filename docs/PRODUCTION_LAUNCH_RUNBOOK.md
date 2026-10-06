@@ -111,6 +111,12 @@ node scripts/prod-launch.js seed-content --apply
 ```
 This copies the **40 reviewed actions** from staging. That's the editorially reviewed catalogue, including the Earth-tag correction. The superseded action is not copied, because production never had it. The step refuses to run unless staging is in the verified 40-action state. It also copies the six **hero video slots** from staging. The dry run prints each video's title, so check that no test video is about to go to production. Docs that already exist in production are skipped unless you pass `--force`.
 
+```bash
+node scripts/migrate-home-coffee-conversation.js prod
+node scripts/migrate-home-coffee-conversation.js prod --apply
+```
+This moves the home page's Coffee Conversation into the new **Home** category, so the home page and the element pages are managed separately. The script picks the conversation the home page shows today, the newest by interview date: *WIOF's Founder Shiv on Corporate Purpose…* (`JBAJyPMR7Cmp7HC2D2AN`, currently **Energy**). It's safe to run ahead, because the old app's home page shows the newest conversation of any category, so it keeps showing this one. The only visible change is that it leaves the Energy page. If you skip the step, the new home page falls back to the newest conversation overall, so nothing breaks. Re-running it is a no-op. Done on staging on 2026-10-06.
+
 ---
 
 ## Phase 2: Deploy (launch window)
@@ -163,6 +169,7 @@ This is a live end-to-end Take Action test through the deployed rules and functi
 
 ### Manual browser check (on worldisonefamily.com, in a private window)
 - [ ] Home, all five element pages, blogs, videos, news, calendar, About load as a **guest**.
+- [ ] Home shows the founder Coffee Conversation, and the Energy page shows only the Biogas one. Admin → Coffee Conversations lists the founder interview with a **Home** badge.
 - [ ] Polls show real results; voting works.
 - [ ] Newsletter subscribe works, and a duplicate email is detected.
 - [ ] **Sign in with Google** works (popup, then profile created). Sign out works.

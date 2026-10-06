@@ -37,6 +37,7 @@
           <ion-icon name="funnel-outline"></ion-icon> Category <ion-icon name="chevron-down-outline"></ion-icon>
         </button>
         <div class="filter-dropdown-menu" *ngIf="openDropdown === 'category'">
+          <div class="menu-item" [class.selected]="filterCategory === 'home'" (click)="filterCategory = 'home'; onFilterChange()">🏠 Home</div>
           <div class="menu-item" [class.selected]="filterCategory === 'earth'" (click)="filterCategory = 'earth'; onFilterChange()">🌍 Earth</div>
           <div class="menu-item" [class.selected]="filterCategory === 'water'" (click)="filterCategory = 'water'; onFilterChange()">💧 Water</div>
           <div class="menu-item" [class.selected]="filterCategory === 'air'" (click)="filterCategory = 'air'; onFilterChange()">🌬️ Air</div>

@@ -352,6 +352,8 @@ ion-header {
   &.air, &[data-cat="air"] { background: rgba(77, 173, 178, 0.14); color: var(--wiof-teal-shade-20); }
   &.fire, &[data-cat="fire"], &.energy, &[data-cat="energy"] { background: rgba(255, 194, 111, 0.2); color: var(--wiof-brown-shade-20); }
   &.spirit, &[data-cat="spirit"] { background: rgba(26, 122, 127, 0.14); color: var(--wiof-teal-shade-40); }
+  // Not an element — neutral ink so it reads as "site-wide", not a sixth element.
+  &.home, &[data-cat="home"] { background: rgba(43, 36, 32, 0.08); color: var(--wiof-ink); }
 }
 
 .cell-date {
