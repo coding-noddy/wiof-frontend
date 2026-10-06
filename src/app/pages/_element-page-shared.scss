@@ -178,11 +178,11 @@ ion-content {
     background-repeat: no-repeat;
     background-size: 100%;
 
-    &.icon-air    { background-image: url('/assets/icons/icon_air.svg'); }
-    &.icon-energy { background-image: url('/assets/icons/icon_energy.svg'); }
-    &.icon-water  { background-image: url('/assets/icons/icon_water.svg'); }
-    &.icon-earth  { background-image: url('/assets/icons/icon_earth.svg'); }
-    &.icon-spirit { background-image: url('/assets/icons/icon_spirit.svg'); }
+    &.icon-air    { background-image: url('/assets/icons/icon_air.png'); }
+    &.icon-energy { background-image: url('/assets/icons/icon_energy.png'); }
+    &.icon-water  { background-image: url('/assets/icons/icon_water.png'); }
+    &.icon-earth  { background-image: url('/assets/icons/icon_earth.png'); }
+    &.icon-spirit { background-image: url('/assets/icons/icon_spirit.png'); }
 
     // Same per-element motifs as the home page's hover animations
     // (life-elements.component.scss), but this icon isn't a hover target —

@@ -96,6 +96,9 @@ $page-padding-mobile:  16px;
     max-width: 640px;
     padding: 2.5rem 1.25rem 2rem;
     text-align: left;
+    // Lets the motto below size itself from this column's actual width
+    // (cqi units) on phones — see .hero-highlight.
+    container-type: inline-size;
 
     @media (min-width: 768px) {
       padding: 2.75rem 6vw 2rem;
@@ -241,6 +244,14 @@ $page-padding-mobile:  16px;
       font-size: 0.85rem;
     }
 
+    // Phones: scales with the column, kept at 0.55× .hero-highlight's fluid
+    // size (below) so the verse keeps its proportions as it grows.
+    @supports (font-size: 1cqi) {
+      @media (max-width: 767px) {
+        font-size: clamp(0.72rem, calc((100cqi - 24px) / 21.8), 1.2rem);
+      }
+    }
+
     @media (min-width: 768px) {
       font-size: 1.2rem;
     }
@@ -283,6 +294,19 @@ $page-padding-mobile:  16px;
     // (the longest verse) at 393px.
     @media (min-width: 390px) {
       font-size: 1.55rem;
+    }
+
+    // Phones: fill the line instead of the fixed steps above, which left
+    // the motto at ~70% of the width on most phones. Measured with Aleo
+    // (2026-10-06): the longest verse, "Enlighten through Knowledge", is
+    // 11.9× this size + ~13px of gaps wide, so (width - 24px) / 12 always
+    // fits one line with ≥10px to spare. Capped at the tablet size so it
+    // joins the 768px step smoothly. The fixed steps above stay as the
+    // fallback for browsers without container units.
+    @supports (font-size: 1cqi) {
+      @media (max-width: 767px) {
+        font-size: clamp(1.3rem, calc((100cqi - 24px) / 12), 2.3rem);
+      }
     }
 
     @media (min-width: 768px) {
