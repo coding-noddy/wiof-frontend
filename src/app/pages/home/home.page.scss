@@ -121,7 +121,7 @@ $page-padding-mobile:  16px;
     align-items: center;
     gap: 0.45em;
     margin-bottom: 0.65rem;
-    color: var(--wiof-brown);
+    color: var(--wiof-brown-text);
     letter-spacing: 0.14em;
     text-transform: uppercase;
     // Smaller on mobile — at the tablet/desktop size (restored below) it
@@ -283,7 +283,7 @@ $page-padding-mobile:  16px;
     // of overflowing.
     font-size: 1.3rem;
     line-height: 1.1;
-    color: var(--wiof-teal);
+    color: var(--wiof-teal-text);
     font-style: italic;
     font-weight: 700;
 
@@ -441,7 +441,7 @@ $page-padding-mobile:  16px;
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--wiof-teal);
+    color: var(--wiof-teal-text);
   }
 }
 

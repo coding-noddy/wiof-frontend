@@ -37,7 +37,7 @@ ion-content {
 
 .login-eyebrow {
   margin: 0 0 0.4rem;
-  color: var(--wiof-teal);
+  color: var(--wiof-teal-text);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   font-size: 0.8rem;
@@ -54,7 +54,7 @@ ion-content {
 .login-subtitle {
   margin: 0 0 1.5rem;
   font-size: 0.9rem;
-  color: rgba(43, 36, 32, 0.6);
+  color: var(--wiof-ink-muted);
 }
 
 .login-error {
@@ -115,7 +115,7 @@ ion-content {
   transition: border-color 0.15s ease;
 
   &::placeholder {
-    color: rgba(43, 36, 32, 0.4);
+    color: var(--wiof-ink-muted);
   }
 
   &:focus {

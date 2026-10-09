@@ -22,10 +22,10 @@
       </div>
       <div class="header-actions">
         <button class="btn-secondary" (click)="refreshData()">
-          <ion-icon name="refresh-outline"></ion-icon> Refresh
+          <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon> Refresh
         </button>
         <button class="btn-primary" (click)="addNewOccasion()">
-          <ion-icon name="add-outline"></ion-icon> Add Occasion
+          <ion-icon aria-hidden="true" name="add-outline"></ion-icon> Add Occasion
         </button>
       </div>
     </div>
@@ -60,10 +60,10 @@
             <td>
               <div class="action-buttons">
                 <button class="action-btn view" title="Edit occasion" (click)="viewOccasionDetails(occasion)">
-                  <ion-icon name="create-outline"></ion-icon>
+                  <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
                 </button>
                 <button class="action-btn delete" title="Delete occasion" (click)="deleteOccasion(occasionsList, i, occasion.id, occasion.imageName)">
-                  <ion-icon name="trash-outline"></ion-icon>
+                  <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
                 </button>
               </div>
             </td>

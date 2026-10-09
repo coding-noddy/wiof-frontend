@@ -9,14 +9,14 @@
       <div class="month-header">
         <div class="month-switcher">
           <button class="month-nav" (click)="changeMonth(-1)" aria-label="Previous month">
-            <ion-icon name="caret-back-outline"></ion-icon>
+            <ion-icon aria-hidden="true" name="caret-back-outline"></ion-icon>
           </button>
           <div class="month-title" [@monthSlide]="monthSlideState">
             <h1>{{ displayMonth }}</h1>
             <p>{{ displayDay }}</p>
           </div>
           <button class="month-nav" (click)="changeMonth(1)" aria-label="Next month">
-            <ion-icon name="caret-forward-outline"></ion-icon>
+            <ion-icon aria-hidden="true" name="caret-forward-outline"></ion-icon>
           </button>
         </div>
       </div>
@@ -70,7 +70,7 @@
                 [disabled]="day.selectedOccasionIndex === 0"
                 (click)="prevOccasion(day); $event.stopPropagation()"
               >
-                <ion-icon name="caret-back-outline"></ion-icon>
+                <ion-icon aria-hidden="true" name="caret-back-outline"></ion-icon>
               </button>
 
               <button
@@ -78,7 +78,7 @@
                 [disabled]="day.selectedOccasionIndex === day.occasion.length - 1"
                 (click)="nextOccasion(day); $event.stopPropagation()"
               >
-                <ion-icon name="caret-forward-outline"></ion-icon>
+                <ion-icon aria-hidden="true" name="caret-forward-outline"></ion-icon>
               </button>
             </div>
           </div>

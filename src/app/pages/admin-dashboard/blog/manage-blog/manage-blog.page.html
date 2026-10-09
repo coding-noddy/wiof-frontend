@@ -22,10 +22,10 @@
       </div>
       <div class="header-actions">
         <button class="btn-secondary" (click)="refreshData()">
-          <ion-icon name="refresh-outline"></ion-icon> Refresh
+          <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon> Refresh
         </button>
         <button class="btn-primary" (click)="addNewBlog()">
-          <ion-icon name="add-outline"></ion-icon> New Blog
+          <ion-icon aria-hidden="true" name="add-outline"></ion-icon> New Blog
         </button>
       </div>
     </div>
@@ -33,42 +33,42 @@
     <!-- Summary Cards -->
     <div class="summary-row">
       <div class="summary-card">
-        <div class="summary-icon accent-teal"><ion-icon name="document-text-outline"></ion-icon></div>
+        <div class="summary-icon accent-teal"><ion-icon aria-hidden="true" name="document-text-outline"></ion-icon></div>
         <div class="summary-info">
           <span class="summary-value">{{ summary.total }}</span>
           <span class="summary-label">Total Blogs</span>
         </div>
       </div>
       <div class="summary-card">
-        <div class="summary-icon earth"><ion-icon name="leaf-outline"></ion-icon></div>
+        <div class="summary-icon earth"><ion-icon aria-hidden="true" name="leaf-outline"></ion-icon></div>
         <div class="summary-info">
           <span class="summary-value">{{ summary.earth }}</span>
           <span class="summary-label">🌍 Earth</span>
         </div>
       </div>
       <div class="summary-card">
-        <div class="summary-icon water"><ion-icon name="water-outline"></ion-icon></div>
+        <div class="summary-icon water"><ion-icon aria-hidden="true" name="water-outline"></ion-icon></div>
         <div class="summary-info">
           <span class="summary-value">{{ summary.water }}</span>
           <span class="summary-label">💧 Water</span>
         </div>
       </div>
       <div class="summary-card">
-        <div class="summary-icon energy"><ion-icon name="flash-outline"></ion-icon></div>
+        <div class="summary-icon energy"><ion-icon aria-hidden="true" name="flash-outline"></ion-icon></div>
         <div class="summary-info">
           <span class="summary-value">{{ summary.energy }}</span>
           <span class="summary-label">⚡ Energy</span>
         </div>
       </div>
       <div class="summary-card">
-        <div class="summary-icon air"><ion-icon name="cloud-outline"></ion-icon></div>
+        <div class="summary-icon air"><ion-icon aria-hidden="true" name="cloud-outline"></ion-icon></div>
         <div class="summary-info">
           <span class="summary-value">{{ summary.air }}</span>
           <span class="summary-label">🌬️ Air</span>
         </div>
       </div>
       <div class="summary-card">
-        <div class="summary-icon spirit"><ion-icon name="sparkles-outline"></ion-icon></div>
+        <div class="summary-icon spirit"><ion-icon aria-hidden="true" name="sparkles-outline"></ion-icon></div>
         <div class="summary-info">
           <span class="summary-value">{{ summary.spirit }}</span>
           <span class="summary-label">✨ Spirit</span>
@@ -81,8 +81,8 @@
       <!-- Category dropdown -->
       <div class="filter-dropdown">
         <button class="filter-dropdown-btn" [class.has-selection]="filterCategory" (click)="toggleDropdown('category')">
-          <ion-icon name="funnel-outline"></ion-icon> Category
-          <ion-icon name="chevron-down-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="funnel-outline"></ion-icon> Category
+          <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
         </button>
         <div class="filter-dropdown-menu" *ngIf="openDropdown === 'category'">
           <div class="menu-item" [class.selected]="filterCategory === 'earth'" (click)="filterCategory = 'earth'; onFilterChange()">🌍 Earth</div>
@@ -96,8 +96,8 @@
       <!-- Author dropdown -->
       <div class="filter-dropdown">
         <button class="filter-dropdown-btn" [class.has-selection]="filterAuthor" (click)="toggleDropdown('author')">
-          <ion-icon name="person-outline"></ion-icon> Author
-          <ion-icon name="chevron-down-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="person-outline"></ion-icon> Author
+          <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
         </button>
         <div class="filter-dropdown-menu" *ngIf="openDropdown === 'author'">
           <div class="menu-item" *ngFor="let author of availableAuthors" [class.selected]="filterAuthor === author" (click)="filterAuthor = author; onFilterChange()">{{ author }}</div>
@@ -127,16 +127,16 @@
           <tr>
             <th>#</th>
             <th (click)="sortBy('title')" [class.sorted]="sortColumn === 'title'">
-              <span class="sort-header">Title <ion-icon class="sort-icon" [name]="sortColumn === 'title' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Title <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'title' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th (click)="sortBy('author')" [class.sorted]="sortColumn === 'author'">
-              <span class="sort-header">Author <ion-icon class="sort-icon" [name]="sortColumn === 'author' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Author <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'author' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th (click)="sortBy('category')" [class.sorted]="sortColumn === 'category'">
-              <span class="sort-header">Category <ion-icon class="sort-icon" [name]="sortColumn === 'category' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Category <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'category' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th (click)="sortBy('submitDate')" [class.sorted]="sortColumn === 'submitDate'">
-              <span class="sort-header">Published <ion-icon class="sort-icon" [name]="sortColumn === 'submitDate' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Published <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'submitDate' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th>Actions</th>
           </tr>
@@ -154,10 +154,10 @@
             <td>
               <div class="action-buttons">
                 <button class="action-btn view" title="Edit blog" (click)="viewBlogDetails(blog)">
-                  <ion-icon name="create-outline"></ion-icon>
+                  <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
                 </button>
                 <button class="action-btn delete" title="Delete blog" (click)="deleteBlog(i, blog.id, blog.imageName)">
-                  <ion-icon name="trash-outline"></ion-icon>
+                  <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
                 </button>
               </div>
             </td>
@@ -172,11 +172,11 @@
         </span>
         <div class="pagination-controls">
           <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
-            <ion-icon name="chevron-back"></ion-icon>
+            <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
           </button>
           <button class="page-btn" *ngFor="let p of pageNumbers" [class.active]="p === currentPage" (click)="goToPage(p)">{{ p }}</button>
           <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
-            <ion-icon name="chevron-forward"></ion-icon>
+            <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
           </button>
           <select class="page-size-select" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
             <option [ngValue]="5">5 / page</option>

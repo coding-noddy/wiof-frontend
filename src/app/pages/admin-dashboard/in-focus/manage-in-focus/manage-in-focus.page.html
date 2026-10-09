@@ -22,10 +22,10 @@
       </div>
       <div class="header-actions">
         <button class="btn-secondary" (click)="refreshData()">
-          <ion-icon name="refresh-outline"></ion-icon> Refresh
+          <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon> Refresh
         </button>
         <button class="btn-primary" (click)="addInFocus()">
-          <ion-icon name="add-outline"></ion-icon> Add Spotlight
+          <ion-icon aria-hidden="true" name="add-outline"></ion-icon> Add Spotlight
         </button>
       </div>
     </div>
@@ -34,7 +34,7 @@
     <div class="filter-toolbar">
       <div class="filter-dropdown">
         <button class="filter-dropdown-btn" [class.has-selection]="filterCategory" (click)="toggleDropdown('category')">
-          <ion-icon name="funnel-outline"></ion-icon> Category <ion-icon name="chevron-down-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="funnel-outline"></ion-icon> Category <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
         </button>
         <div class="filter-dropdown-menu" *ngIf="openDropdown === 'category'">
           <div class="menu-item" [class.selected]="filterCategory === 'earth'" (click)="filterCategory = 'earth'; onFilterChange()">🌍 Earth</div>
@@ -46,7 +46,7 @@
       </div>
       <div class="filter-dropdown">
         <button class="filter-dropdown-btn" [class.has-selection]="filterStatus" (click)="toggleDropdown('status')">
-          <ion-icon name="radio-button-on-outline"></ion-icon> Status <ion-icon name="chevron-down-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="radio-button-on-outline"></ion-icon> Status <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
         </button>
         <div class="filter-dropdown-menu" *ngIf="openDropdown === 'status'">
           <div class="menu-item" [class.selected]="filterStatus === 'published'" (click)="filterStatus = 'published'; onFilterChange()">🟢 Published</div>
@@ -75,16 +75,16 @@
           <tr>
             <th>#</th>
             <th (click)="sortBy('title')" [class.sorted]="sortColumn === 'title'">
-              <span class="sort-header">Title <ion-icon class="sort-icon" [name]="sortColumn === 'title' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Title <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'title' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th (click)="sortBy('category')" [class.sorted]="sortColumn === 'category'">
-              <span class="sort-header">Category <ion-icon class="sort-icon" [name]="sortColumn === 'category' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Category <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'category' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th (click)="sortBy('status')" [class.sorted]="sortColumn === 'status'">
-              <span class="sort-header">Status <ion-icon class="sort-icon" [name]="sortColumn === 'status' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Status <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'status' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th (click)="sortBy('submitDate')" [class.sorted]="sortColumn === 'submitDate'">
-              <span class="sort-header">Submitted <ion-icon class="sort-icon" [name]="sortColumn === 'submitDate' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Submitted <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'submitDate' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th>Published</th>
             <th>Actions</th>
@@ -106,18 +106,18 @@
                 <button class="action-btn publish" title="Publish spotlight"
                   *ngIf="inFocus.status === 'submitted' || inFocus.status === 'inactive'"
                   (click)="publishInFocus(inFocus.inFocusId)">
-                  <ion-icon name="rocket-outline"></ion-icon>
+                  <ion-icon aria-hidden="true" name="rocket-outline"></ion-icon>
                 </button>
                 <button class="action-btn unpublish" title="Unpublish spotlight"
                   *ngIf="inFocus.status === 'published'"
                   (click)="unpublishInFocus(inFocus.inFocusId)">
-                  <ion-icon name="pause-circle-outline"></ion-icon>
+                  <ion-icon aria-hidden="true" name="pause-circle-outline"></ion-icon>
                 </button>
                 <button class="action-btn view" title="Edit spotlight" (click)="viewInFocusDetails(inFocus)">
-                  <ion-icon name="create-outline"></ion-icon>
+                  <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
                 </button>
                 <button class="action-btn delete" title="Delete spotlight" (click)="deleteInFocus(i, inFocus.inFocusId)">
-                  <ion-icon name="trash-outline"></ion-icon>
+                  <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
                 </button>
               </div>
             </td>
@@ -128,9 +128,9 @@
       <div class="pagination-bar" *ngIf="allItems.length > 0">
         <span class="pagination-info">Page {{ currentPage }} of {{ totalPages }} · {{ allItems.length }} items</span>
         <div class="pagination-controls">
-          <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"><ion-icon name="chevron-back"></ion-icon></button>
+          <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"><ion-icon aria-hidden="true" name="chevron-back"></ion-icon></button>
           <button class="page-btn" *ngFor="let p of pageNumbers" [class.active]="p === currentPage" (click)="goToPage(p)">{{ p }}</button>
-          <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"><ion-icon name="chevron-forward"></ion-icon></button>
+          <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"><ion-icon aria-hidden="true" name="chevron-forward"></ion-icon></button>
           <select class="page-size-select" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
             <option [ngValue]="5">5 / page</option>
             <option [ngValue]="10">10 / page</option>

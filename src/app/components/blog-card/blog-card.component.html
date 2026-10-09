@@ -6,8 +6,8 @@
       class="blog-image"
     />
     <div class="blog-image-overlay"></div>
-    <button class="blog-share-icon" (click)="shareBlog($event)" title="Share this blog">
-      <ion-icon name="share-social-outline"></ion-icon>
+    <button aria-label="Share this blog" class="blog-share-icon" (click)="shareBlog($event)" title="Share this blog">
+      <ion-icon aria-hidden="true" name="share-social-outline"></ion-icon>
     </button>
     <app-bookmark-icon
       class="blog-bookmark-icon"
@@ -25,11 +25,11 @@
     <p class="blog-excerpt">{{ blog.shortDescription }}</p>
     <div class="blog-meta">
       <span class="blog-author">
-        <ion-icon name="person-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="person-outline"></ion-icon>
         {{ blog.author }}
       </span>
       <span class="blog-read-time">
-        <ion-icon name="time-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="time-outline"></ion-icon>
         {{ blog.timeToRead }} min read
       </span>
     </div>

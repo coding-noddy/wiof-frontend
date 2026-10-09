@@ -72,7 +72,8 @@ $panel-shadow:
 .wiof-food-ph-widget-card-header {
   padding: 0.9rem 1.1rem;
 
-  background-color: $f;
+  // Text-safe brown: light header text on raw Brown was 3.3:1.
+  background-color: var(--wiof-brown-fill);
 
   border-bottom: 2px solid rgba(255, 255, 255, 0.8);
 }
@@ -264,7 +265,7 @@ $panel-shadow:
 
   .cat-select-chevron {
     font-size: .65rem;
-    color: rgba(0,0,0,.4);
+    color: var(--wiof-ink-muted);
     margin-left: 2px;
   }
 
@@ -399,7 +400,7 @@ $panel-shadow:
 
 .option-info small {
   font-size: .72rem;
-  color: rgba(0,0,0,.5);
+  color: var(--wiof-ink-muted);
   line-height: 1.2;
 }
 
@@ -622,7 +623,7 @@ $panel-shadow:
   transform: translateY(-50%);
 
   font-size: 1.1rem;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--wiof-ink-muted);
 
   pointer-events: none;
   z-index: 2;
@@ -661,7 +662,7 @@ $panel-shadow:
 }
 
 .select-food-input::placeholder {
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--wiof-ink-muted);
   font-weight: 400;
 }
 
@@ -711,7 +712,7 @@ $panel-shadow:
 
   background: transparent;
 
-  color: rgba(0, 0, 0, 0.5);
+  color: var(--wiof-ink-muted);
 
   cursor: pointer;
 
@@ -1122,7 +1123,7 @@ input:focus-visible {
 
 .nutrition-loading {
   font-size: .78rem;
-  color: rgba(0,0,0,.4);
+  color: var(--wiof-ink-muted);
 }
 
 .nutrition-grid {
@@ -1148,7 +1149,7 @@ input:focus-visible {
 .nutrient-label {
   font-size: .6rem;
   font-weight: 600;
-  color: rgba(0,0,0,.45);
+  color: var(--wiof-ink-muted);
   text-transform: uppercase;
 }
 
@@ -1418,7 +1419,7 @@ input:focus-visible {
 
 .option-info small {
   font-size: .74rem;
-  color: rgba(0,0,0,.52);
+  color: var(--wiof-ink-muted);
 }
 
 /* ==========================================

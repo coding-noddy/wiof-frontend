@@ -17,7 +17,7 @@
         <p class="header-copy">Everything you've sent us while signed in, and where it stands.</p>
       </div>
       <button class="wiof-primary-btn" *ngIf="!isLoading && feedbackItems.length > 0" (click)="openFeedback($event)">
-        <ion-icon name="add-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="add-outline"></ion-icon>
         Share new feedback
       </button>
     </div>
@@ -33,17 +33,17 @@
 
     <!-- Error -->
     <div *ngIf="errorMessage && !isLoading" class="error-state">
-      <ion-icon name="cloud-offline-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="cloud-offline-outline"></ion-icon>
       <p>{{ errorMessage }}</p>
       <button class="retry-btn" (click)="loadFeedback()">
-        <ion-icon name="refresh-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon>
         Try Again
       </button>
     </div>
 
     <!-- Empty -->
     <div *ngIf="!isLoading && !errorMessage && feedbackItems.length === 0" class="empty-state">
-      <ion-icon name="chatbubbles-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="chatbubbles-outline"></ion-icon>
       <h2>No feedback yet</h2>
       <p>Found an issue or have an idea? Send it to us and you can follow its status here.</p>
       <button class="explore-btn" (click)="openFeedback($event)">Share feedback</button>
@@ -54,7 +54,7 @@
       <article class="feedback-card" *ngFor="let f of feedbackItems">
         <header class="card-top">
           <span class="card-category">
-            <ion-icon [name]="categoryIcon(f.category)"></ion-icon>
+            <ion-icon aria-hidden="true" [name]="categoryIcon(f.category)"></ion-icon>
             {{ categoryLabel(f.category) }}
           </span>
           <span class="status-pill" [ngClass]="f.status">{{ statusLabels[f.status] || f.status }}</span>

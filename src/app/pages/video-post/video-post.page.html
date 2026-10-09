@@ -47,7 +47,7 @@
 
       <!-- Channel -->
       <div class="video-channel" *ngIf="videoChannelName">
-        <ion-icon name="logo-youtube"></ion-icon>
+        <ion-icon aria-hidden="true" name="logo-youtube"></ion-icon>
         <span>{{ videoChannelName }}</span>
       </div>
 
@@ -61,7 +61,7 @@
         >{{ videoDescription }}</p>
         <button class="toggle-desc" (click)="toggleVideoDescription()">
           {{ showFullVideoDescription ? 'Show More' : 'Show Less' }}
-          <ion-icon [name]="showFullVideoDescription ? 'chevron-down-outline' : 'chevron-up-outline'"></ion-icon>
+          <ion-icon aria-hidden="true" [name]="showFullVideoDescription ? 'chevron-down-outline' : 'chevron-up-outline'"></ion-icon>
         </button>
       </div>
 

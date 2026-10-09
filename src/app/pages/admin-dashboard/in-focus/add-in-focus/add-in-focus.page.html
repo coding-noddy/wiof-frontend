@@ -22,14 +22,14 @@
       <div class="form-actions">
         <button class="btn-secondary" routerLink="/admin-dashboard/manage-in-focus">Cancel</button>
         <button class="btn-primary" (click)="onSubmit()">
-          <ion-icon name="checkmark-outline"></ion-icon> Save
+          <ion-icon aria-hidden="true" name="checkmark-outline"></ion-icon> Save
         </button>
       </div>
     </div>
 
     <form [formGroup]="addInFocusForm">
       <div class="form-card">
-        <div class="form-card-title"><ion-icon name="eye-outline"></ion-icon> Spotlight Details</div>
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="eye-outline"></ion-icon> Spotlight Details</div>
         <div class="form-row">
           <ion-item>
             <ion-label position="floating">{{ pageContent.titleLabel }} *</ion-label>
@@ -57,7 +57,7 @@
       </div>
 
       <div class="form-card">
-        <div class="form-card-title"><ion-icon name="link-outline"></ion-icon> Links</div>
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="link-outline"></ion-icon> Links</div>
         <div class="form-row">
           <ion-item>
             <ion-label position="floating">{{ pageContent.videoLinkLabel }}</ion-label>
@@ -72,7 +72,7 @@
 
       <!-- Dates (edit mode) -->
       <div class="form-card" *ngIf="isEditMode">
-        <div class="form-card-title"><ion-icon name="time-outline"></ion-icon> Timeline</div>
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="time-outline"></ion-icon> Timeline</div>
         <div class="form-dates-row">
           <div class="date-display">
             <div class="date-label">Submitted</div>

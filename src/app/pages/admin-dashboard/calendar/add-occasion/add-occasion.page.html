@@ -22,7 +22,7 @@
       <div class="form-actions">
         <button class="btn-secondary" routerLink="/admin-dashboard/manage-calendar">Cancel</button>
         <button class="btn-primary" (click)="onSubmit()">
-          <ion-icon name="checkmark-outline"></ion-icon> Save
+          <ion-icon aria-hidden="true" name="checkmark-outline"></ion-icon> Save
         </button>
       </div>
     </div>
@@ -30,7 +30,7 @@
     <form [formGroup]="addOccasionForm">
       <!-- Details Card -->
       <div class="form-card">
-        <div class="form-card-title"><ion-icon name="calendar-outline"></ion-icon> Occasion Details</div>
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="calendar-outline"></ion-icon> Occasion Details</div>
         <div class="form-row full-width">
           <ion-item>
             <ion-label position="floating">Occasion Name *</ion-label>
@@ -65,7 +65,7 @@
 
       <!-- Image Card -->
       <div class="form-card">
-        <div class="form-card-title"><ion-icon name="image-outline"></ion-icon> Occasion Image</div>
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="image-outline"></ion-icon> Occasion Image</div>
         <div class="form-row full-width">
           <ion-item>
             <ion-label position="stacked">Upload Image</ion-label>

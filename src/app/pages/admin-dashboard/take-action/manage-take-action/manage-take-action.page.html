@@ -22,10 +22,10 @@
       </div>
       <div class="header-actions">
         <button class="btn-secondary" (click)="refreshData()">
-          <ion-icon name="refresh-outline"></ion-icon> Refresh
+          <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon> Refresh
         </button>
         <button class="btn-primary" (click)="addNewAction()">
-          <ion-icon name="add-outline"></ion-icon> New Action
+          <ion-icon aria-hidden="true" name="add-outline"></ion-icon> New Action
         </button>
       </div>
     </div>
@@ -33,28 +33,28 @@
     <!-- Summary Cards -->
     <div class="summary-row">
       <div class="summary-card">
-        <div class="summary-icon accent-teal"><ion-icon name="checkmark-done-outline"></ion-icon></div>
+        <div class="summary-icon accent-teal"><ion-icon aria-hidden="true" name="checkmark-done-outline"></ion-icon></div>
         <div class="summary-info">
           <span class="summary-value">{{ summary.total }}</span>
           <span class="summary-label">Total Actions</span>
         </div>
       </div>
       <div class="summary-card">
-        <div class="summary-icon accent-brown"><ion-icon name="eye-outline"></ion-icon></div>
+        <div class="summary-icon accent-brown"><ion-icon aria-hidden="true" name="eye-outline"></ion-icon></div>
         <div class="summary-info">
           <span class="summary-value">{{ summary.active }}</span>
           <span class="summary-label">Active</span>
         </div>
       </div>
       <div class="summary-card">
-        <div class="summary-icon accent-brown-tint"><ion-icon name="eye-off-outline"></ion-icon></div>
+        <div class="summary-icon accent-brown-tint"><ion-icon aria-hidden="true" name="eye-off-outline"></ion-icon></div>
         <div class="summary-info">
           <span class="summary-value">{{ summary.inactive }}</span>
           <span class="summary-label">Inactive</span>
         </div>
       </div>
       <div class="summary-card">
-        <div class="summary-icon accent-marigold"><ion-icon name="star-outline"></ion-icon></div>
+        <div class="summary-icon accent-marigold"><ion-icon aria-hidden="true" name="star-outline"></ion-icon></div>
         <div class="summary-info">
           <span class="summary-value">{{ summary.featured }}</span>
           <span class="summary-label">Featured</span>
@@ -65,14 +65,14 @@
     <!-- Filter Toolbar -->
     <div class="filter-toolbar">
       <ion-item class="search-item">
-        <ion-icon name="search-outline" slot="start"></ion-icon>
+        <ion-icon aria-hidden="true" name="search-outline" slot="start"></ion-icon>
         <ion-input placeholder="Search by title" [(ngModel)]="searchText" (ionInput)="onFilterChange()"></ion-input>
       </ion-item>
 
       <div class="filter-dropdown">
         <button class="filter-dropdown-btn" [class.has-selection]="filterElement" (click)="toggleDropdown('element')">
-          <ion-icon name="funnel-outline"></ion-icon> Element
-          <ion-icon name="chevron-down-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="funnel-outline"></ion-icon> Element
+          <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
         </button>
         <div class="filter-dropdown-menu" *ngIf="openDropdown === 'element'">
           <div class="menu-item" *ngFor="let element of elements" [class.selected]="filterElement === element" (click)="filterElement = element; onFilterChange()">{{ element | titlecase }}</div>
@@ -81,8 +81,8 @@
 
       <div class="filter-dropdown">
         <button class="filter-dropdown-btn" [class.has-selection]="filterActionType" (click)="toggleDropdown('type')">
-          <ion-icon name="pricetag-outline"></ion-icon> Type
-          <ion-icon name="chevron-down-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="pricetag-outline"></ion-icon> Type
+          <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
         </button>
         <div class="filter-dropdown-menu" *ngIf="openDropdown === 'type'">
           <div class="menu-item" *ngFor="let type of actionTypes" [class.selected]="filterActionType === type" (click)="filterActionType = type; onFilterChange()">{{ type | titlecase }}</div>
@@ -91,8 +91,8 @@
 
       <div class="filter-dropdown">
         <button class="filter-dropdown-btn" [class.has-selection]="filterActive" (click)="toggleDropdown('active')">
-          <ion-icon name="toggle-outline"></ion-icon> Status
-          <ion-icon name="chevron-down-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="toggle-outline"></ion-icon> Status
+          <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
         </button>
         <div class="filter-dropdown-menu" *ngIf="openDropdown === 'active'">
           <div class="menu-item" [class.selected]="filterActive === 'true'" (click)="filterActive = 'true'; onFilterChange()">Active</div>
@@ -102,8 +102,8 @@
 
       <div class="filter-dropdown">
         <button class="filter-dropdown-btn" [class.has-selection]="filterFeatured" (click)="toggleDropdown('featured')">
-          <ion-icon name="star-outline"></ion-icon> Featured
-          <ion-icon name="chevron-down-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="star-outline"></ion-icon> Featured
+          <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
         </button>
         <div class="filter-dropdown-menu" *ngIf="openDropdown === 'featured'">
           <div class="menu-item" [class.selected]="filterFeatured === 'true'" (click)="filterFeatured = 'true'; onFilterChange()">Featured</div>
@@ -144,14 +144,14 @@
           <tr>
             <th>#</th>
             <th (click)="sortBy('title')" [class.sorted]="sortColumn === 'title'">
-              <span class="sort-header">Title <ion-icon class="sort-icon" [name]="sortColumn === 'title' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Title <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'title' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th>Elements</th>
             <th (click)="sortBy('actionType')" [class.sorted]="sortColumn === 'actionType'">
-              <span class="sort-header">Type <ion-icon class="sort-icon" [name]="sortColumn === 'actionType' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Type <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'actionType' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th (click)="sortBy('displayOrder')" [class.sorted]="sortColumn === 'displayOrder'">
-              <span class="sort-header">Order <ion-icon class="sort-icon" [name]="sortColumn === 'displayOrder' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Order <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'displayOrder' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th>Status</th>
             <th>Actions</th>
@@ -176,10 +176,10 @@
             <td>
               <div class="action-buttons">
                 <button class="action-btn view" title="Edit action" (click)="viewActionDetails(action)">
-                  <ion-icon name="create-outline"></ion-icon>
+                  <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
                 </button>
                 <button class="action-btn delete" title="Deactivate action" *ngIf="action.isActive" (click)="deactivateAction(action)">
-                  <ion-icon name="eye-off-outline"></ion-icon>
+                  <ion-icon aria-hidden="true" name="eye-off-outline"></ion-icon>
                 </button>
               </div>
             </td>
@@ -188,7 +188,7 @@
       </table>
 
       <div class="empty-state" *ngIf="!displayedActions.length">
-        <ion-icon name="checkmark-done-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="checkmark-done-outline"></ion-icon>
         <p>No actions match the current filters.</p>
       </div>
 
@@ -199,11 +199,11 @@
         </span>
         <div class="pagination-controls">
           <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
-            <ion-icon name="chevron-back"></ion-icon>
+            <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
           </button>
           <button class="page-btn" *ngFor="let p of pageNumbers" [class.active]="p === currentPage" (click)="goToPage(p)">{{ p }}</button>
           <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
-            <ion-icon name="chevron-forward"></ion-icon>
+            <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
           </button>
           <select class="page-size-select" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
             <option [ngValue]="5">5 / page</option>

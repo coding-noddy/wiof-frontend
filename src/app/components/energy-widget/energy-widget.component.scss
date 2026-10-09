@@ -5,6 +5,9 @@ $e:      $energy-color;           // rgb(255,235,184)
 $e-mid:  darken($e, 12%);
 $e-dark: darken($e, 28%);
 $e-bg:   lighten($e, 3%);
+// $e-dark (#DF8100) is fine for borders/tints but only ~2.6:1 as text on
+// ivory — text uses the shared text-safe Marigold instead.
+$e-text: var(--wiof-marigold-text);
 $radius-card: 18px;
 $radius-item: 14px;
 
@@ -47,7 +50,7 @@ $radius-item: 14px;
 
 .header-icon {
   font-size: 1.4rem;
-  color: $e-dark;
+  color: $e-text;
 }
 
 // Matches video-widget/in-focus-widget's own header title typography — the
@@ -137,7 +140,7 @@ $radius-item: 14px;
 .input-label {
   font-size: 0.72rem;
   font-weight: 700;
-  color: $e-dark;
+  color: $e-text;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -182,13 +185,13 @@ $radius-item: 14px;
   border-right: none;   // no right border — button continues the line
   font-size: 0.8rem;
   font-weight: 700;
-  color: $e-dark;
+  color: $e-text;
   white-space: nowrap;
 }
 
 .input-hint {
   font-size: 0.67rem;
-  color: rgba($dark-color, 0.45);
+  color: var(--wiof-ink-muted);
   margin-top: 2px;
 }
 
@@ -235,7 +238,7 @@ $radius-item: 14px;
   border-radius: 50%;
   border: 1.5px solid rgba($e-dark, 0.3);
   background: rgba(255, 255, 255, 0.6);
-  color: $e-dark;
+  color: $e-text;
   cursor: pointer;
   transition: background 0.15s ease, box-shadow 0.15s ease;
   flex-shrink: 0;
@@ -286,7 +289,7 @@ $radius-item: 14px;
 
   ion-icon {
     font-size: 1.3rem;
-    color: $e-dark;
+    color: $e-text;
   }
 }
 
@@ -300,7 +303,7 @@ $radius-item: 14px;
 .co2-label {
   font-size: 0.72rem;
   font-weight: 600;
-  color: $e-dark;
+  color: $e-text;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -315,7 +318,7 @@ $radius-item: 14px;
 .co2-unit {
   font-size: 0.85rem;
   font-weight: 600;
-  color: $e-dark;
+  color: $e-text;
 }
 
 .co2-level-badge {
@@ -344,7 +347,7 @@ $radius-item: 14px;
 
 .co2-hint {
   font-size: 0.67rem;
-  color: rgba($dark-color, 0.45);
+  color: var(--wiof-ink-muted);
   margin: 0;
 }
 
@@ -352,7 +355,7 @@ $radius-item: 14px;
 .equivalence-label {
   font-size: 0.74rem;
   font-weight: 700;
-  color: $e-dark;
+  color: $e-text;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin: 0 0 0.6rem;
@@ -407,7 +410,7 @@ $radius-item: 14px;
 
 .equiv-name {
   font-size: 0.7rem;
-  color: rgba($dark-color, 0.55);
+  color: var(--wiof-ink-muted);
   font-weight: 500;
 }
 
@@ -419,7 +422,7 @@ $radius-item: 14px;
   gap: 4px;
   margin-top: 0.65rem;
   font-size: 0.68rem;
-  color: rgba($dark-color, 0.5);
+  color: var(--wiof-ink-muted);
 
   ion-icon {
     font-size: 0.78rem;
@@ -427,7 +430,7 @@ $radius-item: 14px;
   }
 
   a {
-    color: $e-dark;
+    color: $e-text;
     text-decoration: none;
     font-weight: 600;
     opacity: 0.8;
@@ -438,7 +441,7 @@ $radius-item: 14px;
 }
 
 .src-sep {
-  color: rgba($dark-color, 0.3);
+  color: var(--wiof-ink-muted);
 }
 
 // ── Did You Know strip ───────────────────────────────────────────
@@ -472,7 +475,7 @@ $radius-item: 14px;
 
 .fact-icon {
   font-size: 1rem;
-  color: $e-dark;
+  color: $e-text;
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -523,7 +526,7 @@ $radius-item: 14px;
   gap: 3px;
   font-size: 0.68rem;
   font-weight: 600;
-  color: $e-dark;
+  color: $e-text;
   text-decoration: none;
   opacity: 0.8;
   transition: opacity 0.15s ease;
@@ -541,7 +544,7 @@ $radius-item: 14px;
   padding: 0;
   font-size: 0.68rem;
   font-weight: 600;
-  color: $e-dark;
+  color: $e-text;
   cursor: pointer;
   opacity: 0.75;
   margin-left: auto;
@@ -581,7 +584,7 @@ $radius-item: 14px;
 .fact-counter {
   font-size: 0.65rem;
   font-weight: 600;
-  color: $e-dark;
+  color: $e-text;
   min-width: 28px;
   text-align: center;
 }

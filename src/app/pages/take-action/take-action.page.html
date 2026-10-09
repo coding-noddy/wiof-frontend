@@ -97,7 +97,7 @@
     </p>
     <ul class="recent-list" *ngIf="recentlyCompleted.length">
       <li *ngFor="let item of recentlyCompleted">
-        <ion-icon name="checkmark-circle"></ion-icon>
+        <ion-icon aria-hidden="true" name="checkmark-circle"></ion-icon>
         <span class="recent-title">{{ getActionTitle(item.actionId) }}</span>
         <span class="recent-date" *ngIf="item.lastCompletedAt?.toDate">{{ item.lastCompletedAt.toDate() | date:'mediumDate' }}</span>
       </li>

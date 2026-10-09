@@ -9,7 +9,7 @@
     [attr.title]="isSaved ? 'Remove from saved' : 'Save this content'"
     [attr.aria-pressed]="isSaved"
     type="button">
-    <ion-icon
+    <ion-icon aria-hidden="true"
       [name]="isSaved ? 'heart' : 'heart-outline'"
       class="bookmark-icon">
     </ion-icon>
@@ -25,14 +25,14 @@
     <button
       class="prompt-google-btn"
       (click)="signInWithGoogle()">
-      <ion-icon name="logo-google"></ion-icon>
+      <ion-icon aria-hidden="true" name="logo-google"></ion-icon>
       Continue with Google
     </button>
     <button
       class="prompt-dismiss-btn"
       (click)="dismissPrompt()"
       aria-label="Dismiss sign-in prompt">
-      <ion-icon name="close-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="close-outline"></ion-icon>
     </button>
   </div>
 </div>

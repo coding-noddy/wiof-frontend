@@ -55,7 +55,7 @@ ion-content {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--wiof-teal);
+  color: var(--wiof-teal-text);
   margin: 0 0 0.4rem;
 }
 
@@ -70,7 +70,7 @@ ion-content {
 
 .team-subtitle {
   font-size: 1rem;
-  color: rgba(43, 36, 32, 0.55);
+  color: var(--wiof-ink-muted);
   margin: 0;
 }
 
@@ -184,7 +184,7 @@ ion-content {
   gap: 4px;
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--wiof-teal);
+  color: var(--wiof-teal-text);
   text-decoration: none;
   margin: 0 auto 0.75rem;
   transition: opacity 0.15s ease;
@@ -231,7 +231,7 @@ ion-content {
   padding: 0;
   border: none;
   background: transparent;
-  color: var(--wiof-teal);
+  color: var(--wiof-teal-text);
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
@@ -302,4 +302,11 @@ ion-content {
 
   &::-webkit-scrollbar { width: 3px; }
   &::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.12); border-radius: 3px; }
+
+  // Focusable (tabindex="0") so keyboard users can scroll long bios.
+  &:focus-visible {
+    outline: 2px solid var(--wiof-teal-text);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 }

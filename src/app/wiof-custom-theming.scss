@@ -351,9 +351,9 @@ p {
 // `.cta`, styled separately, not through this shared class).
 .wiof-primary-btn {
   @include wiof-button();
-  background: $water-color;
+  background: var(--wiof-teal-fill);
   color: $light-color;
-  border: 1px solid $water-color;
+  border: 1px solid var(--wiof-teal-fill);
 }
 
 .wiof-secondary-btn {
@@ -387,7 +387,7 @@ p {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: $water-color;
+  background: var(--wiof-teal-fill);
   color: $light-color;
   margin: 0 auto;
   font-weight: 700;
@@ -426,7 +426,8 @@ p {
 }
 
 .home-key-tag {
-  @include key-tag($home-color-dark);
+  // Light text on $home-color-dark was 2.4:1; the text-safe Marigold gives 5.8.
+  @include key-tag(var(--wiof-marigold-text));
 }
 
 ion-icon {

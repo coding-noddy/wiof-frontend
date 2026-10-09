@@ -101,7 +101,7 @@
             (click)="triggerAvatarFilePicker()"
             aria-label="Change profile photo"
           >
-            <ion-icon slot="start" name="camera-outline"></ion-icon>
+            <ion-icon aria-hidden="true" slot="start" name="camera-outline"></ion-icon>
             Change Photo
           </ion-button>
           <ion-button
@@ -215,7 +215,7 @@
         (click)="onSignOut()"
         class="sign-out-button"
       >
-        <ion-icon slot="start" name="log-out-outline"></ion-icon>
+        <ion-icon aria-hidden="true" slot="start" name="log-out-outline"></ion-icon>
         {{ isSigningOut ? 'Signing out...' : 'Sign Out' }}
       </ion-button>
 
@@ -243,7 +243,7 @@
   <div *ngIf="showResetModal" class="reset-backdrop" (click)="cancelReset()"></div>
   <div *ngIf="showResetModal" class="reset-modal" role="dialog" aria-modal="true" aria-labelledby="reset-modal-title">
     <div class="reset-icon">
-      <ion-icon name="trash-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
     </div>
     <h3 id="reset-modal-title">Reset all engagement data?</h3>
     <p>This permanently removes your saved content, reading history, activity history, poll history, quality reads, and engagement counters. Your account remains active.</p>

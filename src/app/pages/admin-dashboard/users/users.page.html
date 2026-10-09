@@ -24,7 +24,7 @@
 
     <div class="summary-row">
       <div class="summary-card">
-        <div class="summary-icon accent-teal"><ion-icon name="people-outline"></ion-icon></div>
+        <div class="summary-icon accent-teal"><ion-icon aria-hidden="true" name="people-outline"></ion-icon></div>
         <div class="summary-info">
           <span class="summary-value">{{ users.length }}</span>
           <span class="summary-label">Registered Users</span>
@@ -51,14 +51,14 @@
           <tr>
             <th>#</th>
             <th (click)="sortBy('displayName')" [class.sorted]="sortColumn === 'displayName'">
-              <span class="sort-header">Name <ion-icon class="sort-icon" [name]="sortColumn === 'displayName' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Name <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'displayName' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th (click)="sortBy('email')" [class.sorted]="sortColumn === 'email'">
-              <span class="sort-header">Email <ion-icon class="sort-icon" [name]="sortColumn === 'email' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Email <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'email' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th>Interested Elements</th>
             <th (click)="sortBy('joinedDate')" [class.sorted]="sortColumn === 'joinedDate'">
-              <span class="sort-header">Registered <ion-icon class="sort-icon" [name]="sortColumn === 'joinedDate' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Registered <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'joinedDate' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
           </tr>
         </thead>

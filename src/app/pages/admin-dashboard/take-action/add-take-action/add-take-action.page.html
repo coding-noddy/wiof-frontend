@@ -22,7 +22,7 @@
       <div class="form-actions">
         <button class="btn-secondary" routerLink="/admin-dashboard/manage-take-action">Cancel</button>
         <button class="btn-primary" (click)="onSubmit()" [disabled]="!addActionForm.valid || isSaving">
-          <ion-icon name="checkmark-outline"></ion-icon> {{ isEditMode ? 'Update' : 'Create' }}
+          <ion-icon aria-hidden="true" name="checkmark-outline"></ion-icon> {{ isEditMode ? 'Update' : 'Create' }}
         </button>
       </div>
     </div>
@@ -30,7 +30,7 @@
     <form [formGroup]="addActionForm">
       <!-- Basic Info -->
       <div class="form-card">
-        <div class="form-card-title"><ion-icon name="document-text-outline"></ion-icon> Basic Information</div>
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="document-text-outline"></ion-icon> Basic Information</div>
         <div class="form-row full-width">
           <ion-item>
             <ion-label position="floating">Title *</ion-label>
@@ -59,7 +59,7 @@
 
       <!-- Taxonomy -->
       <div class="form-card">
-        <div class="form-card-title"><ion-icon name="pricetags-outline"></ion-icon> Taxonomy</div>
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="pricetags-outline"></ion-icon> Taxonomy</div>
         <div class="form-row full-width">
           <label class="preferred-elements-label">
             <ion-icon name="options-outline" aria-hidden="true"></ion-icon>
@@ -89,7 +89,7 @@
 
       <!-- Behavior -->
       <div class="form-card">
-        <div class="form-card-title"><ion-icon name="settings-outline"></ion-icon> Behavior</div>
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="settings-outline"></ion-icon> Behavior</div>
         <div class="form-row">
           <ion-item>
             <ion-label position="floating">Action Type *</ion-label>
@@ -132,7 +132,7 @@
 
       <!-- Presentation -->
       <div class="form-card">
-        <div class="form-card-title"><ion-icon name="image-outline"></ion-icon> Presentation</div>
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="image-outline"></ion-icon> Presentation</div>
         <div class="form-row">
           <ion-item>
             <ion-label position="floating">Icon Name</ion-label>
@@ -158,7 +158,7 @@
 
       <!-- Safety & Accessibility -->
       <div class="form-card">
-        <div class="form-card-title"><ion-icon name="warning-outline"></ion-icon> Safety &amp; Accessibility</div>
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="warning-outline"></ion-icon> Safety &amp; Accessibility</div>
         <ion-note class="form-card-note">
           Real guardrails shown to users (e.g. "Never unplug medical devices") — not decorative. Leave blank if genuinely none apply.
         </ion-note>
@@ -178,7 +178,7 @@
 
       <!-- Evidence -->
       <div class="form-card">
-        <div class="form-card-title"><ion-icon name="shield-checkmark-outline"></ion-icon> Evidence (optional)</div>
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="shield-checkmark-outline"></ion-icon> Evidence (optional)</div>
         <ion-note class="form-card-note">
           Sourcing for this action's claim — so it's never presented as if WIOF independently verified or officially endorsed it. Leave Evidence Level blank to omit entirely.
         </ion-note>

@@ -22,7 +22,7 @@
       <div class="form-actions">
         <button class="btn-secondary" routerLink="/admin-dashboard/manage-about-us">Cancel</button>
         <button class="btn-primary" (click)="onSubmit()" [disabled]="addProfileForm.invalid">
-          <ion-icon name="checkmark-outline"></ion-icon> Save
+          <ion-icon aria-hidden="true" name="checkmark-outline"></ion-icon> Save
         </button>
       </div>
     </div>
@@ -30,7 +30,7 @@
     <form [formGroup]="addProfileForm">
       <!-- Photo Card -->
       <div class="form-card">
-        <div class="form-card-title"><ion-icon name="camera-outline"></ion-icon> Profile Photo</div>
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="camera-outline"></ion-icon> Profile Photo</div>
         <div style="text-align: center; padding: 16px 0;">
           <ion-img
             [src]="imageToDisplay || 'assets/placeholder.png'"
@@ -39,10 +39,10 @@
           <div style="margin-top: 12px;">
             <input type="file" id="file-upload" (change)="onFileChange($event)" accept="image/*" style="display: none;" #fileInput>
             <button class="btn-secondary" (click)="fileInput.click()">
-              <ion-icon name="cloud-upload-outline"></ion-icon> {{ isImageSelected ? 'Change Photo' : 'Upload Photo' }}
+              <ion-icon aria-hidden="true" name="cloud-upload-outline"></ion-icon> {{ isImageSelected ? 'Change Photo' : 'Upload Photo' }}
             </button>
             <button class="btn-secondary" *ngIf="isImageSelected" (click)="removeImage()" style="color: #ef4444; border-color: #fca5a5;">
-              <ion-icon name="trash-outline"></ion-icon> Remove
+              <ion-icon aria-hidden="true" name="trash-outline"></ion-icon> Remove
             </button>
           </div>
         </div>
@@ -50,7 +50,7 @@
 
       <!-- Details Card -->
       <div class="form-card">
-        <div class="form-card-title"><ion-icon name="person-outline"></ion-icon> Profile Details</div>
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="person-outline"></ion-icon> Profile Details</div>
         <div class="form-row">
           <ion-item>
             <ion-label position="floating">Serial Number *</ion-label>

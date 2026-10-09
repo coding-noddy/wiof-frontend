@@ -9,11 +9,11 @@
   <div class="wiof-food-ph-widget-card-header">
     <div class="food-ph-widget-header">
       <div class="header-left">
-        <ion-icon name="leaf-outline" class="header-icon"></ion-icon>
+        <ion-icon aria-hidden="true" name="leaf-outline" class="header-icon"></ion-icon>
         <span class="title-text">Food pH Widget</span>
       </div>
       <button class="about-toggle" (click)="about = !about" [attr.aria-expanded]="about">
-        <ion-icon [name]="about ? 'information-circle' : 'information-circle-outline'"></ion-icon>
+        <ion-icon aria-hidden="true" [name]="about ? 'information-circle' : 'information-circle-outline'"></ion-icon>
         <span>About</span>
       </button>
     </div>
@@ -51,7 +51,7 @@
             >
               <span class="cat-selected-emoji">{{ getActiveCategoryEmoji() }}</span>
               <span>{{ getActiveCategoryLabel() }}</span>
-              <ion-icon name="chevron-down-outline" class="cat-select-chevron"></ion-icon>
+              <ion-icon aria-hidden="true" name="chevron-down-outline" class="cat-select-chevron"></ion-icon>
             </button>
             <div class="category-dropdown-panel" *ngIf="showCategoryDropdown">
               <button
@@ -66,14 +66,14 @@
             </div>
           </div>
           <button class="random-btn" (click)="pickRandomFood()" aria-label="Pick random food" title="Surprise me!">
-            <ion-icon name="shuffle-outline"></ion-icon>
+            <ion-icon aria-hidden="true" name="shuffle-outline"></ion-icon>
             <span>Random</span>
           </button>
         </div>
 
         <form class="food-form" autocomplete="off" (submit)="$event.preventDefault()">
           <div class="food-search-wrapper">
-            <ion-icon class="search-icon" name="search-outline"></ion-icon>
+            <ion-icon aria-hidden="true" class="search-icon" name="search-outline"></ion-icon>
             <input
               id="foodSearch"
               #foodSearchInput
@@ -86,7 +86,7 @@
               [formControl]="foodInputCtrl"
             />
             <button *ngIf="selectedFood" type="button" class="clear-btn" (click)="clearSelection()">
-              <ion-icon name="close-circle"></ion-icon>
+              <ion-icon aria-hidden="true" name="close-circle"></ion-icon>
             </button>
           </div>
 
@@ -109,7 +109,7 @@
 
         <!-- Health tip (shows when food selected) -->
         <div class="health-tip" *ngIf="selectedFood">
-          <ion-icon name="heart-outline" class="tip-icon"></ion-icon>
+          <ion-icon aria-hidden="true" name="heart-outline" class="tip-icon"></ion-icon>
           <p class="tip-text">{{ healthTip }}</p>
         </div>
 
@@ -131,7 +131,7 @@
                 (click)="showDetails = true"
                 aria-label="Show food details"
               >
-                <ion-icon name="information-circle-outline"></ion-icon>
+                <ion-icon aria-hidden="true" name="information-circle-outline"></ion-icon>
                 <span>Details</span>
               </button>
             </header>
@@ -161,7 +161,7 @@
             <header class="meter-header">
               <span class="ph-meter-text">{{ selectedFood?.name || 'Food Details' }}</span>
               <button class="flip-trigger" (click)="showDetails = false" aria-label="Back to pH meter">
-                <ion-icon name="arrow-back-outline"></ion-icon>
+                <ion-icon aria-hidden="true" name="arrow-back-outline"></ion-icon>
                 <span>pH Meter</span>
               </button>
             </header>
@@ -249,12 +249,12 @@
               </div>
 
               <a class="source-link" *ngIf="selectedFood.sourceUrl" [href]="selectedFood.sourceUrl" target="_blank" rel="noopener noreferrer">
-                <ion-icon name="link-outline"></ion-icon>
+                <ion-icon aria-hidden="true" name="link-outline"></ion-icon>
                 View Official Source
               </a>
 
               <p class="detail-notes" *ngIf="selectedFood.notes">
-                <ion-icon name="document-text-outline"></ion-icon>
+                <ion-icon aria-hidden="true" name="document-text-outline"></ion-icon>
                 {{ selectedFood.notes }}
               </p>
             </div>
@@ -268,27 +268,27 @@
   <!-- ── Fact strip ──────────────────────────────────────────── -->
   <div class="fact-strip" [class.fact-strip--expanded]="factExpanded">
     <div class="fact-content">
-      <ion-icon name="bulb-outline" class="fact-icon"></ion-icon>
+      <ion-icon aria-hidden="true" name="bulb-outline" class="fact-icon"></ion-icon>
       <div class="fact-body">
         <p class="fact-text" [class.expanded]="factExpanded">{{ currentFact.text }}</p>
         <div class="fact-meta-row">
           <a class="fact-source" [href]="currentFact.url" target="_blank" rel="noopener noreferrer">
-            <ion-icon name="link-outline"></ion-icon>{{ currentFact.source }}
+            <ion-icon aria-hidden="true" name="link-outline"></ion-icon>{{ currentFact.source }}
           </a>
           <button class="fact-expand-btn" (click)="factExpanded = !factExpanded">
             {{ factExpanded ? 'Show less' : 'Read more' }}
-            <ion-icon [name]="factExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+            <ion-icon aria-hidden="true" [name]="factExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
           </button>
         </div>
       </div>
     </div>
     <div class="fact-controls">
       <button class="fact-btn" (click)="prevFact()" aria-label="Previous fact">
-        <ion-icon name="chevron-back-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="chevron-back-outline"></ion-icon>
       </button>
       <span class="fact-counter">{{ currentFactIndex + 1 }} / {{ phFacts.length }}</span>
       <button class="fact-btn" (click)="nextFact()" aria-label="Next fact">
-        <ion-icon name="chevron-forward-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="chevron-forward-outline"></ion-icon>
       </button>
     </div>
   </div>

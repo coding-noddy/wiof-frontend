@@ -34,12 +34,16 @@
   // .in-focus-header-title sets its own explicit color (same specificity,
   // declared later in this file), so each state needs its own nested
   // override to actually win over that default.
+  // Contrast (WCAG AA 4.5:1): raw Brown/Teal under light text is ~3.3:1, so
+  // Earth/Water use the text-safe fills and Spirit steps one shade darker to
+  // stay distinct from Water; Air keeps its light teal tint but with ink
+  // text (light text on it was 2.6:1).
   &.wiof-earth {
-    background-color: $earth-color;
+    background-color: var(--wiof-brown-fill);
     .in-focus-header-title { color: $light-color; }
   }
   &.wiof-water {
-    background-color: $water-color;
+    background-color: var(--wiof-teal-fill);
     .in-focus-header-title { color: $light-color; }
   }
   // Was .wiof-fire — leftover from before the Fire->Energy rename; the
@@ -49,10 +53,10 @@
   &.wiof-energy { background-color: $energy-color; color: $dark-color; }
   &.wiof-air {
     background-color: $air-color;
-    .in-focus-header-title { color: $light-color; }
+    .in-focus-header-title { color: $dark-color; }
   }
   &.wiof-spirit {
-    background-color: $spirit-color;
+    background-color: var(--wiof-teal-shade-40);
 
     .in-focus-header-title { color: $light-color; }
   }

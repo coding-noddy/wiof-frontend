@@ -30,7 +30,7 @@
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--wiof-teal);
+    color: var(--wiof-teal-text);
   }
 
   .bn-badge-dot {
@@ -175,7 +175,7 @@
     align-self: flex-start;
     padding: 0.5rem 1rem;
     border-radius: 999px;
-    background: var(--wiof-teal);
+    background: var(--wiof-teal-fill);
     color: var(--wiof-warm-white);
     font-weight: 700;
     font-size: 0.85rem;
@@ -261,7 +261,7 @@
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--wiof-brown);
+    color: var(--wiof-brown-text);
     padding-right: 0.85rem;
     border-right: 1.5px solid var(--wiof-border);
   }
@@ -289,7 +289,7 @@
         margin: 0 0.85rem;
         font-size: 0.5rem;
         vertical-align: middle;
-        color: var(--wiof-brown);
+        color: var(--wiof-brown-text);
       }
 
       &:last-child::after {

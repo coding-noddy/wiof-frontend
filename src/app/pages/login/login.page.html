@@ -10,7 +10,7 @@
       <p class="login-subtitle">Manage content for World Is One Family</p>
 
       <div *ngIf="error" class="login-error">
-        <ion-icon name="alert-circle-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="alert-circle-outline"></ion-icon>
         <p>{{ error }}</p>
       </div>
 
@@ -39,7 +39,7 @@
 
         <button type="submit" class="login-submit-btn">
           Sign In
-          <ion-icon name="arrow-forward-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="arrow-forward-outline"></ion-icon>
         </button>
       </form>
     </div>

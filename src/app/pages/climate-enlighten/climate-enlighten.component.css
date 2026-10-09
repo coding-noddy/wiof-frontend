@@ -83,7 +83,7 @@
   font-size: 0.78rem;
   font-weight: 700;
   background: rgba(33, 153, 159, 0.12);
-  color: var(--wiof-teal-shade-20);
+  color: var(--wiof-teal-shade-40);
 }
 
 .card-body {
@@ -112,7 +112,7 @@
   position: absolute;
   left: 0;
   top: 0;
-  color: var(--wiof-teal);
+  color: var(--wiof-teal-text);
 }
 
 .card-footer {
@@ -127,7 +127,7 @@
   display: block;
   text-align: center;
   color: var(--wiof-warm-white);
-  background: var(--wiof-teal);
+  background: var(--wiof-teal-fill);
   padding: 12px 20px;
   border-radius: 999px;
   text-decoration: none;
@@ -136,7 +136,7 @@
 }
 
 .enquire-btn:hover {
-  background: var(--wiof-teal-shade-20);
+  background: var(--wiof-teal-shade-40);
 }
 
 .enquire-btn:active {

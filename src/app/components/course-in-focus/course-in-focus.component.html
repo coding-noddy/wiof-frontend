@@ -4,7 +4,7 @@
 >
   <ion-card-header class="wiof-slider-header">
     <span class="header-badge">
-      <ion-icon name="school-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="school-outline"></ion-icon>
       Course in Focus
     </span>
   </ion-card-header>
@@ -75,11 +75,11 @@
           </div>
         </swiper-slide>
       </swiper-container>
-      <button class="swiper-nav-btn prev" *ngIf="coursesInFocus.length > 1" (click)="swiperCourse.swiper.slidePrev()">
-        <ion-icon name="chevron-back"></ion-icon>
+      <button aria-label="Previous slide" class="swiper-nav-btn prev" *ngIf="coursesInFocus.length > 1" (click)="swiperCourse.swiper.slidePrev()">
+        <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
       </button>
-      <button class="swiper-nav-btn next" *ngIf="coursesInFocus.length > 1" (click)="swiperCourse.swiper.slideNext()">
-        <ion-icon name="chevron-forward"></ion-icon>
+      <button aria-label="Next slide" class="swiper-nav-btn next" *ngIf="coursesInFocus.length > 1" (click)="swiperCourse.swiper.slideNext()">
+        <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
       </button>
     </div>
 

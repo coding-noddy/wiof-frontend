@@ -16,7 +16,7 @@
 }
 
 .agenda-header {
-  background-color: var(--wiof-brown);
+  background-color: var(--wiof-brown-fill);
   border-bottom: 2px solid var(--wiof-warm-white);
 }
 
@@ -41,7 +41,7 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--wiof-teal);
+  color: var(--wiof-teal-text);
   margin: -0.5rem 0 -0.75rem;
 }
 

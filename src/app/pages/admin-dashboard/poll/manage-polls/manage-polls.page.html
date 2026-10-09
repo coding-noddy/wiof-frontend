@@ -22,10 +22,10 @@
       </div>
       <div class="header-actions">
         <button class="btn-secondary" (click)="refreshData()">
-          <ion-icon name="refresh-outline"></ion-icon> Refresh
+          <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon> Refresh
         </button>
         <button class="btn-primary" (click)="addNewPoll()">
-          <ion-icon name="add-outline"></ion-icon> New Poll
+          <ion-icon aria-hidden="true" name="add-outline"></ion-icon> New Poll
         </button>
       </div>
     </div>
@@ -33,28 +33,28 @@
     <!-- Summary -->
     <div class="summary-row">
       <div class="summary-card">
-        <div class="summary-icon accent-teal"><ion-icon name="bar-chart-outline"></ion-icon></div>
+        <div class="summary-icon accent-teal"><ion-icon aria-hidden="true" name="bar-chart-outline"></ion-icon></div>
         <div class="summary-info">
           <span class="summary-value">{{ summary.total }}</span>
           <span class="summary-label">Total Polls</span>
         </div>
       </div>
       <div class="summary-card">
-        <div class="summary-icon accent-brown"><ion-icon name="checkmark-circle-outline"></ion-icon></div>
+        <div class="summary-icon accent-brown"><ion-icon aria-hidden="true" name="checkmark-circle-outline"></ion-icon></div>
         <div class="summary-info">
           <span class="summary-value">{{ summary.published }}</span>
           <span class="summary-label">Active / Published</span>
         </div>
       </div>
       <div class="summary-card">
-        <div class="summary-icon accent-teal-tint"><ion-icon name="people-outline"></ion-icon></div>
+        <div class="summary-icon accent-teal-tint"><ion-icon aria-hidden="true" name="people-outline"></ion-icon></div>
         <div class="summary-info">
           <span class="summary-value">{{ summary.totalVotes }}</span>
           <span class="summary-label">Total Votes</span>
         </div>
       </div>
       <div class="summary-card">
-        <div class="summary-icon accent-marigold"><ion-icon name="trending-up-outline"></ion-icon></div>
+        <div class="summary-icon accent-marigold"><ion-icon aria-hidden="true" name="trending-up-outline"></ion-icon></div>
         <div class="summary-info">
           <span class="summary-value">{{ summary.total > 0 ? (summary.totalVotes / summary.total | number:'1.0-0') : 0 }}</span>
           <span class="summary-label">Avg Votes / Poll</span>
@@ -66,7 +66,7 @@
     <div class="filter-toolbar">
       <div class="filter-dropdown">
         <button class="filter-dropdown-btn" [class.has-selection]="filterStatus" (click)="toggleDropdown('status')">
-          <ion-icon name="funnel-outline"></ion-icon> Status <ion-icon name="chevron-down-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="funnel-outline"></ion-icon> Status <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
         </button>
         <div class="filter-dropdown-menu" *ngIf="openDropdown === 'status'">
           <div class="menu-item" [class.selected]="filterStatus === 'published'" (click)="filterStatus = 'published'; onFilterChange()">🟢 Published</div>
@@ -90,15 +90,15 @@
           <tr>
             <th>#</th>
             <th (click)="sortBy('question')" [class.sorted]="sortColumn === 'question'">
-              <span class="sort-header">Question <ion-icon class="sort-icon" [name]="sortColumn === 'question' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Question <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'question' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th>Options</th>
             <th>Votes</th>
             <th (click)="sortBy('status')" [class.sorted]="sortColumn === 'status'">
-              <span class="sort-header">Status <ion-icon class="sort-icon" [name]="sortColumn === 'status' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Status <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'status' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th (click)="sortBy('submitDate')" [class.sorted]="sortColumn === 'submitDate'">
-              <span class="sort-header">Created <ion-icon class="sort-icon" [name]="sortColumn === 'submitDate' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Created <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'submitDate' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th>Actions</th>
           </tr>
@@ -121,13 +121,13 @@
                 <button class="action-btn publish" title="Publish this poll"
                   *ngIf="poll.status === 'submitted' || poll.status === 'inactive'"
                   (click)="publishPollQuestion(poll.pollId)">
-                  <ion-icon name="rocket-outline"></ion-icon>
+                  <ion-icon aria-hidden="true" name="rocket-outline"></ion-icon>
                 </button>
                 <button class="action-btn view" title="Edit poll" (click)="viewPollDetails(poll)">
-                  <ion-icon name="create-outline"></ion-icon>
+                  <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
                 </button>
                 <button class="action-btn delete" title="Delete poll" (click)="deletePollQuestion(pollQuestions, i, poll.pollId)">
-                  <ion-icon name="trash-outline"></ion-icon>
+                  <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
                 </button>
               </div>
             </td>

@@ -1,7 +1,7 @@
 <ion-card class="wiof-poll-card" *ngIf="pollQuestion">
   <ion-card-header class="poll-header">
     <span class="poll-badge">
-      <ion-icon name="bar-chart-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="bar-chart-outline"></ion-icon>
       Weekly Poll
     </span>
   </ion-card-header>
@@ -10,7 +10,7 @@
     <!-- Already voted indicator for authenticated users -->
     <div *ngIf="hasVoted" class="poll-voted-indicator">
       <div class="voted-icon">
-        <ion-icon name="checkmark"></ion-icon>
+        <ion-icon aria-hidden="true" name="checkmark"></ion-icon>
       </div>
       <div class="voted-message">You voted for: <strong>{{ votedOption }}</strong></div>
     </div>
@@ -26,7 +26,7 @@
             (click)="questionExpanded = !questionExpanded"
           >
             {{ questionExpanded ? 'Show less' : 'Read full question' }}
-            <ion-icon [name]="questionExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+            <ion-icon aria-hidden="true" [name]="questionExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
           </button>
         </div>
 

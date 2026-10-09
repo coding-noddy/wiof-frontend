@@ -22,7 +22,7 @@
       <div class="form-actions">
         <button class="btn-secondary" routerLink="/admin-dashboard/manage-polls">Cancel</button>
         <button class="btn-primary" (click)="onSubmit()">
-          <ion-icon name="checkmark-outline"></ion-icon> {{ pageContent.savePollLabel }}
+          <ion-icon aria-hidden="true" name="checkmark-outline"></ion-icon> {{ pageContent.savePollLabel }}
         </button>
       </div>
     </div>
@@ -30,7 +30,7 @@
     <form [formGroup]="addPollForm" (submit)="onSubmit()">
       <!-- Question Card -->
       <div class="form-card">
-        <div class="form-card-title"><ion-icon name="help-circle-outline"></ion-icon> Poll Question</div>
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="help-circle-outline"></ion-icon> Poll Question</div>
         <div class="form-row full-width">
           <ion-item>
             <ion-label position="floating">{{ pageContent.pollQuestionLabel }} *</ion-label>
@@ -41,26 +41,26 @@
 
       <!-- Options Card -->
       <div class="form-card">
-        <div class="form-card-title"><ion-icon name="list-outline"></ion-icon> Options</div>
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="list-outline"></ion-icon> Options</div>
         <div formArrayName="options">
           <div class="form-row">
             <ion-item *ngFor="let option of getOptionControls().controls; let i = index">
               <ion-label position="floating">{{ pageContent.optionLabel }} {{ i + 1 }}</ion-label>
               <ion-input [formControlName]="i"></ion-input>
               <span class="input-close-icon" title="Remove this option" (click)="removeOption(i)">
-                <ion-icon name="close"></ion-icon>
+                <ion-icon aria-hidden="true" name="close"></ion-icon>
               </span>
             </ion-item>
           </div>
         </div>
         <button class="btn-secondary" style="margin-top: 12px;" (click)="addOption()">
-          <ion-icon name="add-outline"></ion-icon> {{ pageContent.addOptionBtnLabel }}
+          <ion-icon aria-hidden="true" name="add-outline"></ion-icon> {{ pageContent.addOptionBtnLabel }}
         </button>
       </div>
 
       <!-- Settings Card -->
       <div class="form-card">
-        <div class="form-card-title"><ion-icon name="settings-outline"></ion-icon> Settings</div>
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="settings-outline"></ion-icon> Settings</div>
         <div class="form-row">
           <ion-item>
             <ion-label position="floating">Correct Answer (optional)</ion-label>
@@ -91,7 +91,7 @@
 
       <!-- Poll Results (Edit mode only) -->
       <div class="form-card" *ngIf="isEditMode">
-        <div class="form-card-title"><ion-icon name="bar-chart-outline"></ion-icon> Poll Results</div>
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="bar-chart-outline"></ion-icon> Poll Results</div>
         <div class="form-row">
           <div class="poll-options" *ngFor="let option of pollQuestion.options; let i = index">
             <ion-label>{{ option | titlecase }}</ion-label>

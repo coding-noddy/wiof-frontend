@@ -26,7 +26,8 @@ $radius-item: 14px;
 // Solid Water teal — matching the same flat brand color used for Water
 // everywhere else (video/in-focus headers), not a one-off lighten() tint.
 .water-widget-header {
-  background-color: $w;
+  // Text-safe teal: light header text on raw Teal was 3.3:1.
+  background-color: var(--wiof-teal-fill);
   border-bottom: 2px solid rgba(255, 255, 255, 0.8);
   padding: 0.9rem 1.1rem;
   display: flex;
@@ -197,7 +198,7 @@ $radius-item: 14px;
   top: 50%;
   transform: translateY(-50%);
   font-size: 0.65rem;
-  color: rgba(0, 0, 0, 0.4);
+  color: var(--wiof-ink-muted);
   pointer-events: none;
 }
 
@@ -285,7 +286,7 @@ $radius-item: 14px;
 .city-searching,
 .city-no-results {
   font-size: .75rem;
-  color: rgba(0,0,0,.5);
+  color: var(--wiof-ink-muted);
   padding: .4rem .5rem;
 }
 
@@ -391,7 +392,7 @@ $radius-item: 14px;
   display: flex;
   justify-content: space-between;
   font-size: 0.68rem;
-  color: rgba($dark-color, 0.5);
+  color: var(--wiof-ink-muted);
 }
 
 // ── Body ─────────────────────────────────────────────────────────
@@ -550,7 +551,7 @@ $radius-item: 14px;
   gap: 0.4rem;
   margin-top: 0.5rem;
   font-size: 0.72rem;
-  color: rgba($dark-color, 0.5);
+  color: var(--wiof-ink-muted);
 
   ion-icon {
     font-size: 0.85rem;

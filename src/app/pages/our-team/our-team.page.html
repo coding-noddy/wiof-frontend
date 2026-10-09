@@ -24,8 +24,9 @@
       <div class="team-card" *ngFor="let profile of profiles">
         <div class="flip-card" [class.flipped]="profile.showKnowMore">
 
-          <!-- Front face -->
-          <div class="flip-front">
+          <!-- Front face — inert while flipped, so keyboard/screen-reader
+               users only reach the face that is actually visible -->
+          <div class="flip-front" [attr.inert]="profile.showKnowMore ? '' : null">
             <div class="card-avatar-section">
               <img
                 class="team-avatar"
@@ -42,27 +43,34 @@
                 rel="noopener"
                 class="team-linkedin"
               >
-                <ion-icon name="logo-linkedin"></ion-icon>
+                <ion-icon aria-hidden="true" name="logo-linkedin"></ion-icon>
                 LinkedIn
               </a>
               <p class="team-bio">{{ profile.bio }}</p>
               <button class="read-more-btn" (click)="profile.showKnowMore = true">
                 Read Full Bio
-                <ion-icon name="arrow-forward-outline"></ion-icon>
+                <ion-icon aria-hidden="true" name="arrow-forward-outline"></ion-icon>
               </button>
             </div>
           </div>
 
-          <!-- Back face -->
-          <div class="flip-back">
+          <!-- Back face — inert until flipped (its close button and bio were
+               reachable by Tab while hidden) -->
+          <div class="flip-back" [attr.inert]="profile.showKnowMore ? null : ''">
             <div class="expanded-header">
               <img class="expanded-avatar" [src]="profile.imageLink" [alt]="profile.name" />
               <h3>{{ profile.name }}</h3>
               <button class="close-btn" (click)="profile.showKnowMore = false" aria-label="Back to summary">
-                <ion-icon name="close-outline"></ion-icon>
+                <ion-icon aria-hidden="true" name="close-outline"></ion-icon>
               </button>
             </div>
-            <p class="expanded-bio">{{ profile.bio }}</p>
+            <!-- Scrolls on long bios: focusable so keyboard users can scroll it -->
+            <p
+              class="expanded-bio"
+              tabindex="0"
+              role="region"
+              [attr.aria-label]="profile.name + ' full bio'"
+            >{{ profile.bio }}</p>
           </div>
 
         </div>

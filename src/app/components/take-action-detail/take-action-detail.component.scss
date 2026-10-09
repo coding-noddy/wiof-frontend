@@ -111,9 +111,9 @@
   font-weight: 600;
   text-transform: capitalize;
 
-  &.earth { background: rgba(166, 135, 93, 0.14); color: var(--wiof-brown-shade-20); }
-  &.water, &.air, &.spirit { background: rgba(33, 153, 159, 0.12); color: var(--wiof-teal-shade-20); }
-  &.energy { background: rgba(255, 194, 111, 0.2); color: var(--wiof-marigold-shade-20); }
+  &.earth { background: rgba(166, 135, 93, 0.14); color: var(--wiof-brown-shade-40); }
+  &.water, &.air, &.spirit { background: rgba(33, 153, 159, 0.12); color: var(--wiof-teal-shade-40); }
+  &.energy { background: rgba(255, 194, 111, 0.2); color: var(--wiof-marigold-text); }
 
   &.meta-chip {
     background: var(--wiof-ivory, #faf5ec);
@@ -185,7 +185,7 @@
 
   &.accessibility {
     background: rgba(33, 153, 159, 0.08);
-    ion-icon { color: var(--wiof-teal); }
+    ion-icon { color: var(--wiof-teal-text); }
   }
 }
 
@@ -197,7 +197,7 @@
   opacity: 0.85;
 
   a {
-    color: var(--wiof-teal);
+    color: var(--wiof-teal-text);
     margin-left: 0.4rem;
   }
 }

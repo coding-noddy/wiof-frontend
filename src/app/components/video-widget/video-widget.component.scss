@@ -41,12 +41,12 @@
   // specificity, declared later in this file), so each state needs its own
   // nested override to actually win over that default.
   &.wiof-earth {
-    background-color: $earth-color;
+    background-color: var(--wiof-brown-fill);
     color: $light-color;
     .video-widget-title { color: $light-color; }
   }
   &.wiof-water {
-    background-color: $water-color;
+    background-color: var(--wiof-teal-fill);
     color: $light-color;
     .video-widget-title { color: $light-color; }
   }
@@ -59,11 +59,11 @@
   &.wiof-energy { background-color: $energy-color; color: $dark-color; }
   &.wiof-air {
     background-color: $air-color;
-    color: $light-color;
-    .video-widget-title { color: $light-color; }
+    color: $dark-color;
+    .video-widget-title { color: $dark-color; }
   }
   &.wiof-spirit {
-    background-color: $spirit-color;
+    background-color: var(--wiof-teal-shade-40);
     color: $light-color;
 
     .video-widget-title { color: $light-color; }

@@ -20,7 +20,7 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--wiof-teal);
+  color: var(--wiof-teal-text);
 
   ion-icon {
     font-size: 1.05rem;
@@ -73,7 +73,7 @@
   transition: color 0.2s ease;
 
   &:hover {
-    color: $home-color-dark;
+    color: var(--wiof-marigold-text);
   }
 }
 
@@ -115,7 +115,7 @@
 
 .meta-label {
   font-weight: 700;
-  color: $home-color-dark;
+  color: var(--wiof-marigold-text);
   white-space: nowrap;
 }
 
@@ -146,7 +146,7 @@
   padding: 0.22rem 0.65rem;
   border-radius: 999px;
   background: rgba($home-color, 0.12);
-  color: $home-color-dark;
+  color: var(--wiof-marigold-text);
   font-size: 0.82rem;
   font-weight: 600;
 }

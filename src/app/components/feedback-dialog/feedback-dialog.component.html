@@ -5,7 +5,7 @@
       <p class="feedback-subtitle">Spotted an issue or have an idea? Tell us, we read every message.</p>
     </div>
     <button class="modal-close-btn" (click)="close()" aria-label="Close">
-      <ion-icon name="close"></ion-icon>
+      <ion-icon aria-hidden="true" name="close"></ion-icon>
     </button>
   </div>
 
@@ -22,7 +22,7 @@
           [class.selected]="feedbackForm.value.category === c.value"
           (click)="selectCategory(c.value)"
         >
-          <ion-icon [name]="c.icon"></ion-icon>
+          <ion-icon aria-hidden="true" [name]="c.icon"></ion-icon>
           <span>{{ c.label }}</span>
         </button>
       </div>
@@ -73,7 +73,7 @@
       </p>
       <button type="button" class="wiof-secondary-btn" (click)="close()">Cancel</button>
       <button type="submit" class="wiof-primary-btn" [disabled]="submitting">
-        <ion-icon name="send-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="send-outline"></ion-icon>
         {{ submitting ? 'Sending…' : 'Send feedback' }}
       </button>
     </div>

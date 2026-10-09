@@ -24,7 +24,7 @@
               <div class="news-content" [innerHTML]="news.content"></div>
               <a *ngIf="news.newsSource" [href]="news.newsSource" target="_blank" rel="noopener" class="news-cta">
                 Read Full Story
-                <ion-icon name="arrow-forward"></ion-icon>
+                <ion-icon aria-hidden="true" name="arrow-forward"></ion-icon>
               </a>
             </div>
           </div>
@@ -32,10 +32,10 @@
       </swiper-container>
 
       <button class="bn-nav-btn prev" *ngIf="newsList.length > 1" (click)="swiperNews.swiper.slidePrev()" aria-label="Previous story">
-        <ion-icon name="chevron-back"></ion-icon>
+        <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
       </button>
       <button class="bn-nav-btn next" *ngIf="newsList.length > 1" (click)="swiperNews.swiper.slideNext()" aria-label="Next story">
-        <ion-icon name="chevron-forward"></ion-icon>
+        <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
       </button>
     </div>
 

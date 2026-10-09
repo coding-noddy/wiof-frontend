@@ -22,10 +22,10 @@
       </div>
       <div class="header-actions">
         <button class="btn-secondary" (click)="refreshData()">
-          <ion-icon name="refresh-outline"></ion-icon> Refresh
+          <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon> Refresh
         </button>
         <button class="btn-primary" (click)="addCoffeeConversation()">
-          <ion-icon name="add-outline"></ion-icon> Add Conversation
+          <ion-icon aria-hidden="true" name="add-outline"></ion-icon> Add Conversation
         </button>
       </div>
     </div>
@@ -34,7 +34,7 @@
     <div class="filter-toolbar">
       <div class="filter-dropdown">
         <button class="filter-dropdown-btn" [class.has-selection]="filterCategory" (click)="toggleDropdown('category')">
-          <ion-icon name="funnel-outline"></ion-icon> Category <ion-icon name="chevron-down-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="funnel-outline"></ion-icon> Category <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
         </button>
         <div class="filter-dropdown-menu" *ngIf="openDropdown === 'category'">
           <div class="menu-item" [class.selected]="filterCategory === 'home'" (click)="filterCategory = 'home'; onFilterChange()">🏠 Home</div>
@@ -47,7 +47,7 @@
       </div>
       <div class="filter-dropdown" *ngIf="availableYears.length > 0">
         <button class="filter-dropdown-btn" [class.has-selection]="filterYear" (click)="toggleDropdown('year')">
-          <ion-icon name="calendar-outline"></ion-icon> Year <ion-icon name="chevron-down-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="calendar-outline"></ion-icon> Year <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
         </button>
         <div class="filter-dropdown-menu" *ngIf="openDropdown === 'year'">
           <div class="menu-item" *ngFor="let year of availableYears" [class.selected]="filterYear === year" (click)="filterYear = year; onFilterChange()">{{ year }}</div>
@@ -76,16 +76,16 @@
           <tr>
             <th>#</th>
             <th (click)="sortBy('topic')" [class.sorted]="sortColumn === 'topic'">
-              <span class="sort-header">Topic <ion-icon class="sort-icon" [name]="sortColumn === 'topic' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Topic <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'topic' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th (click)="sortBy('intervieweeName')" [class.sorted]="sortColumn === 'intervieweeName'">
-              <span class="sort-header">Interviewee <ion-icon class="sort-icon" [name]="sortColumn === 'intervieweeName' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Interviewee <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'intervieweeName' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th (click)="sortBy('category')" [class.sorted]="sortColumn === 'category'">
-              <span class="sort-header">Category <ion-icon class="sort-icon" [name]="sortColumn === 'category' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Category <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'category' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th (click)="sortBy('interviewDate')" [class.sorted]="sortColumn === 'interviewDate'">
-              <span class="sort-header">Date <ion-icon class="sort-icon" [name]="sortColumn === 'interviewDate' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Date <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'interviewDate' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th>Actions</th>
           </tr>
@@ -103,10 +103,10 @@
             <td>
               <div class="action-buttons">
                 <button class="action-btn view" title="Edit conversation" (click)="viewCoffeeConversationDetails(cc)">
-                  <ion-icon name="create-outline"></ion-icon>
+                  <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
                 </button>
                 <button class="action-btn delete" title="Delete conversation" (click)="deleteCoffeeConversation(i, cc)">
-                  <ion-icon name="trash-outline"></ion-icon>
+                  <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
                 </button>
               </div>
             </td>
@@ -117,9 +117,9 @@
       <div class="pagination-bar" *ngIf="allItems.length > 0">
         <span class="pagination-info">Page {{ currentPage }} of {{ totalPages }} · {{ allItems.length }} items</span>
         <div class="pagination-controls">
-          <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"><ion-icon name="chevron-back"></ion-icon></button>
+          <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"><ion-icon aria-hidden="true" name="chevron-back"></ion-icon></button>
           <button class="page-btn" *ngFor="let p of pageNumbers" [class.active]="p === currentPage" (click)="goToPage(p)">{{ p }}</button>
-          <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"><ion-icon name="chevron-forward"></ion-icon></button>
+          <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"><ion-icon aria-hidden="true" name="chevron-forward"></ion-icon></button>
           <select class="page-size-select" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
             <option [ngValue]="5">5 / page</option>
             <option [ngValue]="10">10 / page</option>

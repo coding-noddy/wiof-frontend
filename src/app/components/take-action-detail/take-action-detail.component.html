@@ -2,11 +2,11 @@
   <ion-card-header class="detail-header" [ngClass]="action.elementIds?.[0]">
     <div class="header-row">
       <div class="header-icon" [ngClass]="action.elementIds?.[0]">
-        <ion-icon [name]="action.iconName || 'checkmark-circle-outline'"></ion-icon>
+        <ion-icon aria-hidden="true" [name]="action.iconName || 'checkmark-circle-outline'"></ion-icon>
       </div>
       <p class="detail-title">{{ action.title }}</p>
       <button class="detail-close-btn" (click)="close()" aria-label="Close">
-        <ion-icon name="close"></ion-icon>
+        <ion-icon aria-hidden="true" name="close"></ion-icon>
       </button>
     </div>
   </ion-card-header>
@@ -15,7 +15,7 @@
     <div class="detail-chips" *ngIf="action.elementIds?.length">
       <span class="chip" *ngFor="let element of action.elementIds" [ngClass]="element">{{ element }}</span>
       <span class="chip meta-chip" *ngIf="action.estimatedDurationMinutes">
-        <ion-icon name="time-outline"></ion-icon> {{ action.estimatedDurationMinutes }} min
+        <ion-icon aria-hidden="true" name="time-outline"></ion-icon> {{ action.estimatedDurationMinutes }} min
       </span>
       <span class="chip meta-chip" *ngIf="action.difficulty">{{ action.difficulty | enumLabel }}</span>
     </div>
@@ -30,14 +30,14 @@
     </div>
 
     <div class="detail-notes safety" *ngIf="action.safetyNotes?.length">
-      <ion-icon name="warning-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="warning-outline"></ion-icon>
       <ul>
         <li *ngFor="let note of action.safetyNotes">{{ note }}</li>
       </ul>
     </div>
 
     <div class="detail-notes accessibility" *ngIf="action.accessibilityNotes?.length">
-      <ion-icon name="accessibility-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="accessibility-outline"></ion-icon>
       <ul>
         <li *ngFor="let note of action.accessibilityNotes">{{ note }}</li>
       </ul>

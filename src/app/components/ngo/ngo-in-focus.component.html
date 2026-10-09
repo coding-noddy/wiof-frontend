@@ -1,7 +1,7 @@
 <ion-card class="wiof-ngo-in-focus-container" *ngIf="ngosInFocus?.length > 0">
   <ion-card-header class="wiof-slider-header">
     <span class="header-badge">
-      <ion-icon name="briefcase-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="briefcase-outline"></ion-icon>
       Firm in Focus
     </span>
   </ion-card-header>
@@ -40,7 +40,7 @@
             </div>
             <!-- Expand hint overlay on image -->
             <div class="media-expand-hint" *ngIf="ngoInFocus.mediaType == 'image'">
-              <ion-icon name="expand-outline"></ion-icon>
+              <ion-icon aria-hidden="true" name="expand-outline"></ion-icon>
             </div>
           </div>
 
@@ -80,11 +80,11 @@
         </div>
       </swiper-slide>
     </swiper-container>
-    <button class="swiper-nav-btn prev" *ngIf="ngosInFocus.length > 1" (click)="swiperNgo.swiper.slidePrev()">
-      <ion-icon name="chevron-back"></ion-icon>
+    <button aria-label="Previous slide" class="swiper-nav-btn prev" *ngIf="ngosInFocus.length > 1" (click)="swiperNgo.swiper.slidePrev()">
+      <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
     </button>
-    <button class="swiper-nav-btn next" *ngIf="ngosInFocus.length > 1" (click)="swiperNgo.swiper.slideNext()">
-      <ion-icon name="chevron-forward"></ion-icon>
+    <button aria-label="Next slide" class="swiper-nav-btn next" *ngIf="ngosInFocus.length > 1" (click)="swiperNgo.swiper.slideNext()">
+      <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
     </button>
   </ion-card-content>
 </ion-card>
