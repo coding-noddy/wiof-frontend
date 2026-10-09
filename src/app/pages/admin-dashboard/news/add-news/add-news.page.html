@@ -22,7 +22,7 @@
       <div class="form-actions">
         <button class="btn-secondary" routerLink="/admin-dashboard/manage-news">Cancel</button>
         <button class="btn-primary" (click)="onSubmit()">
-          <ion-icon name="checkmark-outline"></ion-icon> Save
+          <ion-icon aria-hidden="true" name="checkmark-outline"></ion-icon> Save
         </button>
       </div>
     </div>
@@ -30,7 +30,7 @@
     <form [formGroup]="addNewsForm">
       <!-- Basic Info -->
       <div class="form-card">
-        <div class="form-card-title"><ion-icon name="newspaper-outline"></ion-icon> News Details</div>
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="newspaper-outline"></ion-icon> News Details</div>
         <div class="form-row full-width">
           <ion-item>
             <ion-label position="floating">{{ pageContent.headlineLabel }} *</ion-label>
@@ -61,7 +61,7 @@
 
       <!-- Media Card -->
       <div class="form-card">
-        <div class="form-card-title"><ion-icon name="videocam-outline"></ion-icon> Media</div>
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="videocam-outline"></ion-icon> Media</div>
         <div class="form-row">
           <ion-item>
             <ion-label position="floating">{{ pageContent.mediaTypeLabel }} *</ion-label>
@@ -90,7 +90,7 @@
 
       <!-- Content Card -->
       <div class="form-card">
-        <div class="form-card-title"><ion-icon name="create-outline"></ion-icon> Content</div>
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="create-outline"></ion-icon> Content</div>
         <quill-editor formControlName="content"></quill-editor>
       </div>
     </form>

@@ -22,7 +22,7 @@
       </div>
       <div class="header-actions">
         <button class="btn-primary" (click)="generateExcel()">
-          <ion-icon name="download-outline"></ion-icon> Export Excel
+          <ion-icon aria-hidden="true" name="download-outline"></ion-icon> Export Excel
         </button>
       </div>
     </div>
@@ -30,7 +30,7 @@
     <!-- Summary -->
     <div class="summary-row">
       <div class="summary-card">
-        <div class="summary-icon accent-teal"><ion-icon name="mail-outline"></ion-icon></div>
+        <div class="summary-icon accent-teal"><ion-icon aria-hidden="true" name="mail-outline"></ion-icon></div>
         <div class="summary-info">
           <span class="summary-value">{{ summary.total }}</span>
           <span class="summary-label">Total Subscribers</span>
@@ -45,16 +45,16 @@
           <tr>
             <th>#</th>
             <th (click)="sortBy('firstName')" [class.sorted]="sortColumn === 'firstName'">
-              <span class="sort-header">First Name <ion-icon class="sort-icon" [name]="sortColumn === 'firstName' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">First Name <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'firstName' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th (click)="sortBy('lastName')" [class.sorted]="sortColumn === 'lastName'">
-              <span class="sort-header">Last Name <ion-icon class="sort-icon" [name]="sortColumn === 'lastName' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Last Name <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'lastName' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th (click)="sortBy('email')" [class.sorted]="sortColumn === 'email'">
-              <span class="sort-header">Email <ion-icon class="sort-icon" [name]="sortColumn === 'email' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Email <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'email' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th (click)="sortBy('datetime')" [class.sorted]="sortColumn === 'datetime'">
-              <span class="sort-header">Subscribed <ion-icon class="sort-icon" [name]="sortColumn === 'datetime' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Subscribed <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'datetime' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
           </tr>
         </thead>

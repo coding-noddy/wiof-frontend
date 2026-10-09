@@ -15,8 +15,8 @@
   gap: 1.5rem;
   flex-wrap: wrap;
 
-  &.earth { background: var(--wiof-brown); }
-  &.air, &.water, &.spirit { background: var(--wiof-teal); }
+  &.earth { background: var(--wiof-brown-fill); }
+  &.air, &.water, &.spirit { background: var(--wiof-teal-fill); }
   // .energy keeps the default Marigold above.
 
   // Teal/Brown are dark enough that ink (near-black) text fails contrast —

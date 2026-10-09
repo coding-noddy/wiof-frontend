@@ -66,7 +66,8 @@
 // plain $dark-color text, not a heavily darkened per-element text tint — that
 // read as muddy/too-dark next to the switcher pills right above this bar. Air,
 // Water and Spirit all share the same plain teal ($water-color) there too,
-// rather than three separate tint/shade variants.
+// rather than three separate tint/shade variants. The teal ones use the
+// text-safe fill with light text: ink on raw Teal is 4.44:1, just under AA.
 .theme-earth .nav-item.active {
   background: $earth-color;
   color: $dark-color;
@@ -74,8 +75,8 @@
 .theme-earth .nav-item:hover { background: rgba($earth-color, 0.15); color: darken($earth-color, 30%); }
 
 .theme-water .nav-item.active {
-  background: $water-color;
-  color: $dark-color;
+  background: var(--wiof-teal-fill);
+  color: $light-color;
 }
 .theme-water .nav-item:hover { background: rgba($water-color, 0.15); color: darken($water-color, 30%); }
 
@@ -86,14 +87,14 @@
 .theme-energy .nav-item:hover { background: rgba($energy-color, 0.15); color: darken($energy-color, 30%); }
 
 .theme-air .nav-item.active {
-  background: $water-color;
-  color: $dark-color;
+  background: var(--wiof-teal-fill);
+  color: $light-color;
 }
 .theme-air .nav-item:hover { background: rgba($water-color, 0.15); color: darken($water-color, 30%); }
 
 .theme-spirit .nav-item.active {
-  background: $water-color;
-  color: $dark-color;
+  background: var(--wiof-teal-fill);
+  color: $light-color;
 }
 .theme-spirit .nav-item:hover { background: rgba($water-color, 0.15); color: darken($water-color, 30%); }
 

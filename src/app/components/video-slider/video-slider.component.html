@@ -13,11 +13,11 @@
       </swiper-slide>
     </swiper-container>
 
-    <button class="swiper-nav-btn prev" (click)="swiperRef.swiper.slidePrev()" *ngIf="showNavigator()">
-      <ion-icon name="chevron-back"></ion-icon>
+    <button aria-label="Previous slide" class="swiper-nav-btn prev" (click)="swiperRef.swiper.slidePrev()" *ngIf="showNavigator()">
+      <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
     </button>
-    <button class="swiper-nav-btn next" (click)="swiperRef.swiper.slideNext()" *ngIf="showNavigator()">
-      <ion-icon name="chevron-forward"></ion-icon>
+    <button aria-label="Next slide" class="swiper-nav-btn next" (click)="swiperRef.swiper.slideNext()" *ngIf="showNavigator()">
+      <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
     </button>
   </div>
 
@@ -30,7 +30,7 @@
       attr.aria-label="Explore more {{ element }} videos"
     >
       Explore More {{ element | titlecase }} Videos
-      <ion-icon name="arrow-forward-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="arrow-forward-outline"></ion-icon>
     </a>
   </div>
 

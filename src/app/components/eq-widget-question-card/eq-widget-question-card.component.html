@@ -44,11 +44,11 @@
 <!-- Submit / Back buttons -->
 <div class="eq-actions" *ngIf="!showResult">
   <button class="wiof-primary-btn" (click)="onSubmit()">
-    <ion-icon name="checkmark-outline"></ion-icon>
+    <ion-icon aria-hidden="true" name="checkmark-outline"></ion-icon>
     Submit Assessment
   </button>
   <button class="wiof-secondary-btn" (click)="onBack()">
-    <ion-icon name="arrow-back-outline"></ion-icon>
+    <ion-icon aria-hidden="true" name="arrow-back-outline"></ion-icon>
     Back
   </button>
 </div>
@@ -83,7 +83,7 @@
 
   <!-- Citation -->
   <div class="eq-citation">
-    <ion-icon name="information-circle-outline"></ion-icon>
+    <ion-icon aria-hidden="true" name="information-circle-outline"></ion-icon>
     <span>Based on TMMS-24 scale (Fernández-Berrocal et al., 2004) — validated in 20+ countries.</span>
     <a href="https://pubmed.ncbi.nlm.nih.gov/15519370/" target="_blank" rel="noopener noreferrer">
       View source
@@ -93,11 +93,11 @@
   <!-- Actions -->
   <div class="eq-actions">
     <button class="wiof-primary-btn" (click)="retakeTest()">
-      <ion-icon name="refresh-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon>
       Take Again
     </button>
     <button class="wiof-secondary-btn" (click)="onBack()">
-      <ion-icon name="arrow-back-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="arrow-back-outline"></ion-icon>
       Back to Info
     </button>
   </div>

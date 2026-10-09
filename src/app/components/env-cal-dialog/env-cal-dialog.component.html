@@ -17,7 +17,7 @@
               </span>
               <p class="occasion-name">{{ occasn.name }}</p>
               <button class="occasion-close-btn" (click)="closeDialog()" aria-label="Close">
-                <ion-icon name="close"></ion-icon>
+                <ion-icon aria-hidden="true" name="close"></ion-icon>
               </button>
             </div>
           </ion-card-header>
@@ -71,11 +71,11 @@
         </ion-card>
       </swiper-slide>
     </swiper-container>
-    <button class="swiper-nav-btn prev" *ngIf="showNavigation" (click)="swiperCal.swiper.slidePrev()">
-      <ion-icon name="chevron-back"></ion-icon>
+    <button aria-label="Previous slide" class="swiper-nav-btn prev" *ngIf="showNavigation" (click)="swiperCal.swiper.slidePrev()">
+      <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
     </button>
-    <button class="swiper-nav-btn next" *ngIf="showNavigation" (click)="swiperCal.swiper.slideNext()">
-      <ion-icon name="chevron-forward"></ion-icon>
+    <button aria-label="Next slide" class="swiper-nav-btn next" *ngIf="showNavigation" (click)="swiperCal.swiper.slideNext()">
+      <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
     </button>
   </div>
 

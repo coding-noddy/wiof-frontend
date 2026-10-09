@@ -81,12 +81,12 @@
   font-weight: 600;
   text-transform: capitalize;
 
-  &.earth { background: rgba(166, 135, 93, 0.14); color: var(--wiof-brown-shade-20); }
-  &.water, &.air, &.spirit { background: rgba(33, 153, 159, 0.12); color: var(--wiof-teal-shade-20); }
+  &.earth { background: rgba(166, 135, 93, 0.14); color: var(--wiof-brown-shade-40); }
+  &.water, &.air, &.spirit { background: rgba(33, 153, 159, 0.12); color: var(--wiof-teal-shade-40); }
   // A marigold-toned shade (not brown-shade-20) for the text, so Energy
   // reads as visibly distinct from Earth instead of two near-identical
   // muted tan chips sitting side by side.
-  &.energy { background: rgba(255, 194, 111, 0.2); color: var(--wiof-marigold-shade-20); }
+  &.energy { background: rgba(255, 194, 111, 0.2); color: var(--wiof-marigold-text); }
 }
 
 .details-toggle {
@@ -101,7 +101,7 @@
   padding-bottom: 0;
   border: none;
   background: none;
-  color: var(--wiof-teal);
+  color: var(--wiof-teal-text);
   font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
@@ -161,7 +161,7 @@
   padding: 0.6rem 1rem;
   border-radius: 999px;
   border: none;
-  background: var(--wiof-teal);
+  background: var(--wiof-teal-fill);
   color: var(--wiof-warm-white);
   font-size: 0.85rem;
   font-weight: 600;
@@ -215,7 +215,7 @@
     border-radius: 999px;
     border: none;
     background: linear-gradient(135deg, $home-color 0%, $home-color-dark 100%);
-    color: #fff;
+    color: var(--wiof-ink); // white on Marigold was ~1.6:1
     font-size: 0.8rem;
     font-weight: 500;
     cursor: pointer;

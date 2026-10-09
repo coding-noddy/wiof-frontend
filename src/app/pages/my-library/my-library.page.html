@@ -40,17 +40,17 @@
 
     <!-- Error State -->
     <div *ngIf="errorMessage && !isLoading" class="error-state">
-      <ion-icon name="cloud-offline-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="cloud-offline-outline"></ion-icon>
       <p>{{ errorMessage }}</p>
       <button class="retry-btn" (click)="retry()">
-        <ion-icon name="refresh-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon>
         Try Again
       </button>
     </div>
 
     <!-- Empty State -->
     <div *ngIf="!isLoading && !errorMessage && savedItems.length === 0" class="empty-state">
-      <ion-icon name="bookmark-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="bookmark-outline"></ion-icon>
       <h2>Your library is empty</h2>
       <p>Content you bookmark will appear here. Start exploring and save what inspires you!</p>
       <a routerLink="/home" class="explore-btn">Explore Content</a>
@@ -84,8 +84,8 @@
                   <h3 class="card-title">{{ item.contentTitle }}</h3>
                 </div>
               </a>
-              <button class="remove-btn" (click)="confirmRemove(item)" title="Remove from library">
-                <ion-icon name="close-circle-outline"></ion-icon>
+              <button aria-label="Remove from library" class="remove-btn" (click)="confirmRemove(item)" title="Remove from library">
+                <ion-icon aria-hidden="true" name="close-circle-outline"></ion-icon>
               </button>
             </div>
           </ion-col>
@@ -99,7 +99,7 @@
           (click)="loadMore()"
           [disabled]="isLoadingMore"
         >
-          <ion-icon *ngIf="!isLoadingMore" name="chevron-down-outline"></ion-icon>
+          <ion-icon aria-hidden="true" *ngIf="!isLoadingMore" name="chevron-down-outline"></ion-icon>
           <ion-spinner *ngIf="isLoadingMore" name="crescent"></ion-spinner>
           {{ isLoadingMore ? 'Loading...' : 'Load More' }}
         </button>
@@ -112,7 +112,7 @@
   <div *ngIf="showConfirmModal" class="confirm-backdrop" (click)="cancelRemove()"></div>
   <div *ngIf="showConfirmModal" class="confirm-modal" role="dialog" aria-label="Confirm removal">
     <div class="confirm-icon">
-      <ion-icon name="bookmark-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="bookmark-outline"></ion-icon>
     </div>
     <h3 class="confirm-title">Remove from Library?</h3>
     <p class="confirm-text">

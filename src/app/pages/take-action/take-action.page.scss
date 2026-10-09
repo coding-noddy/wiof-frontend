@@ -47,7 +47,7 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--wiof-brown);
+  color: var(--wiof-brown-text);
 }
 
 .take-action-title {
@@ -130,7 +130,7 @@
   cursor: pointer;
 
   &.active {
-    background: var(--wiof-teal);
+    background: var(--wiof-teal-fill);
     border-color: var(--wiof-teal);
     color: var(--wiof-warm-white);
   }
@@ -154,7 +154,7 @@
     background: var(--wiof-warm-white);
 
     ion-icon {
-      color: var(--wiof-teal);
+      color: var(--wiof-teal-text);
       font-size: 1.1rem;
     }
   }

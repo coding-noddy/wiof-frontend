@@ -20,7 +20,7 @@
       <div class="blog-hero-blur" [style.backgroundImage]="'url(' + blogImage + ')'"></div>
       <button class="blog-hero-trigger" type="button" (click)="openImage(blogImage, blog.title)" [attr.aria-label]="'Expand image: ' + blog.title">
         <img [src]="blogImage" [alt]="blog.title" class="blog-hero-img" />
-        <span class="zoom-badge"><ion-icon name="expand-outline"></ion-icon></span>
+        <span class="zoom-badge"><ion-icon aria-hidden="true" name="expand-outline"></ion-icon></span>
       </button>
     </div>
 
@@ -31,7 +31,7 @@
             <ion-title>{{ blog.title }}</ion-title>
             <ion-buttons slot="end">
               <ion-button (click)="closeImage()" aria-label="Close expanded image">
-                <ion-icon name="close-outline"></ion-icon>
+                <ion-icon aria-hidden="true" name="close-outline"></ion-icon>
               </ion-button>
             </ion-buttons>
           </ion-toolbar>
@@ -52,7 +52,7 @@
       <!-- Meta -->
       <div class="blog-meta-top">
         <span class="blog-read-time">
-          <ion-icon name="time-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="time-outline"></ion-icon>
           {{ blog.timeToRead }} min read
         </span>
       </div>
@@ -68,7 +68,7 @@
         </div>
         <div class="author-actions">
           <button class="share-btn" (click)="shareBlog(blog)">
-            <ion-icon name="share-social-outline"></ion-icon>
+            <ion-icon aria-hidden="true" name="share-social-outline"></ion-icon>
             Share
           </button>
           <app-bookmark-icon

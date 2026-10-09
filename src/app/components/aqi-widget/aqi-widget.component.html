@@ -3,11 +3,11 @@
   <!-- ── Header ─────────────────────────────────────────────── -->
   <div class="aqi-widget-header">
     <div class="header-left">
-      <ion-icon name="cloud-outline" class="header-icon"></ion-icon>
+      <ion-icon aria-hidden="true" name="cloud-outline" class="header-icon"></ion-icon>
       <span class="title-text">AQI Widget</span>
     </div>
     <button class="about-toggle" (click)="about = !about" [attr.aria-expanded]="about">
-      <ion-icon [name]="about ? 'information-circle' : 'information-circle-outline'"></ion-icon>
+      <ion-icon aria-hidden="true" [name]="about ? 'information-circle' : 'information-circle-outline'"></ion-icon>
       <span>About</span>
     </button>
   </div>
@@ -36,10 +36,10 @@
             {{ city | titlecase }}
           </option>
         </select>
-        <ion-icon name="chevron-down-outline" class="city-chevron"></ion-icon>
+        <ion-icon aria-hidden="true" name="chevron-down-outline" class="city-chevron"></ion-icon>
       </div>
-      <button class="aqi-search-toggle" (click)="showSearch = !showSearch" [class.active]="showSearch" title="Search any location">
-        <ion-icon name="search-outline"></ion-icon>
+      <button aria-label="Search any location" class="aqi-search-toggle" (click)="showSearch = !showSearch" [class.active]="showSearch" title="Search any location">
+        <ion-icon aria-hidden="true" name="search-outline"></ion-icon>
       </button>
     </div>
 
@@ -63,7 +63,7 @@
       <!-- Search results -->
       <div class="aqi-search-results" *ngIf="searchLocationClickedFlag && !searchLoading && searchLocationResults">
         <div *ngIf="!searchLocationResults.data || !searchLocationResults.data[0]" class="no-results">
-          <ion-icon name="alert-circle-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="alert-circle-outline"></ion-icon>
           <span>No AQI data found. Try another city.</span>
         </div>
         <div *ngIf="searchLocationResults.data && searchLocationResults.data[0]" class="results-list">
@@ -73,7 +73,7 @@
             (click)="expandLocationAqiDetails('@' + location.uid)"
           >
             <div class="result-station">
-              <ion-icon name="location-outline"></ion-icon>
+              <ion-icon aria-hidden="true" name="location-outline"></ion-icon>
               <span>{{ location.station.name }}</span>
             </div>
             <span
@@ -98,27 +98,27 @@
   <!-- ── Fact strip ──────────────────────────────────────────── -->
   <div class="fact-strip" [class.fact-strip--expanded]="factExpanded">
     <div class="fact-content">
-      <ion-icon name="bulb-outline" class="fact-icon"></ion-icon>
+      <ion-icon aria-hidden="true" name="bulb-outline" class="fact-icon"></ion-icon>
       <div class="fact-body">
         <p class="fact-text" [class.expanded]="factExpanded">{{ currentFact.text }}</p>
         <div class="fact-meta-row">
           <a class="fact-source" [href]="currentFact.url" target="_blank" rel="noopener noreferrer">
-            <ion-icon name="link-outline"></ion-icon>{{ currentFact.source }}
+            <ion-icon aria-hidden="true" name="link-outline"></ion-icon>{{ currentFact.source }}
           </a>
           <button class="fact-expand-btn" (click)="factExpanded = !factExpanded">
             {{ factExpanded ? 'Show less' : 'Read more' }}
-            <ion-icon [name]="factExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+            <ion-icon aria-hidden="true" [name]="factExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
           </button>
         </div>
       </div>
     </div>
     <div class="fact-controls">
       <button class="fact-btn" (click)="prevFact()" aria-label="Previous fact">
-        <ion-icon name="chevron-back-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="chevron-back-outline"></ion-icon>
       </button>
       <span class="fact-counter">{{ currentFactIndex + 1 }} / {{ aqiFacts.length }}</span>
       <button class="fact-btn" (click)="nextFact()" aria-label="Next fact">
-        <ion-icon name="chevron-forward-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="chevron-forward-outline"></ion-icon>
       </button>
     </div>
   </div>

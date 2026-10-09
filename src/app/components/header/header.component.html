@@ -33,7 +33,7 @@
 
     <!-- Mobile hamburger -->
     <button class="mobile-menu-btn" (click)="toggleMobileMenu()" aria-label="Open menu">
-      <ion-icon [name]="mobileMenuOpen ? 'close-outline' : 'menu-outline'"></ion-icon>
+      <ion-icon aria-hidden="true" [name]="mobileMenuOpen ? 'close-outline' : 'menu-outline'"></ion-icon>
     </button>
   </div>
 
@@ -50,6 +50,7 @@
     <ng-container *ngIf="isAuthenticated$ | async">
       <a routerLink="/my-journey" class="mobile-link" (click)="closeMobileMenu()">My Journey</a>
       <a routerLink="/my-library" class="mobile-link" (click)="closeMobileMenu()">My Library</a>
+      <a routerLink="/my-feedback" class="mobile-link" (click)="closeMobileMenu()">My Feedback</a>
       <a routerLink="/settings" class="mobile-link" (click)="closeMobileMenu()">Settings</a>
       <button class="mobile-link mobile-logout" (click)="logout(); closeMobileMenu()">Logout</button>
     </ng-container>

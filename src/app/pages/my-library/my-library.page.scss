@@ -74,7 +74,7 @@ $accent-color: var(--wiof-teal);
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--wiof-teal);
+    color: var(--wiof-teal-text);
     margin: 0;
   }
 
@@ -429,7 +429,7 @@ ion-content {
 
 .confirm-text {
   font-size: 0.88rem;
-  color: var(--wiof-warm-grey);
+  color: var(--wiof-ink-muted);
   margin: 0 0 1.25rem;
   line-height: 1.4;
 }

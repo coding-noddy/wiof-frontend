@@ -62,7 +62,7 @@ ion-content {
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--wiof-teal);
+    color: var(--wiof-teal-text);
   }
 
   h1 {
@@ -181,7 +181,7 @@ ion-content {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--wiof-teal);
+    background: var(--wiof-teal-fill);
     color: #fff;
     font-size: 2.1rem;
     font-weight: 700;
@@ -359,9 +359,9 @@ ion-content {
   &.active {
     color: var(--wiof-ink);
 
-    &.color-teal     { background: var(--wiof-teal); }
+    &.color-teal     { background: var(--wiof-teal-fill); color: var(--wiof-warm-white); }
     &.color-marigold { background: var(--wiof-marigold); }
-    &.color-brown    { background: var(--wiof-brown); color: var(--wiof-warm-white); }
+    &.color-brown    { background: var(--wiof-brown-fill); color: var(--wiof-warm-white); }
   }
 
   &:hover:not(:disabled) {
@@ -436,7 +436,7 @@ ion-content {
     align-items: center;
     gap: 0.4rem;
     margin: 0 0 0.5rem;
-    color: var(--wiof-brown);
+    color: var(--wiof-brown-text);
     font-size: 0.95rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -494,7 +494,7 @@ ion-content {
 
   p {
     margin: 0 0 1.25rem;
-    color: var(--wiof-warm-grey);
+    color: var(--wiof-ink-muted);
     font-size: 0.9rem;
     line-height: 1.45;
   }

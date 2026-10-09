@@ -90,7 +90,7 @@
     border-radius: 999px;
     border: none;
     background: linear-gradient(135deg, $home-color 0%, $home-color-dark 100%);
-    color: #fff;
+    color: var(--wiof-ink); // white on Marigold was ~1.6:1
     font-size: 0.82rem;
     font-weight: 500;
     cursor: pointer;

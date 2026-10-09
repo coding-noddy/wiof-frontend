@@ -156,7 +156,7 @@ ion-content {
   align-items: center;
   gap: 4px;
   font-size: 0.85rem;
-  color: rgba(43, 36, 32, 0.55);
+  color: var(--wiof-ink-muted);
   font-weight: 500;
 
   ion-icon { font-size: 1rem; }
@@ -204,7 +204,7 @@ ion-content {
 
 .blog-date {
   font-size: 0.82rem;
-  color: rgba(43, 36, 32, 0.55);
+  color: var(--wiof-ink-muted);
 }
 
 // ── Share button ─────────────────────────────────────────────────
@@ -248,7 +248,7 @@ ion-content {
     p { margin-bottom: 1.25rem; }
     h2, h3, h4 { margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--wiof-ink); }
     img { max-width: 100%; border-radius: 12px; margin: 1rem 0; }
-    a { color: var(--wiof-teal); font-weight: 600; }
+    a { color: var(--wiof-teal-text); font-weight: 600; }
     blockquote {
       border-left: 4px solid var(--wiof-marigold);
       padding-left: 1rem;

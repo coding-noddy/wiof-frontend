@@ -192,8 +192,12 @@ $mobile-breakpoint: 768px;
     display: flex;
   }
 
+  // Sized to the viewport, not a fixed 400px: the signed-in menu has 9
+  // items (~450px), so a fixed cap silently clipped the last ones. Scrolls
+  // on short screens instead of cutting items off.
   &--open {
-    max-height: 400px;
+    max-height: calc(100vh - 72px);
+    overflow-y: auto;
     padding: 0.5rem 0;
   }
 }
@@ -231,7 +235,7 @@ $mobile-breakpoint: 768px;
   padding: 13px 1.5rem;
   font-size: 0.92rem;
   font-weight: 700;
-  color: var(--wiof-teal);
+  color: var(--wiof-teal-text);
   background: transparent;
   border: none;
   width: 100%;

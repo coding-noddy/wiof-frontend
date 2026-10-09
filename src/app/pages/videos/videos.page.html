@@ -23,7 +23,7 @@
           title="Go to Take Action"
           aria-label="Go to Take Action"
         >
-          <ion-icon name="trail-sign-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="trail-sign-outline"></ion-icon>
         </a>
       </div> -->
       <p class="header-eyebrow">Explore</p>
@@ -72,7 +72,7 @@
       </div>
 
       <div *ngIf="videosList.length === 0" class="no-content">
-        <ion-icon name="videocam-off-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="videocam-off-outline"></ion-icon>
         <p>No videos found under <strong>{{ category }}</strong> category.</p>
       </div>
     </div>

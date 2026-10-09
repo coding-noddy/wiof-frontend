@@ -248,7 +248,7 @@ $radius-card: 18px;
 
 .gender-note {
   font-size: 0.7rem;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--wiof-ink-muted);
   text-align: center;
   margin: 0;
   max-width: 300px;
@@ -262,7 +262,7 @@ $radius-card: 18px;
 
 .eq-meta {
   font-size: 0.72rem;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--wiof-ink-muted);
   font-weight: 500;
 }
 

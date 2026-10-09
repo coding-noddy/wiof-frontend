@@ -22,13 +22,13 @@
       </div>
       <div class="header-actions">
         <button class="btn-secondary" (click)="loadData()">
-          <ion-icon name="refresh-outline"></ion-icon> Refresh
+          <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon> Refresh
         </button>
       </div>
     </div>
 
     <div class="empty-state" *ngIf="loadError">
-      <ion-icon name="alert-circle-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="alert-circle-outline"></ion-icon>
       <p>Couldn't load hero videos. Check your connection and refresh.</p>
     </div>
 
@@ -46,7 +46,7 @@
         <div class="hero-thumb">
           <img *ngIf="parsedId(form) as id" [src]="thumbnailUrl(id)" [alt]="'Thumbnail for ' + form.title" />
           <div class="hero-thumb-empty" *ngIf="!parsedId(form)">
-            <ion-icon name="videocam-off-outline"></ion-icon>
+            <ion-icon aria-hidden="true" name="videocam-off-outline"></ion-icon>
             <span>Enter a valid YouTube link to preview</span>
           </div>
         </div>
@@ -82,7 +82,7 @@
         <div class="hero-actions">
           <button class="btn-secondary" (click)="reset(form)" [disabled]="form.saving || !isDirty(form) || form.saved.isDefault">Reset</button>
           <button class="btn-primary" (click)="save(form)" [disabled]="!canSave(form)">
-            <ion-icon name="save-outline"></ion-icon> {{ form.saving ? 'Saving…' : 'Save' }}
+            <ion-icon aria-hidden="true" name="save-outline"></ion-icon> {{ form.saving ? 'Saving…' : 'Save' }}
           </button>
         </div>
       </div>

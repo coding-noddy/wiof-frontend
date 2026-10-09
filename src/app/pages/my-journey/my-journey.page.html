@@ -18,7 +18,7 @@
       <h1 class="page-title">
         My Journey
         <span class="streak-badge" *ngIf="currentStreak > 0">
-          <ion-icon name="flame-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="flame-outline"></ion-icon>
           {{ currentStreak }}-day streak
         </span>
       </h1>
@@ -53,10 +53,10 @@
 
     <!-- Error State -->
     <div *ngIf="hasError && !isLoading" class="error-state">
-      <ion-icon name="cloud-offline-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="cloud-offline-outline"></ion-icon>
       <p class="error-message">Unable to load your engagement data.</p>
       <button class="retry-button" (click)="retry()">
-        <ion-icon name="refresh-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon>
         Try Again
       </button>
     </div>
@@ -78,17 +78,17 @@
               Blogs Explored
               <span *ngIf="metrics?.lastBlogReadDate" class="metric-date">{{ getFormattedLastBlogDate() }}</span>
             </div>
-            <ion-icon name="newspaper-outline" class="metric-icon"></ion-icon>
+            <ion-icon aria-hidden="true" name="newspaper-outline" class="metric-icon"></ion-icon>
           </div>
           <div class="metric-card videos-card" (click)="scrollToSection('videos-watched')">
             <div class="metric-value">{{ metrics?.videosCompleted ?? 0 }}</div>
             <div class="metric-label">Videos Watched</div>
-            <ion-icon name="videocam-outline" class="metric-icon"></ion-icon>
+            <ion-icon aria-hidden="true" name="videocam-outline" class="metric-icon"></ion-icon>
           </div>
           <div class="metric-card polls-card" (click)="scrollToSection('polls-voted')">
             <div class="metric-value">{{ metrics?.pollsVoted ?? 0 }}</div>
             <div class="metric-label">Polls Voted</div>
-            <ion-icon name="bar-chart-outline" class="metric-icon"></ion-icon>
+            <ion-icon aria-hidden="true" name="bar-chart-outline" class="metric-icon"></ion-icon>
           </div>
           <div class="metric-card eq-card" (click)="scrollToSection('eq-score')">
             <div class="metric-value" *ngIf="metrics?.lastEqScore !== null">{{ metrics?.lastEqScore }}</div>
@@ -97,17 +97,17 @@
               EQ Score
               <span *ngIf="metrics?.lastEqDate" class="metric-date">{{ getFormattedEqDate() }}</span>
             </div>
-            <ion-icon name="heart-outline" class="metric-icon"></ion-icon>
+            <ion-icon aria-hidden="true" name="heart-outline" class="metric-icon"></ion-icon>
           </div>
           <div class="metric-card saved-metric-card" (click)="scrollToSection('saved-content')">
             <div class="metric-value">{{ savedContentCount }}</div>
             <div class="metric-label">Saved Content</div>
-            <ion-icon name="bookmark-outline" class="metric-icon"></ion-icon>
+            <ion-icon aria-hidden="true" name="bookmark-outline" class="metric-icon"></ion-icon>
           </div>
           <div class="metric-card actions-card" (click)="scrollToSection('actions-taken')">
             <div class="metric-value">{{ metrics?.totalActionsCompleted ?? 0 }}</div>
             <div class="metric-label">Actions Taken</div>
-            <ion-icon name="checkmark-done-outline" class="metric-icon"></ion-icon>
+            <ion-icon aria-hidden="true" name="checkmark-done-outline" class="metric-icon"></ion-icon>
           </div>
           <div class="metric-card streak-card">
             <div class="metric-value">{{ currentStreak }}</div>
@@ -115,17 +115,17 @@
               Day Streak
               <span class="metric-best" *ngIf="longestStreak > 0">Best: {{ longestStreak }}-day streak</span>
             </div>
-            <ion-icon name="flame-outline" class="metric-icon"></ion-icon>
+            <ion-icon aria-hidden="true" name="flame-outline" class="metric-icon"></ion-icon>
           </div>
         </div>
       </div>
 
       <!-- Global Retry (all new sections failed) -->
       <div *ngIf="allSectionsFailed" class="global-retry-state">
-        <ion-icon name="cloud-offline-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="cloud-offline-outline"></ion-icon>
         <p class="error-message">Unable to load engagement history sections.</p>
         <button class="retry-button" (click)="retryAllSections()">
-          <ion-icon name="refresh-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon>
           Retry All Sections
         </button>
       </div>
@@ -133,7 +133,7 @@
       <!-- Blogs Explored (Quality Reads) Section -->
       <div class="history-section" id="quality-reads-section" *ngIf="!allSectionsFailed">
         <h2 class="section-title">
-          <ion-icon name="newspaper-outline" class="section-icon"></ion-icon>
+          <ion-icon aria-hidden="true" name="newspaper-outline" class="section-icon"></ion-icon>
           Blogs Explored
         </h2>
 
@@ -149,7 +149,7 @@
         <div *ngIf="qualityReadsError && !qualityReadsLoading" class="section-error">
           <p>Failed to load quality reads.</p>
           <button class="retry-button-sm" (click)="retrySection('qualityReads')">
-            <ion-icon name="refresh-outline"></ion-icon> Retry
+            <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon> Retry
           </button>
         </div>
 
@@ -175,9 +175,9 @@
               [routerLink]="getBlogHistoryLink(read.contentId)"
             >
               <div class="history-item-main">
-                <ion-icon name="book-outline" class="history-item-icon"></ion-icon>
+                <ion-icon aria-hidden="true" name="book-outline" class="history-item-icon"></ion-icon>
                 <span class="history-item-title">{{ read.blogTitle }}</span>
-                <ion-icon name="chevron-forward-outline" class="history-item-arrow"></ion-icon>
+                <ion-icon aria-hidden="true" name="chevron-forward-outline" class="history-item-arrow"></ion-icon>
               </div>
               <div class="history-item-meta">
                 <span class="meta-tag">{{ read.scrollDepth }}% read</span>
@@ -198,7 +198,7 @@
 
           <!-- Empty State -->
           <div *ngIf="qualityReads.length === 0" class="section-empty">
-            <ion-icon name="book-outline"></ion-icon>
+            <ion-icon aria-hidden="true" name="book-outline"></ion-icon>
             <p>No quality reads yet — start reading to track your engagement!</p>
           </div>
         </div>
@@ -207,7 +207,7 @@
       <!-- Videos Watched Section -->
       <div class="history-section" id="videos-watched-section" *ngIf="!allSectionsFailed">
         <h2 class="section-title">
-          <ion-icon name="videocam-outline" class="section-icon"></ion-icon>
+          <ion-icon aria-hidden="true" name="videocam-outline" class="section-icon"></ion-icon>
           Videos Watched
         </h2>
 
@@ -223,7 +223,7 @@
         <div *ngIf="videoWatchHistoryError && !videoWatchHistoryLoading" class="section-error">
           <p>Failed to load video watch history.</p>
           <button class="retry-button-sm" (click)="retrySection('videoWatchHistory')">
-            <ion-icon name="refresh-outline"></ion-icon> Retry
+            <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon> Retry
           </button>
         </div>
 
@@ -236,9 +236,9 @@
               [routerLink]="getVideoHistoryLink(video.contentId)"
             >
               <div class="history-item-main">
-                <ion-icon name="play-circle-outline" class="history-item-icon"></ion-icon>
+                <ion-icon aria-hidden="true" name="play-circle-outline" class="history-item-icon"></ion-icon>
                 <span class="history-item-title">{{ video.videoTitle }}</span>
-                <ion-icon name="chevron-forward-outline" class="history-item-arrow"></ion-icon>
+                <ion-icon aria-hidden="true" name="chevron-forward-outline" class="history-item-arrow"></ion-icon>
               </div>
               <div class="history-item-meta">
                 <span class="meta-tag">{{ video.watchPercent }}% watched</span>
@@ -258,7 +258,7 @@
 
           <!-- Empty State -->
           <div *ngIf="videoWatchHistory.length === 0" class="section-empty">
-            <ion-icon name="videocam-outline"></ion-icon>
+            <ion-icon aria-hidden="true" name="videocam-outline"></ion-icon>
             <p>No videos completed yet — watch videos to track your engagement!</p>
           </div>
         </div>
@@ -267,7 +267,7 @@
       <!-- Actions Taken Section -->
       <div class="history-section" id="actions-taken-section" *ngIf="!allSectionsFailed">
         <h2 class="section-title">
-          <ion-icon name="checkmark-done-outline" class="section-icon"></ion-icon>
+          <ion-icon aria-hidden="true" name="checkmark-done-outline" class="section-icon"></ion-icon>
           Actions Taken
         </h2>
 
@@ -283,7 +283,7 @@
         <div *ngIf="actionsTakenError && !actionsTakenLoading" class="section-error">
           <p>Failed to load your action history.</p>
           <button class="retry-button-sm" (click)="retrySection('actionsTaken')">
-            <ion-icon name="refresh-outline"></ion-icon> Retry
+            <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon> Retry
           </button>
         </div>
 
@@ -305,10 +305,10 @@
             <div class="history-item" *ngFor="let item of visibleRecentActions">
               <ng-container *ngIf="getActionMeta(item.actionId) | async as actionMeta">
                 <div class="history-item-main">
-                  <ion-icon name="checkmark-circle-outline" class="history-item-icon"></ion-icon>
+                  <ion-icon aria-hidden="true" name="checkmark-circle-outline" class="history-item-icon"></ion-icon>
                   <span class="history-item-title">{{ actionMeta?.title || item.actionId }}</span>
                   <span class="streak-badge" *ngIf="actionMeta?.repeatType === 'DAILY' && (getActionStreak(item.actionId) | async) as streak">
-                    <ion-icon name="flame-outline"></ion-icon> {{ streak }}
+                    <ion-icon aria-hidden="true" name="flame-outline"></ion-icon> {{ streak }}
                   </span>
                 </div>
                 <div class="history-item-meta">
@@ -330,7 +330,7 @@
 
           <!-- Empty State -->
           <div *ngIf="recentActions.length === 0" class="section-empty">
-            <ion-icon name="checkmark-done-outline"></ion-icon>
+            <ion-icon aria-hidden="true" name="checkmark-done-outline"></ion-icon>
             <p>No actions completed yet — visit Take Action to get started!</p>
           </div>
         </div>
@@ -339,7 +339,7 @@
       <!-- Poll History Section -->
       <div class="history-section" id="poll-history-section" *ngIf="!allSectionsFailed">
         <h2 class="section-title">
-          <ion-icon name="bar-chart-outline" class="section-icon"></ion-icon>
+          <ion-icon aria-hidden="true" name="bar-chart-outline" class="section-icon"></ion-icon>
           Poll History
         </h2>
 
@@ -355,7 +355,7 @@
         <div *ngIf="pollHistoryError && !pollHistoryLoading" class="section-error">
           <p>Failed to load poll history.</p>
           <button class="retry-button-sm" (click)="retrySection('pollHistory')">
-            <ion-icon name="refresh-outline"></ion-icon> Retry
+            <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon> Retry
           </button>
         </div>
 
@@ -364,7 +364,7 @@
           <div *ngIf="pollHistory.length > 0" class="history-list">
             <div class="history-item" *ngFor="let poll of pollHistory">
               <div class="history-item-main">
-                <ion-icon name="checkmark-circle-outline" class="history-item-icon"></ion-icon>
+                <ion-icon aria-hidden="true" name="checkmark-circle-outline" class="history-item-icon"></ion-icon>
                 <span class="history-item-title">{{ poll.pollTitle }}</span>
               </div>
               <div class="history-item-meta">
@@ -376,7 +376,7 @@
 
           <!-- Empty State -->
           <div *ngIf="pollHistory.length === 0" class="section-empty">
-            <ion-icon name="bar-chart-outline"></ion-icon>
+            <ion-icon aria-hidden="true" name="bar-chart-outline"></ion-icon>
             <p>No poll votes yet — participate in polls to see your voting history!</p>
           </div>
         </div>
@@ -385,7 +385,7 @@
       <!-- EQ History Section -->
       <div class="history-section" id="eq-history-section" *ngIf="!allSectionsFailed">
         <h2 class="section-title">
-          <ion-icon name="heart-outline" class="section-icon"></ion-icon>
+          <ion-icon aria-hidden="true" name="heart-outline" class="section-icon"></ion-icon>
           EQ History
         </h2>
 
@@ -402,7 +402,7 @@
         <div *ngIf="eqHistoryError && !eqHistoryLoading" class="section-error">
           <p>Failed to load EQ history.</p>
           <button class="retry-button-sm" (click)="retrySection('eqHistory')">
-            <ion-icon name="refresh-outline"></ion-icon> Retry
+            <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon> Retry
           </button>
         </div>
 
@@ -417,7 +417,7 @@
                 <div class="eq-score-label">Latest EQ Score</div>
                 <div class="eq-score-date">{{ formatDate(eqHistory[0].date) }}</div>
                 <div *ngIf="eqHistory.length > 1" class="eq-trend-badge" [ngClass]="getEqTrendClass()">
-                  <ion-icon [name]="getEqTrendIcon()"></ion-icon>
+                  <ion-icon aria-hidden="true" [name]="getEqTrendIcon()"></ion-icon>
                   {{ getEqComparisonMessage() }}
                 </div>
               </div>
@@ -483,7 +483,7 @@
             <div *ngIf="eqHistory.length > 1" class="eq-previous">
               <button class="collapsible-toggle" (click)="eqPreviousExpanded = !eqPreviousExpanded">
                 <span>Previous Scores ({{ eqHistory.length - 1 }})</span>
-                <ion-icon [name]="eqPreviousExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+                <ion-icon aria-hidden="true" [name]="eqPreviousExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
               </button>
               <div class="history-list" *ngIf="eqPreviousExpanded">
                 <div class="history-item" *ngFor="let entry of eqHistory.slice(1)">
@@ -503,7 +503,7 @@
 
           <!-- Empty State -->
           <div *ngIf="eqHistory.length === 0" class="section-empty">
-            <ion-icon name="heart-outline"></ion-icon>
+            <ion-icon aria-hidden="true" name="heart-outline"></ion-icon>
             <p>Not yet taken</p>
             <a routerLink="/element/water/eq-assessment" class="section-cta">Take the EQ Assessment</a>
           </div>
@@ -529,7 +529,7 @@
                       (error)="item.imageLoadFailed = true"
                       [hidden]="item.imageLoadFailed"
                     />
-                    <ion-icon
+                    <ion-icon aria-hidden="true"
                       *ngIf="item.imageLoadFailed"
                       name="image-outline"
                       class="thumbnail-fallback">
@@ -541,7 +541,7 @@
                       {{ item.contentType === 'blog' ? 'Blog' : 'Video' }}
                     </span>
                   </div>
-                  <ion-icon name="chevron-forward-outline" class="saved-card-arrow"></ion-icon>
+                  <ion-icon aria-hidden="true" name="chevron-forward-outline" class="saved-card-arrow"></ion-icon>
                 </a>
               </ion-col>
             </ion-row>
@@ -550,11 +550,11 @@
 
         <!-- Empty State -->
         <div *ngIf="!hasSavedContent" class="empty-state">
-          <ion-icon name="bookmark-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="bookmark-outline"></ion-icon>
           <p class="empty-message">No saved content yet</p>
           <p class="empty-hint">Explore blogs and videos to save your favorites.</p>
           <a routerLink="/home" class="explore-link">
-            <ion-icon name="compass-outline"></ion-icon>
+            <ion-icon aria-hidden="true" name="compass-outline"></ion-icon>
             Explore Content
           </a>
         </div>

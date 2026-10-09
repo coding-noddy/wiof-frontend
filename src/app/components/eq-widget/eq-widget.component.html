@@ -3,11 +3,11 @@
   <!-- ── Header ─────────────────────────────────────────────── -->
   <div class="eq-widget-header">
     <div class="header-left">
-      <ion-icon name="heart-outline" class="header-icon"></ion-icon>
+      <ion-icon aria-hidden="true" name="heart-outline" class="header-icon"></ion-icon>
       <span class="title-text">Emotional Quotient</span>
     </div>
     <button class="about-toggle" (click)="about = !about" [attr.aria-expanded]="about">
-      <ion-icon [name]="about ? 'information-circle' : 'information-circle-outline'"></ion-icon>
+      <ion-icon aria-hidden="true" [name]="about ? 'information-circle' : 'information-circle-outline'"></ion-icon>
       <span>About</span>
     </button>
   </div>
@@ -79,7 +79,7 @@
           Scoring thresholds differ by gender based on TMMS-24 research norms (Fernández-Berrocal et al., 2004).
         </p>
         <button class="wiof-primary-btn eq-start-btn" (click)="startTest()">
-          <ion-icon name="play-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="play-outline"></ion-icon>
           Start EQ Assessment
         </button>
         <span class="eq-meta">24 questions • ~5 minutes • free</span>
@@ -99,27 +99,27 @@
   <!-- ── Fact strip ──────────────────────────────────────────── -->
   <div class="fact-strip" [class.fact-strip--expanded]="factExpanded">
     <div class="fact-content">
-      <ion-icon name="bulb-outline" class="fact-icon"></ion-icon>
+      <ion-icon aria-hidden="true" name="bulb-outline" class="fact-icon"></ion-icon>
       <div class="fact-body">
         <p class="fact-text" [class.expanded]="factExpanded">{{ currentFact.text }}</p>
         <div class="fact-meta-row">
           <a class="fact-source" [href]="currentFact.url" target="_blank" rel="noopener noreferrer">
-            <ion-icon name="link-outline"></ion-icon>{{ currentFact.source }}
+            <ion-icon aria-hidden="true" name="link-outline"></ion-icon>{{ currentFact.source }}
           </a>
           <button class="fact-expand-btn" (click)="factExpanded = !factExpanded">
             {{ factExpanded ? 'Show less' : 'Read more' }}
-            <ion-icon [name]="factExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+            <ion-icon aria-hidden="true" [name]="factExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
           </button>
         </div>
       </div>
     </div>
     <div class="fact-controls">
       <button class="fact-btn" (click)="prevFact()" aria-label="Previous fact">
-        <ion-icon name="chevron-back-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="chevron-back-outline"></ion-icon>
       </button>
       <span class="fact-counter">{{ currentFactIndex + 1 }} / {{ eqFacts.length }}</span>
       <button class="fact-btn" (click)="nextFact()" aria-label="Next fact">
-        <ion-icon name="chevron-forward-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="chevron-forward-outline"></ion-icon>
       </button>
     </div>
   </div>

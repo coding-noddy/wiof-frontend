@@ -22,10 +22,10 @@
       </div>
       <div class="header-actions">
         <button class="btn-secondary" (click)="refreshData()">
-          <ion-icon name="refresh-outline"></ion-icon> Refresh
+          <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon> Refresh
         </button>
         <button class="btn-primary" (click)="addNewAboutUs()">
-          <ion-icon name="add-outline"></ion-icon> Add Member
+          <ion-icon aria-hidden="true" name="add-outline"></ion-icon> Add Member
         </button>
       </div>
     </div>
@@ -35,10 +35,10 @@
         <thead>
           <tr>
             <th (click)="sortBy('serialNo')" [class.sorted]="sortColumn === 'serialNo'">
-              <span class="sort-header">Order <ion-icon class="sort-icon" [name]="sortColumn === 'serialNo' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Order <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'serialNo' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th (click)="sortBy('name')" [class.sorted]="sortColumn === 'name'">
-              <span class="sort-header">Name <ion-icon class="sort-icon" [name]="sortColumn === 'name' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              <span class="sort-header">Name <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'name' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
             </th>
             <th>Bio</th>
             <th>LinkedIn</th>
@@ -62,10 +62,10 @@
             <td>
               <div class="action-buttons">
                 <button class="action-btn view" title="Edit profile" (click)="viewAboutUsDetails(person)">
-                  <ion-icon name="create-outline"></ion-icon>
+                  <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
                 </button>
                 <button class="action-btn delete" title="Delete profile" (click)="deleteAboutUs(person.id)">
-                  <ion-icon name="trash-outline"></ion-icon>
+                  <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
                 </button>
               </div>
             </td>
@@ -76,9 +76,9 @@
       <div class="pagination-bar" *ngIf="allItems.length > 0">
         <span class="pagination-info">Page {{ currentPage }} of {{ totalPages }} · {{ allItems.length }} members</span>
         <div class="pagination-controls">
-          <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"><ion-icon name="chevron-back"></ion-icon></button>
+          <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"><ion-icon aria-hidden="true" name="chevron-back"></ion-icon></button>
           <button class="page-btn" *ngFor="let p of pageNumbers" [class.active]="p === currentPage" (click)="goToPage(p)">{{ p }}</button>
-          <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"><ion-icon name="chevron-forward"></ion-icon></button>
+          <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"><ion-icon aria-hidden="true" name="chevron-forward"></ion-icon></button>
           <select class="page-size-select" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
             <option [ngValue]="5">5 / page</option>
             <option [ngValue]="10">10 / page</option>

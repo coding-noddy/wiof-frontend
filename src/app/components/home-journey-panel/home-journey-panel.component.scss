@@ -6,7 +6,7 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--wiof-teal);
+  color: var(--wiof-teal-text);
 }
 
 h2 {
@@ -28,7 +28,7 @@ h2 {
 .journey-link {
   font-weight: 700;
   font-size: 0.9rem;
-  color: var(--wiof-teal);
+  color: var(--wiof-teal-text);
   text-decoration: none;
   white-space: nowrap;
 
@@ -137,7 +137,7 @@ h2 {
 
   ion-icon {
     font-size: 1.4rem;
-    color: var(--wiof-warm-grey);
+    color: var(--wiof-ink-muted);
   }
 
   span {

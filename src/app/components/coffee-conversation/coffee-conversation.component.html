@@ -5,7 +5,7 @@
 >
   <ion-card-header class="wiof-slider-header">
     <span class="header-badge">
-      <ion-icon name="cafe-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="cafe-outline"></ion-icon>
       Coffee Conversations
     </span>
   </ion-card-header>
@@ -35,7 +35,7 @@
                   class="conversation-byline"
                   *ngIf="coffeeConv.intervieweeName.toUpperCase() !== 'NA'"
                 >
-                  <ion-icon name="person-outline"></ion-icon>
+                  <ion-icon aria-hidden="true" name="person-outline"></ion-icon>
                   Conversation with {{ coffeeConv.intervieweeName }}
                 </p>
                 <p class="conversation-desc">
@@ -54,7 +54,7 @@
                     [href]="coffeeConv.knowMoreLink"
                     target="_blank"
                     class="conversation-cta"
-                    >Explore conversation <ion-icon name="arrow-forward-outline"></ion-icon></a
+                    >Explore conversation <ion-icon aria-hidden="true" name="arrow-forward-outline"></ion-icon></a
                   >
                 </div>
                 <div
@@ -66,7 +66,7 @@
                 >
                   <div class="header">
                     <div class="header-title">
-                      <ion-icon name="person-circle-outline"></ion-icon>
+                      <ion-icon aria-hidden="true" name="person-circle-outline"></ion-icon>
                       <h3>About {{ coffeeConv.intervieweeName }}</h3>
                     </div>
                     <button
@@ -74,7 +74,7 @@
                       aria-label="Close interviewee details"
                       (click)="showIntervieweeDetails($event, false)"
                     >
-                      <ion-icon name="close" slot="icon-only"></ion-icon>
+                      <ion-icon aria-hidden="true" name="close" slot="icon-only"></ion-icon>
                     </button>
                   </div>
                   <p>{{ coffeeConv.intervieweeDesc }}</p>
@@ -84,11 +84,11 @@
           </div>
         </swiper-slide>
       </swiper-container>
-      <button class="swiper-nav-btn prev" *ngIf="coffeeConvList.length > 1" (click)="swiperCC.swiper.slidePrev()">
-        <ion-icon name="chevron-back"></ion-icon>
+      <button aria-label="Previous slide" class="swiper-nav-btn prev" *ngIf="coffeeConvList.length > 1" (click)="swiperCC.swiper.slidePrev()">
+        <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
       </button>
-      <button class="swiper-nav-btn next" *ngIf="coffeeConvList.length > 1" (click)="swiperCC.swiper.slideNext()">
-        <ion-icon name="chevron-forward"></ion-icon>
+      <button aria-label="Next slide" class="swiper-nav-btn next" *ngIf="coffeeConvList.length > 1" (click)="swiperCC.swiper.slideNext()">
+        <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
       </button>
     </div>
     <ng-template #loading>

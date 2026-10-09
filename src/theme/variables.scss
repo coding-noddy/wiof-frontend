@@ -45,21 +45,45 @@
      token instead of the 20+ files that previously hardcoded this hex. */
   --wiof-border: #EDE4D3;
 
-  /** primary — mapped to Ocean Teal, the identity color **/
-  --ion-color-primary: #21999F;
-  --ion-color-primary-rgb: 33, 153, 159;
+  /* Text-safe brand colors (WCAG 2.1 AA)
+     ------------------------------------
+     Raw Teal/Brown are mid-tones: ~3.3:1 against ivory/warm-white and
+     against white text — below the 4.5:1 AA minimum for normal-size text.
+     Raw Teal/Brown/Marigold stay correct for borders, icons, decorative
+     fills and large display type. For anything that is *text*, or a fill
+     that carries *light text*, use these instead:
+       - text on light surfaces   → --wiof-teal-text / --wiof-brown-text /
+                                    --wiof-marigold-text (≥4.5:1 on ivory)
+       - fill behind white text   → --wiof-teal-fill / --wiof-brown-fill
+                                    (≥4.9:1 with warm-white text)
+       - text on Marigold         → --wiof-ink (9.6:1), never white
+       - text on tinted chips     → the -shade-40 tokens (≥6.4:1)
+       - secondary / muted text   → --wiof-ink-muted, not opacity or
+                                    warm-grey (those land at ~2.5–4:1) */
+  --wiof-teal-text: #1A7A7F;      /* = teal-shade-20 · 4.68 on ivory, 4.96 on warm-white */
+  --wiof-brown-text: #856C4A;     /* = brown-shade-20 · 4.56 on ivory, 4.84 on warm-white */
+  --wiof-marigold-text: #805E2C;  /* 5.44 on ivory — no existing Marigold shade reaches 4.5 */
+  --wiof-teal-fill: #1A7A7F;      /* warm-white text on it: 4.96 */
+  --wiof-brown-fill: #856C4A;     /* warm-white text on it: 4.84 */
+  --wiof-ink-muted: #6B645F;      /* 5.35 on ivory, 5.66 on warm-white */
+
+  /** primary — Ocean Teal, at its text-safe shade: Ionic paints white
+      text on this (ion-button etc.), which raw Teal fails at 3.4:1 **/
+  --ion-color-primary: #1A7A7F;
+  --ion-color-primary-rgb: 26, 122, 127;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #1A7A7F;
-  --ion-color-primary-tint: #4DADB2;
+  --ion-color-primary-shade: #145C5F;
+  --ion-color-primary-tint: #21999F;
 
-  /** secondary — mapped to Earthy Brown, which grounds the system **/
-  --ion-color-secondary: #A6875D;
-  --ion-color-secondary-rgb: 166, 135, 93;
+  /** secondary — Earthy Brown, at its text-safe shade (white text on raw
+      Brown is 3.4:1) **/
+  --ion-color-secondary: #856C4A;
+  --ion-color-secondary-rgb: 133, 108, 74;
   --ion-color-secondary-contrast: #ffffff;
   --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #856C4A;
-  --ion-color-secondary-tint: #B89F7D;
+  --ion-color-secondary-shade: #645138;
+  --ion-color-secondary-tint: #A6875D;
 
   /** tertiary **/
   --ion-color-tertiary: #5260ff;

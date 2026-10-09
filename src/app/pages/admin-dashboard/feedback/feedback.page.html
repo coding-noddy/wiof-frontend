@@ -22,10 +22,10 @@
       </div>
       <div class="header-actions">
         <button class="btn-secondary" (click)="loadFeedback()">
-          <ion-icon name="refresh-outline"></ion-icon> Refresh
+          <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon> Refresh
         </button>
         <button class="btn-primary" (click)="generateExcel()" [disabled]="!filteredFeedback.length">
-          <ion-icon name="download-outline"></ion-icon> Export Excel
+          <ion-icon aria-hidden="true" name="download-outline"></ion-icon> Export Excel
         </button>
       </div>
     </div>
@@ -33,21 +33,21 @@
     <!-- Summary -->
     <div class="summary-row">
       <div class="summary-card">
-        <div class="summary-icon accent-teal"><ion-icon name="chatbubbles-outline"></ion-icon></div>
+        <div class="summary-icon accent-teal"><ion-icon aria-hidden="true" name="chatbubbles-outline"></ion-icon></div>
         <div class="summary-info">
           <span class="summary-value">{{ summary.total }}</span>
           <span class="summary-label">Total Feedback</span>
         </div>
       </div>
       <div class="summary-card">
-        <div class="summary-icon accent-marigold"><ion-icon name="mail-unread-outline"></ion-icon></div>
+        <div class="summary-icon accent-marigold"><ion-icon aria-hidden="true" name="mail-unread-outline"></ion-icon></div>
         <div class="summary-info">
           <span class="summary-value">{{ summary.new }}</span>
           <span class="summary-label">New</span>
         </div>
       </div>
       <div class="summary-card">
-        <div class="summary-icon accent-brown"><ion-icon name="bug-outline"></ion-icon></div>
+        <div class="summary-icon accent-brown"><ion-icon aria-hidden="true" name="bug-outline"></ion-icon></div>
         <div class="summary-info">
           <span class="summary-value">{{ summary.issues }}</span>
           <span class="summary-label">Issues Reported</span>
@@ -107,7 +107,7 @@
             <td>
               <div class="action-buttons">
                 <button class="action-btn delete" title="Delete" (click)="deleteFeedback(f)">
-                  <ion-icon name="trash-outline"></ion-icon>
+                  <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
                 </button>
               </div>
             </td>
@@ -118,7 +118,7 @@
 
     <div class="admin-table-card" *ngIf="!loading && filteredFeedback.length === 0">
       <div class="empty-state">
-        <ion-icon name="chatbubbles-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="chatbubbles-outline"></ion-icon>
         <h3>No feedback {{ summary.total ? 'matches these filters' : 'yet' }}</h3>
         <p>Feedback visitors send from the site footer will appear here.</p>
       </div>

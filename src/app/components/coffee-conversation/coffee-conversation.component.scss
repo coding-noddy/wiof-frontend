@@ -124,7 +124,7 @@
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--wiof-teal);
+    color: var(--wiof-teal-text);
 
     ion-icon {
       font-size: 1.05rem;
@@ -205,7 +205,7 @@
         margin: 0 0 0.85rem;
         font-size: 0.82rem;
         font-weight: 600;
-        color: var(--wiof-teal);
+        color: var(--wiof-teal-text);
 
         ion-icon {
           font-size: 0.95rem;
@@ -241,7 +241,7 @@
         gap: 0.35rem;
         padding: 0.6rem 0.9rem;
         border-radius: 999px;
-        background: $water-color;
+        background: var(--wiof-teal-fill);
         color: $light-color;
         font-size: 0.82rem;
         font-weight: 800;
@@ -313,7 +313,7 @@
           }
 
           ion-icon {
-            color: $home-color-dark;
+            color: var(--wiof-marigold-text);
             font-size: 1.15rem;
           }
 

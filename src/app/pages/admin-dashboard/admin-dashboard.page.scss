@@ -258,7 +258,7 @@ $transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--wiof-teal);
+  color: var(--wiof-teal-text);
   text-decoration: none;
   background: rgba(33, 153, 159, 0.08);
   transition: background $transition;
@@ -290,7 +290,7 @@ $transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
 .topbar-greeting {
   font-size: 0.85rem;
-  color: rgba(43, 36, 32, 0.6);
+  color: var(--wiof-ink-muted);
   margin-right: 12px;
 }
 
@@ -361,7 +361,7 @@ $transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
 .stat-label {
   font-size: 0.8rem;
-  color: rgba(43, 36, 32, 0.6);
+  color: var(--wiof-ink-muted);
   font-weight: 500;
 }
 
@@ -419,7 +419,7 @@ $transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
   p {
     font-size: 0.78rem;
-    color: rgba(43, 36, 32, 0.45);
+    color: var(--wiof-ink-muted);
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -428,13 +428,13 @@ $transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card-arrow {
-  color: rgba(43, 36, 32, 0.25);
+  color: var(--wiof-ink-muted);
   font-size: 18px;
   flex-shrink: 0;
   transition: color $transition, transform $transition;
 
   .admin-card:hover & {
-    color: var(--wiof-teal);
+    color: var(--wiof-teal-text);
     transform: translateX(3px);
   }
 }

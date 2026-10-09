@@ -55,7 +55,7 @@ ion-content {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--wiof-teal);
+  color: var(--wiof-teal-text);
   margin: 0 0 0.5rem;
 }
 
@@ -70,7 +70,7 @@ ion-content {
 
 .discover-subtitle {
   font-size: 1rem;
-  color: rgba(43, 36, 32, 0.6);
+  color: var(--wiof-ink-muted);
   font-style: italic;
   margin: 0;
 }
@@ -120,7 +120,7 @@ ion-content {
 .card-icon {
   flex-shrink: 0;
   font-size: 1.75rem;
-  color: var(--wiof-teal);
+  color: var(--wiof-teal-text);
 }
 
 .content-card h2 {
@@ -143,7 +143,7 @@ ion-content {
 .welcome-text {
   font-size: 1.1rem !important;
   font-weight: 700;
-  color: var(--wiof-teal) !important;
+  color: var(--wiof-teal-text) !important;
   font-style: italic;
   margin-top: 0.5rem !important;
 }

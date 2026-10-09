@@ -146,7 +146,7 @@ $a-dark: darken($air-color, 24%);
 
 .pollutant-unit {
   font-size: 0.58rem;
-  color: rgba(0, 0, 0, 0.4);
+  color: var(--wiof-ink-muted);
 }
 
 .pollutant-card.suspicious {
@@ -155,14 +155,14 @@ $a-dark: darken($air-color, 24%);
 }
 
 .suspicious-text {
-  color: rgba(0, 0, 0, 0.3) !important;
+  color: var(--wiof-ink-muted) !important;
   font-size: 0.8rem !important;
 }
 
 // ── Credit ───────────────────────────────────────────────────────
 .aqi-credit {
   font-size: 0.68rem;
-  color: rgba(0, 0, 0, 0.4);
+  color: var(--wiof-ink-muted);
   text-align: center;
 
   a {
@@ -177,8 +177,8 @@ $a-dark: darken($air-color, 24%);
 .aqi-good { background-color: $aqi-good-color; color: $dark-color; }
 .aqi-moderate { background-color: $aqi-moderate-color; color: $dark-color; }
 .aqi-unhealthy-for-sensitive { background-color: $aqi-unhealthy-for-sensitive-color; color: $dark-color; }
-.aqi-unhealthy { background-color: $aqi-unhealthy-color; color: $light-color; }
-.aqi-very-unhealthy { background-color: $aqi-very-unhealthy-color; color: $light-color; }
+.aqi-unhealthy { background-color: $aqi-unhealthy-color; color: $dark-color; } // light text on this red was 2.9:1
+.aqi-very-unhealthy { background-color: $aqi-very-unhealthy-color; color: $dark-color; } // light text on this purple was ~2.3:1
 .aqi-hazardous { background-color: $aqi-hazardous-color; color: $light-color; }
 .aqi-na { background-color: rgba(0,0,0,.05); color: $dark-color; }
 
@@ -190,7 +190,7 @@ $a-dark: darken($air-color, 24%);
   gap: 8px;
   padding: 1.5rem;
   font-size: 0.82rem;
-  color: rgba(0, 0, 0, 0.5);
+  color: var(--wiof-ink-muted);
 }
 
 .loading-dots {

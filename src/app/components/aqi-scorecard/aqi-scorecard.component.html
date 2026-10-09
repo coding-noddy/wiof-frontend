@@ -8,7 +8,7 @@
     </div>
     <div class="aqi-hero-right">
       <span class="aqi-station">
-        <ion-icon name="location-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="location-outline"></ion-icon>
         {{ aqiData.city.name | titlecase }}
       </span>
       <span class="aqi-pollutant">
@@ -19,7 +19,7 @@
 
   <!-- Health advice -->
   <div class="aqi-advice">
-    <ion-icon [name]="getAdviceIcon(aqiData.aqi)"></ion-icon>
+    <ion-icon aria-hidden="true" [name]="getAdviceIcon(aqiData.aqi)"></ion-icon>
     <span>{{ getAdvice(aqiData.aqi) }}</span>
   </div>
 

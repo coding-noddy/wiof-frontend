@@ -36,7 +36,7 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--wiof-teal);
+  color: var(--wiof-teal-text);
 
   ion-icon {
     font-size: 1.05rem;
@@ -151,7 +151,7 @@ ion-card-content.wiof-polls-widget-card-background {
   padding: 0;
   border: none;
   background: transparent;
-  color: var(--wiof-teal);
+  color: var(--wiof-teal-text);
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
@@ -261,7 +261,7 @@ ion-card-content.wiof-polls-widget-card-background {
 
 .option-percent {
   font-weight: 700;
-  color: var(--wiof-teal);
+  color: var(--wiof-teal-text);
   font-size: 0.78rem;
   text-align: right;
 }
@@ -333,7 +333,7 @@ ion-card-content.wiof-polls-widget-card-background {
   border: none;
   border-radius: 999px;
   padding: 0.6rem 1.3rem;
-  background: var(--wiof-teal);
+  background: var(--wiof-teal-fill);
   color: var(--wiof-warm-white);
   font-weight: 700;
   font-size: 0.9rem;
@@ -409,6 +409,6 @@ ion-card-content.wiof-polls-widget-card-background {
   line-height: 1.4;
 
   strong {
-    color: var(--wiof-teal);
+    color: var(--wiof-teal-text);
   }
 }

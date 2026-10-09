@@ -15,7 +15,7 @@
       <div class="option-header">
         <span class="option-label">
           {{ option }}
-          <ion-icon
+          <ion-icon aria-hidden="true"
             *ngIf="pollQuestion.correctAnswer === 'option' + (i + 1)"
             name="checkmark-circle"
             class="correct-icon"
@@ -37,7 +37,7 @@
 
   <!-- Correct answer reveal -->
   <div class="correct-answer-note" *ngIf="pollQuestion.correctAnswer">
-    <ion-icon name="checkmark-circle-outline"></ion-icon>
+    <ion-icon aria-hidden="true" name="checkmark-circle-outline"></ion-icon>
     <span>Correct answer: <strong>{{ getCorrectAnswerText() }}</strong></span>
   </div>
 </div>

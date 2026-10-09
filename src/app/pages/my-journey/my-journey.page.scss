@@ -65,7 +65,7 @@ $streak-color: var(--wiof-marigold);
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--wiof-teal);
+    color: var(--wiof-teal-text);
     margin: 0 0 0.3rem;
   }
 
@@ -87,7 +87,7 @@ $streak-color: var(--wiof-marigold);
     gap: 0.3rem;
     font-size: 0.78rem;
     font-weight: 700;
-    color: var(--wiof-marigold-shade-20);
+    color: var(--wiof-marigold-text);
     background: rgba(255, 194, 111, 0.16);
     border-radius: 999px;
     padding: 4px 12px;
@@ -188,7 +188,7 @@ $streak-color: var(--wiof-marigold);
   &.actions-card {
     border-top-color: var(--wiof-teal);
     cursor: pointer;
-    .metric-icon { color: var(--wiof-teal); }
+    .metric-icon { color: var(--wiof-teal-text); }
     .metric-value { color: var(--wiof-teal-shade-20); }
   }
 
@@ -198,8 +198,8 @@ $streak-color: var(--wiof-marigold);
     // marigold-shade-20, not raw marigold — at 70% opacity (.metric-icon's
     // base rule above) on this card's warm-white background, raw marigold
     // was ~1.4:1 contrast, same underlying issue as the onboarding chip fix.
-    .metric-icon { color: var(--wiof-marigold-shade-20); }
-    .metric-value { color: var(--wiof-marigold-shade-20); }
+    .metric-icon { color: var(--wiof-marigold-text); }
+    .metric-value { color: var(--wiof-marigold-text); }
   }
 }
 
@@ -254,7 +254,7 @@ $streak-color: var(--wiof-marigold);
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 1.5rem;
-    color: var(--wiof-warm-grey);
+    color: var(--wiof-ink-muted);
   }
 }
 
@@ -291,7 +291,7 @@ $streak-color: var(--wiof-marigold);
 }
 
 .saved-card-arrow {
-  color: var(--wiof-warm-grey);
+  color: var(--wiof-ink-muted);
   font-size: 1.1rem;
   flex-shrink: 0;
 }
@@ -303,7 +303,7 @@ $streak-color: var(--wiof-marigold);
 
   ion-icon {
     font-size: 3rem;
-    color: var(--wiof-warm-grey);
+    color: var(--wiof-ink-muted);
     margin-bottom: 0.75rem;
   }
 
@@ -525,7 +525,7 @@ $streak-color: var(--wiof-marigold);
 
   ion-icon {
     font-size: 2rem;
-    color: var(--wiof-warm-grey);
+    color: var(--wiof-ink-muted);
     margin-bottom: 0.5rem;
   }
 

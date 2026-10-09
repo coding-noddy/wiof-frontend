@@ -3,11 +3,11 @@
   <!-- ── Header ─────────────────────────────────────────────── -->
   <div class="water-widget-header">
     <div class="header-left">
-      <ion-icon name="water-outline" class="header-icon"></ion-icon>
+      <ion-icon aria-hidden="true" name="water-outline" class="header-icon"></ion-icon>
       <span class="title-text">Water Widget</span>
     </div>
     <button class="about-toggle" (click)="about = !about" [attr.aria-expanded]="about">
-      <ion-icon [name]="about ? 'information-circle' : 'information-circle-outline'"></ion-icon>
+      <ion-icon aria-hidden="true" [name]="about ? 'information-circle' : 'information-circle-outline'"></ion-icon>
       <span>About</span>
     </button>
   </div>
@@ -25,7 +25,7 @@
   <div class="rainfall-card">
     <div class="rainfall-header">
       <div class="rainfall-title">
-        <ion-icon name="rainy-outline" class="rainfall-icon"></ion-icon>
+        <ion-icon aria-hidden="true" name="rainy-outline" class="rainfall-icon"></ion-icon>
         <span>Live Rainfall</span>
         <span class="live-badge">LIVE</span>
       </div>
@@ -41,10 +41,10 @@
         >
           <option *ngFor="let city of cities" [ngValue]="city">{{ city.name }}</option>
         </select>
-        <ion-icon name="chevron-down-outline" class="select-chevron"></ion-icon>
+        <ion-icon aria-hidden="true" name="chevron-down-outline" class="select-chevron"></ion-icon>
       </div>
-      <button class="city-search-toggle" (click)="toggleCitySearch()" title="Search any city worldwide">
-        <ion-icon name="search-outline"></ion-icon>
+      <button aria-label="Search any city worldwide" class="city-search-toggle" (click)="toggleCitySearch()" title="Search any city worldwide">
+        <ion-icon aria-hidden="true" name="search-outline"></ion-icon>
       </button>
     </div>
 
@@ -65,7 +65,7 @@
           *ngFor="let city of citySearchResults"
           (click)="selectSearchedCity(city)"
         >
-          <ion-icon name="location-outline"></ion-icon>
+          <ion-icon aria-hidden="true" name="location-outline"></ion-icon>
           <span>{{ city.name }}</span>
         </button>
       </div>
@@ -89,7 +89,7 @@
 
     <!-- Error state -->
     <div class="rainfall-error" *ngIf="rainfallError && !rainfallLoading">
-      <ion-icon name="cloud-offline-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="cloud-offline-outline"></ion-icon>
       <span>Could not fetch rainfall data.</span>
       <button class="retry-btn" (click)="fetchRainfall()">Retry</button>
     </div>
@@ -128,7 +128,7 @@
         [attr.aria-selected]="activeCategory === cat.key"
         (click)="setCategory(cat.key)"
       >
-        <ion-icon [name]="cat.icon"></ion-icon>
+        <ion-icon aria-hidden="true" [name]="cat.icon"></ion-icon>
         <span>{{ cat.label }}</span>
       </button>
     </div>
@@ -145,19 +145,19 @@
         (click)="onItemClick(item)"
       >
         <span class="last-visited-badge" *ngIf="isLastVisited(item)">
-          <ion-icon name="time-outline"></ion-icon> Last visited
+          <ion-icon aria-hidden="true" name="time-outline"></ion-icon> Last visited
         </span>
         <div class="water-item-icon-wrap">
           <img [src]="item.icon" [alt]="item.name" class="water-item-icon" />
         </div>
         <span class="water-item-label">{{ item.name }}</span>
-        <ion-icon name="open-outline" class="water-item-external"></ion-icon>
+        <ion-icon aria-hidden="true" name="open-outline" class="water-item-external"></ion-icon>
       </a>
     </div>
 
     <!-- Footer disclaimer (inside body) -->
     <div class="water-widget-disclaimer">
-      <ion-icon name="shield-checkmark-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="shield-checkmark-outline"></ion-icon>
       <span>Links open India WRIS — a third-party interactive map portal.</span>
     </div>
 
@@ -166,7 +166,7 @@
   <!-- ── Did You Know strip (sticks to bottom like energy/pH) ── -->
   <div class="fact-strip" [class.fact-strip--expanded]="factExpanded">
     <div class="fact-content">
-      <ion-icon name="bulb-outline" class="fact-icon"></ion-icon>
+      <ion-icon aria-hidden="true" name="bulb-outline" class="fact-icon"></ion-icon>
       <div class="fact-body">
         <p class="fact-text" [class.expanded]="factExpanded">{{ currentFact.text }}</p>
         <div class="fact-meta-row">
@@ -176,23 +176,23 @@
             target="_blank"
             rel="noopener noreferrer"
           >
-            <ion-icon name="link-outline"></ion-icon>
+            <ion-icon aria-hidden="true" name="link-outline"></ion-icon>
             {{ currentFact.source }}
           </a>
           <button class="fact-expand-btn" (click)="factExpanded = !factExpanded">
             {{ factExpanded ? 'Show less' : 'Read more' }}
-            <ion-icon [name]="factExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+            <ion-icon aria-hidden="true" [name]="factExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
           </button>
         </div>
       </div>
     </div>
     <div class="fact-controls">
       <button class="fact-btn" (click)="prevFact()" aria-label="Previous fact">
-        <ion-icon name="chevron-back-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="chevron-back-outline"></ion-icon>
       </button>
       <span class="fact-counter">{{ currentFactIndex + 1 }} / {{ waterFacts.length }}</span>
       <button class="fact-btn" (click)="nextFact()" aria-label="Next fact">
-        <ion-icon name="chevron-forward-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="chevron-forward-outline"></ion-icon>
       </button>
     </div>
   </div>

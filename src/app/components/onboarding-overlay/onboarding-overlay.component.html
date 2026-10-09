@@ -15,7 +15,7 @@
     (click)="dismiss()"
     aria-label="Close onboarding overlay"
   >
-    <ion-icon name="close-outline"></ion-icon>
+    <ion-icon aria-hidden="true" name="close-outline"></ion-icon>
   </button>
 
   <div class="overlay-content">
@@ -32,12 +32,12 @@
     <!-- Five Elements with colorful icons -->
     <div class="elements-section">
       <h3 class="section-heading">
-        <ion-icon name="layers-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="layers-outline"></ion-icon>
         The Five Elements
       </h3>
       <div class="elements-grid">
         <div *ngFor="let element of elements" class="element-chip" [style.--chip-color]="element.color">
-          <ion-icon [name]="element.icon" class="element-icon"></ion-icon>
+          <ion-icon aria-hidden="true" [name]="element.icon" class="element-icon"></ion-icon>
           <div class="element-text">
             <span class="element-name">{{ element.name }}</span>
             <span class="element-desc">{{ element.description }}</span>
@@ -49,19 +49,19 @@
     <!-- Features with icons -->
     <div class="features-section">
       <h3 class="section-heading">
-        <ion-icon name="compass-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="compass-outline"></ion-icon>
         Explore
       </h3>
       <div class="features-grid">
         <div *ngFor="let feature of features" class="feature-chip">
-          <ion-icon [name]="feature.icon"></ion-icon>
+          <ion-icon aria-hidden="true" [name]="feature.icon"></ion-icon>
           <span>{{ feature.name }}</span>
         </div>
       </div>
     </div>
 
     <button class="got-it-btn" (click)="dismiss()">
-      <ion-icon name="checkmark-circle-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="checkmark-circle-outline"></ion-icon>
       Got it, let's go!
     </button>
   </div>

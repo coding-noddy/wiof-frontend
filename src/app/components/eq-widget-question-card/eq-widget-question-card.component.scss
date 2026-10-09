@@ -50,7 +50,7 @@ $s-dark: darken($s, 22%);
 .gender-note {
   width: 100%;
   font-size: .7rem;
-  color: rgba(0,0,0,.45);
+  color: var(--wiof-ink-muted);
   margin: .25rem 0 0;
 }
 
@@ -83,7 +83,7 @@ $s-dark: darken($s, 22%);
 
 .progress-count {
   font-size: .72rem;
-  color: rgba(0,0,0,.5);
+  color: var(--wiof-ink-muted);
   font-weight: 500;
 }
 
@@ -111,7 +111,7 @@ $s-dark: darken($s, 22%);
 
 .range-label-text {
   font-size: .62rem;
-  color: rgba(0,0,0,.4);
+  color: var(--wiof-ink-muted);
   font-weight: 500;
   text-align: center;
   flex: 1;
@@ -232,7 +232,7 @@ $s-dark: darken($s, 22%);
 
 .result-score {
   font-size: .72rem;
-  color: rgba(0,0,0,.5);
+  color: var(--wiof-ink-muted);
 }
 
 .result-badge {
@@ -284,7 +284,7 @@ $s-dark: darken($s, 22%);
   background: rgba($s-dark, .05);
   border-radius: 10px;
   font-size: .7rem;
-  color: rgba(0,0,0,.5);
+  color: var(--wiof-ink-muted);
 
   ion-icon { font-size: .85rem; color: $s-dark; flex-shrink: 0; }
 

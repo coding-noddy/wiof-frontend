@@ -1,13 +1,13 @@
 <div class="take-action-card">
   <div class="card-icon" [ngClass]="action.elementIds?.[0]">
-    <ion-icon [name]="action.iconName || 'checkmark-circle-outline'"></ion-icon>
+    <ion-icon aria-hidden="true" [name]="action.iconName || 'checkmark-circle-outline'"></ion-icon>
   </div>
 
   <div class="card-body">
     <div class="card-title-row">
       <h3 class="card-title">{{ action.title }}</h3>
       <span class="streak-badge" *ngIf="streak > 0">
-        <ion-icon name="flame-outline"></ion-icon> {{ streak }}
+        <ion-icon aria-hidden="true" name="flame-outline"></ion-icon> {{ streak }}
       </span>
     </div>
     <p class="card-desc">{{ action.shortDescription }}</p>
@@ -17,7 +17,7 @@
 
     <button type="button" class="details-toggle" *ngIf="hasDetails" (click)="openDetails($event)">
       Learn more
-      <ion-icon name="chevron-forward-outline"></ion-icon>
+      <ion-icon aria-hidden="true" name="chevron-forward-outline"></ion-icon>
     </button>
   </div>
 
@@ -33,18 +33,18 @@
       [disabled]="isLoading || isDone"
       type="button"
     >
-      <ion-icon [name]="isDone ? 'checkmark-circle' : 'checkmark-circle-outline'"></ion-icon>
+      <ion-icon aria-hidden="true" [name]="isDone ? 'checkmark-circle' : 'checkmark-circle-outline'"></ion-icon>
       {{ buttonLabel }}
     </button>
 
     <div class="sign-in-prompt" *ngIf="showSignInPrompt" role="tooltip" aria-label="Sign in to save your progress">
       <p class="prompt-text">Sign in to save your progress</p>
       <button class="prompt-google-btn" (click)="signInWithGoogle()">
-        <ion-icon name="logo-google"></ion-icon>
+        <ion-icon aria-hidden="true" name="logo-google"></ion-icon>
         Continue with Google
       </button>
       <button class="prompt-dismiss-btn" (click)="dismissPrompt()" aria-label="Dismiss sign-in prompt">
-        <ion-icon name="close-outline"></ion-icon>
+        <ion-icon aria-hidden="true" name="close-outline"></ion-icon>
       </button>
     </div>
   </div>

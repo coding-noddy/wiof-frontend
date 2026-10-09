@@ -31,7 +31,7 @@
 .results-votes {
   font-size: 0.75rem;
   font-weight: 600;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--wiof-ink-muted);
   background: rgba(0, 0, 0, 0.04);
   padding: 3px 8px;
   border-radius: 999px;
@@ -89,7 +89,7 @@
 .option-percent {
   font-size: 0.78rem;
   font-weight: 700;
-  color: var(--wiof-teal);
+  color: var(--wiof-teal-text);
 }
 
 // ── Result bar ───────────────────────────────────────────────────
