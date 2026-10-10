@@ -10,6 +10,17 @@ const CUT_KEY = 'wiof_launch_ribbon_cut';
  *  the curtain straight away instead of a flash of the site first. */
 const ENABLED_CACHE_KEY = 'wiof_launch_enabled';
 
+/**
+ * Launch window. Until this moment the curtain shows *immediately* on a
+ * first visit and is then confirmed against Firestore (hidden again if the
+ * admin switch is off). Asking Firestore first takes ~2-3s on a cold load,
+ * which let visitors see the site before the curtain closed over it —
+ * spoiling the reveal. After the window, the curtain only appears once
+ * Firestore says it's on, so a visitor never sees a stray curtain flash
+ * once the launch is over.
+ */
+const OPTIMISTIC_UNTIL = new Date('2026-10-12T23:59:59+05:30');
+
 /** Pages that never show the ceremony. */
 const EXCLUDED_PATH_PREFIXES = ['/admin-dashboard', '/login'];
 
@@ -48,7 +59,7 @@ export class LaunchCurtainComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (this.read(ENABLED_CACHE_KEY) === 'true') {
+    if (this.read(ENABLED_CACHE_KEY) === 'true' || Date.now() < OPTIMISTIC_UNTIL.getTime()) {
       this.show();
     }
 

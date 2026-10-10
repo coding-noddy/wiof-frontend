@@ -7,6 +7,11 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [5.6.1] - 2026-10-10
+
+### Fixed
+- **Launch ceremony appears instantly** during the launch window (until the end of 12 October 2026, IST): it shows as soon as the app starts and is then confirmed with Firestore, instead of waiting ~3s for the setting while first-time visitors already saw the site. If the switch is off it disappears again; after the window it only shows once Firestore confirms
+
 ## [5.6.0] - 2026-10-10
 
 ### Added
