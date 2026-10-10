@@ -7,9 +7,9 @@
       <span class="aqi-label">{{ aqiLabel(aqiData.aqi) }}</span>
     </div>
     <div class="aqi-hero-right">
-      <span class="aqi-station">
+      <span class="aqi-station" [title]="aqiData.city.name | titlecase">
         <ion-icon aria-hidden="true" name="location-outline"></ion-icon>
-        {{ aqiData.city.name | titlecase }}
+        <span class="aqi-station-name">{{ aqiData.city.name | titlecase }}</span>
       </span>
       <span class="aqi-pollutant">
         Dominant: <strong>{{ aqiData.dominentpol | uppercase }}</strong>

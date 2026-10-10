@@ -58,15 +58,28 @@ $a-dark: darken($air-color, 24%);
 
 .aqi-station {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 4px;
+  min-width: 0;
   font-size: 0.82rem;
   font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.35;
 
-  ion-icon { font-size: 0.9rem; flex-shrink: 0; }
+  ion-icon { font-size: 0.9rem; flex-shrink: 0; margin-top: 0.1em; }
+}
+
+// Station names can be long and bilingual ("Mumbai Us Consulate, India
+// (मुंबई अमेरिकी वाणिज्य दूतावास)"). They used to be one nowrap line, which
+// spilled out of the card on phones: wrap to at most two lines instead (the
+// full name is in the title tooltip).
+.aqi-station-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
 }
 
 .aqi-pollutant {
@@ -237,5 +250,17 @@ $a-dark: darken($air-color, 24%);
   .aqi-hero {
     flex-direction: column;
     text-align: center;
+  }
+
+  // In the stacked layout the column would otherwise size to its content
+  // (centered flex items shrink-wrap), letting a long station name push it
+  // wider than the card; stretch it to the card's width instead.
+  .aqi-hero-right {
+    align-self: stretch;
+    align-items: center;
+  }
+
+  .aqi-station {
+    justify-content: center;
   }
 }

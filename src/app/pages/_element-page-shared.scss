@@ -121,12 +121,20 @@ ion-content {
     align-items: flex-start;
   }
 
-  // Same reasoning as home.page.scss's own .hero — centered cropping at
-  // narrow widths cuts evenly from both sides, but the copy (same
-  // left-to-right scrim below) already dims the left, so biasing right
-  // keeps more of the illustration's own content visible.
+  // Phones: copy on top, illustration revealed below it (same top-down idea
+  // as home.page.scss's mobile .hero). The copy runs nearly edge to edge on
+  // a narrow screen, so a left-to-right wash had to stay almost opaque
+  // everywhere to keep the text readable, hiding the artwork entirely.
+  // Height follows the content (no fixed aspect ratio) plus a fixed reveal
+  // zone below it, so longer copy never runs into the unwashed art.
   @media (max-width: 767px) {
-    background-position: right 68%;
+    align-items: flex-start;
+    aspect-ratio: auto;
+    min-height: 0;
+    max-height: none;
+    padding: 1.75rem 1.25rem 13rem;
+    // Biased right: the illustrations' people/activity sit to the right.
+    background-position: right bottom;
   }
 
   &.air    { background-image: url('/assets/banners/air-hero.png'); }
@@ -135,19 +143,15 @@ ion-content {
   &.energy { background-image: url('/assets/banners/energy-hero.png'); }
   &.earth  { background-image: url('/assets/banners/earth-hero.png'); }
 
-  // Ivory scrim so ink text stays legible over the illustration — same
-  // left-to-right treatment at every width (see home.page.scss's
-  // .hero-scrim) so the copy always reads as left-aligned over the banner,
-  // never a different top-down layout on mobile.
+  // Ivory scrim so ink text stays legible over the illustration.
   .hero-scrim {
     position: absolute;
     inset: 0;
     z-index: 0;
-    // Phones: the copy runs nearly edge to edge, so the wash has to hold
-    // across the full width — the old falloff (0.55 at 68%, 0.18 at 100%)
-    // let busy illustration detail sit behind the right end of each line
-    // and dropped body text to ~2.2:1 (WCAG AA needs 4.5:1).
-    background: linear-gradient(100deg, var(--wiof-ivory) 0%, rgba(250, 245, 236, 0.94) 50%, rgba(250, 245, 236, 0.86) 80%, rgba(250, 245, 236, 0.78) 100%);
+    // Phones: top-to-bottom. Near-opaque behind the copy (which ends 13rem
+    // above the bottom — the hero's bottom padding), then fading out over
+    // the reveal zone so the illustration shows clearly below the text.
+    background: linear-gradient(180deg, var(--wiof-ivory) 0%, rgba(250, 245, 236, 0.94) calc(100% - 13rem), rgba(250, 245, 236, 0.55) calc(100% - 9rem), rgba(250, 245, 236, 0) calc(100% - 3rem));
     pointer-events: none;
 
     // Tablet and up: tried a backdrop-blur-only-behind-the-text treatment
