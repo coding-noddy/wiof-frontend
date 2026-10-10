@@ -31,7 +31,8 @@
       #18696d 28px,
       var(--wiof-teal-shade-40) 56px
     );
-  transition: transform 1.6s cubic-bezier(0.7, 0, 0.25, 1);
+  // A slow, even draw (~5s) — a ceremonial reveal rather than a snap open.
+  transition: transform 5s cubic-bezier(0.45, 0, 0.3, 1);
 
   &--left {
     left: 0;
@@ -54,7 +55,7 @@
   background: var(--wiof-teal-fill);
   border-bottom: 4px solid var(--wiof-marigold);
   z-index: 1;
-  transition: transform 0.9s ease-in 0.5s;
+  transition: transform 2s ease-in-out 2.5s;
 }
 
 // ─── Copy ─────────────────────────────────────────────────────────────────────
@@ -65,7 +66,7 @@
   max-width: 560px;
   text-align: center;
   margin-bottom: 2.5rem;
-  transition: opacity 0.35s ease;
+  transition: opacity 0.6s ease;
 }
 
 .curtain-logo {

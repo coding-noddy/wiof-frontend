@@ -7,6 +7,11 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [5.6.4] - 2026-10-10
+
+### Changed
+- **Launch ceremony curtains open slowly:** about 5 seconds with an even, ceremonial motion (was 1.6s), and the top pelmet lifts away afterwards. The overlay stays until the curtains are fully open
+
 ## [5.6.3] - 2026-10-10
 
 ### Changed

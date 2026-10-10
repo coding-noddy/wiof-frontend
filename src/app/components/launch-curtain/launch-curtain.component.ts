@@ -93,7 +93,9 @@ export class LaunchCurtainComponent implements OnInit, OnDestroy {
     this.confetti = this.makeConfetti(70);
     this.state = 'cutting';
     this.after(650, () => (this.state = 'opening'));
-    this.after(650 + 3200, () => (this.state = 'hidden'));
+    // Curtains take 5s to open (see .curtain-panel); confetti runs up to
+    // ~4.7s. Remove the overlay once both are done.
+    this.after(650 + 5200, () => (this.state = 'hidden'));
   }
 
   skip(): void {
