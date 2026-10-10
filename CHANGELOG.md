@@ -7,6 +7,38 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [5.6.4] - 2026-10-10
+
+### Changed
+- **Launch ceremony curtains open slowly:** about 5 seconds with an even, ceremonial motion (was 1.6s), and the top pelmet lifts away afterwards. The overlay stays until the curtains are fully open
+
+## [5.6.3] - 2026-10-10
+
+### Changed
+- **Launch ceremony appears with no entrance animation at all:** the curtains are simply there, closed, when the site opens. The short fade from 5.6.2 let the site show through for a moment
+
+## [5.6.2] - 2026-10-10
+
+### Fixed
+- **Launch ceremony no longer looks like the curtains are closing** when the site opens: the panels used to slide in from the sides on appearing. They're now simply already closed, with a quick fade in
+
+## [5.6.1] - 2026-10-10
+
+### Fixed
+- **Launch ceremony appears instantly** during the launch window (until the end of 12 October 2026, IST): it shows as soon as the app starts and is then confirmed with Firestore, instead of waiting ~3s for the setting while first-time visitors already saw the site. If the switch is off it disappears again; after the window it only shows once Firestore confirms
+
+## [5.6.0] - 2026-10-10
+
+### Added
+- **Launch ceremony:** a launch-day curtain with a Marigold ribbon. Each visitor's first visit (any page except admin and login) shows closed curtains with *Launching today*; *Cut the ribbon* splits the ribbon, the curtains part with brand-colored confetti, and the site (with the welcome modal) is revealed. Shown once per browser; *Skip* is always available; with reduced motion it simply fades
+- **Admin → Launch Ceremony:** turn it on or off (takes effect on each visitor's next load, no deploy), with last-changed info and *Preview on this browser*
+- New `site_settings` collection: public read, admin-only write limited to known setting ids and a boolean `enabled`, with 5 new rules tests (143 passing)
+- Fail-safe: a missing setting, read error or 5-second timeout means "off", so the ceremony can never keep visitors out
+
+### Deploy notes
+- Needs a **backend** deploy (Firestore rules) alongside Hosting. Without it the ceremony stays off
+- Runbook: turn it on after the production deploy, and off when the launch window ends
+
 ## [5.5.3] - 2026-10-10
 
 ### Fixed

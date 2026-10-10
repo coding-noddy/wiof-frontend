@@ -1,0 +1,77 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Launch Ceremony</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="admin-page">
+    <nav class="breadcrumb">
+      <a routerLink="/admin-dashboard">Dashboard</a>
+      <span class="separator">/</span>
+      <span class="current">Launch Ceremony</span>
+    </nav>
+
+    <div class="admin-page-header">
+      <div>
+        <h1>Launch Ceremony</h1>
+        <p class="header-meta">The launch-day curtain and ribbon cutting visitors see when they open the site</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-secondary" (click)="loadData()">
+          <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon> Refresh
+        </button>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="loadError">
+      <ion-icon aria-hidden="true" name="alert-circle-outline"></ion-icon>
+      <p>Couldn't load the setting. Check your connection and refresh.</p>
+    </div>
+
+    <div class="ceremony-card skeleton ceremony-card-skeleton" *ngIf="isLoading"></div>
+
+    <div class="ceremony-card" *ngIf="!isLoading && !loadError && setting">
+      <div class="ceremony-status-row">
+        <div>
+          <p class="ceremony-label">Status</p>
+          <span class="status-badge" [ngClass]="setting.enabled ? 'published' : 'inactive'">
+            {{ setting.enabled ? 'On — visitors see the ceremony' : 'Off — site opens normally' }}
+          </span>
+        </div>
+        <button
+          class="btn-primary ceremony-toggle"
+          [class.ceremony-toggle--off]="setting.enabled"
+          (click)="toggle()"
+          [disabled]="saving"
+        >
+          <ion-icon aria-hidden="true" [name]="setting.enabled ? 'power-outline' : 'cut-outline'"></ion-icon>
+          {{ saving ? 'Saving…' : (setting.enabled ? 'Turn off' : 'Turn on') }}
+        </button>
+      </div>
+
+      <p class="ceremony-error" *ngIf="saveError" role="alert">{{ saveError }}</p>
+
+      <p class="ceremony-updated" *ngIf="updatedAtDate() as updated">
+        Last changed {{ updated | date:'medium' }}<span *ngIf="setting.updatedBy"> by {{ setting.updatedBy }}</span>
+      </p>
+
+      <ul class="ceremony-notes">
+        <li>When on, each visitor sees closed curtains with a ribbon the first time they open the site, on any page except the admin area.</li>
+        <li>They cut the ribbon (or press Skip), the curtains open with confetti, and it's never shown to them again.</li>
+        <li>Turning it off takes effect on every visitor's next page load. No deploy is needed.</li>
+      </ul>
+
+      <div class="ceremony-preview">
+        <button class="btn-secondary" (click)="previewOnThisBrowser()" [disabled]="!setting.enabled">
+          <ion-icon aria-hidden="true" name="eye-outline"></ion-icon> Preview on this browser
+        </button>
+        <span class="ceremony-hint" *ngIf="!setting.enabled">Turn it on to preview.</span>
+        <span class="ceremony-hint" *ngIf="previewReady">Opened the home page in a new tab.</span>
+      </div>
+    </div>
+  </div>
+</ion-content>

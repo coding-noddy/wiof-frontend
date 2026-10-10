@@ -1,0 +1,79 @@
+@import '../admin-shared';
+@import '../../../wiof-custom-theming.scss';
+
+.ceremony-card {
+  max-width: 720px;
+  padding: 22px 24px;
+  border-radius: 18px;
+  background: var(--wiof-warm-white);
+  border: 1.5px solid var(--wiof-brown-tint-40);
+}
+
+.ceremony-card-skeleton {
+  height: 240px;
+}
+
+.ceremony-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ceremony-label {
+  margin: 0 0 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wiof-ink-muted);
+}
+
+.ceremony-toggle {
+  min-width: 128px;
+  justify-content: center;
+
+  &--off {
+    background: var(--wiof-ink);
+  }
+}
+
+.ceremony-error {
+  margin: 14px 0 0;
+  color: #b42318;
+  font-weight: 600;
+}
+
+.ceremony-updated {
+  margin: 14px 0 0;
+  font-size: 0.86rem;
+  color: var(--wiof-ink-muted);
+}
+
+.ceremony-notes {
+  margin: 18px 0 0;
+  padding-left: 1.1rem;
+  color: var(--wiof-ink);
+  line-height: 1.6;
+  font-size: 0.92rem;
+
+  li + li {
+    margin-top: 4px;
+  }
+}
+
+.ceremony-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--wiof-border);
+}
+
+.ceremony-hint {
+  font-size: 0.86rem;
+  color: var(--wiof-ink-muted);
+}

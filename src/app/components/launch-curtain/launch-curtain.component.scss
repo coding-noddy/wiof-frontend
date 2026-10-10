@@ -1,0 +1,276 @@
+// Launch-day curtain + ribbon. Sits above everything, including the welcome
+// modal (z-index 9998), which is then revealed underneath once the curtains
+// part.
+.launch-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem;
+  color: var(--wiof-warm-white);
+  // No entrance animation: the curtains are simply already closed when the
+  // site opens. A slide-in read as them *closing* on the visitor, and even a
+  // short fade let the site show through for a moment.
+}
+
+// ─── Curtain panels ───────────────────────────────────────────────────────────
+// Deep teal with soft vertical folds — flat bands, not a glossy 3D drape.
+.curtain-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50.5%;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--wiof-teal-shade-40) 0,
+      #18696d 28px,
+      var(--wiof-teal-shade-40) 56px
+    );
+  // A slow, even draw (~5s) — a ceremonial reveal rather than a snap open.
+  transition: transform 5s cubic-bezier(0.45, 0, 0.3, 1);
+
+  &--left {
+    left: 0;
+    transform-origin: left center;
+  }
+
+  &--right {
+    right: 0;
+    transform-origin: right center;
+  }
+}
+
+// Pelmet across the top, with a Marigold trim line.
+.curtain-valance {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 44px;
+  background: var(--wiof-teal-fill);
+  border-bottom: 4px solid var(--wiof-marigold);
+  z-index: 1;
+  transition: transform 2s ease-in-out 2.5s;
+}
+
+// ─── Copy ─────────────────────────────────────────────────────────────────────
+// Warm-white on teal-shade-40: 7.5:1.
+.curtain-content {
+  position: relative;
+  z-index: 2;
+  max-width: 560px;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  transition: opacity 0.6s ease;
+}
+
+.curtain-logo {
+  height: 52px;
+  width: auto;
+  margin: 0 auto 1.25rem;
+  display: block;
+}
+
+.curtain-eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--wiof-marigold);
+}
+
+.curtain-title {
+  margin: 0 0 0.5rem;
+  font-family: 'Aleo', serif !important;
+  font-size: clamp(1.6rem, 4.5vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--wiof-warm-white);
+}
+
+.curtain-desc {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--wiof-warm-white);
+}
+
+// ─── Ribbon ───────────────────────────────────────────────────────────────────
+.ribbon {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  height: 30px;
+  margin-bottom: 2.25rem;
+  // Lets the absolutely positioned halves/bow overflow the viewport edges.
+  left: 0;
+}
+
+.ribbon-half {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: calc(50% + 1.25rem);
+  background: var(--wiof-marigold);
+  border-top: 3px solid var(--wiof-marigold-shade-20);
+  border-bottom: 3px solid var(--wiof-marigold-shade-20);
+  transition: transform 0.9s cubic-bezier(0.5, 0, 0.75, 0), opacity 0.9s ease;
+
+  &--left {
+    right: 50%;
+    transform-origin: left center;
+  }
+
+  &--right {
+    left: 50%;
+    transform-origin: right center;
+  }
+}
+
+.ribbon-bow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 104px;
+  height: 70px;
+  transform: translate(-50%, -50%);
+  fill: var(--wiof-marigold);
+  stroke: var(--wiof-marigold-shade-20);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  transition: transform 1s cubic-bezier(0.5, 0, 0.75, 0), opacity 1s ease;
+}
+
+// ─── Buttons ──────────────────────────────────────────────────────────────────
+.cut-btn {
+  position: relative;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.85rem 1.9rem;
+  border-radius: 999px;
+  border: none;
+  background: var(--wiof-warm-white);
+  color: var(--wiof-ink);
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.18s ease, opacity 0.35s ease;
+
+  ion-icon { font-size: 1.25rem; }
+
+  &:hover:not(:disabled) { transform: translateY(-2px); }
+
+  &:focus-visible {
+    outline: 3px solid var(--wiof-marigold);
+    outline-offset: 3px;
+  }
+
+  &:disabled { cursor: default; }
+}
+
+.skip-link {
+  position: absolute;
+  top: 60px;
+  right: 1.25rem;
+  z-index: 3;
+  background: none;
+  border: none;
+  padding: 0.4rem 0.5rem;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--wiof-warm-white);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--wiof-marigold);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+// ─── Cutting: the ribbon splits and falls away ────────────────────────────────
+.is-cutting,
+.is-opening {
+  .ribbon-half--left  { transform: translate(-12%, 70px) rotate(-14deg); opacity: 0; }
+  .ribbon-half--right { transform: translate(12%, 70px) rotate(14deg); opacity: 0; }
+  .ribbon-bow { transform: translate(-50%, 60vh) rotate(25deg); opacity: 0; }
+  .cut-btn, .skip-link { opacity: 0; pointer-events: none; }
+}
+
+// ─── Opening: the curtains part and the site shows through ────────────────────
+.is-opening {
+  pointer-events: none;
+
+  .curtain-panel--left  { transform: translateX(-102%); }
+  .curtain-panel--right { transform: translateX(102%); }
+  .curtain-valance { transform: translateY(-110%); }
+  .curtain-content { opacity: 0; }
+}
+
+// ─── Confetti ─────────────────────────────────────────────────────────────────
+.confetti {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -20px;
+  width: 8px;
+  height: 14px;
+  border-radius: 2px;
+  opacity: 0;
+  animation-name: confettiFall;
+  animation-timing-function: cubic-bezier(0.25, 0.6, 0.5, 1);
+  animation-fill-mode: forwards;
+
+  &--wide {
+    width: 12px;
+    height: 8px;
+  }
+}
+
+@keyframes confettiFall {
+  0%   { opacity: 1; transform: translate3d(0, 0, 0) rotate(var(--spin, 0deg)); }
+  85%  { opacity: 1; }
+  100% { opacity: 0; transform: translate3d(40px, 110vh, 0) rotate(calc(var(--spin, 0deg) + 540deg)); }
+}
+
+// ─── Phones ───────────────────────────────────────────────────────────────────
+@media (max-width: 600px) {
+  .curtain-logo { height: 42px; }
+  .curtain-desc { font-size: 0.98rem; }
+  .ribbon { height: 24px; }
+  .ribbon-bow { width: 88px; height: 60px; }
+  .curtain-panel {
+    background:
+      repeating-linear-gradient(
+        90deg,
+        var(--wiof-teal-shade-40) 0,
+        #18696d 18px,
+        var(--wiof-teal-shade-40) 36px
+      );
+  }
+}
+
+// ─── Reduced motion: no drawing, splitting or confetti — just a fade ──────────
+@media (prefers-reduced-motion: reduce) {
+  .curtain-panel { transition: none; }
+  .ribbon-half, .ribbon-bow, .curtain-valance { transition: none; }
+  .launch-curtain { transition: opacity 0.35s ease; }
+  .is-opening { opacity: 0; }
+  .confetti { display: none; }
+}

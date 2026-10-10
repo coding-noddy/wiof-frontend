@@ -188,7 +188,8 @@ export const FIREBASE_COLLECTION = {
   USER_ACTIONS: 'user_actions',
   USER_ACTION_COMPLETIONS: 'user_action_completions',
   HERO_VIDEOS: 'hero_videos',
-  FEEDBACK: 'Feedback'
+  FEEDBACK: 'Feedback',
+  SITE_SETTINGS: 'site_settings'
 };
 
 export const ACTION_TYPE = {

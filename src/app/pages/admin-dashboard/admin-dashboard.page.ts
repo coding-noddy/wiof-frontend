@@ -108,6 +108,13 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
       description: 'Featured video on each element page and Our Purpose'
     },
     {
+      name: 'Launch Ceremony',
+      route: 'launch-ceremony',
+      icon: 'cut-outline',
+      color: AdminDashboardPage.GRADIENT_MARIGOLD,
+      description: 'Turn the launch-day curtain and ribbon cutting on or off'
+    },
+    {
       name: 'Subscribers',
       route: 'subscribers',
       icon: 'mail-outline',

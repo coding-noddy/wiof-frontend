@@ -40,7 +40,7 @@ The phases below are the same steps, broken out for reference or for running one
 
 ### Code
 - [ ] Commit everything, merge into **`master`** and push. Production deploys **only from `master`**, the remote's default branch. The launch script refuses any other branch, and refuses if local `master` differs from `origin/master`. (`main` also exists, but it's 79 commits behind and isn't used.) `deploy.ps1` builds from the **working tree**: without `-SkipBranch` it creates and checks out `release-<package.json version>` and tags `v<version>-prod`.
-- [ ] Decide the launch version in `package.json` (the footer shows it). It must not already have a `release-<version>` branch or `v<version>-prod` tag. `deploy.ps1` would switch to that **existing** branch and ship its old code, so the launch script refuses. As of 2026-10-10 `package.json` is at `5.5.3` and it's free: only the `v5.1.0-staging` through `v5.5.3-staging` tags exist, with no `release-5.x` branch or `-prod` tag.
+- [ ] Decide the launch version in `package.json` (the footer shows it). It must not already have a `release-<version>` branch or `v<version>-prod` tag. `deploy.ps1` would switch to that **existing** branch and ship its old code, so the launch script refuses. As of 2026-10-10 `package.json` is at `5.6.4` and it's free: only the `v5.1.0-staging` through `v5.6.2-staging` tags exist, with no `release-5.x` branch or `-prod` tag.
 - [ ] `git checkout master && git pull` before running the script. `deploy.ps1` branches `release-<version>` from the current commit.
 - [ ] `npm run test:rules` passes. This needs Java 21; the deploy scripts run it automatically.
 
@@ -183,6 +183,13 @@ This is a live end-to-end Take Action test through the deployed rules and functi
 - [ ] **Feedback, signed in:** send one. Name and email are prefilled, and it appears under avatar menu → **My Feedback** as *Received*.
 - [ ] **Feedback, admin:** Dashboard → **Feedback** lists both entries. Set the signed-in one to *Resolved*, then check that My Feedback shows *Resolved*. Export Excel downloads a file. Delete the two test entries afterwards.
 
+### Launch ceremony (curtain + ribbon cutting)
+The curtain reads `site_settings/launch_ceremony`, which needs the new Firestore rule. The launch script's backend deploy includes it. Without the rule, or with the switch off, the site simply opens normally.
+- [ ] Admin → **Launch Ceremony** → **Turn on**.
+- [ ] In a private window: closed curtains with the ribbon appear on any page; *Cut the ribbon* splits it, the curtains open with confetti, and the welcome modal is underneath. Reload: it doesn't show again. *Skip* also works.
+- [ ] Admins can see it again with **Preview on this browser**.
+- Until the end of **12 October 2026 (IST)** the curtain appears instantly and is then confirmed with Firestore; if the switch is off it disappears within a few seconds. After that date it only appears once Firestore confirms it's on (`OPTIMISTIC_UNTIL` in `launch-curtain.component.ts`). If the launch moves, update that date.
+
 ---
 
 ## After launch
@@ -191,6 +198,8 @@ This is a live end-to-end Take Action test through the deployed rules and functi
 - [ ] **Git housekeeping.** `deploy.ps1` left you on `release-<version>`, with the footer version change uncommitted. Commit it, push the branch, and merge it back into `master`. The `v<version>-prod` tag is already pushed.
 - [ ] Delete the extra copy of the production key in your Downloads folder. Keep only `scripts/service-account.prod.json`.
 - [ ] Add any admins who signed in for the first time after launch (`seed-admins --email … --apply`).
+
+- [ ] **Turn off the launch ceremony** when the launch window ends (Admin → Launch Ceremony → **Turn off**). Its text says "Launching today". No deploy needed; it stops on each visitor's next page load.
 
 ### First 48 hours
 - [ ] **Function errors:** Google Cloud Console → Logging, filter `severity>=ERROR`, or `jsonPayload.fn="<functionName>"` for one function. See `docs/OPERATIONAL_MONITORING.md`.
