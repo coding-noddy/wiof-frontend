@@ -7,6 +7,14 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [5.5.1] - 2026-10-10
+
+### Changed
+- **Footer:** the brand blurb now opens with what World Is One Family is (a community inspired by *Vasudhaiva Kutumbakam*, coming together to protect the planet we share) before the ClimatEnlighten line. Its "that" had been left without anything to refer to
+
+### Fixed
+- **Course in Focus logo** no longer cropped: the image is fitted whole instead of filling its box, and the mobile box is 16:9 (was a 72px square that cut off both ends of the ClimatEnlighten wordmark)
+
 ## [5.5.0] - 2026-10-10
 
 ### Changed
