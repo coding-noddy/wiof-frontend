@@ -14,9 +14,9 @@ Once Phase 0 is done (key saved, Console settings in place, everything committed
 .\launch-production.ps1 -AdminEmails "admin1@example.com,admin2@example.com"
 ```
 
-[`launch-production.ps1`](../launch-production.ps1) runs Phases 1–3 in 13 steps, in order, and stops at the first failure:
+[`launch-production.ps1`](../launch-production.ps1) runs Phases 1–3 in 15 steps, in order, and stops at the first failure:
 
-1. Local checks: the key is for wiof-production, the git tree is clean, you're on `master` in sync with `origin/master`, the Firebase CLI has access, and no `release-<version>` branch or `v<version>-prod` tag exists yet. You then confirm the branch and commit being deployed.
+1. Local checks: the key is for wiof-production, the git tree is clean, you're on `master` in sync with `origin/master`, the Firebase CLI has access, and no `release-<version>` branch or `v<version>-prod` tag exists yet. You then confirm the branch and commit being deployed. It also warns if the launch curtain's instant-show window (`OPTIMISTIC_UNTIL`) has already passed.
 2. **Prerequisites**, checked by API: Google and email sign-in are enabled, and the non-redirect custom domain is authorized. Then you confirm the OAuth consent screen by hand.
 3. Rules tests.
 4. Preflight.
@@ -24,13 +24,15 @@ Once Phase 0 is done (key saved, Console settings in place, everything committed
 6. **Snapshot of the deployed configuration**, the rollback kit (see **Rollback**).
 7. Seed admins.
 8. Content: it shows the dry run and asks you to confirm.
-9. **Deploy**: `deploy.ps1` asks you to type `yes`. It deploys functions and indexes, then rules, then Hosting (see Phase 2). Answer yes to the Storage IAM prompt.
-10. Poll backfill.
-11. Wait for indexes.
-12. Verify.
-13. Smoke test.
+9. **Home Coffee Conversation** migration: it shows the dry run and asks you to confirm.
+10. **Launch ceremony on** (`prod-launch.js launch-ceremony --on --apply`). This runs before the deploy, so the new site's first visitors get the curtain; the old app ignores the setting. Pass `-SkipLaunchCeremony` to leave it off.
+11. **Deploy**: `deploy.ps1` asks you to type `yes`. It deploys functions and indexes, then rules, then Hosting (see Phase 2). Answer yes to the Storage IAM prompt.
+12. Poll backfill.
+13. Wait for indexes.
+14. Verify. It also reports whether the launch ceremony is on.
+15. Smoke test.
 
-Everything is logged to `scripts/backups/launch-<timestamp>.log`. After fixing a failure, resume with `-StartAt <step>` (`checks`, `prerequisites`, `tests`, `preflight`, `backup`, `snapshot`, `admins`, `content`, `deploy`, `polls`, `indexes`, `verify`, `smoke`). The script prints the exact resume command when it stops. **Not run by the script:** the Home Coffee Conversation migration (`node scripts/migrate-home-coffee-conversation.js prod --apply`, see Phase 1). Run it any time before launch, or right after; the home page falls back safely until then. **Still manual afterwards:** the Phase 3 browser check, adding admins who had no production account before launch, and the **After launch** section.
+Everything is logged to `scripts/backups/launch-<timestamp>.log`. After fixing a failure, resume with `-StartAt <step>` (`checks`, `prerequisites`, `tests`, `preflight`, `backup`, `snapshot`, `admins`, `content`, `homecoffee`, `ceremony`, `deploy`, `polls`, `indexes`, `verify`, `smoke`). The script prints the exact resume command when it stops. **Still manual afterwards:** the Phase 3 browser check, adding admins who had no production account before launch, and the **After launch** section.
 
 The phases below are the same steps, broken out for reference or for running one at a time.
 
@@ -185,7 +187,7 @@ This is a live end-to-end Take Action test through the deployed rules and functi
 
 ### Launch ceremony (curtain + ribbon cutting)
 The curtain reads `site_settings/launch_ceremony`, which needs the new Firestore rule. The launch script's backend deploy includes it. Without the rule, or with the switch off, the site simply opens normally.
-- [ ] Admin → **Launch Ceremony** → **Turn on**.
+- [ ] The launch script turned it on before the deploy (unless you passed `-SkipLaunchCeremony`; then use Admin → **Launch Ceremony** → **Turn on**). Admin → Launch Ceremony should show **On**.
 - [ ] In a private window: closed curtains with the ribbon appear on any page; *Cut the ribbon* splits it, the curtains open with confetti, and the welcome modal is underneath. Reload: it doesn't show again. *Skip* also works.
 - [ ] Admins can see it again with **Preview on this browser**.
 - Until the end of **12 October 2026 (IST)** the curtain appears instantly and is then confirmed with Firestore; if the switch is off it disappears within a few seconds. After that date it only appears once Firestore confirms it's on (`OPTIMISTIC_UNTIL` in `launch-curtain.component.ts`). If the launch moves, update that date.

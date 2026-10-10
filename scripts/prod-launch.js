@@ -22,6 +22,9 @@
  *   seed-admins     write admins/{uid} for the given emails (--email a,b)
  *   seed-content    copy the reviewed 40-action catalogue and the hero
  *                   video slots from staging into production
+ *   launch-ceremony turn the launch-day curtain on (--on) or off (--off):
+ *                   site_settings/launch_ceremony { enabled }. Safe before
+ *                   the deploy — the old app never reads it
  *   backfill-polls  rebuild poll_results from the raw Polls votes
  *                   (run AFTER the functions deploy — see runbook)
  *   wait-indexes    block until every composite index is READY (after deploy)
@@ -560,6 +563,31 @@ async function backfillPolls() {
   console.log(`\n${ids.length} poll(s) ${APPLY ? 'backfilled' : 'would be backfilled'}.`);
 }
 
+// ── launch-ceremony ─────────────────────────────────────────────────────────
+
+// The launch-day curtain + ribbon (LaunchCurtainComponent). Same doc the
+// Admin → Launch Ceremony page writes. Turned on BEFORE the Hosting deploy so
+// the very first visitors of the new site get it; the old app ignores it.
+async function launchCeremony() {
+  const on = flag('--on');
+  const off = flag('--off');
+  if (on === off) {
+    console.error('Pass exactly one of --on or --off.');
+    process.exit(1);
+  }
+  heading(`Launch ceremony ${on ? 'ON' : 'OFF'} — ${mode()}`);
+  const { db } = prod();
+  const ref = db.collection('site_settings').doc('launch_ceremony');
+  const current = await ref.get();
+  console.log(`Currently: ${current.exists ? `enabled=${current.data().enabled}` : 'not set (off)'}`);
+  if (APPLY) {
+    await ref.set({ enabled: on, updatedAt: FieldValue.serverTimestamp(), updatedBy: 'prod-launch.js' });
+    console.log(`Set enabled=${on}.`);
+  } else {
+    console.log(`Would set enabled=${on}.`);
+  }
+}
+
 // ── verify ──────────────────────────────────────────────────────────────────
 
 async function verify() {
@@ -593,6 +621,12 @@ async function verify() {
   const keyPath = path.resolve(option('--prod-key', path.join(__dirname, 'service-account.prod.json')));
   const catalogue = spawnSync(process.execPath, [path.join(__dirname, 'verify-take-action-catalogue.js'), '--key', keyPath], { stdio: 'inherit' });
   check('Take Action catalogue (40 active)', catalogue.status === 0);
+
+  // Informational, never a failure: off is a valid launch choice.
+  const ceremony = await db.collection('site_settings').doc('launch_ceremony').get();
+  console.log(`
+INFO  launch ceremony: ${ceremony.exists && ceremony.data().enabled ? 'ON' : 'off'}`
+    + '  (Admin → Launch Ceremony, or: node scripts/prod-launch.js launch-ceremony --off --apply)');
 
   const failed = results.filter((ok) => !ok).length;
   console.log(`\n${results.length - failed}/${results.length} checks passed`);
@@ -771,6 +805,7 @@ const STEPS = {
   'snapshot-config': snapshotConfig,
   'seed-admins': seedAdmins,
   'seed-content': seedContent,
+  'launch-ceremony': launchCeremony,
   'backfill-polls': backfillPolls,
   'wait-indexes': waitIndexes,
   verify,
