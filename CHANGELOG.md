@@ -7,6 +7,17 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [5.5.2] - 2026-10-10
+
+### Changed
+- **Privacy policy brought up to date** with what the site collects now (last updated 10 October 2026):
+  - Take Action completions and streaks added to engagement information
+  - New sections for poll votes (optional guest email, used only to prevent duplicate votes) and feedback you send (message, optional name/email, page, user agent, user ID when signed in)
+  - Location searches in the air quality and rainfall tools go to the data providers; the site doesn't use device location
+  - Names the providers: YouTube embeds (may set cookies), the World Air Quality Index project and Open-Meteo
+  - Points to Settings → *Delete my data* for self-service deletion
+- Removed the internal note that was showing publicly in *Contact us* ("Before this policy is released to production, the WIOF team should add…"); privacy requests now go through *Share feedback* → *Something else*
+
 ## [5.5.1] - 2026-10-10
 
 ### Changed
