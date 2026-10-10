@@ -14,6 +14,10 @@
                      functions + auth settings and a ready-to-run ROLLBACK.md
       admins         seed admins/{uid} for -AdminEmails
       content        copy the 40 Take Action actions + hero videos from staging
+      homecoffee     move the home page's Coffee Conversation into 'Home'
+      ceremony       turn the launch-day curtain + ribbon ON (before the
+                     deploy, so the first visitors get it; the old app
+                     ignores it). Skip with -SkipLaunchCeremony
       deploy         deploy.ps1 -Target prod -Backend (rules, indexes,
                      Storage rules, functions, then Hosting)
       polls          rebuild poll_results from raw votes
@@ -32,6 +36,9 @@
     once after launch and are added then - see the closing message.
 .PARAMETER ProdKey
     Production service account key. Default: scripts\service-account.prod.json
+.PARAMETER SkipLaunchCeremony
+    Don't turn the launch ceremony on (it can still be turned on later in
+    Admin -> Launch Ceremony).
 .PARAMETER StartAt
     Resume from this step after fixing a failure (steps before it are skipped).
 .EXAMPLE
@@ -46,8 +53,10 @@ param(
     [string]$ProdKey = "scripts\service-account.prod.json",
 
     [ValidateSet("checks", "prerequisites", "tests", "preflight", "backup", "snapshot", "admins", "content",
-                 "deploy", "polls", "indexes", "verify", "smoke")]
-    [string]$StartAt = "checks"
+                 "homecoffee", "ceremony", "deploy", "polls", "indexes", "verify", "smoke")]
+    [string]$StartAt = "checks",
+
+    [switch]$SkipLaunchCeremony
 )
 
 # Continue, not Stop: every native call below is checked via $LASTEXITCODE,
@@ -57,7 +66,7 @@ $ErrorActionPreference = "Continue"
 Set-Location $PSScriptRoot
 
 $Steps = @("checks", "prerequisites", "tests", "preflight", "backup", "snapshot", "admins", "content",
-           "deploy", "polls", "indexes", "verify", "smoke")
+           "homecoffee", "ceremony", "deploy", "polls", "indexes", "verify", "smoke")
 $startIndex = [array]::IndexOf($Steps, $StartAt)
 $keyPath = (Resolve-Path $ProdKey -ErrorAction SilentlyContinue).Path
 
@@ -137,6 +146,21 @@ if (Should-Run "checks") {
     $projects = firebase projects:list | Out-String
     if ($projects -notmatch "wiof-production") { Stop-Launch "checks" "Firebase CLI has no access to wiof-production (run: firebase login)" }
     Write-Host "  firebase CLI: has access to wiof-production" -ForegroundColor Green
+
+    # The launch curtain only shows instantly (before Firestore answers)
+    # until OPTIMISTIC_UNTIL; after that it still works, just ~2-3s late.
+    if (-not $SkipLaunchCeremony) {
+        $curtainTs = Get-Content "src\app\components\launch-curtain\launch-curtain.component.ts" -Raw
+        if ($curtainTs -match "OPTIMISTIC_UNTIL = new Date\('([^']+)'\)") {
+            $until = [DateTimeOffset]::Parse($Matches[1])
+            if ([DateTimeOffset]::Now -gt $until) {
+                Write-Host "  [!] Launch curtain's instant window ended $($Matches[1]). It will appear ~2-3s" -ForegroundColor Yellow
+                Write-Host "      after load. Move OPTIMISTIC_UNTIL in launch-curtain.component.ts if that matters." -ForegroundColor Yellow
+            } else {
+                Write-Host "  launch curtain: shows instantly until $($Matches[1])" -ForegroundColor Green
+            }
+        }
+    }
 }
 
 # 2. prerequisites
@@ -185,6 +209,28 @@ if (Should-Run "content") {
     Invoke-Launch "content" @("seed-content", "--apply")
 }
 
+# 8b. homecoffee - v5.2.0: the home page shows the newest 'Home' Coffee
+# Conversation (falls back to the newest overall until this runs)
+if (Should-Run "homecoffee") {
+    Show-Step "homecoffee" "Home Coffee Conversation"
+    node scripts\migrate-home-coffee-conversation.js prod
+    if ($LASTEXITCODE -ne 0) { Stop-Launch "homecoffee" "migrate-home-coffee-conversation.js dry run failed" }
+    Confirm-Continue "homecoffee" "Apply the above to production?"
+    node scripts\migrate-home-coffee-conversation.js prod --apply
+    if ($LASTEXITCODE -ne 0) { Stop-Launch "homecoffee" "migrate-home-coffee-conversation.js failed" }
+}
+
+# 8c. ceremony - before the deploy, so the new site's very first visitors get
+# the curtain + ribbon. Only the new app reads site_settings.
+if (Should-Run "ceremony") {
+    Show-Step "ceremony" "Launch ceremony (curtain + ribbon)"
+    if ($SkipLaunchCeremony) {
+        Write-Host "      Skipped (-SkipLaunchCeremony). Turn on later in Admin -> Launch Ceremony." -ForegroundColor Yellow
+    } else {
+        Invoke-Launch "ceremony" @("launch-ceremony", "--on", "--apply")
+    }
+}
+
 # 9. deploy
 if (Should-Run "deploy") {
     Show-Step "deploy" "Deploy backend + Hosting to production"
@@ -226,10 +272,18 @@ Write-Host "  Now do the manual browser check (runbook, Phase 3) on https://worl
 Write-Host "  in a private window: guest pages, polls, Google sign-in, My Journey, Take Action," -ForegroundColor Cyan
 Write-Host "  a WhatsApp blog share, and the admin dashboard." -ForegroundColor Cyan
 Write-Host ""
+if (-not $SkipLaunchCeremony) {
+    Write-Host "  Launch ceremony is ON. Check it in a private window (cut the ribbon), and" -ForegroundColor Cyan
+    Write-Host "  TURN IT OFF when the launch window ends: Admin -> Launch Ceremony -> Turn off" -ForegroundColor Cyan
+    Write-Host "    (or: node scripts/prod-launch.js launch-ceremony --off --apply)" -ForegroundColor Cyan
+    Write-Host ""
+}
+Write-Host "  Still open: add the privacy contact email to the Privacy Policy (Contact us)." -ForegroundColor Yellow
+Write-Host ""
 Write-Host "  Admins who had no production account yet: sign in once with Google, then run" -ForegroundColor Cyan
 Write-Host "    node scripts/prod-launch.js seed-admins --email them@example.com --apply" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "  To roll back: .estore-production.ps1 -Snapshot <the pre-launch kit below>" -ForegroundColor Cyan
+Write-Host "  To roll back: .\restore-production.ps1 -Snapshot <the pre-launch kit below>" -ForegroundColor Cyan
 Write-Host "  Rollback kit (pre-launch config + exact commands):" -ForegroundColor Cyan
 Write-Host "    $((Get-ChildItem scripts\backups -Directory -Filter 'prod-config-*' | Sort-Object Name | Select-Object -Last 1).FullName)\ROLLBACK.md" -ForegroundColor Cyan
 Write-Host ""
