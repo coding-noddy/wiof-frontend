@@ -7,6 +7,14 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [5.4.1] - 2026-10-10
+
+### Changed
+- **Earth's active pills** (element section nav and element switcher) now use white text on the deeper brown, matching the teal elements' white-on-deeper-teal pills. Both are dark shades, so they read the same way (4.84:1)
+
+### Fixed
+- Unit tests compile again: the analytics spec fixture was missing the now-required `schemaVersion` field on `ActivityLogEntry`
+
 ## [5.4.0] - 2026-10-09
 
 ### Fixed — accessibility (WCAG 2.1 AA)

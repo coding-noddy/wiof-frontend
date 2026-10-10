@@ -357,11 +357,15 @@
     border-color: transparent;
   }
 
-  // Ink on raw Teal is 4.44:1 (just under AA) — the active teal pill uses
-  // the text-safe fill with light text. Brown (4.5) and Marigold (9.6)
-  // keep ink.
+  // Teal and Brown are both dark: the active pill uses their text-safe
+  // fills with light text (4.96 / 4.84:1) so they read alike. Ink on raw
+  // Teal was 4.44:1, just under AA. Marigold keeps ink (9.6:1).
   &.active.color-teal {
     background-color: var(--wiof-teal-fill);
+    color: $light-color;
+  }
+  &.active.color-brown {
+    background-color: var(--wiof-brown-fill);
     color: $light-color;
   }
 
