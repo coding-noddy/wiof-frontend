@@ -11,6 +11,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - **Air quality widget on phones:** long station names (e.g. *Mumbai Us Consulate, India (मुंबई अमेरिकी वाणिज्य दूतावास)*) ran past both edges of the AQI card. They now wrap to at most two lines inside the card, with the full name in a tooltip; checked at 360–1440px widths
+- **Element page heroes on phones:** the illustration was hidden behind a near-opaque wash (added in 5.4.0 for text contrast). Phones now use the home hero's top-down layout: copy on top over a solid ivory wash that fades out below it, revealing the illustration underneath. Text contrast stays above 12:1; tablet and desktop are unchanged
 
 ## [5.5.2] - 2026-10-10
 
