@@ -738,6 +738,38 @@ describe('hero_videos/{slotId} (admin-managed hero video per element page)', () 
   });
 });
 
+describe('site_settings/{settingId} (admin-managed site switches, e.g. launch ceremony)', () => {
+  it('lets anyone, including unauthenticated, read the launch ceremony switch', async () => {
+    await seed((db) => db.collection('site_settings').doc('launch_ceremony').set({ enabled: true }));
+    const db = testEnv.unauthenticatedContext().firestore();
+    await assertSucceeds(db.collection('site_settings').doc('launch_ceremony').get());
+  });
+
+  it('denies a non-admin turning the ceremony on or off', async () => {
+    const db = testEnv.authenticatedContext('mallory').firestore();
+    await assertFails(db.collection('site_settings').doc('launch_ceremony').set({ enabled: false }));
+  });
+
+  it('lets an admin turn the ceremony on and off', async () => {
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    const db = testEnv.authenticatedContext('root').firestore();
+    await assertSucceeds(db.collection('site_settings').doc('launch_ceremony').set({ enabled: true }));
+    await assertSucceeds(db.collection('site_settings').doc('launch_ceremony').set({ enabled: false }));
+  });
+
+  it('denies an admin write to an unknown setting id', async () => {
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    const db = testEnv.authenticatedContext('root').firestore();
+    await assertFails(db.collection('site_settings').doc('maintenance_mode').set({ enabled: true }));
+  });
+
+  it('denies a non-boolean enabled value', async () => {
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    const db = testEnv.authenticatedContext('root').firestore();
+    await assertFails(db.collection('site_settings').doc('launch_ceremony').set({ enabled: 'yes' }));
+  });
+});
+
 describe('user_actions/{userActionId} (product source of truth for completion)', () => {
   // Mirrors toCalendarDay() in activity.service.ts (client-local date).
   function calendarDay(offsetDays = 0) {

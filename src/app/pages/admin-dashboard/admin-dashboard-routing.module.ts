@@ -205,6 +205,13 @@ const routes: Routes = [
       )
   },
   {
+    path: 'launch-ceremony',
+    loadChildren: () =>
+      import('./launch-ceremony/launch-ceremony.module').then(
+        (m) => m.LaunchCeremonyPageModule
+      )
+  },
+  {
     path: 'subscribers',
     loadChildren: () =>
       import('./subscribers/subscribers.module').then(

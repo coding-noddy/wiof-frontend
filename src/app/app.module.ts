@@ -15,6 +15,7 @@ import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { OnboardingOverlayComponent } from './components/onboarding-overlay/onboarding-overlay.component';
+import { LaunchCurtainComponent } from './components/launch-curtain/launch-curtain.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
   AngularFireAnalyticsModule,
@@ -23,7 +24,7 @@ import {
 } from '@angular/fire/compat/analytics';
 
 @NgModule({
-  declarations: [AppComponent, OnboardingOverlayComponent],
+  declarations: [AppComponent, OnboardingOverlayComponent, LaunchCurtainComponent],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),

@@ -7,6 +7,18 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [5.6.0] - 2026-10-10
+
+### Added
+- **Launch ceremony:** a launch-day curtain with a Marigold ribbon. Each visitor's first visit (any page except admin and login) shows closed curtains with *Launching today*; *Cut the ribbon* splits the ribbon, the curtains part with brand-colored confetti, and the site (with the welcome modal) is revealed. Shown once per browser; *Skip* is always available; with reduced motion it simply fades
+- **Admin → Launch Ceremony:** turn it on or off (takes effect on each visitor's next load, no deploy), with last-changed info and *Preview on this browser*
+- New `site_settings` collection: public read, admin-only write limited to known setting ids and a boolean `enabled`, with 5 new rules tests (143 passing)
+- Fail-safe: a missing setting, read error or 5-second timeout means "off", so the ceremony can never keep visitors out
+
+### Deploy notes
+- Needs a **backend** deploy (Firestore rules) alongside Hosting. Without it the ceremony stays off
+- Runbook: turn it on after the production deploy, and off when the launch window ends
+
 ## [5.5.3] - 2026-10-10
 
 ### Fixed

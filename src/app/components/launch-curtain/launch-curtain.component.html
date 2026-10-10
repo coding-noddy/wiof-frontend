@@ -1,0 +1,54 @@
+<div
+  *ngIf="state !== 'hidden'"
+  class="launch-curtain"
+  [ngClass]="'is-' + state"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="launch-title"
+  aria-describedby="launch-desc"
+>
+  <!-- Two curtain panels that part when the ribbon is cut -->
+  <div class="curtain-panel curtain-panel--left" aria-hidden="true"></div>
+  <div class="curtain-panel curtain-panel--right" aria-hidden="true"></div>
+  <div class="curtain-valance" aria-hidden="true"></div>
+
+  <button type="button" class="skip-link" (click)="skip()">Skip</button>
+
+  <div class="curtain-content">
+    <img src="assets/brand/logos/WIOF-full-logo-white.png" alt="World Is One Family logo" class="curtain-logo" />
+    <p class="curtain-eyebrow">Launching today</p>
+    <h1 class="curtain-title" id="launch-title">Welcome to the new World Is One Family</h1>
+    <p class="curtain-desc" id="launch-desc">Cut the ribbon to step inside.</p>
+  </div>
+
+  <!-- Ribbon: two halves so it can split in the middle, plus a bow -->
+  <div class="ribbon" aria-hidden="true">
+    <span class="ribbon-half ribbon-half--left"></span>
+    <span class="ribbon-half ribbon-half--right"></span>
+    <svg class="ribbon-bow" viewBox="0 0 120 80" focusable="false">
+      <path d="M60 40 C40 10, 8 12, 10 36 C12 58, 42 54, 60 40 Z" />
+      <path d="M60 40 C80 10, 112 12, 110 36 C108 58, 78 54, 60 40 Z" />
+      <path d="M54 42 L40 78 L50 72 L56 80 Z" />
+      <path d="M66 42 L80 78 L70 72 L64 80 Z" />
+      <circle cx="60" cy="40" r="9" />
+    </svg>
+  </div>
+
+  <button #cutBtn type="button" class="cut-btn" (click)="cutRibbon()" [disabled]="state !== 'closed'">
+    <ion-icon aria-hidden="true" name="cut-outline"></ion-icon>
+    Cut the ribbon
+  </button>
+
+  <div class="confetti" aria-hidden="true" *ngIf="confetti.length">
+    <span
+      *ngFor="let piece of confetti"
+      class="confetti-piece"
+      [class.confetti-piece--wide]="piece.wide"
+      [style.left.%]="piece.left"
+      [style.background]="piece.color"
+      [style.animation-delay.s]="piece.delay"
+      [style.animation-duration.s]="piece.duration"
+      [style.--spin]="piece.rotate + 'deg'"
+    ></span>
+  </div>
+</div>
