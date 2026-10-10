@@ -40,7 +40,7 @@ The phases below are the same steps, broken out for reference or for running one
 
 ### Code
 - [ ] Commit everything, merge into **`master`** and push. Production deploys **only from `master`**, the remote's default branch. The launch script refuses any other branch, and refuses if local `master` differs from `origin/master`. (`main` also exists, but it's 79 commits behind and isn't used.) `deploy.ps1` builds from the **working tree**: without `-SkipBranch` it creates and checks out `release-<package.json version>` and tags `v<version>-prod`.
-- [ ] Decide the launch version in `package.json` (the footer shows it). It must not already have a `release-<version>` branch or `v<version>-prod` tag. `deploy.ps1` would switch to that **existing** branch and ship its old code, so the launch script refuses. As of 2026-10-10 `package.json` is at `5.6.2` and it's free: only the `v5.1.0-staging` through `v5.6.2-staging` tags exist, with no `release-5.x` branch or `-prod` tag.
+- [ ] Decide the launch version in `package.json` (the footer shows it). It must not already have a `release-<version>` branch or `v<version>-prod` tag. `deploy.ps1` would switch to that **existing** branch and ship its old code, so the launch script refuses. As of 2026-10-10 `package.json` is at `5.6.3` and it's free: only the `v5.1.0-staging` through `v5.6.3-staging` tags exist, with no `release-5.x` branch or `-prod` tag.
 - [ ] `git checkout master && git pull` before running the script. `deploy.ps1` branches `release-<version>` from the current commit.
 - [ ] `npm run test:rules` passes. This needs Java 21; the deploy scripts run it automatically.
 

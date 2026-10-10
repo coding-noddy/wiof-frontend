@@ -12,15 +12,9 @@
   justify-content: center;
   padding: 2rem 1.25rem;
   color: var(--wiof-warm-white);
-  // The curtains are simply already closed when the site opens — a quick
-  // fade in, not panels sliding in from the sides (which read as the
-  // curtains *closing* on the visitor).
-  animation: curtainFadeIn 0.25s ease-out;
-}
-
-@keyframes curtainFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  // No entrance animation: the curtains are simply already closed when the
+  // site opens. A slide-in read as them *closing* on the visitor, and even a
+  // short fade let the site show through for a moment.
 }
 
 // ─── Curtain panels ───────────────────────────────────────────────────────────
@@ -273,7 +267,6 @@
 
 // ─── Reduced motion: no drawing, splitting or confetti — just a fade ──────────
 @media (prefers-reduced-motion: reduce) {
-  .launch-curtain { animation: none; }
   .curtain-panel { transition: none; }
   .ribbon-half, .ribbon-bow, .curtain-valance { transition: none; }
   .launch-curtain { transition: opacity 0.35s ease; }
