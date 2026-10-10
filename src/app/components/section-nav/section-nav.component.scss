@@ -66,11 +66,12 @@
 // plain $dark-color text, not a heavily darkened per-element text tint — that
 // read as muddy/too-dark next to the switcher pills right above this bar. Air,
 // Water and Spirit all share the same plain teal ($water-color) there too,
-// rather than three separate tint/shade variants. The teal ones use the
-// text-safe fill with light text: ink on raw Teal is 4.44:1, just under AA.
+// rather than three separate tint/shade variants. Teal and Brown use their
+// text-safe fills with light text (4.96 / 4.84:1) so the dark element pills
+// all read the same way; ink on raw Teal was 4.44:1, just under AA.
 .theme-earth .nav-item.active {
-  background: $earth-color;
-  color: $dark-color;
+  background: var(--wiof-brown-fill);
+  color: $light-color;
 }
 .theme-earth .nav-item:hover { background: rgba($earth-color, 0.15); color: darken($earth-color, 30%); }
 

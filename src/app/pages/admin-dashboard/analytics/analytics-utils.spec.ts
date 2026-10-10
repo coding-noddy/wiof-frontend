@@ -10,6 +10,7 @@ function makeEntry(overrides: Partial<ActivityLogEntry>): ActivityLogEntry {
   return {
     userId: 'user1',
     activityType: 'daily_visit',
+    schemaVersion: 1, // matches ActivityService.SCHEMA_VERSION (private)
     timestamp: new Date(),
     calendarDay: '2024-01-15',
     ...overrides
