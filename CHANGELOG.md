@@ -7,6 +7,11 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [5.6.2] - 2026-10-10
+
+### Fixed
+- **Launch ceremony no longer looks like the curtains are closing** when the site opens: the panels used to slide in from the sides on appearing. They're now simply already closed, with a quick fade in
+
 ## [5.6.1] - 2026-10-10
 
 ### Fixed

@@ -12,6 +12,15 @@
   justify-content: center;
   padding: 2rem 1.25rem;
   color: var(--wiof-warm-white);
+  // The curtains are simply already closed when the site opens — a quick
+  // fade in, not panels sliding in from the sides (which read as the
+  // curtains *closing* on the visitor).
+  animation: curtainFadeIn 0.25s ease-out;
+}
+
+@keyframes curtainFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 // ─── Curtain panels ───────────────────────────────────────────────────────────
@@ -29,7 +38,6 @@
       var(--wiof-teal-shade-40) 56px
     );
   transition: transform 1.6s cubic-bezier(0.7, 0, 0.25, 1);
-  animation: curtainDrawIn 0.6s ease-out;
 
   &--left {
     left: 0;
@@ -39,13 +47,7 @@
   &--right {
     right: 0;
     transform-origin: right center;
-    --draw-from: 100%;
   }
-}
-
-@keyframes curtainDrawIn {
-  from { transform: translateX(var(--draw-from, -100%)); }
-  to { transform: translateX(0); }
 }
 
 // Pelmet across the top, with a Marigold trim line.
@@ -271,7 +273,8 @@
 
 // ─── Reduced motion: no drawing, splitting or confetti — just a fade ──────────
 @media (prefers-reduced-motion: reduce) {
-  .curtain-panel { animation: none; transition: none; }
+  .launch-curtain { animation: none; }
+  .curtain-panel { transition: none; }
   .ribbon-half, .ribbon-bow, .curtain-valance { transition: none; }
   .launch-curtain { transition: opacity 0.35s ease; }
   .is-opening { opacity: 0; }
