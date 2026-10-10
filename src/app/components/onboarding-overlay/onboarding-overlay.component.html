@@ -1,68 +1,91 @@
 <!-- Backdrop overlay -->
 <div *ngIf="visible" class="onboarding-backdrop" (click)="dismiss()"></div>
 
-<!-- Modal content -->
+<!-- Welcome modal: "three ways to start", mapped to the home hero's motto
+     (Enlighten / Inspire / Protect). Every item navigates somewhere, so the
+     welcome is a starting point rather than a wall of information. -->
 <div
   *ngIf="visible"
   class="onboarding-overlay"
   role="dialog"
   aria-modal="true"
-  aria-label="Welcome to WIOF onboarding"
+  aria-labelledby="onboarding-title"
+  aria-describedby="onboarding-purpose"
 >
   <button
     #closeBtn
     class="close-btn"
     (click)="dismiss()"
-    aria-label="Close onboarding overlay"
+    aria-label="Close welcome"
   >
     <ion-icon aria-hidden="true" name="close-outline"></ion-icon>
   </button>
 
   <div class="overlay-content">
-    <!-- Header with gradient -->
     <div class="overlay-header">
       <img src="assets/brand/logos/WIOF-full-logo-white.png" alt="World Is One Family logo" class="header-logo" />
-      <h2 class="overlay-title">Welcome to WIOF</h2>
-      <p class="overlay-purpose">
-        The world is one family — Vasudhaiva Kutumbakam. Explore the five elements that hold
-        every life on Earth together, and find the spark that's yours to carry forward.
+      <h2 class="overlay-title" id="onboarding-title">Welcome to WIOF</h2>
+      <p class="overlay-purpose" id="onboarding-purpose">
+        The world is one family. Here are three ways to start.
       </p>
     </div>
 
-    <!-- Five Elements with colorful icons -->
-    <div class="elements-section">
-      <h3 class="section-heading">
-        <ion-icon aria-hidden="true" name="layers-outline"></ion-icon>
-        The Five Elements
-      </h3>
-      <div class="elements-grid">
-        <div *ngFor="let element of elements" class="element-chip" [style.--chip-color]="element.color">
-          <ion-icon aria-hidden="true" [name]="element.icon" class="element-icon"></ion-icon>
-          <div class="element-text">
-            <span class="element-name">{{ element.name }}</span>
-            <span class="element-desc">{{ element.description }}</span>
-          </div>
-        </div>
-      </div>
+    <div class="ways">
+      <!-- Enlighten: learning lives on the element pages, so the card holds
+           one link per element instead of being a single link itself. -->
+      <section class="way way--enlighten" aria-labelledby="way-enlighten-title">
+        <p class="way-verb">Enlighten</p>
+        <h3 class="way-title" id="way-enlighten-title">Learn about the five elements</h3>
+        <p class="way-desc">Blogs, videos and live data like air quality and rainfall.</p>
+        <ul class="element-pills">
+          <li *ngFor="let element of elements">
+            <a
+              class="element-pill"
+              [ngClass]="'color-' + element.colorClass"
+              [routerLink]="['/element', element.slug]"
+              (click)="dismiss()"
+            >
+              <img [src]="'assets/icons/icon_' + element.slug + '.png'" alt="" class="pill-icon" />
+              {{ element.name }}
+            </a>
+          </li>
+        </ul>
+      </section>
+
+      <button type="button" class="way way--inspire way--link" (click)="goToConversations()">
+        <span class="way-text">
+          <span class="way-verb">Inspire</span>
+          <span class="way-title">Join the conversation</span>
+          <span class="way-desc">Coffee Conversations with changemakers and this week's poll.</span>
+        </span>
+        <ion-icon aria-hidden="true" name="chevron-forward" class="way-arrow"></ion-icon>
+      </button>
+
+      <a class="way way--protect way--link" routerLink="/take-action" (click)="dismiss()">
+        <span class="way-text">
+          <span class="way-verb">Protect</span>
+          <span class="way-title">Take a small action</span>
+          <span class="way-desc">Pick something you can do today, mark it done and build a streak.</span>
+        </span>
+        <ion-icon aria-hidden="true" name="chevron-forward" class="way-arrow"></ion-icon>
+      </a>
     </div>
 
-    <!-- Features with icons -->
-    <div class="features-section">
-      <h3 class="section-heading">
-        <ion-icon aria-hidden="true" name="compass-outline"></ion-icon>
-        Explore
-      </h3>
-      <div class="features-grid">
-        <div *ngFor="let feature of features" class="feature-chip">
-          <ion-icon aria-hidden="true" [name]="feature.icon"></ion-icon>
-          <span>{{ feature.name }}</span>
-        </div>
-      </div>
-    </div>
+    <div class="overlay-footer">
+      <!-- The one Marigold element on the welcome: Protect is the one thing a
+           visitor can do straight away, so the primary CTA points there. -->
+      <button type="button" class="primary-cta" (click)="onPrimaryCta()">
+        Find an action to take
+        <ion-icon aria-hidden="true" name="arrow-forward"></ion-icon>
+      </button>
+      <button type="button" class="secondary-link" (click)="dismiss()">Explore on my own</button>
 
-    <button class="got-it-btn" (click)="dismiss()">
-      <ion-icon aria-hidden="true" name="checkmark-circle-outline"></ion-icon>
-      Got it, let's go!
-    </button>
+      <p class="sign-in-note" *ngIf="!(isAuthenticated$ | async)">
+        <button type="button" class="sign-in-link" (click)="signIn()" [disabled]="signingIn">
+          {{ signingIn ? 'Signing in…' : 'Sign in with Google' }}
+        </button>
+        to save your actions and track your journey.
+      </p>
+    </div>
   </div>
 </div>

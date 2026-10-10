@@ -7,6 +7,19 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [5.5.0] - 2026-10-10
+
+### Changed
+- **Welcome modal redesigned as "three ways to start"**, mapped to the home hero motto:
+  - *Enlighten*: learn about the five elements, with a link to each element page (brand element icons)
+  - *Inspire*: join the conversation, which goes to Coffee Conversations and this week's poll on the home page
+  - *Protect*: take a small action, which goes to Take Action
+- One Marigold CTA, *Find an action to take*, plus *Explore on my own*. The three cards share the same plain border, so the CTA is the only Marigold element
+- Signed-out visitors see *Sign in with Google to save your actions and track your journey*; a successful sign-in closes the welcome
+- Shows on the **home page only**, not on content pages, so visitors from a shared blog or video link can read what they came for; they see it when they first reach Home. Take Action already explains itself
+- Fits without scrolling (was taller than a laptop screen); a bottom sheet on phones
+- Fixed: every tile and chip looked clickable but wasn't; the header's white text on raw Teal was about 3.4:1 (now the text-safe teal); the dialog is labelled by its title
+
 ## [5.4.1] - 2026-10-10
 
 ### Changed
