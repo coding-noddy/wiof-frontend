@@ -7,6 +7,21 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [6.0.0] - 2026-10-11
+
+**Production launch release.** The first production deploy since `v2.0.2-prod` (2026-08-12). It contains everything released to staging from 3.x to 5.6.4, including:
+- Google sign-in, My Journey, My Library, Settings and engagement tracking
+- The Take Action catalogue with completions and streaks
+- Brand-aligned redesign across every page, with element illustration heroes
+- Coffee Conversations (with a Home category), polls with server-side results, news, the environment calendar, In Focus widgets
+- Site feedback with My Feedback, and the admin feedback inbox
+- WCAG 2.1 AA accessibility pass
+- The new "three ways to start" welcome modal
+- An updated privacy policy
+- The launch-day curtain and ribbon ceremony
+
+No code changes from 5.6.4; this entry marks the version that goes to production. The launch sequence is in `docs/PRODUCTION_LAUNCH_RUNBOOK.md` (`launch-production.ps1`, 15 steps).
+
 ## [5.6.4] - 2026-10-10
 
 ### Changed
