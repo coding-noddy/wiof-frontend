@@ -21,6 +21,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - The launch-day curtain and ribbon ceremony
 
 Changed since 5.6.4:
+- **Admin login: Continue with Google** under the email/password form. Admins land on the dashboard; a non-admin Google account gets a clear "isn't an admin" message; closing the popup isn't an error. Production keeps one account per email, so an admin's Google sign-in uses the same account (and admin rights) as their email/password login
 - **Launch ceremony can start locked:** visitors see the curtain with "Opening today at 3:30 PM IST", a disabled *Opening soon* button and no Skip, until an admin clicks **Unlock ribbon** (Admin → Launch Ceremony). That enables the button live on every open page, no reload. The launch script takes `-LockRibbon -RibbonOpensAt "3:30 PM IST"`; the curtain still releases visitors if the setting can't be read
 - **Only one video plays at a time:** starting a YouTube video now pauses any other video playing on the page, for guests and signed-in users. Reported by the testing team The launch sequence is in `docs/PRODUCTION_LAUNCH_RUNBOOK.md` (`launch-production.ps1`, 15 steps).
 

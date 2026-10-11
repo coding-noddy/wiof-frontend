@@ -124,6 +124,62 @@ ion-content {
   }
 }
 
+// "or" between the email form and Google sign-in.
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  margin: 1.25rem 0 1rem;
+  font-size: 0.82rem;
+  color: var(--wiof-ink-muted);
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--wiof-brown-tint-40);
+  }
+}
+
+// Secondary to the Marigold Sign In: outlined, warm-white.
+.login-google-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  height: 48px;
+  border-radius: 999px;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  background: var(--wiof-warm-white);
+  color: var(--wiof-ink);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+
+  ion-icon {
+    font-size: 1.1rem;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: var(--wiof-brown);
+    background: var(--wiof-ivory);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--wiof-teal-text);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.7;
+  }
+}
+
 // Marigold: this page has exactly one action and no competing hero CTA,
 // same reasoning as the element pages' Coffee Conversation CTA — genuinely
 // the one primary action on the page.
