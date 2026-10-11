@@ -32,7 +32,7 @@ Every `-AdminEmails` address must already have a production sign-in account (`pr
 7. Seed admins.
 8. Content: it shows the dry run and asks you to confirm.
 9. **Home Coffee Conversation** migration: it shows the dry run and asks you to confirm.
-10. **Launch ceremony on** (`prod-launch.js launch-ceremony --on --apply`). This runs before the deploy, so the new site's first visitors get the curtain; the old app ignores the setting. Pass `-SkipLaunchCeremony` to leave it off.
+10. **Launch ceremony on** (`prod-launch.js launch-ceremony --on --apply`). This runs before the deploy, so the new site's first visitors get the curtain; the old app ignores the setting. Pass `-SkipLaunchCeremony` to leave it off. With **`-LockRibbon -RibbonOpensAt "3:30 PM IST"`** (what `launch-command.local.ps1` uses) the ribbon starts **locked**: visitors see "Opening today at 3:30 PM IST", a disabled *Opening soon* button and no Skip, until an admin unlocks it (see Phase 3).
 11. **Deploy**: `deploy.ps1` asks you to type `yes`. It deploys functions and indexes, then rules, then Hosting (see Phase 2). Answer yes to the Storage IAM prompt.
 12. Poll backfill.
 13. Wait for indexes.
@@ -197,6 +197,13 @@ The curtain reads `site_settings/launch_ceremony`, which needs the new Firestore
 - [ ] The launch script turned it on before the deploy (unless you passed `-SkipLaunchCeremony`; then use Admin → **Launch Ceremony** → **Turn on**). Admin → Launch Ceremony should show **On**.
 - [ ] In a private window: closed curtains with the ribbon appear on any page; *Cut the ribbon* splits it, the curtains open with confetti, and the welcome modal is underneath. Reload: it doesn't show again. *Skip* also works.
 - [ ] Admins can see it again with **Preview on this browser**.
+
+**If launched with the ribbon locked** (`-LockRibbon`):
+- [ ] In a private window, the curtain shows "Opening today at …", the button reads *Opening soon* and is disabled, and there's no Skip.
+- [ ] Before the opening time, admins sign in at `/login` (email/password). Login and admin pages are never covered by the curtain.
+- [ ] **At the opening time:** Admin → Launch Ceremony → **Unlock ribbon**. Every open page switches to *Cut the ribbon* within seconds, no reload. Fallback from the launch machine: `node scripts/prod-launch.js launch-ceremony --on --unlocked --apply`.
+- [ ] To let everyone straight in instead (skipping the ceremony), **Turn off** the ceremony.
+- If a visitor's browser can't read the setting, the curtain releases them after 8 seconds (fail-safe), so a closed launch isn't watertight for someone on a broken network.
 - Until the end of **12 October 2026 (IST)** the curtain appears instantly and is then confirmed with Firestore; if the switch is off it disappears within a few seconds. After that date it only appears once Firestore confirms it's on (`OPTIMISTIC_UNTIL` in `launch-curtain.component.ts`). If the launch moves, update that date.
 
 ---
