@@ -24,7 +24,10 @@
  *                   video slots from staging into production
  *   launch-ceremony turn the launch-day curtain on (--on) or off (--off):
  *                   site_settings/launch_ceremony { enabled }. Safe before
- *                   the deploy — the old app never reads it
+ *                   the deploy — the old app never reads it. --locked keeps
+ *                   the ribbon uncuttable until an admin unlocks it
+ *                   (--unlocked, or Admin → Launch Ceremony); --opens-at
+ *                   "3:30 PM IST" is shown on the curtain while locked
  *   backfill-polls  rebuild poll_results from the raw Polls votes
  *                   (run AFTER the functions deploy — see runbook)
  *   wait-indexes    block until every composite index is READY (after deploy)
@@ -575,16 +578,29 @@ async function launchCeremony() {
     console.error('Pass exactly one of --on or --off.');
     process.exit(1);
   }
-  heading(`Launch ceremony ${on ? 'ON' : 'OFF'} — ${mode()}`);
+  const locked = flag('--locked');
+  const unlocked = flag('--unlocked');
+  if (locked && unlocked) {
+    console.error('Pass at most one of --locked or --unlocked.');
+    process.exit(1);
+  }
+  const opensAt = option('--opens-at', '');
+  heading(`Launch ceremony ${on ? 'ON' : 'OFF'}${locked ? ' (ribbon LOCKED)' : ''} — ${mode()}`);
   const { db } = prod();
   const ref = db.collection('site_settings').doc('launch_ceremony');
   const current = await ref.get();
-  console.log(`Currently: ${current.exists ? `enabled=${current.data().enabled}` : 'not set (off)'}`);
+  const cur = current.exists ? current.data() : null;
+  console.log(`Currently: ${cur ? `enabled=${cur.enabled} ribbonLocked=${cur.ribbonLocked === true}${cur.opensAtLabel ? ` opensAt="${cur.opensAtLabel}"` : ''}` : 'not set (off)'}`);
+  const update = { enabled: on, updatedAt: FieldValue.serverTimestamp(), updatedBy: 'prod-launch.js' };
+  if (locked) update.ribbonLocked = true;
+  if (unlocked) update.ribbonLocked = false;
+  if (opensAt) update.opensAtLabel = opensAt;
+  const summary = Object.entries(update).filter(([k]) => !['updatedAt', 'updatedBy'].includes(k)).map(([k, v]) => `${k}=${JSON.stringify(v)}`).join(' ');
   if (APPLY) {
-    await ref.set({ enabled: on, updatedAt: FieldValue.serverTimestamp(), updatedBy: 'prod-launch.js' });
-    console.log(`Set enabled=${on}.`);
+    await ref.set(update, { merge: true });
+    console.log(`Set ${summary}.`);
   } else {
-    console.log(`Would set enabled=${on}.`);
+    console.log(`Would set ${summary}.`);
   }
 }
 
@@ -624,8 +640,9 @@ async function verify() {
 
   // Informational, never a failure: off is a valid launch choice.
   const ceremony = await db.collection('site_settings').doc('launch_ceremony').get();
+  const cer = ceremony.exists ? ceremony.data() : {};
   console.log(`
-INFO  launch ceremony: ${ceremony.exists && ceremony.data().enabled ? 'ON' : 'off'}`
+INFO  launch ceremony: ${cer.enabled ? 'ON' : 'off'}${cer.enabled && cer.ribbonLocked ? ', ribbon LOCKED (unlock in Admin → Launch Ceremony)' : ''}`
     + '  (Admin → Launch Ceremony, or: node scripts/prod-launch.js launch-ceremony --off --apply)');
 
   const failed = results.filter((ok) => !ok).length;

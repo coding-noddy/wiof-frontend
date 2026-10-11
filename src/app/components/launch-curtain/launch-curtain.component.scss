@@ -173,6 +173,12 @@
   }
 
   &:disabled { cursor: default; }
+
+  // Locked: clearly not clickable yet, but still readable (ink on a
+  // warm-white at 75% over the teal curtain stays well above 4.5:1).
+  &--locked {
+    background: rgba(255, 252, 246, 0.75);
+  }
 }
 
 .skip-link {

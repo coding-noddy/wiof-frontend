@@ -763,6 +763,22 @@ describe('site_settings/{settingId} (admin-managed site switches, e.g. launch ce
     await assertFails(db.collection('site_settings').doc('maintenance_mode').set({ enabled: true }));
   });
 
+  it('lets an admin lock and unlock the ribbon, with an opening-time label', async () => {
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    const db = testEnv.authenticatedContext('root').firestore();
+    const ref = db.collection('site_settings').doc('launch_ceremony');
+    await assertSucceeds(ref.set({ enabled: true, ribbonLocked: true, opensAtLabel: '3:30 PM IST' }));
+    await assertSucceeds(ref.set({ ribbonLocked: false }, { merge: true }));
+  });
+
+  it('denies a non-boolean ribbonLocked or an over-long label', async () => {
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    const db = testEnv.authenticatedContext('root').firestore();
+    const ref = db.collection('site_settings').doc('launch_ceremony');
+    await assertFails(ref.set({ enabled: true, ribbonLocked: 'yes' }));
+    await assertFails(ref.set({ enabled: true, opensAtLabel: 'x'.repeat(41) }));
+  });
+
   it('denies a non-boolean enabled value', async () => {
     await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
     const db = testEnv.authenticatedContext('root').firestore();
