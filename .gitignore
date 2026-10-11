@@ -141,5 +141,8 @@ scripts/service-account.json
 scripts/service-account*.json
 service-account*.json
 scripts/.env
+# Local-only scripts with private details, e.g. launch-command.local.ps1
+# (real admin emails; this repo is public)
+*.local.ps1
 scripts/backups/
 functions/node_modules/

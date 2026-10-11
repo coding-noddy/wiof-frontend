@@ -14,6 +14,13 @@ Once Phase 0 is done (key saved, Console settings in place, everything committed
 .\launch-production.ps1 -AdminEmails "admin1@example.com,admin2@example.com"
 ```
 
+**This repo is public**, so the real admin emails aren't written here. The exact command is in **`launch-command.local.ps1`** at the repo root. That file is git-ignored (`*.local.ps1`) and exists only on the launch machine. Run it instead:
+```powershell
+.\launch-command.local.ps1                  # full launch
+.\launch-command.local.ps1 -StartAt polls   # resume after a failure
+```
+Every `-AdminEmails` address must already have a production sign-in account (`prod-launch.js preflight` lists them), or the `admins` step stops the launch.
+
 [`launch-production.ps1`](../launch-production.ps1) runs Phases 1–3 in 15 steps, in order, and stops at the first failure:
 
 1. Local checks: the key is for wiof-production, the git tree is clean, you're on `master` in sync with `origin/master`, the Firebase CLI has access, and no `release-<version>` branch or `v<version>-prod` tag exists yet. You then confirm the branch and commit being deployed. It also warns if the launch curtain's instant-show window (`OPTIMISTIC_UNTIL`) has already passed.
