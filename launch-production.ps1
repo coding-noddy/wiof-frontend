@@ -36,6 +36,12 @@
     once after launch and are added then - see the closing message.
 .PARAMETER ProdKey
     Production service account key. Default: scripts\service-account.prod.json
+.PARAMETER LockRibbon
+    Start the launch ceremony with the ribbon LOCKED: visitors see the
+    curtain but can't cut it (no Skip) until an admin clicks Unlock ribbon
+    in Admin -> Launch Ceremony. Use with -RibbonOpensAt.
+.PARAMETER RibbonOpensAt
+    Opening time shown on the curtain while locked, e.g. "3:30 PM IST".
 .PARAMETER SkipLaunchCeremony
     Don't turn the launch ceremony on (it can still be turned on later in
     Admin -> Launch Ceremony).
@@ -56,7 +62,11 @@ param(
                  "homecoffee", "ceremony", "deploy", "polls", "indexes", "verify", "smoke")]
     [string]$StartAt = "checks",
 
-    [switch]$SkipLaunchCeremony
+    [switch]$SkipLaunchCeremony,
+
+    [switch]$LockRibbon,
+
+    [string]$RibbonOpensAt = ""
 )
 
 # Continue, not Stop: every native call below is checked via $LASTEXITCODE,
@@ -227,7 +237,10 @@ if (Should-Run "ceremony") {
     if ($SkipLaunchCeremony) {
         Write-Host "      Skipped (-SkipLaunchCeremony). Turn on later in Admin -> Launch Ceremony." -ForegroundColor Yellow
     } else {
-        Invoke-Launch "ceremony" @("launch-ceremony", "--on", "--apply")
+        $ceremonyArgs = @("launch-ceremony", "--on", "--apply")
+        if ($LockRibbon) { $ceremonyArgs += "--locked" } else { $ceremonyArgs += "--unlocked" }
+        if ($RibbonOpensAt) { $ceremonyArgs += @("--opens-at", $RibbonOpensAt) }
+        Invoke-Launch "ceremony" $ceremonyArgs
     }
 }
 
@@ -272,6 +285,12 @@ Write-Host "  Now do the manual browser check (runbook, Phase 3) on https://worl
 Write-Host "  in a private window: guest pages, polls, Google sign-in, My Journey, Take Action," -ForegroundColor Cyan
 Write-Host "  a WhatsApp blog share, and the admin dashboard." -ForegroundColor Cyan
 Write-Host ""
+if ($LockRibbon -and -not $SkipLaunchCeremony) {
+    Write-Host "  RIBBON IS LOCKED: visitors are waiting behind the curtain." -ForegroundColor Yellow
+    Write-Host "  At the opening time: Admin -> Launch Ceremony -> Unlock ribbon" -ForegroundColor Yellow
+    Write-Host "    (or: node scripts/prod-launch.js launch-ceremony --on --unlocked --apply)" -ForegroundColor Yellow
+    Write-Host ""
+}
 if (-not $SkipLaunchCeremony) {
     Write-Host "  Launch ceremony is ON. Check it in a private window (cut the ribbon), and" -ForegroundColor Cyan
     Write-Host "  TURN IT OFF when the launch window ends: Admin -> Launch Ceremony -> Turn off" -ForegroundColor Cyan

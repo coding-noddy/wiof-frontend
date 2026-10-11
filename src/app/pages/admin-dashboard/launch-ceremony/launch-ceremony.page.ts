@@ -44,7 +44,28 @@ export class LaunchCeremonyPage implements OnInit {
     this.saveError = '';
     this.launchCeremony.setEnabled(next).subscribe({
       next: () => {
-        this.setting = { enabled: next, updatedAt: new Date(), updatedBy: 'you' };
+        this.setting = { ...this.setting!, enabled: next, updatedAt: new Date(), updatedBy: 'you' };
+        this.saving = false;
+      },
+      error: () => {
+        this.saveError = "Couldn't save. Check you're signed in as an admin and try again.";
+        this.saving = false;
+      }
+    });
+  }
+
+  /** Locked: visitors see the curtain but can't cut the ribbon yet.
+   *  Unlocking reaches every open page live. */
+  toggleLock(): void {
+    if (!this.setting || this.saving) {
+      return;
+    }
+    const next = !this.setting.ribbonLocked;
+    this.saving = true;
+    this.saveError = '';
+    this.launchCeremony.setRibbonLocked(next).subscribe({
+      next: () => {
+        this.setting = { ...this.setting!, ribbonLocked: next, updatedAt: new Date(), updatedBy: 'you' };
         this.saving = false;
       },
       error: () => {

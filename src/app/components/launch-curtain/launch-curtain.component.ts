@@ -43,6 +43,10 @@ const CONFETTI_COLORS = ['#FFC26F', '#7AC2C5', '#FFFCF6', '#CAB79E', '#21999F'];
 export class LaunchCurtainComponent implements OnInit, OnDestroy {
   state: CurtainState = 'hidden';
   confetti: ConfettiPiece[] = [];
+  /** Visitors can't cut the ribbon until an admin unlocks it. Starts true
+   *  so the button can't flash on before the live setting arrives. */
+  locked = true;
+  opensAtLabel?: string;
 
   @ViewChild('cutBtn') cutBtn?: ElementRef<HTMLButtonElement>;
 
@@ -63,14 +67,34 @@ export class LaunchCurtainComponent implements OnInit, OnDestroy {
       this.show();
     }
 
-    // Always re-check: an admin switching the ceremony off takes effect on
-    // the visitor's next load, even if their cached value said "on".
-    this.sub = this.launchCeremony.isEnabled().subscribe((enabled) => {
-      this.write(ENABLED_CACHE_KEY, enabled ? 'true' : null);
-      if (enabled) {
-        this.show();
-      } else if (this.state === 'closed') {
-        this.state = 'hidden';
+    // Fail-safe: if the live setting never arrives (offline, blocked), don't
+    // hold the visitor behind the curtain.
+    let received = false;
+    this.after(8000, () => {
+      if (!received && this.state === 'closed') {
+        this.close();
+      }
+    });
+
+    // Live: an admin unlocking the ribbon reaches every open page at once;
+    // switching the ceremony off releases visitors straight away.
+    this.sub = this.launchCeremony.watch().subscribe((setting) => {
+      received = true;
+      this.write(ENABLED_CACHE_KEY, setting.enabled ? 'true' : null);
+      if (!setting.enabled) {
+        if (this.state === 'closed') {
+          this.close();
+        } else {
+          this.sub?.unsubscribe();
+        }
+        return;
+      }
+      const wasLocked = this.locked;
+      this.locked = setting.ribbonLocked;
+      this.opensAtLabel = setting.opensAtLabel;
+      this.show();
+      if (wasLocked && !this.locked) {
+        this.after(50, () => this.cutBtn?.nativeElement.focus());
       }
     });
   }
@@ -81,9 +105,10 @@ export class LaunchCurtainComponent implements OnInit, OnDestroy {
   }
 
   cutRibbon(): void {
-    if (this.state !== 'closed') {
+    if (this.state !== 'closed' || this.locked) {
       return;
     }
+    this.sub?.unsubscribe();
     this.write(CUT_KEY, 'true');
     if (this.reducedMotion) {
       this.state = 'opening';
@@ -99,7 +124,17 @@ export class LaunchCurtainComponent implements OnInit, OnDestroy {
   }
 
   skip(): void {
+    if (this.locked) {
+      return;
+    }
+    this.sub?.unsubscribe();
     this.write(CUT_KEY, 'true');
+    this.state = 'hidden';
+  }
+
+  /** Hide without marking the ribbon cut (ceremony off / setting unavailable). */
+  private close(): void {
+    this.sub?.unsubscribe();
     this.state = 'hidden';
   }
 
@@ -111,7 +146,11 @@ export class LaunchCurtainComponent implements OnInit, OnDestroy {
     // The welcome modal (behind this overlay) focuses its own close button
     // at 1s, and Ionic's gesture init can steal focus earlier still — so
     // focus the ribbon button after both.
-    this.after(1300, () => this.cutBtn?.nativeElement.focus());
+    this.after(1300, () => {
+      if (!this.locked) {
+        this.cutBtn?.nativeElement.focus();
+      }
+    });
   }
 
   private makeConfetti(count: number): ConfettiPiece[] {

@@ -21,6 +21,12 @@
   flex-wrap: wrap;
 }
 
+.ceremony-lock-row {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--wiof-border);
+}
+
 .ceremony-label {
   margin: 0 0 6px;
   font-size: 0.78rem;

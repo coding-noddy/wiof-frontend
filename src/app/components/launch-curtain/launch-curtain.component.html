@@ -12,13 +12,20 @@
   <div class="curtain-panel curtain-panel--right" aria-hidden="true"></div>
   <div class="curtain-valance" aria-hidden="true"></div>
 
-  <button type="button" class="skip-link" (click)="skip()">Skip</button>
+  <!-- No Skip while the ribbon is locked: nobody gets in before the launch. -->
+  <button type="button" class="skip-link" *ngIf="!locked" (click)="skip()">Skip</button>
 
   <div class="curtain-content">
     <img src="assets/brand/logos/WIOF-full-logo-white.png" alt="World Is One Family logo" class="curtain-logo" />
     <p class="curtain-eyebrow">Launching today</p>
     <h1 class="curtain-title" id="launch-title">Welcome to the new World Is One Family</h1>
-    <p class="curtain-desc" id="launch-desc">Cut the ribbon to step inside.</p>
+    <p class="curtain-desc" id="launch-desc" aria-live="polite">
+      <ng-container *ngIf="!locked">Cut the ribbon to step inside.</ng-container>
+      <ng-container *ngIf="locked">
+        {{ opensAtLabel ? 'Opening today at ' + opensAtLabel + '.' : 'Opening shortly.' }}
+        Stay on this page — you'll cut the ribbon in a moment.
+      </ng-container>
+    </p>
   </div>
 
   <!-- Ribbon: two halves so it can split in the middle, plus a bow -->
@@ -34,9 +41,9 @@
     </svg>
   </div>
 
-  <button #cutBtn type="button" class="cut-btn" (click)="cutRibbon()" [disabled]="state !== 'closed'">
-    <ion-icon aria-hidden="true" name="cut-outline"></ion-icon>
-    Cut the ribbon
+  <button #cutBtn type="button" class="cut-btn" [class.cut-btn--locked]="locked" (click)="cutRibbon()" [disabled]="state !== 'closed' || locked">
+    <ion-icon aria-hidden="true" [name]="locked ? 'time-outline' : 'cut-outline'"></ion-icon>
+    {{ locked ? 'Opening soon' : 'Cut the ribbon' }}
   </button>
 
   <div class="confetti" aria-hidden="true" *ngIf="confetti.length">

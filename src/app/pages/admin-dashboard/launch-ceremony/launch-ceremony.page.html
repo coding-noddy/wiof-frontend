@@ -53,6 +53,21 @@
         </button>
       </div>
 
+      <div class="ceremony-status-row ceremony-lock-row" *ngIf="setting.enabled">
+        <div>
+          <p class="ceremony-label">Ribbon</p>
+          <span class="status-badge" [ngClass]="setting.ribbonLocked ? 'submitted' : 'published'">
+            {{ setting.ribbonLocked
+                ? 'Locked — visitors wait' + (setting.opensAtLabel ? ' (opens ' + setting.opensAtLabel + ')' : '')
+                : 'Open — visitors can cut the ribbon' }}
+          </span>
+        </div>
+        <button class="btn-primary ceremony-toggle" (click)="toggleLock()" [disabled]="saving">
+          <ion-icon aria-hidden="true" [name]="setting.ribbonLocked ? 'lock-open-outline' : 'lock-closed-outline'"></ion-icon>
+          {{ saving ? 'Saving…' : (setting.ribbonLocked ? 'Unlock ribbon' : 'Lock ribbon') }}
+        </button>
+      </div>
+
       <p class="ceremony-error" *ngIf="saveError" role="alert">{{ saveError }}</p>
 
       <p class="ceremony-updated" *ngIf="updatedAtDate() as updated">
@@ -62,7 +77,8 @@
       <ul class="ceremony-notes">
         <li>When on, each visitor sees closed curtains with a ribbon the first time they open the site, on any page except the admin area.</li>
         <li>They cut the ribbon (or press Skip), the curtains open with confetti, and it's never shown to them again.</li>
-        <li>Turning it off takes effect on every visitor's next page load. No deploy is needed.</li>
+        <li>While the ribbon is <strong>locked</strong>, visitors see the curtain with the button disabled and no Skip. <strong>Unlock ribbon</strong> enables it on every open page instantly.</li>
+        <li>Turning the ceremony off releases visitors straight away. No deploy is needed.</li>
       </ul>
 
       <div class="ceremony-preview">
