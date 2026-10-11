@@ -20,7 +20,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - An updated privacy policy
 - The launch-day curtain and ribbon ceremony
 
-No code changes from 5.6.4; this entry marks the version that goes to production. The launch sequence is in `docs/PRODUCTION_LAUNCH_RUNBOOK.md` (`launch-production.ps1`, 15 steps).
+Changed since 5.6.4:
+- **Only one video plays at a time:** starting a YouTube video now pauses any other video playing on the page, for guests and signed-in users. Reported by the testing team The launch sequence is in `docs/PRODUCTION_LAUNCH_RUNBOOK.md` (`launch-production.ps1`, 15 steps).
 
 ## [5.6.4] - 2026-10-10
 

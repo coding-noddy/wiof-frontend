@@ -8,6 +8,7 @@ import { ActivityService } from './services/activity.service';
 import { AuthService } from './services/auth.service';
 import { UserProfileService } from './services/user-profile.service';
 import { IdleTimeoutService } from './services/idle-timeout.service';
+import { SingleVideoPlaybackService } from './services/single-video-playback.service';
 
 @Component({
   selector: 'app-root',
@@ -23,7 +24,8 @@ export class AppComponent implements OnInit {
     private authService: AuthService,
     private userProfileService: UserProfileService,
     private activityService: ActivityService,
-    private idleTimeoutService: IdleTimeoutService
+    private idleTimeoutService: IdleTimeoutService,
+    private singleVideoPlayback: SingleVideoPlaybackService
   ) {
     this.initializeApp();
     // this.addMetaTags();
@@ -32,6 +34,9 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     // Auto-logout any authenticated user after 10 minutes of inactivity.
     this.idleTimeoutService.init();
+
+    // Starting one YouTube video pauses any other playing on the page.
+    this.singleVideoPlayback.start();
 
     // Record a visit whenever the authenticated account changes.
     this.authService.currentUser$.pipe(
