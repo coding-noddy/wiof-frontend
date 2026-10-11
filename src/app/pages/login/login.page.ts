@@ -16,6 +16,7 @@ export class LoginPage implements OnInit, OnDestroy {
   error: string;
   wiofLogo: string = '../../assets/brand/logos/WIOF-full-logo.png';
   destroy$: Subject<boolean> = new Subject();
+  signingInWithGoogle = false;
   private isLoggingIn = false;
 
   constructor(
@@ -48,6 +49,35 @@ export class LoginPage implements OnInit, OnDestroy {
     } catch (err) {
       this.error = err as string;
     } finally {
+      this.isLoggingIn = false;
+    }
+  }
+
+  /**
+   * Google sign-in for admins. Admin rights come from admins/{uid}; with
+   * production's one-account-per-email setting, an admin's Google sign-in
+   * lands on the same uid as their email/password account.
+   */
+  async onGoogleLogin() {
+    this.error = '';
+    this.isLoggingIn = true;
+    this.signingInWithGoogle = true;
+    try {
+      const res = await this.afService.signInWithGoogle();
+      const user = (res as any)?.user;
+      const role = user?.uid ? await this.userProfileService.getRole(user.uid) : 'public';
+      if (role === 'admin') {
+        this.router.navigate(['/admin-dashboard']);
+      } else {
+        this.error = `${user?.email || 'This Google account'} isn't an admin. You're signed in as a regular user.`;
+      }
+    } catch (err: any) {
+      // Closing the popup isn't an error worth showing.
+      if (err?.code !== 'auth/popup-closed-by-user' && err?.code !== 'auth/cancelled-popup-request') {
+        this.error = "Google sign-in didn't complete. Please try again.";
+      }
+    } finally {
+      this.signingInWithGoogle = false;
       this.isLoggingIn = false;
     }
   }

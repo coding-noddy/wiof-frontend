@@ -42,6 +42,15 @@
           <ion-icon aria-hidden="true" name="arrow-forward-outline"></ion-icon>
         </button>
       </form>
+
+      <div class="login-divider" role="separator"><span>or</span></div>
+
+      <!-- Same Google sign-in as the site header; admin rights come from the
+           admins collection, not the sign-in method. -->
+      <button type="button" class="login-google-btn" (click)="onGoogleLogin()" [disabled]="signingInWithGoogle">
+        <ion-icon aria-hidden="true" name="logo-google"></ion-icon>
+        {{ signingInWithGoogle ? 'Signing in…' : 'Continue with Google' }}
+      </button>
     </div>
   </div>
 </ion-content>
