@@ -7,6 +7,11 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [6.0.1] - 2026-10-12
+
+### Changed
+- **Home page Breaking News shows the 30 newest stories.** The home page now fetches only the 30 most recent news items by date (it previously loaded the whole News collection). The limit is `HOME_BREAKING_NEWS_LIMIT` in `app.constants.ts`, to move into an admin settings page later. Admin Manage News still lists every story
+
 ## [6.0.0] - 2026-10-11
 
 **Production launch release.** The first production deploy since `v2.0.2-prod` (2026-08-12). It contains everything released to staging from 3.x to 5.6.4, including:

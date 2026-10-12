@@ -58,8 +58,23 @@ export class NewsService {
   }
 
   getAllNews(): Observable<News[]> {
-    return this.newsCollection.get().pipe(
-      map((querySnapshot) =>
+    return this.mapNewsSnapshot(this.newsCollection.get());
+  }
+
+  /** Newest `max` news items by date — used by the home page Breaking News widget. */
+  getLatestNews(max: number): Observable<News[]> {
+    return this.mapNewsSnapshot(
+      this.database
+        .collection(FIREBASE_COLLECTION.NEWS, (ref) =>
+          ref.orderBy('date', 'desc').limit(max)
+        )
+        .get()
+    );
+  }
+
+  private mapNewsSnapshot(snapshot$: Observable<any>): Observable<News[]> {
+    return snapshot$.pipe(
+      map((querySnapshot: any) =>
         querySnapshot.docs.map((doc) => {
           const data = doc.data() as News;
           data.newsId = doc.id;

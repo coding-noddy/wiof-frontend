@@ -88,6 +88,10 @@ export const VIDEO_SLIDER_OPTIONS = {
   }
 };
 
+// Max Breaking News items shown on the home page (newest first).
+// TODO: move to an admin-managed settings doc.
+export const HOME_BREAKING_NEWS_LIMIT = 30;
+
 export const BREAKING_NEWS_SLIDER_OPTIONS = {
   slidesPerView: 1,
   spaceBetween: 1,

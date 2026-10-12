@@ -4,7 +4,10 @@ import { CoffeeConversationService } from 'src/app/services/coffee-conversation.
 import { NgoInFocusService } from 'src/app/services/ngo-in-focus.service';
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { COFFEE_CONVERSATION_HOME_CATEGORY } from 'src/app/app.constants';
+import {
+  COFFEE_CONVERSATION_HOME_CATEGORY,
+  HOME_BREAKING_NEWS_LIMIT
+} from 'src/app/app.constants';
 import { CoffeeConversation } from 'src/app/models/CoffeeConversation';
 import { NgoInFocus } from 'src/app/models/NgoInFocus';
 import { CourseInFocusService } from 'src/app/services/course-in-focus.service';
@@ -42,7 +45,7 @@ export class HomePage implements OnInit, ViewWillEnter {
       'privacyConsentAccepted'
     );
     this.viewConsentPopup = privacyConsentAccepted !== 'true';
-    this.newsList$ = this.newsService.getAllNews();
+    this.newsList$ = this.newsService.getLatestNews(HOME_BREAKING_NEWS_LIMIT);
     // The home page features the newest conversation in the 'Home' category.
     // Falls back to the newest overall (the behaviour before the category
     // existed) while no Home conversation is set, so the section is never
