@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { throwError, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { Subscriber } from '../../models/Subscriber';
-import { catchError, map, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { SubscriptionService } from '../../services/subscription.service';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 import { UI_MESSAGES } from 'src/app/app.constants';
@@ -59,44 +59,30 @@ export class SubscribeComponent implements OnInit, OnDestroy {
           'subscription'
         )
       );
+      const subscriber = Subscriber.createByForm(this.addSubscriberForm);
       this.subscribeService
-        .findSubscriber(this.addSubscriberForm.value.email)
-        .subscribe(async (data) => {
-          if (data) {
-            this.loader.dismiss();
-            this.uiUtil.presentToast(UI_MESSAGES.ALREADY_SUBSCRIBED, 'warning');
-          } else {
-            const subscriber = Subscriber.createByForm(this.addSubscriberForm);
-            this.subscribeService
-              .saveSubscriber(subscriber)
-              .pipe(
-                takeUntil(this.destroy$),
-                catchError((err) => {
-                  return throwError(err);
-                })
-              )
-              .subscribe(
-                () => {
-                  this.subscribeButton = true;
-                  this.setSubscribedFlag();
+        .subscribe(subscriber)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(
+          () => {
+            this.subscribeButton = true;
+            this.setSubscribedFlag();
 
-                  this.loader.dismiss();
-                  this.addSubscriberForm.reset();
-                  this.uiUtil.presentToast(UI_MESSAGES.SUCCESS_SUBSCRIPTION, 'success');
-                },
-                (error) => {
-                  this.loader.dismiss();
-                  this.uiUtil.presentToast(
-                    UI_MESSAGES.FAILURE_ADD_ITEM_DESC.replace(
-                      UI_MESSAGES.PLACEHOLDER,
-                      'subscription'
-                    ),
-                    'error'
-                  );
-                }
-              );
+            this.loader.dismiss();
+            this.addSubscriberForm.reset();
+            this.uiUtil.presentToast(UI_MESSAGES.SUCCESS_SUBSCRIPTION, 'success');
+          },
+          () => {
+            this.loader.dismiss();
+            this.uiUtil.presentToast(
+              UI_MESSAGES.FAILURE_ADD_ITEM_DESC.replace(
+                UI_MESSAGES.PLACEHOLDER,
+                'subscription'
+              ),
+              'error'
+            );
           }
-        });
+        );
     }
   }
 

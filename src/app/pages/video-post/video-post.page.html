@@ -17,10 +17,11 @@
 
     <!-- Video player -->
     <div class="video-player-wrap">
-      <iframe
+      <iframe loading="lazy"
         class="video-player"
         [title]="videoTitle"
         [src]="urlSafe"
+        [appYoutubeLite]="id"
         allowfullscreen
         appYoutubeWatchTracker
         [contentId]="id"

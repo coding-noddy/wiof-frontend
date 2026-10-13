@@ -14,10 +14,11 @@
 
             <!-- Full-width video -->
             <div class="in-focus-video">
-              <iframe
+              <iframe loading="lazy"
                 [title]="inFocus.title"
                 class="in-focus-player"
                 [src]="inFocus.sanitizedLink"
+                [appYoutubeLite]="inFocus.videoLink"
                 allowfullscreen
                 appYoutubeWatchTracker
                 [contentId]="inFocus.id || inFocus.title"

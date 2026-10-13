@@ -5,11 +5,12 @@
       <ng-template #titleSkeleton><span class="skeleton title-skeleton"></span></ng-template>
     </div>
     <div class="video-widget-player">
-      <iframe
+      <iframe loading="lazy"
         *ngIf="urlSafe"
         [title]="videoPlayerTitle"
         class="video-player"
         [src]="urlSafe"
+        [appYoutubeLite]="videoLink"
         allowfullscreen
         appYoutubeWatchTracker
         [contentId]="videoLink"

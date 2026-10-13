@@ -15,6 +15,7 @@ import {
 import { DomSanitizer } from '@angular/platform-browser';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { AdminWriteGuardService } from './admin-write-guard.service';
+import { uploadCompressedImage } from '../util/image-compression.util';
 
 @Injectable({
   providedIn: 'root'
@@ -173,11 +174,11 @@ export class NgoInFocusService {
   }
 
   saveNgoInFocusImage(imageData: any, imageName: string) {
-    const imageUploadTask = this.storage.upload(
+    return uploadCompressedImage(
+      this.storage,
       `/${FIREBASE_COLLECTION.NGO_IN_FOCUS_IMAGE_STORAGE}/${imageName}`,
       imageData
     );
-    return from(imageUploadTask);
   }
 
   deleteNgoInFocusImage(imageName: string) {

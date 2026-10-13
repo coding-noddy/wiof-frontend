@@ -340,7 +340,7 @@ export const Months = [
 ];
 
 export const YOUTUBE_EMBED_VIDEO_LINK =
-  'https://www.youtube.com/embed/VIDEO_ID?enablejsapi=1&version=3&playerapiid=ytplayer?controls=1';
+  'https://www.youtube.com/embed/VIDEO_ID?enablejsapi=1&version=3&playerapiid=ytplayer&controls=1';
 
 export const ITEMS = {
   BLOG: 'Blog',
@@ -367,8 +367,6 @@ export const UI_MESSAGES = {
   FAILURE_CTA_TEXT: 'OK',
   SUCCESS_SUBSCRIPTION:
     'You are now subscribed to WIOF Newsletter. Stay tuned for receiving periodic updates of our website in your mailbox.',
-  ALREADY_SUBSCRIBED:
-    'You have already been subscribed to WIOF Newsletter. Stay tuned for receiving periodic updates of our website in your mailbox.',
   SUCCESS_PUBLISH_ITEM_DESC: '$ITEM successfully published!',
   SUCCESS_UNPUBLISH_ITEM_DESC: '$ITEM successfully unpublished!',
   SUCCESS_POLL_VOTE_HEADER: 'Vote Recorded',

@@ -5,6 +5,9 @@ export const environment = {
   data_gov_api_key: "579b464db66ec23bdd000001621cba90a5da4f495a68b73125383b41",
   usda_api_key: "lVaK8acJ1Fi3yHBCXhdFzUJ2g4L86wmCOGwXpIWR",
 
+  // reCAPTCHA Enterprise site key for Firebase App Check (empty = App Check off).
+  appCheckSiteKey: '',
+
   firebaseConfig: {
     apiKey: "AIzaSyAYH1Y5nG3RtKyYqfr0bgDluxAwczAoyRo",
     authDomain: "wiof-production.firebaseapp.com",

@@ -36,22 +36,21 @@ export class SubscriptionService {
   }
 
   /**
-   * Checks whether an email is already subscribed via the checkSubscriberExists
-   * Cloud Function rather than a direct client query — the Subscriptions
-   * collection is admin-only to read (see firestore.rules), so this is the
-   * only path that can answer "already subscribed?" for a public visitor.
+   * Newsletter sign-up through the `subscribe` Cloud Function, which drops
+   * duplicates server-side. It answers the same whether or not the email was
+   * already subscribed, so the form can't be used to test email addresses.
    */
-  findSubscriber(email: string): Observable<Boolean> {
-    const normalizedEmail = email.trim().toLowerCase();
-    const checkExists = httpsCallable<{ email: string }, { exists: boolean }>(
+  subscribe(subscriber: Pick<Subscriber, 'firstName' | 'lastName' | 'email'>): Observable<void> {
+    const subscribeFn = httpsCallable<{ firstName: string; lastName: string; email: string }, { ok: boolean }>(
       getWiofFunctions(),
-      'checkSubscriberExists'
+      'subscribe'
     );
-    return from(checkExists({ email: normalizedEmail }).then((result) => result.data.exists));
-  }
-
-  saveSubscriber(subscriber: Subscriber) {
-    // from create an observable from promise
-    return from(this.subscriptionsCollection.add({ ...subscriber }));
+    return from(
+      subscribeFn({
+        firstName: subscriber.firstName,
+        lastName: subscriber.lastName,
+        email: subscriber.email.trim().toLowerCase()
+      }).then(() => undefined)
+    );
   }
 }

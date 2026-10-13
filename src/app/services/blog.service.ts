@@ -9,6 +9,7 @@ import { last, map, switchMap } from 'rxjs/operators';
 import { Blog } from '../models/Blog';
 import { FIREBASE_COLLECTION, AVG_WORD_READ_PER_MIN } from '../app.constants';
 import { AdminWriteGuardService } from './admin-write-guard.service';
+import { uploadCompressedImage } from '../util/image-compression.util';
 
 @Injectable({
   providedIn: 'root'
@@ -122,9 +123,7 @@ export class BlogService {
   saveBlogImage(imageData: any, imageName: string): Observable<string> {
     const imagePath = `/${FIREBASE_COLLECTION.BLOG_IMAGE_STORAGE}/${imageName}`;
     const imageRef = this.storage.ref(imagePath);
-    const uploadTask = this.storage.upload(imagePath, imageData);
-    return uploadTask.snapshotChanges().pipe(
-      last(),
+    return uploadCompressedImage(this.storage, imagePath, imageData).pipe(
       switchMap(() => imageRef.getDownloadURL())
     );
   }
@@ -132,9 +131,7 @@ export class BlogService {
   saveBlogInlineImage(file: File, imageName: string): Observable<string> {
     const imagePath = `/${FIREBASE_COLLECTION.BLOG_IMAGE_STORAGE}/inline/${imageName}`;
     const imageRef = this.storage.ref(imagePath);
-    const uploadTask = this.storage.upload(imagePath, file);
-    return uploadTask.snapshotChanges().pipe(
-      last(),
+    return uploadCompressedImage(this.storage, imagePath, file).pipe(
       switchMap(() => imageRef.getDownloadURL())
     );
   }
@@ -143,7 +140,7 @@ export class BlogService {
    * Upload inline image and expose upload task + download URL observable
    * Returns an object with `task` (upload task) and `downloadUrl$` observable
    */
-  saveBlogInlineImageWithProgress(file: File, imageName: string) {
+  saveBlogInlineImageWithProgress(file: Blob, imageName: string) {
     const imagePath = `/${FIREBASE_COLLECTION.BLOG_IMAGE_STORAGE}/inline/${imageName}`;
     const imageRef = this.storage.ref(imagePath);
     const task = this.storage.upload(imagePath, file);

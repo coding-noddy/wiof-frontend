@@ -449,14 +449,42 @@ describe('Admin content collections (Blogs representative — same isAdmin() gat
 });
 
 describe('Polls/{id} (raw votes — email/IP, admin-only per the privacy fix)', () => {
+  const seedPoll = () => seed((db) => db.collection('Poll').doc('poll-1').set({ question: 'Q?', options: ['A', 'B', 'C'] }));
+
   it('lets anyone (including unauthenticated) submit a vote', async () => {
+    await seedPoll();
     const db = testEnv.unauthenticatedContext().firestore();
     await assertSucceeds(
       db.collection('Polls').add({ pollQuestionId: 'poll-1', option: 'option1' })
     );
   });
 
+  it("accepts the poll's last option", async () => {
+    await seedPoll();
+    const db = testEnv.unauthenticatedContext().firestore();
+    await assertSucceeds(db.collection('Polls').add({ pollQuestionId: 'poll-1', option: 'option3' }));
+  });
+
+  it('denies a vote for an option the poll does not have', async () => {
+    await seedPoll();
+    const db = testEnv.unauthenticatedContext().firestore();
+    await assertFails(db.collection('Polls').add({ pollQuestionId: 'poll-1', option: 'option4' }));
+    await assertFails(db.collection('Polls').add({ pollQuestionId: 'poll-1', option: 'option0' }));
+  });
+
+  it('denies a vote whose option is free text (junk keys in the public results)', async () => {
+    await seedPoll();
+    const db = testEnv.unauthenticatedContext().firestore();
+    await assertFails(db.collection('Polls').add({ pollQuestionId: 'poll-1', option: 'anything I like' }));
+  });
+
+  it('denies a vote for a poll that does not exist', async () => {
+    const db = testEnv.unauthenticatedContext().firestore();
+    await assertFails(db.collection('Polls').add({ pollQuestionId: 'no-such-poll', option: 'option1' }));
+  });
+
   it('denies a vote with a field outside the known shape', async () => {
+    await seedPoll();
     const db = testEnv.unauthenticatedContext().firestore();
     await assertFails(
       db.collection('Polls').add({ pollQuestionId: 'poll-1', option: 'option1', voterName: 'x' })
@@ -520,21 +548,11 @@ describe('poll_results/{pollQuestionId} (sanitized public aggregate)', () => {
 });
 
 describe('Subscriptions/{id}', () => {
-  it('lets anyone subscribe with the expected fields', async () => {
-    const db = testEnv.unauthenticatedContext().firestore();
-    await assertSucceeds(
-      db.collection('Subscriptions').add({
-        firstName: 'Alice', lastName: 'Test', email: 'alice@test.com', datetime: new Date().toISOString()
-      })
-    );
-  });
-
-  it('denies a subscribe request with an unexpected field', async () => {
+  it('denies a direct client sign-up, even with the expected fields (only the subscribe function writes)', async () => {
     const db = testEnv.unauthenticatedContext().firestore();
     await assertFails(
       db.collection('Subscriptions').add({
-        firstName: 'Alice', lastName: 'Test', email: 'alice@test.com', datetime: new Date().toISOString(),
-        phone: '555-0100'
+        firstName: 'Alice', lastName: 'Test', email: 'alice@test.com', datetime: new Date().toISOString()
       })
     );
   });

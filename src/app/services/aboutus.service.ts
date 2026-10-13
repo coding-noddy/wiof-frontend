@@ -5,6 +5,7 @@ import { map,switchMap } from 'rxjs/operators';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { throwError } from 'rxjs';
 import { AdminWriteGuardService } from './admin-write-guard.service';
+import { uploadCompressedImage } from '../util/image-compression.util';
 export interface AboutUsProfile {
   id?: string; // <--- ADDED: Needs to be part of the interface
   serialNo: number;
@@ -97,9 +98,7 @@ saveProfileImage(file: File, fileName: string): Observable<string> {
   // 3. If valid, proceed with upload
   const path = `about-us/${fileName}`;
   const ref = this.storage.ref(path);
-  const task = this.storage.upload(path, file);
-
-  return from(task).pipe(
+  return uploadCompressedImage(this.storage, path, file).pipe(
     switchMap(() => ref.getDownloadURL())
   );
 }

@@ -29,7 +29,9 @@ param(
 $ErrorActionPreference = "Stop"
 
 $firebaseProject = if ($Target -eq "prod") { "wiof-production" } else { "wiof-staging" }
-$buildConfig = if ($Target -eq "prod") { "production" } else { "" }
+# Staging gets the same optimized AOT build as production (only the Firebase
+# project differs), so staging tests exercise the code users actually run.
+$buildConfig = if ($Target -eq "prod") { "production" } else { "staging" }
 $envLabel = if ($Target -eq "prod") { "PRODUCTION" } else { "STAGING" }
 
 Write-Host ""

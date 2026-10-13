@@ -13,6 +13,8 @@ import { BlogService } from 'src/app/services/blog.service';
 import { AppUtilService } from 'src/app/util/AppUtilService';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 import Quill from 'quill';
+import { compressImage } from 'src/app/util/image-compression.util';
+import 'src/app/util/quill-global';
 import ImageResize from 'quill-image-resize-module';
 
 Quill.register('modules/imageResize', ImageResize);
@@ -422,7 +424,8 @@ export class AddBlogPage implements OnInit, OnDestroy {
       const imageName = this.appUtil.formatImageName('blog_inline_', file);
       this.loader = await this.uiUtil.showLoader('Uploading image 0%');
 
-      const { task, downloadUrl$ } = this.blogService.saveBlogInlineImageWithProgress(file, imageName);
+      const image = await compressImage(file);
+      const { task, downloadUrl$ } = this.blogService.saveBlogInlineImageWithProgress(image, imageName);
 
       const progressSub = (task as any).percentageChanges().subscribe((p: number) => {
         try {

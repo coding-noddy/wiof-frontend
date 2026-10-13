@@ -10,6 +10,7 @@ import { map } from 'rxjs/operators';
 import { forkJoin, from, Observable } from 'rxjs';
 import { FIREBASE_COLLECTION } from '../app.constants';
 import { AdminWriteGuardService } from './admin-write-guard.service';
+import { uploadCompressedImage } from '../util/image-compression.util';
 
 @Injectable({
   providedIn: 'root'
@@ -113,11 +114,11 @@ export class EnvcalService {
   //to-do link images to each envday obj
 
   saveOccasionImage(imageData: any, imageName: string) {
-    const imageUploadTask = this.storage.upload(
+    return uploadCompressedImage(
+      this.storage,
       `/${FIREBASE_COLLECTION.ENVCAL_IMAGE_STORAGE}/${imageName}`,
       imageData
     );
-    return from(imageUploadTask);
   }
 
   deleteOccasionImage(imageName: string) {

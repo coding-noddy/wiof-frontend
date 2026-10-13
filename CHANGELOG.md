@@ -7,6 +7,45 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [6.2.0] - 2026-10-13
+
+Phase 1 hardening, part 2.
+
+### Performance
+- **Click-to-play YouTube.** Every embed now shows the video's thumbnail and a play button until it's clicked, through a tiny `srcdoc` poster in the same iframe (`appYoutubeLite`). The ~500 KB YouTube player loads only for videos someone plays, and then starts straight away. Iframe classes, sizing, the watch tracker and one-video-at-a-time keep working unchanged. Also fixed a malformed embed URL (`…ytplayer?controls=1` → `&controls=1`).
+- **Admin image uploads are compressed in the browser** (`image-compression.util.ts`): scaled to at most 1600 px and saved as WebP (JPEG where WebP can't be encoded), with a 7-day browser cache. This applies to news, blog cover and inline images, courses, NGOs, the calendar and team profiles. GIF/SVG and already-small images are untouched; avatars keep their existing 1 MB JPEG/PNG rules.
+- **`scripts/compress-storage-images.js`** does the same for images already in Storage. It overwrites each image in place and **keeps each file's download token**, so saved URLs, including inline blog images, keep working. It also sets the 7-day cache: Storage was serving every image `private, max-age=0`, so browsers re-downloaded them on every visit. It's a dry run unless `--apply`, backs up originals, and has `--restore`. Staging dry run: 188 images, 125 MB → 15 MB.
+- **`scripts/delete-orphan-images.js`** deletes Storage images that no Firestore document refers to any more. A file counts as in use if its name appears anywhere in any document, plain or URL-encoded, so leftover images from replaced uploads and deleted posts go while anything mentioned stays. Originals are backed up and `--restore` puts them back; uploads from the last 7 days are skipped (`--min-age-days`). Staging dry run: 161 of 369 files (8.8 MB) unused. Images of content that exists but isn't shown publicly are kept, since their documents still use them.
+- **Quill is no longer loaded for every visitor.** It was a global script in `angular.json` (209 KB); now only the pages that use the editor or viewer bundle it.
+
+### Security
+- **Firebase App Check (reCAPTCHA Enterprise) is wired in, switched off until configured.** The client turns it on once `appCheckSiteKey` is set in the environment. Every callable function has `enforceAppCheck`, controlled by `ENFORCE_APP_CHECK` in `functions/.env.<project>`. Firestore and Storage enforcement are switched on in the App Check console. The CSP allows the reCAPTCHA hosts.
+
+## [6.1.0] - 2026-10-13
+
+Phase 1 hardening: security and performance quick wins.
+
+### Security
+- **Security headers on every page:** `X-Content-Type-Options`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy`, `Permissions-Policy`, and an **enforced Content-Security-Policy** that lists every service the site uses. Before enforcing, it ran report-only on staging across every page and flow (guest and signed-in, Google sign-in popup, poll, subscribe, YouTube) with 0 violations. To make that possible, Angular's critical-CSS inlining is off in the production and staging builds: it adds an inline `onload` handler that a strict CSP blocks, which would leave the page unstyled.
+- **Poll votes are validated:** a vote must name a poll that exists and one of its real options (`option1`..`optionN`), in both `firestore.rules` and `onPollVoteCreated`. Junk options can no longer be added to public results or inflate the totals that percentages use.
+- **No more public email lookups:**
+  - `checkPollEmailVoted` now answers only yes/no; it used to say which option an email voted for.
+  - `checkSubscriberExists` is removed. Newsletter sign-up goes through a new `subscribe` function that drops duplicates on the server and gives the same answer either way. Direct client writes to `Subscriptions` are now denied.
+
+### Performance
+- **Images:**
+  - The element and home hero images are now right-sized WebP: about 2.8 MB → about 200 KB each.
+  - Team photos and the site logo were resized in place: 6.5 MB → 62 KB, 316 KB → 12 KB.
+- **Breaking News loads only the current, previous and next story's image or video**, not every story up front.
+- **YouTube embeds lazy-load** (`loading="lazy"`).
+- **Caching:** hashed JS/CSS bundles are cached for a year (`immutable`), `/assets` for a week, and pages (`index.html`) revalidate on every load so a new release shows up immediately. Before, everything was cached for one hour.
+
+### Fixed
+- **The Environment Calendar dialog's page dots now follow the slide.** It listened for `swiperslidechange`, but this Swiper setup emits `slidechange`, so the dots never moved.
+
+### Build
+- **Staging now gets the same optimized AOT build as production** (a new `staging` build configuration). Before, staging ran an unoptimized development build, so it wasn't testing the code users get.
+
 ## [6.0.2] - 2026-10-13
 
 ### Fixed
