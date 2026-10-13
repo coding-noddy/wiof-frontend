@@ -242,10 +242,9 @@ export class PollsWidgetComponent implements OnInit, OnDestroy {
         const existing = await this.pollsService.hasEmailVoted(this.pollQuestion.pollId, normalizedEmail).toPromise();
         if (existing?.voted) {
           this.hasVoted = true;
-          this.votedOption = this.resolveOptionText(existing.option || '');
           this.showForm = false;
           this.showPollResult = true;
-          this.uiUtil.presentToast(`You already voted for: ${this.votedOption}`, 'warning');
+          this.uiUtil.presentToast('This email has already voted on this poll.', 'warning');
           return;
         }
       } catch (err) {

@@ -43,11 +43,11 @@ export class PollsService {
    * goes through the checkPollEmailVoted Cloud Function instead of a direct
    * client query.
    */
-  hasEmailVoted(pollQuestionId: string, email: string): Observable<{ voted: boolean; option?: string }> {
+  hasEmailVoted(pollQuestionId: string, email: string): Observable<{ voted: boolean }> {
     const normalizedEmail = email.trim().toLowerCase();
     const checkEmailVoted = httpsCallable<
       { pollQuestionId: string; email: string },
-      { voted: boolean; option?: string }
+      { voted: boolean }
     >(getWiofFunctions(), 'checkPollEmailVoted');
 
     return from(

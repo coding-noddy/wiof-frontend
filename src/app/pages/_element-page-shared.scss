@@ -137,11 +137,11 @@ ion-content {
     background-position: right bottom;
   }
 
-  &.air    { background-image: url('/assets/banners/air-hero.png'); }
-  &.water  { background-image: url('/assets/banners/water-hero.png'); }
-  &.spirit { background-image: url('/assets/banners/spirit-hero.png'); }
-  &.energy { background-image: url('/assets/banners/energy-hero.png'); }
-  &.earth  { background-image: url('/assets/banners/earth-hero.png'); }
+  &.air    { background-image: url('/assets/banners/air-hero.webp'); }
+  &.water  { background-image: url('/assets/banners/water-hero.webp'); }
+  &.spirit { background-image: url('/assets/banners/spirit-hero.webp'); }
+  &.energy { background-image: url('/assets/banners/energy-hero.webp'); }
+  &.earth  { background-image: url('/assets/banners/earth-hero.webp'); }
 
   // Ivory scrim so ink text stays legible over the illustration.
   .hero-scrim {

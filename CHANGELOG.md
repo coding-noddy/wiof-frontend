@@ -7,6 +7,28 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [6.1.0] - 2026-10-13
+
+Phase 1 hardening: security and performance quick wins.
+
+### Security
+- **Security headers on every page:** `X-Content-Type-Options`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy`, `Permissions-Policy`, and a Content-Security-Policy listing every service the site uses.
+- **Poll votes are validated:** a vote must name a poll that exists and one of its real options (`option1`..`optionN`), in both `firestore.rules` and `onPollVoteCreated`. Junk options can no longer be added to public results or inflate the totals that percentages use.
+- **No more public email lookups:**
+  - `checkPollEmailVoted` now answers only yes/no; it used to say which option an email voted for.
+  - `checkSubscriberExists` is removed. Newsletter sign-up goes through a new `subscribe` function that drops duplicates on the server and gives the same answer either way. Direct client writes to `Subscriptions` are now denied.
+
+### Performance
+- **Images:**
+  - The element and home hero images are now right-sized WebP: about 2.8 MB → about 200 KB each.
+  - Team photos and the site logo were resized in place: 6.5 MB → 62 KB, 316 KB → 12 KB.
+- **Breaking News loads only the current, previous and next story's image or video**, not every story up front.
+- **YouTube embeds lazy-load** (`loading="lazy"`).
+- **Caching:** hashed JS/CSS bundles are cached for a year (`immutable`), `/assets` for a week, and pages (`index.html`) revalidate on every load so a new release shows up immediately. Before, everything was cached for one hour.
+
+### Build
+- **Staging now gets the same optimized AOT build as production** (a new `staging` build configuration). Before, staging ran an unoptimized development build, so it wasn't testing the code users get.
+
 ## [6.0.2] - 2026-10-13
 
 ### Fixed

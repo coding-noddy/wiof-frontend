@@ -8,13 +8,13 @@
 
   <ion-card-content class="breaking-news-content">
     <div class="bn-body" *ngIf="newsList; else loading">
-      <swiper-container #swiperNews [attr.slides-per-view]="1" [attr.space-between]="1" [attr.loop]="true" [attr.autoplay-delay]="5000" class="breaking-news-slides">
-        <swiper-slide *ngFor="let news of newsList">
+      <swiper-container #swiperNews [attr.slides-per-view]="1" [attr.space-between]="1" [attr.loop]="true" [attr.autoplay-delay]="5000" class="breaking-news-slides" (swiperslidechange)="onSlideChange(swiperNews.swiper.realIndex)">
+        <swiper-slide *ngFor="let news of newsList; let i = index">
           <div class="news-card">
             <div class="media-panel">
-              <img *ngIf="news.mediaType === 'image'" class="news-media" [src]="news.image$ | async" [alt]="news.headline" />
-              <div *ngIf="news.mediaType === 'video'" class="video-wrap">
-                <iframe class="news-media" [title]="'Video for news ' + news.headline" [src]="news.sanitizedLink" allowfullscreen></iframe>
+              <img *ngIf="news.mediaType === 'image' && isLoaded(i)" class="news-media" [src]="news.image$ | async" [alt]="news.headline" decoding="async" />
+              <div *ngIf="news.mediaType === 'video' && isLoaded(i)" class="video-wrap">
+                <iframe loading="lazy" class="news-media" [title]="'Video for news ' + news.headline" [src]="news.sanitizedLink" allowfullscreen></iframe>
               </div>
               <span class="news-date-badge">{{ news.date | date: 'MMM d' }}</span>
             </div>

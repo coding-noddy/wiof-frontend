@@ -780,6 +780,18 @@ exports.backfillUserMetrics = functions
  * that writes `poll_results`, and it runs under the Admin SDK, which bypasses
  * security rules — so no client can ever write the aggregate directly.
  */
+/** True when `option` is "option<i>" for one of the poll question's options. */
+async function isValidPollOption(pollQuestionId, option) {
+  const match = /^option([0-9]{1,2})$/.exec(String(option));
+  if (!match) {
+    return false;
+  }
+  const pollDoc = await db.collection('Poll').doc(String(pollQuestionId)).get();
+  const options = pollDoc.exists ? pollDoc.get('options') : null;
+  const index = parseInt(match[1], 10);
+  return Array.isArray(options) && index >= 1 && index <= options.length;
+}
+
 exports.onPollVoteCreated = functions
   .region(REGION)
   .firestore.document('Polls/{voteId}')
@@ -788,6 +800,15 @@ exports.onPollVoteCreated = functions
     const pollQuestionId = vote.pollQuestionId;
     const option = vote.option;
     if (!pollQuestionId || !option) {
+      return null;
+    }
+
+    // Count only a real option ("option1".."optionN") of a poll that exists.
+    // firestore.rules already enforces this on create; re-checked here so a
+    // stray vote can never add a junk key or inflate totalVotes (which every
+    // percentage is computed from).
+    if (!(await isValidPollOption(pollQuestionId, option))) {
+      console.warn(JSON.stringify({ fn: 'onPollVoteCreated', skipped: 'invalid option', pollQuestionId, option: String(option).slice(0, 40) }));
       return null;
     }
 
@@ -838,7 +859,9 @@ exports.checkPollEmailVoted = functions
       return { voted: false };
     }
 
-    return { voted: true, option: snapshot.docs[0].data().option || null };
+    // Yes/no only: returning the option would tell anyone who knows an
+    // email address how that person voted.
+    return { voted: true };
   }));
 
 /**
@@ -894,26 +917,48 @@ exports.backfillPollResults = functions
     return { pollsBackfilled: pollQuestionIds.length };
   }));
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** "d/m/yyyy h:mm" in IST — the format the admin Subscribers page sorts on. */
+function subscriptionTimestamp(date = new Date()) {
+  const ist = new Date(date.getTime() + 330 * 60 * 1000);
+  const minutes = String(ist.getUTCMinutes()).padStart(2, '0');
+  return `${ist.getUTCDate()}/${ist.getUTCMonth() + 1}/${ist.getUTCFullYear()} ${ist.getUTCHours()}:${minutes}`;
+}
+
 /**
- * Checks whether an email is already subscribed, without exposing the
- * Subscriptions collection to public reads — replaces the old bounded
- * (limit-1) public query, which let a caller enumerate individual known
- * emails one at a time even though it couldn't dump the whole collection.
+ * Newsletter sign-up. Replaces the old checkSubscriberExists + client write:
+ * that public "is this email subscribed?" lookup let anyone test any email
+ * address. Duplicates are now dropped here, and the answer is the same
+ * whether or not the email was already on the list.
  */
-exports.checkSubscriberExists = functions
+exports.subscribe = functions
   .region(REGION)
-  .https.onCall(withErrorLogging('checkSubscriberExists', async (data) => {
-    const email = (data && data.email ? String(data.email) : '').trim().toLowerCase();
-    if (!email) {
-      return { exists: false };
+  .https.onCall(withErrorLogging('subscribe', async (data) => {
+    const clean = (value, max) => (typeof value === 'string' ? value.trim() : '').substring(0, max);
+    const firstName = clean(data && data.firstName, 100);
+    const lastName = clean(data && data.lastName, 100);
+    const email = clean(data && data.email, 254).toLowerCase();
+
+    if (!firstName || !EMAIL_PATTERN.test(email)) {
+      throw new functions.https.HttpsError('invalid-argument', 'Enter your name and a valid email address.');
     }
 
-    const snapshot = await db.collection('Subscriptions')
+    const existing = await db.collection('Subscriptions')
       .where('email', '==', email)
       .limit(1)
       .get();
 
-    return { exists: !snapshot.empty };
+    if (existing.empty) {
+      await db.collection('Subscriptions').add({
+        firstName,
+        lastName,
+        email,
+        datetime: subscriptionTimestamp()
+      });
+    }
+
+    return { ok: true };
   }));
 
 exports.socialMetaTags = functions

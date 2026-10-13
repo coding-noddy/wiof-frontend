@@ -364,22 +364,13 @@ service cloud.firestore {
     // Public users can submit these forms, but cannot alter existing records.
 
     match /Subscriptions/{id} {
-      // "Already subscribed?" checks go through the checkSubscriberExists
-      // Cloud Function (Admin SDK, bypasses these rules) instead of a public
-      // query — even a bounded (limit<=1) query lets a caller enumerate
-      // individual known emails one at a time, so no public read path exists.
+      // No public read path: even a bounded (limit<=1) query lets a caller
+      // test known emails one at a time.
       allow get, list: if isAdmin();
-      allow create: if request.resource.data.keys().hasOnly([
-          'firstName', 'lastName', 'email', 'datetime'
-        ])
-        && request.resource.data.firstName is string
-        && request.resource.data.firstName.size() <= 100
-        && request.resource.data.lastName is string
-        && request.resource.data.lastName.size() <= 100
-        && request.resource.data.email is string
-        && request.resource.data.email.size() <= 254
-        && request.resource.data.datetime is string
-        && request.resource.data.datetime.size() <= 40;
+      // Sign-ups go through the `subscribe` Cloud Function, which drops
+      // duplicates server-side without telling the caller whether the email
+      // was already on the list (no public "is this email subscribed?" check).
+      allow create: if false;
       allow update, delete: if isAdmin();
     }
 
@@ -431,7 +422,11 @@ service cloud.firestore {
         && request.resource.data.pollQuestionId is string
         && request.resource.data.pollQuestionId.size() <= 200
         && request.resource.data.option is string
-        && request.resource.data.option.size() <= 200
+        && request.resource.data.option.matches('^option[0-9]{1,2}$')
+        && exists(/databases/$(database)/documents/Poll/$(request.resource.data.pollQuestionId))
+        && int(request.resource.data.option.split('option')[1]) >= 1
+        && int(request.resource.data.option.split('option')[1])
+             <= get(/databases/$(database)/documents/Poll/$(request.resource.data.pollQuestionId)).data.options.size()
         && (!('email' in request.resource.data)
           || request.resource.data.email is string && request.resource.data.email.size() <= 254)
         && (!('ip4' in request.resource.data)
