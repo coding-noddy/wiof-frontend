@@ -93,70 +93,84 @@ async function compressAll(bucket) {
   let after = 0;
   let recompressed = 0;
   let cacheOnly = 0;
+  const failed = [];
 
   console.log(`\n${APPLY ? 'APPLY' : 'DRY RUN (pass --apply to write)'} — ${target.id}\n`);
+
+  const processFile = async (file) => {
+    const meta = file.metadata;
+    const type = meta.contentType || '';
+    if (!type.startsWith('image/') || /gif|svg/.test(type) || file.name.endsWith('/')) {
+      return;
+    }
+    const size = Number(meta.size);
+    before += size;
+
+    const [original] = await file.download();
+    let output = null;
+    try {
+      const image = sharp(original, { failOn: 'none' }).rotate();
+      const { width } = await image.metadata();
+      output = await image
+        .resize({ width: Math.min(width || MAX_WIDTH, MAX_WIDTH), withoutEnlargement: true })
+        .webp({ quality: WEBP_QUALITY })
+        .toBuffer();
+    } catch (e) {
+      console.warn(`  skip ${file.name}: ${e.message}`);
+    }
+
+    const worthIt = output && output.length <= size * (1 - MIN_SAVING);
+    const custom = meta.metadata || {};
+    if (worthIt) {
+      after += output.length;
+      recompressed++;
+      console.log(`  ${file.name.padEnd(70)} ${kb(size).padStart(9)} -> ${kb(output.length).padStart(8)}`);
+      if (APPLY) {
+        const backupPath = path.join(backupDir, file.name);
+        fs.mkdirSync(path.dirname(backupPath), { recursive: true });
+        fs.writeFileSync(backupPath, original);
+        manifest.push({ name: file.name, contentType: type, cacheControl: meta.cacheControl || null, size, metadata: custom });
+        // Written after every file, so a run that stops part-way can still be restored.
+        fs.writeFileSync(path.join(backupDir, 'manifest.json'), JSON.stringify({ project: target.id, files: manifest }, null, 2));
+        await file.save(output, {
+          resumable: false,
+          metadata: {
+            contentType: 'image/webp',
+            cacheControl: CACHE_CONTROL,
+            // Keeps firebaseStorageDownloadTokens, so saved download URLs stay valid.
+            metadata: custom
+          }
+        });
+      }
+    } else {
+      after += size;
+      if (meta.cacheControl !== CACHE_CONTROL) {
+        cacheOnly++;
+        if (APPLY) {
+          await file.setMetadata({ cacheControl: CACHE_CONTROL });
+        }
+      }
+    }
+  };
 
   for (const prefix of FOLDERS) {
     const [files] = await bucket.getFiles({ prefix });
     for (const file of files) {
-      const meta = file.metadata;
-      const type = meta.contentType || '';
-      if (!type.startsWith('image/') || /gif|svg/.test(type) || file.name.endsWith('/')) {
-        continue;
-      }
-      const size = Number(meta.size);
-      before += size;
-
-      const [original] = await file.download();
-      let output = null;
       try {
-        const image = sharp(original, { failOn: 'none' }).rotate();
-        const { width } = await image.metadata();
-        output = await image
-          .resize({ width: Math.min(width || MAX_WIDTH, MAX_WIDTH), withoutEnlargement: true })
-          .webp({ quality: WEBP_QUALITY })
-          .toBuffer();
+        await processFile(file);
       } catch (e) {
-        console.warn(`  skip ${file.name}: ${e.message}`);
-      }
-
-      const worthIt = output && output.length <= size * (1 - MIN_SAVING);
-      const custom = meta.metadata || {};
-      if (worthIt) {
-        after += output.length;
-        recompressed++;
-        console.log(`  ${file.name.padEnd(70)} ${kb(size).padStart(9)} -> ${kb(output.length).padStart(8)}`);
-        if (APPLY) {
-          const backupPath = path.join(backupDir, file.name);
-          fs.mkdirSync(path.dirname(backupPath), { recursive: true });
-          fs.writeFileSync(backupPath, original);
-          manifest.push({ name: file.name, contentType: type, cacheControl: meta.cacheControl || null, size, metadata: custom });
-          await file.save(output, {
-            resumable: false,
-            metadata: {
-              contentType: 'image/webp',
-              cacheControl: CACHE_CONTROL,
-              // Keeps firebaseStorageDownloadTokens, so saved download URLs stay valid.
-              metadata: custom
-            }
-          });
-        }
-      } else {
-        after += size;
-        if (meta.cacheControl !== CACHE_CONTROL) {
-          cacheOnly++;
-          if (APPLY) {
-            await file.setMetadata({ cacheControl: CACHE_CONTROL });
-          }
-        }
+        // One failing file (network blip, permissions, rate limit) is reported
+        // and skipped instead of stopping the whole run.
+        failed.push(file.name);
+        console.error(`  FAILED ${file.name}: ${e.message}`);
       }
     }
   }
 
-  if (APPLY && manifest.length) {
-    fs.writeFileSync(path.join(backupDir, 'manifest.json'), JSON.stringify({ project: target.id, files: manifest }, null, 2));
+  console.log(`\n${recompressed} recompressed, ${cacheOnly} cache-only updates, ${failed.length} failed.`);
+  if (failed.length) {
+    console.log('Failed files are unchanged unless listed in the backup manifest; re-running the script retries them.');
   }
-  console.log(`\n${recompressed} recompressed, ${cacheOnly} cache-only updates.`);
   console.log(`Total ${kb(before)} -> ${kb(after)} (${before ? Math.round((1 - after / before) * 100) : 0}% smaller).`);
   if (APPLY && manifest.length) {
     console.log(`Originals backed up to ${backupDir}`);
