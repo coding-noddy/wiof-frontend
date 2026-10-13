@@ -8,7 +8,7 @@
 
   <ion-card-content class="breaking-news-content">
     <div class="bn-body" *ngIf="newsList; else loading">
-      <swiper-container #swiperNews [attr.slides-per-view]="1" [attr.space-between]="1" [attr.loop]="true" [attr.autoplay-delay]="5000" class="breaking-news-slides" (swiperslidechange)="onSlideChange(swiperNews.swiper.realIndex)">
+      <swiper-container #swiperNews [attr.slides-per-view]="1" [attr.space-between]="1" [attr.loop]="true" [attr.autoplay-delay]="5000" class="breaking-news-slides" (slidechange)="onSlideChange(swiperNews.swiper.realIndex)">
         <swiper-slide *ngFor="let news of newsList; let i = index">
           <div class="news-card">
             <div class="media-panel">

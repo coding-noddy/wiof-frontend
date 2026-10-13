@@ -26,6 +26,9 @@ Phase 1 hardening: security and performance quick wins.
 - **YouTube embeds lazy-load** (`loading="lazy"`).
 - **Caching:** hashed JS/CSS bundles are cached for a year (`immutable`), `/assets` for a week, and pages (`index.html`) revalidate on every load so a new release shows up immediately. Before, everything was cached for one hour.
 
+### Fixed
+- **The Environment Calendar dialog's page dots now follow the slide.** It listened for `swiperslidechange`, but this Swiper setup emits `slidechange`, so the dots never moved.
+
 ### Build
 - **Staging now gets the same optimized AOT build as production** (a new `staging` build configuration). Before, staging ran an unoptimized development build, so it wasn't testing the code users get.
 

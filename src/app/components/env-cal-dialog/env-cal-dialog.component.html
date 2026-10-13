@@ -4,7 +4,7 @@
       #swiperCal
       [attr.slides-per-view]="1"
       [attr.space-between]="10"
-      (swiperslidechange)="activeIndex = swiperCal.swiper.activeIndex"
+      (slidechange)="activeIndex = swiperCal.swiper.activeIndex"
     >
       <swiper-slide *ngFor="let occasn of occasionDetails.occasion; let i = index">
         <ion-card class="occasion-card">
