@@ -979,6 +979,16 @@ describe('user_actions/{userActionId} (product source of truth for completion)',
     await assertFails(ref(db).get());
   });
 
+  it("lets a user read their own not-yet-created action record (a card they haven't done)", async () => {
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertSucceeds(ref(db).get());
+  });
+
+  it('denies a guest reading a not-yet-created action record', async () => {
+    const db = testEnv.unauthenticatedContext().firestore();
+    await assertFails(ref(db).get());
+  });
+
   it('lets an admin read any user_action', async () => {
     await seed(async (db) => {
       await ref(db).set(storedDoc());

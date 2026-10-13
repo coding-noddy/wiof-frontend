@@ -212,8 +212,13 @@ service cloud.firestore {
       // Owner or admin can read. No `list` beyond a user's own docs: every
       // query the client issues already filters by userId, so this is
       // enforced the same way as activity_log's read rule.
+      // `resource == null`: every Take Action card gets its own
+      // {uid}_{actionId} doc, which doesn't exist until the first start or
+      // completion — without this, each not-yet-done card's status read was
+      // permission-denied (same guard as user_saved_content).
       allow read: if isAdmin()
-        || (isAuthenticated() && resource.data.userId == request.auth.uid);
+        || (isAuthenticated()
+          && (resource == null || resource.data.userId == request.auth.uid));
 
       // onUserActionWritten derives user_metrics from completionCount and
       // elementIdsSnapshot, so neither may be client-chosen: a new doc starts
