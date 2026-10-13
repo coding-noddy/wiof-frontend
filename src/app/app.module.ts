@@ -1,7 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import { APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 //Firestore Integration Modules
-import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFireModule, FirebaseApp } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
@@ -12,6 +12,7 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { environment } from '../environments/environment';
+import { initWiofAppCheck } from './util/app-check';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { OnboardingOverlayComponent } from './components/onboarding-overlay/onboarding-overlay.component';
@@ -44,6 +45,14 @@ import {
     SplashScreen,
     Meta,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    // App Check before any Firebase request; FirebaseApp makes sure the app
+    // AngularFire creates exists first.
+    {
+      provide: APP_INITIALIZER,
+      multi: true,
+      deps: [FirebaseApp],
+      useFactory: () => () => initWiofAppCheck()
+    },
     ScreenTrackingService,
     UserTrackingService
   ],

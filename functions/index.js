@@ -148,6 +148,13 @@ const REGION = process.env.GCLOUD_PROJECT === 'wiof-staging' ? 'asia-south1' : '
 // lives in the same region everywhere. Keep in sync with firebase.json.
 const SOCIAL_META_TAGS_REGION = 'us-central1';
 
+// App Check on every callable. Off until ENFORCE_APP_CHECK=true is set for the
+// project (functions/.env.<projectId>): turn it on only after the App Check
+// console shows real traffic arriving with valid tokens, or every visitor
+// whose browser can't get a token (old cached page, blocked reCAPTCHA) loses
+// polls, sign-up and sign-in sync.
+const APP_CHECK = { enforceAppCheck: process.env.ENFORCE_APP_CHECK === 'true' };
+
 /**
  * Structured error logging for Cloud Functions — Foundation Hardening Plan
  * v4 §11 ("operational analytics": function failures, failed writes, auth
@@ -250,6 +257,7 @@ function diffCalendarDays(today, lastDay) {
  */
 exports.createUserProfile = functions
   .region(REGION)
+  .runWith(APP_CHECK)
   .https.onCall(withErrorLogging('createUserProfile', async (data, context) => {
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
@@ -290,6 +298,7 @@ exports.createUserProfile = functions
  */
 exports.recordLoginMetrics = functions
   .region(REGION)
+  .runWith(APP_CHECK)
   .https.onCall(withErrorLogging('recordLoginMetrics', async (data, context) => {
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
@@ -315,6 +324,7 @@ exports.recordLoginMetrics = functions
  */
 exports.recordUserVisit = functions
   .region(REGION)
+  .runWith(APP_CHECK)
   .https.onCall(withErrorLogging('recordUserVisit', async (data, context) => {
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
@@ -411,7 +421,7 @@ async function deleteAllOwnedBy(collectionName, uid) {
  */
 exports.resetEngagementData = functions
   .region(REGION)
-  .runWith({ timeoutSeconds: 120 })
+  .runWith({ timeoutSeconds: 120, ...APP_CHECK })
   .https.onCall(withErrorLogging('resetEngagementData', async (data, context) => {
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
@@ -457,7 +467,7 @@ exports.resetEngagementData = functions
  */
 exports.migrateSavedContentIds = functions
   .region(REGION)
-  .runWith({ timeoutSeconds: 120 })
+  .runWith({ timeoutSeconds: 120, ...APP_CHECK })
   .https.onCall(withErrorLogging('migrateSavedContentIds', async (data, context) => {
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
@@ -636,7 +646,7 @@ exports.onUserActionWritten = functions
  */
 exports.backfillUserMetrics = functions
   .region(REGION)
-  .runWith({ timeoutSeconds: 300 })
+  .runWith({ timeoutSeconds: 300, ...APP_CHECK })
   .https.onCall(withErrorLogging('backfillUserMetrics', async (data, context) => {
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
@@ -841,6 +851,7 @@ exports.onPollVoteCreated = functions
  */
 exports.checkPollEmailVoted = functions
   .region(REGION)
+  .runWith(APP_CHECK)
   .https.onCall(withErrorLogging('checkPollEmailVoted', async (data) => {
     const pollQuestionId = (data && data.pollQuestionId ? String(data.pollQuestionId) : '').trim();
     const email = (data && data.email ? String(data.email) : '').trim().toLowerCase();
@@ -875,6 +886,7 @@ exports.checkPollEmailVoted = functions
  */
 exports.backfillPollResults = functions
   .region(REGION)
+  .runWith(APP_CHECK)
   .https.onCall(withErrorLogging('backfillPollResults', async (data, context) => {
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
@@ -934,6 +946,7 @@ function subscriptionTimestamp(date = new Date()) {
  */
 exports.subscribe = functions
   .region(REGION)
+  .runWith(APP_CHECK)
   .https.onCall(withErrorLogging('subscribe', async (data) => {
     const clean = (value, max) => (typeof value === 'string' ? value.trim() : '').substring(0, max);
     const firstName = clean(data && data.firstName, 100);

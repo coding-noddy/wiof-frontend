@@ -7,6 +7,19 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [6.2.0] - 2026-10-13
+
+Phase 1 hardening, part 2.
+
+### Performance
+- **Click-to-play YouTube.** Every embed now shows the video's thumbnail and a play button until it's clicked, through a tiny `srcdoc` poster in the same iframe (`appYoutubeLite`). The ~500 KB YouTube player loads only for videos someone plays, and then starts straight away. Iframe classes, sizing, the watch tracker and one-video-at-a-time keep working unchanged. Also fixed a malformed embed URL (`…ytplayer?controls=1` → `&controls=1`).
+- **Admin image uploads are compressed in the browser** (`image-compression.util.ts`): scaled to at most 1600 px and saved as WebP (JPEG where WebP can't be encoded), with a 7-day browser cache. This applies to news, blog cover and inline images, courses, NGOs, the calendar and team profiles. GIF/SVG and already-small images are untouched; avatars keep their existing 1 MB JPEG/PNG rules.
+- **`scripts/compress-storage-images.js`** does the same for images already in Storage. It overwrites each image in place and **keeps each file's download token**, so saved URLs, including inline blog images, keep working. It also sets the 7-day cache: Storage was serving every image `private, max-age=0`, so browsers re-downloaded them on every visit. It's a dry run unless `--apply`, backs up originals, and has `--restore`. Staging dry run: 188 images, 125 MB → 15 MB.
+- **Quill is no longer loaded for every visitor.** It was a global script in `angular.json` (209 KB); now only the pages that use the editor or viewer bundle it.
+
+### Security
+- **Firebase App Check (reCAPTCHA Enterprise) is wired in, switched off until configured.** The client turns it on once `appCheckSiteKey` is set in the environment. Every callable function has `enforceAppCheck`, controlled by `ENFORCE_APP_CHECK` in `functions/.env.<project>`. Firestore and Storage enforcement are switched on in the App Check console. The CSP allows the reCAPTCHA hosts.
+
 ## [6.1.0] - 2026-10-13
 
 Phase 1 hardening: security and performance quick wins.

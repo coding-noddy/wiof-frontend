@@ -9,6 +9,7 @@ import { map } from 'rxjs/operators';
 import { from, Observable } from 'rxjs';
 import { FIREBASE_COLLECTION } from '../app.constants';
 import { AdminWriteGuardService } from './admin-write-guard.service';
+import { uploadCompressedImage } from '../util/image-compression.util';
 
 @Injectable({
   providedIn: 'root'
@@ -37,11 +38,11 @@ export class NewsService {
   }
 
   saveNewsImage(imageData: any, imageName: string) {
-    const imageUploadTask = this.storage.upload(
+    return uploadCompressedImage(
+      this.storage,
       `/${FIREBASE_COLLECTION.NEWS_IMAGE_STORAGE}/${imageName}`,
       imageData
     );
-    return from(imageUploadTask);
   }
 
   getImage(imageName: string): Observable<String> {

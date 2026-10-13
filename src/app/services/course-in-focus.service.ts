@@ -10,6 +10,7 @@ import { FIREBASE_COLLECTION, ITEM_STATUS } from '../app.constants';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { DomSanitizer } from '@angular/platform-browser';
 import { AdminWriteGuardService } from './admin-write-guard.service';
+import { uploadCompressedImage } from '../util/image-compression.util';
 
 @Injectable({
   providedIn: 'root'
@@ -126,11 +127,11 @@ export class CourseInFocusService {
   }
 
   saveCourseInFocusImage(imageData: any, imageName: string) {
-    const imageUploadTask = this.storage.upload(
+    return uploadCompressedImage(
+      this.storage,
       `/${FIREBASE_COLLECTION.COURSE_IN_FOCUS_IMAGE_STORAGE}/${imageName}`,
       imageData
     );
-    return from(imageUploadTask);
   }
 
   deleteCourseInFocusImage(imageName: string) {

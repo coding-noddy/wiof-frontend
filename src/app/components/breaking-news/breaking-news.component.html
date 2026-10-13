@@ -14,7 +14,7 @@
             <div class="media-panel">
               <img *ngIf="news.mediaType === 'image' && isLoaded(i)" class="news-media" [src]="news.image$ | async" [alt]="news.headline" decoding="async" />
               <div *ngIf="news.mediaType === 'video' && isLoaded(i)" class="video-wrap">
-                <iframe loading="lazy" class="news-media" [title]="'Video for news ' + news.headline" [src]="news.sanitizedLink" allowfullscreen></iframe>
+                <iframe loading="lazy" class="news-media" [title]="'Video for news ' + news.headline" [src]="news.sanitizedLink" [appYoutubeLite]="news.mediaLink" allowfullscreen></iframe>
               </div>
               <span class="news-date-badge">{{ news.date | date: 'MMM d' }}</span>
             </div>

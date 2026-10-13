@@ -340,7 +340,7 @@ export const Months = [
 ];
 
 export const YOUTUBE_EMBED_VIDEO_LINK =
-  'https://www.youtube.com/embed/VIDEO_ID?enablejsapi=1&version=3&playerapiid=ytplayer?controls=1';
+  'https://www.youtube.com/embed/VIDEO_ID?enablejsapi=1&version=3&playerapiid=ytplayer&controls=1';
 
 export const ITEMS = {
   BLOG: 'Blog',

@@ -46,6 +46,7 @@ import { TakeActionDetailComponent } from './components/take-action-detail/take-
 import { ContinueJourneyBannerComponent } from './components/continue-journey-banner/continue-journey-banner.component';
 import { BlogReadTrackerDirective } from './directives/blog-read-tracker.directive';
 import { YoutubeWatchTrackerDirective } from './directives/youtube-watch-tracker.directive';
+import { YoutubeLiteDirective } from './directives/youtube-lite.directive';
 import { EnumLabelPipe } from './pipes/enum-label.pipe';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
@@ -94,6 +95,7 @@ const COMPONENTS = [
   SearchBoxComponent,
   BlogReadTrackerDirective,
   YoutubeWatchTrackerDirective,
+  YoutubeLiteDirective,
   EnumLabelPipe
 ];
 
