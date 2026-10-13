@@ -33,7 +33,7 @@ export class YoutubeLiteDirective implements OnChanges {
       return;
     }
     // Delegates autoplay to the player, so one click starts the video.
-    this.renderer.setAttribute(iframe, 'allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen');
+    this.renderer.setAttribute(iframe, 'allow', 'autoplay; encrypted-media; fullscreen');
     this.renderer.setAttribute(iframe, 'srcdoc', this.poster(id));
   }
 
