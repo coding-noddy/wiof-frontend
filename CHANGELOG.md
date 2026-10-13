@@ -12,7 +12,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Phase 1 hardening: security and performance quick wins.
 
 ### Security
-- **Security headers on every page:** `X-Content-Type-Options`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy`, `Permissions-Policy`, and a Content-Security-Policy listing every service the site uses.
+- **Security headers on every page:** `X-Content-Type-Options`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy`, `Permissions-Policy`, and an **enforced Content-Security-Policy** that lists every service the site uses. Before enforcing, it ran report-only on staging across every page and flow (guest and signed-in, Google sign-in popup, poll, subscribe, YouTube) with 0 violations. To make that possible, Angular's critical-CSS inlining is off in the production and staging builds: it adds an inline `onload` handler that a strict CSP blocks, which would leave the page unstyled.
 - **Poll votes are validated:** a vote must name a poll that exists and one of its real options (`option1`..`optionN`), in both `firestore.rules` and `onPollVoteCreated`. Junk options can no longer be added to public results or inflate the totals that percentages use.
 - **No more public email lookups:**
   - `checkPollEmailVoted` now answers only yes/no; it used to say which option an email voted for.
