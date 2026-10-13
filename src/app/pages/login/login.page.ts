@@ -37,6 +37,15 @@ export class LoginPage implements OnInit, OnDestroy {
   }
 
   async onLogin() {
+    this.error = '';
+    if (!this.email?.trim()) {
+      this.error = 'Enter your email address.';
+      return;
+    }
+    if (!this.password) {
+      this.error = 'Enter your password.';
+      return;
+    }
     this.isLoggingIn = true;
     try {
       const res = await this.afService.login(this.email, this.password);
@@ -46,8 +55,8 @@ export class LoginPage implements OnInit, OnDestroy {
         await this.userProfileService.getRole(user.uid);
       }
       this.router.navigate(['/admin-dashboard']);
-    } catch (err) {
-      this.error = err as string;
+    } catch (err: any) {
+      this.error = this.loginErrorMessage(err?.code);
     } finally {
       this.isLoggingIn = false;
     }
@@ -79,6 +88,31 @@ export class LoginPage implements OnInit, OnDestroy {
     } finally {
       this.signingInWithGoogle = false;
       this.isLoggingIn = false;
+    }
+  }
+
+  /**
+   * Plain-language message for a failed email/password sign-in. Unknown
+   * email and wrong password share one message, so the form doesn't reveal
+   * which emails have accounts.
+   */
+  private loginErrorMessage(code: string): string {
+    switch (code) {
+      case 'auth/invalid-email':
+        return 'Enter a valid email address.';
+      case 'auth/user-not-found':
+      case 'auth/wrong-password':
+      case 'auth/invalid-credential':
+      case 'auth/invalid-login-credentials':
+        return 'Email or password is incorrect.';
+      case 'auth/user-disabled':
+        return 'This account has been disabled.';
+      case 'auth/too-many-requests':
+        return 'Too many attempts. Please wait a few minutes and try again.';
+      case 'auth/network-request-failed':
+        return "Couldn't reach the server. Check your connection and try again.";
+      default:
+        return "Sign-in didn't complete. Please try again.";
     }
   }
 

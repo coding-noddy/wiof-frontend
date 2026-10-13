@@ -7,6 +7,12 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [6.0.2] - 2026-10-13
+
+### Fixed
+- **Take Action no longer fires a permission error per card for signed-in users.** Each card reads the user's `{uid}_{actionId}` record, which doesn't exist until the action is first done, and the rule denied reads of missing docs (51 console errors on one page load). `user_actions` now allows reading your own not-yet-created record, the same guard `user_saved_content` uses. **Needs the Firestore rules deploy.**
+- **Admin login shows plain-language errors** instead of raw Firebase text (e.g. "FirebaseError: … (auth/wrong-password)"). Unknown email and wrong password now share one message, "Email or password is incorrect.", so the form no longer reveals which emails have accounts. Empty fields are caught before calling Firebase, and an old error clears on the next attempt.
+
 ## [6.0.1] - 2026-10-12
 
 ### Changed
