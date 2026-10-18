@@ -143,18 +143,20 @@ async function findAndDelete({ db, bucket }) {
       orphanBytes += size;
       console.log(`  orphan  ${file.name.padEnd(72)} ${kb(size).padStart(9)}`);
       if (APPLY) {
-        const [data] = await file.download();
-        const backupPath = path.join(backupDir, file.name);
-        fs.mkdirSync(path.dirname(backupPath), { recursive: true });
-        fs.writeFileSync(backupPath, data);
-        manifest.push({ name: file.name, contentType: file.metadata.contentType, cacheControl: file.metadata.cacheControl || null, metadata: file.metadata.metadata || {} });
-        await file.delete();
+        try {
+          const [data] = await file.download();
+          const backupPath = path.join(backupDir, file.name);
+          fs.mkdirSync(path.dirname(backupPath), { recursive: true });
+          fs.writeFileSync(backupPath, data);
+          manifest.push({ name: file.name, contentType: file.metadata.contentType, cacheControl: file.metadata.cacheControl || null, metadata: file.metadata.metadata || {} });
+          // Written before each delete, so a run that stops part-way can still be restored.
+          fs.writeFileSync(path.join(backupDir, 'manifest.json'), JSON.stringify({ project: target.id, files: manifest }, null, 2));
+          await file.delete();
+        } catch (e) {
+          console.error(`  FAILED ${file.name}: ${e.message}`);
+        }
       }
     }
-  }
-
-  if (APPLY && manifest.length) {
-    fs.writeFileSync(path.join(backupDir, 'manifest.json'), JSON.stringify({ project: target.id, files: manifest }, null, 2));
   }
   console.log(`\nIn use: ${kept} files (${kb(keptBytes)}). Orphaned: ${orphans} files (${kb(orphanBytes)}). Skipped as recent: ${recent} (younger than ${MIN_AGE_MS / 86400000} days).`);
   if (APPLY && manifest.length) {
