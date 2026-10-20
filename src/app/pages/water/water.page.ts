@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
+import { shareReplay } from 'rxjs/operators';
 import {
   ELEMENT_BLOG_CATEGORY,
   ELEMENT_SELECT,
@@ -47,10 +48,10 @@ export class WaterPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.blogs$ = this.blogService.getBlogs(ELEMENT_BLOG_CATEGORY.WATER);
+    this.blogs$ = this.blogService.getBlogSummaries(ELEMENT_BLOG_CATEGORY.WATER).pipe(shareReplay(1));
     this.videos$ = this.videoService.getYoutubePlaylist(
       ELEMENT_VIDEOS_PLAYLIST_ID.WATER
-    );
+    ).pipe(shareReplay(1));
     this.coffeeConversations$ = this.coffeeConvService.getCoffeeConversations(
       ELEMENT_BLOG_CATEGORY.WATER
     );

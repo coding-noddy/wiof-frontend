@@ -60,7 +60,7 @@ export class BlogsPage implements OnInit, OnDestroy {
     this.blogList = null;
     this.searchBox?.clear();
     this.blogService
-      .getBlogs(this.category)
+      .getBlogSummaries(this.category)
       .pipe(takeUntil(this.elementChange$), takeUntil(this.destroy$))
       .subscribe((blogs) => {
         this.blogList = blogs;
@@ -83,7 +83,7 @@ export class BlogsPage implements OnInit, OnDestroy {
   private loadAllBlogs(): void {
     this.otherElementsLoading = true;
     this.blogService
-      .getBlogs()
+      .getBlogSummaries()
       .pipe(takeUntil(this.destroy$))
       .subscribe((blogs) => {
         this.allBlogs = blogs;

@@ -1,5 +1,6 @@
 import { Component, ViewChild, HostListener, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
+import { shareReplay } from 'rxjs/operators';
 import {
   ELEMENT_BLOG_CATEGORY,
   ELEMENT_SELECT,
@@ -49,10 +50,10 @@ export class AirPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.blogs$ = this.blogService.getBlogs(ELEMENT_BLOG_CATEGORY.AIR);
+    this.blogs$ = this.blogService.getBlogSummaries(ELEMENT_BLOG_CATEGORY.AIR).pipe(shareReplay(1));
     this.videos$ = this.videoService.getYoutubePlaylist(
       ELEMENT_VIDEOS_PLAYLIST_ID.AIR
-    );
+    ).pipe(shareReplay(1));
     this.coffeeConversations$ = this.coffeeConvService.getCoffeeConversations(
       ELEMENT_BLOG_CATEGORY.AIR
     );

@@ -167,6 +167,7 @@ export const INDIAN_CITIES = [
 
 export const FIREBASE_COLLECTION = {
   BLOGS: 'Blogs',
+  BLOG_SUMMARIES: 'blog_summaries',
   SUBSCRIPTIONS: 'Subscriptions',
   BLOG_IMAGE_STORAGE: 'blog-images',
   ENVCAL_IMAGE_STORAGE: 'environment-calendar',

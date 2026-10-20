@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, HostListener } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, throwError, of, interval } from 'rxjs';
+import { Observable, Subject, throwError, of, interval, firstValueFrom } from 'rxjs';
 import { catchError, switchMap, takeUntil } from 'rxjs/operators';
 import {
   ELEMENT_BLOG_CATEGORY,
@@ -240,17 +240,25 @@ export class AddBlogPage implements OnInit, OnDestroy {
   async onSubmit() {
     if (this.addBlogForm.valid) {
       this.isSaving = true;
-      this.blog = this.createByForm(this.addBlogForm, this.blog, this.isEditMode);
       this.loader = await this.uiUtil.showLoader(
         UI_MESSAGES.SAVE_IN_PROGRESS.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.BLOG)
       );
-      this.blogService.saveBlog(this.blog).pipe(
-        switchMap(() => {
-          if (this.imageToSave !== undefined) {
-            return this.blogService.saveBlogImage(this.imageToSave, this.blog.imageName);
-          }
-          return of(true);
-        }),
+      try {
+        await this.uploadEmbeddedImages();
+      } catch (e) {
+        this.loader.dismiss();
+        this.isSaving = false;
+        await this.uiUtil.presentToast('Could not upload an image in the blog. Please try again.', 'error');
+        return;
+      }
+      this.blog = this.createByForm(this.addBlogForm, this.blog, this.isEditMode);
+      // Cover image first, then the blog: the onBlogWritten function reads the
+      // image's download token when the blog is saved, for the blog lists.
+      const coverUpload$: Observable<unknown> = this.imageToSave
+        ? this.blogService.saveBlogImage(this.imageToSave, this.blog.imageName)
+        : of(true);
+      coverUpload$.pipe(
+        switchMap(() => this.blogService.saveBlog(this.blog)),
         takeUntil(this.destroy$),
         catchError((err) => throwError(err))
       ).subscribe(
@@ -334,7 +342,12 @@ export class AddBlogPage implements OnInit, OnDestroy {
         const html = clipboard.getData('text/html');
         const text = clipboard.getData('text/plain');
         const rangeIndex = (this.editor.getSelection && this.editor.getSelection(true)?.index) ?? this.editor.getLength();
-        if (html) {
+        // A copied image (screenshot, "Copy image") arrives as a file with no
+        // HTML: upload it like the toolbar's image button does.
+        const imageFile = Array.from(clipboard.files || []).find((f: File) => f.type.startsWith('image/'));
+        if (imageFile && !html) {
+          this.insertUploadedImage(imageFile as File);
+        } else if (html) {
           this.editor.clipboard.dangerouslyPasteHTML(rangeIndex, this.cleanPastedHTML(html));
         } else if (text) {
           this.editor.insertText(rangeIndex, text, 'user');
@@ -416,41 +429,101 @@ export class AddBlogPage implements OnInit, OnDestroy {
     input.setAttribute('accept', 'image/*');
     input.click();
 
-    input.onchange = async () => {
+    input.onchange = () => {
       const file = input.files?.[0];
       if (!file) return;
       if (!this.isImageUnderSize(file)) { input.value = ''; return; }
-
-      const imageName = this.appUtil.formatImageName('blog_inline_', file);
-      this.loader = await this.uiUtil.showLoader('Uploading image 0%');
-
-      const image = await compressImage(file);
-      const { task, downloadUrl$ } = this.blogService.saveBlogInlineImageWithProgress(image, imageName);
-
-      const progressSub = (task as any).percentageChanges().subscribe((p: number) => {
-        try {
-          if (this.loader) this.loader.message = `Uploading image ${Math.round(p || 0)}%`;
-        } catch (err) { /* ignore */ }
-      });
-
-      downloadUrl$.subscribe(
-        async (downloadUrl) => {
-          progressSub.unsubscribe();
-          try {
-            const range = this.editor?.getSelection(true);
-            const index = range?.index ?? this.editor?.getLength() ?? 0;
-            this.editor.insertEmbed(index, 'image', downloadUrl, 'user');
-            this.editor.setSelection(index + 1, 0, 'silent');
-          } catch (e) { console.error('Insert image failed', e); }
-          if (this.loader) this.loader.dismiss();
-        },
-        async () => {
-          progressSub.unsubscribe();
-          if (this.loader) this.loader.dismiss();
-          await this.uiUtil.presentToast('Could not upload the image. Please try again.', 'error');
-        }
-      );
+      this.insertUploadedImage(file);
     };
+  }
+
+  /** Uploads an image to Storage and inserts it at the cursor, with upload progress. */
+  private async insertUploadedImage(file: File) {
+    if (!this.isImageUnderSize(file)) return;
+    const imageName = this.appUtil.formatImageName('blog_inline_', file);
+    this.loader = await this.uiUtil.showLoader('Uploading image 0%');
+
+    const image = await compressImage(file);
+    const { task, downloadUrl$ } = this.blogService.saveBlogInlineImageWithProgress(image, imageName);
+
+    const progressSub = (task as any).percentageChanges().subscribe((p: number) => {
+      try {
+        if (this.loader) this.loader.message = `Uploading image ${Math.round(p || 0)}%`;
+      } catch (err) { /* ignore */ }
+    });
+
+    downloadUrl$.subscribe(
+      async (downloadUrl) => {
+        progressSub.unsubscribe();
+        try {
+          const range = this.editor?.getSelection(true);
+          const index = range?.index ?? this.editor?.getLength() ?? 0;
+          this.editor.insertEmbed(index, 'image', downloadUrl, 'user');
+          this.editor.setSelection(index + 1, 0, 'silent');
+        } catch (e) { console.error('Insert image failed', e); }
+        if (this.loader) this.loader.dismiss();
+      },
+      async () => {
+        progressSub.unsubscribe();
+        if (this.loader) this.loader.dismiss();
+        await this.uiUtil.presentToast('Could not upload the image. Please try again.', 'error');
+      }
+    );
+  }
+
+  /**
+   * Images pasted as HTML or dropped into the editor are embedded as
+   * `data:`/`blob:` URLs, which stored the whole image inside the blog doc
+   * (one blog reached 800 KB, near Firestore's 1 MB doc limit). Before
+   * saving, each one is compressed, uploaded to Storage and swapped for its
+   * download URL, keeping its size/alignment attributes. Runs from the last
+   * image back so earlier editor indexes stay valid.
+   */
+  private async uploadEmbeddedImages() {
+    if (!this.editor) return;
+    const Delta = Quill.import('delta');
+    const embedded: { index: number; src: string; attributes: any }[] = [];
+    let index = 0;
+    for (const op of this.editor.getContents().ops) {
+      const src = op.insert?.image;
+      if (typeof src === 'string' && /^(data|blob):/.test(src)) {
+        embedded.push({ index, src, attributes: op.attributes });
+      }
+      index += typeof op.insert === 'string' ? op.insert.length : 1;
+    }
+    for (const image of embedded.reverse()) {
+      const compressed = await compressImage(await this.embeddedImageBlob(image.src));
+      const ext = (compressed.type.split('/')[1] || 'png').replace('jpeg', 'jpg').replace(/\+.*/, '');
+      const imageName = `blog_inline_${Date.now()}_${image.index}.${ext}`;
+      const url = await firstValueFrom(this.blogService.saveBlogInlineImage(compressed as File, imageName));
+      this.editor.updateContents(
+        new Delta().retain(image.index).delete(1).insert({ image: url }, image.attributes),
+        'user'
+      );
+    }
+  }
+
+  /**
+   * The image behind a data:/blob: URL. Not fetch(): the CSP's connect-src
+   * doesn't allow data:/blob:, but img-src does, so a blob: URL is read
+   * back through an <img> and a canvas.
+   */
+  private async embeddedImageBlob(src: string): Promise<Blob> {
+    if (src.startsWith('data:')) {
+      const [header, base64] = src.split(',');
+      const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+      return new Blob([bytes], { type: header.match(/^data:([^;]+)/)?.[1] || 'image/png' });
+    }
+    const img = new Image();
+    img.src = src;
+    await img.decode();
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    canvas.getContext('2d').drawImage(img, 0, 0);
+    return new Promise((resolve, reject) =>
+      canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('Could not read image'))), 'image/png')
+    );
   }
 
   ngOnDestroy(): void {

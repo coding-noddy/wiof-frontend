@@ -184,7 +184,7 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
   }
 
   private loadStats() {
-    this.blogService.getBlogs().pipe(takeUntil(this.destroy$)).subscribe(blogs => {
+    this.blogService.getBlogSummaries().pipe(takeUntil(this.destroy$)).subscribe(blogs => {
       this.stats[0].value = blogs.length.toString();
     });
 
