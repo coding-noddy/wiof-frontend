@@ -10,6 +10,11 @@ export interface Workshop {
   /** 'YYYY-MM-DD'. Text, not a timestamp, so it never shifts a day across
    *  time zones and sorts correctly as a string. */
   eventDate: string;
+  /** Optional 'HH:MM' (24h), India time (IST). Shown on the card. */
+  startTime?: string;
+  /** Optional 'HH:MM' (24h), IST. The workshop moves to Past Workshops once
+   *  this has passed; without it, at the end of the event day (IST). */
+  endTime?: string;
   /** Optional one-liner, e.g. "Online (Zoom)" or a venue. */
   modeOrVenue: string;
   /** Google Forms link only (docs.google.com/forms/… or forms.gle/…),

@@ -35,25 +35,69 @@ describe('WorkshopService', () => {
     service = TestBed.inject(WorkshopService);
   });
 
-  describe('getUpcomingWorkshops', () => {
-    const now = new Date(2026, 10, 15, 18, 0); // 15 Nov 2026, evening, local time
+  describe('getPublishedWorkshops', () => {
+    // 31 Oct 2026, 6:00 PM IST (12:30 UTC)
+    const now = new Date('2026-10-31T18:00:00+05:30');
 
     it('asks Firestore for published workshops only (the rules require that filter)', async () => {
-      await firstValueFrom(service.getUpcomingWorkshops(now));
+      await firstValueFrom(service.getPublishedWorkshops(now));
       expect(queryFilters).toEqual([['published', '==', true]]);
     });
 
-    it('keeps today and future workshops, drops past ones, soonest first', async () => {
+    it('splits by end time: upcoming soonest first, past most recent first', async () => {
       docs = [
-        doc('later', { title: 'Later', eventDate: '2026-12-01' }),
-        doc('past', { title: 'Past', eventDate: '2026-11-14' }),
-        doc('today', { title: 'Today', eventDate: '2026-11-15' }),
-        doc('soon', { title: 'Soon', eventDate: '2026-11-20' })
+        doc('later', { eventDate: '2026-12-01' }),
+        doc('endedToday', { eventDate: '2026-10-31', startTime: '15:00', endTime: '17:00' }),
+        doc('liveNow', { eventDate: '2026-10-31', startTime: '17:00', endTime: '19:00' }),
+        doc('noEndToday', { eventDate: '2026-10-31', startTime: '10:00' }),
+        doc('lastWeek', { eventDate: '2026-10-20', startTime: '17:00' }),
+        doc('soon', { eventDate: '2026-11-05' })
       ];
 
-      const workshops = await firstValueFrom(service.getUpcomingWorkshops(now));
+      const { upcoming, past } = await firstValueFrom(service.getPublishedWorkshops(now));
 
-      expect(workshops.map((w) => w.id)).toEqual(['today', 'soon', 'later']);
+      expect(upcoming.map((w) => w.id)).toEqual(['noEndToday', 'liveNow', 'soon', 'later']);
+      expect(past.map((w) => w.id)).toEqual(['endedToday', 'lastWeek']);
+    });
+
+    it('keeps only the most recent past workshops', async () => {
+      docs = ['01', '02', '03', '04', '05', '06', '07', '08'].map((d) => doc(d, { eventDate: `2026-09-${d}` }));
+
+      const { past } = await firstValueFrom(service.getPublishedWorkshops(now, 6));
+
+      expect(past.map((w) => w.id)).toEqual(['08', '07', '06', '05', '04', '03']);
+    });
+  });
+
+  describe('time rules (IST)', () => {
+    const w = (extra: any) => ({ eventDate: '2026-10-31', ...extra } as any);
+
+    it('ends at the end time, or at the end of the day without one, in IST', () => {
+      expect(WorkshopService.endsAt(w({ endTime: '19:00' })).toISOString()).toBe('2026-10-31T13:30:00.000Z');
+      expect(WorkshopService.endsAt(w({})).toISOString()).toBe('2026-10-31T18:29:59.000Z');
+    });
+
+    it('isLiveNow is true only between start and end', () => {
+      const ws = w({ startTime: '17:00', endTime: '19:00' });
+      expect(WorkshopService.isLiveNow(ws, new Date('2026-10-31T16:59:00+05:30'))).toBeFalse();
+      expect(WorkshopService.isLiveNow(ws, new Date('2026-10-31T17:00:00+05:30'))).toBeTrue();
+      expect(WorkshopService.isLiveNow(ws, new Date('2026-10-31T19:00:00+05:30'))).toBeFalse();
+      expect(WorkshopService.isLiveNow(w({ endTime: '19:00' }), new Date('2026-10-31T18:00:00+05:30'))).toBeFalse();
+    });
+
+    it('timeLabel formats 12-hour IST times', () => {
+      expect(WorkshopService.timeLabel(w({ startTime: '17:00', endTime: '19:30' }))).toBe('5:00 PM – 7:30 PM IST');
+      expect(WorkshopService.timeLabel(w({ startTime: '09:05' }))).toBe('9:05 AM IST');
+      expect(WorkshopService.timeLabel(w({ startTime: '12:00', endTime: '00:30' }))).toBe('12:00 PM – 12:30 AM IST');
+      expect(WorkshopService.timeLabel(w({ endTime: '19:00' }))).toBe('Until 7:00 PM IST');
+      expect(WorkshopService.timeLabel(w({}))).toBe('');
+    });
+
+    it('isValidTime accepts empty or HH:MM only', () => {
+      expect(WorkshopService.isValidTime('')).toBeTrue();
+      expect(WorkshopService.isValidTime('17:00')).toBeTrue();
+      expect(WorkshopService.isValidTime('24:00')).toBeFalse();
+      expect(WorkshopService.isValidTime('5pm')).toBeFalse();
     });
   });
 
@@ -79,8 +123,7 @@ describe('WorkshopService', () => {
     expect(WorkshopService.isGoogleFormUrl('')).toBeFalse();
   });
 
-  it('today() and eventDateAsDate() use local dates, not UTC', () => {
-    expect(WorkshopService.today(new Date(2026, 0, 5, 23, 59))).toBe('2026-01-05');
+  it('eventDateAsDate() is a local date, not UTC', () => {
     const date = WorkshopService.eventDateAsDate('2026-03-09');
     expect([date.getFullYear(), date.getMonth(), date.getDate()]).toEqual([2026, 2, 9]);
   });

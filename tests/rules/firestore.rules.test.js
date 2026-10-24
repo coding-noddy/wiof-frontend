@@ -620,6 +620,19 @@ describe('workshops/{workshopId} (ClimatEnlighten workshops)', () => {
     await assertFails(db.collection('workshops').doc('d').set(workshop({ price: 500 })));
   });
 
+  it('accepts optional HH:MM start/end times, or empty strings for "not set"', async () => {
+    const db = await asAdmin();
+    await assertSucceeds(db.collection('workshops').doc('a').set(workshop({ startTime: '17:00', endTime: '19:30' })));
+    await assertSucceeds(db.collection('workshops').doc('b').set(workshop({ startTime: '', endTime: '' })));
+  });
+
+  it('rejects malformed times', async () => {
+    const db = await asAdmin();
+    await assertFails(db.collection('workshops').doc('a').set(workshop({ startTime: '5pm' })));
+    await assertFails(db.collection('workshops').doc('b').set(workshop({ endTime: '24:00' })));
+    await assertFails(db.collection('workshops').doc('c').set(workshop({ startTime: 1700 })));
+  });
+
   it('denies any write from a signed-in non-admin', async () => {
     const db = testEnv.authenticatedContext('alice').firestore();
     await assertFails(db.collection('workshops').doc('a').set(workshop()));

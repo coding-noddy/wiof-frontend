@@ -12,6 +12,8 @@ const emptyWorkshop = (): Workshop => ({
   title: '',
   description: '',
   eventDate: '',
+  startTime: '',
+  endTime: '',
   modeOrVenue: '',
   registrationUrl: '',
   posterName: '',
@@ -42,8 +44,6 @@ export class WorkshopsPage implements OnInit, OnDestroy {
   posterPreview: string | null = null;
   saving = false;
 
-  readonly today = WorkshopService.today();
-
   constructor(
     private workshopService: WorkshopService,
     private uiUtil: UiUtilService
@@ -68,9 +68,22 @@ export class WorkshopsPage implements OnInit, OnDestroy {
     );
   }
 
-  statusOf(workshop: Workshop): 'live' | 'draft' | 'past' {
-    if (workshop.eventDate < this.today) return 'past';
+  statusOf(workshop: Workshop): 'live' | 'draft' | 'past' | 'past-draft' {
+    if (WorkshopService.isOver(workshop)) return workshop.published ? 'past' : 'past-draft';
     return workshop.published ? 'live' : 'draft';
+  }
+
+  statusLabel(workshop: Workshop): string {
+    return {
+      live: 'Upcoming — on the website',
+      draft: 'Draft',
+      past: 'Past — in Past Workshops',
+      'past-draft': 'Past — draft, not shown'
+    }[this.statusOf(workshop)];
+  }
+
+  timeLabel(workshop: Workshop): string {
+    return WorkshopService.timeLabel(workshop);
   }
 
   eventDate(workshop: Workshop): Date {
@@ -82,7 +95,7 @@ export class WorkshopsPage implements OnInit, OnDestroy {
   }
 
   startEdit(workshop: Workshop) {
-    this.openForm({ ...workshop });
+    this.openForm({ startTime: '', endTime: '', ...workshop });
   }
 
   private openForm(workshop: Workshop) {
@@ -113,6 +126,15 @@ export class WorkshopsPage implements OnInit, OnDestroy {
     reader.readAsDataURL(file);
   }
 
+  /** Both times well-formed, and the end after the start when both are set. */
+  get timesValid(): boolean {
+    const w = this.editing;
+    if (!w) return false;
+    const start = w.startTime || '';
+    const end = w.endTime || '';
+    return WorkshopService.isValidTime(start) && WorkshopService.isValidTime(end) && (!start || !end || end > start);
+  }
+
   get linkValid(): boolean {
     return WorkshopService.isGoogleFormUrl(this.editing?.registrationUrl || '');
   }
@@ -122,6 +144,7 @@ export class WorkshopsPage implements OnInit, OnDestroy {
     return !!w && !this.saving
       && !!w.title.trim()
       && !!w.eventDate
+      && this.timesValid
       && this.linkValid
       && (!!this.posterFile || !!w.posterUrl);
   }

@@ -6,7 +6,7 @@
 
 .logo-banner {
   text-align: center;
-  padding: 3rem 1.5rem 2.5rem;
+  padding: 1.5rem 1.5rem 2.5rem;
   background: var(--wiof-warm-white);
   border-bottom: 1.5px solid var(--wiof-border);
 }
@@ -169,6 +169,97 @@
   font-size: 0.95rem;
   line-height: 1.5;
   color: rgba(43, 36, 32, 0.8);
+}
+
+.live-badge,
+.completed-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.live-badge {
+  background: #B42318;
+  color: #fff;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+  animation: live-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  50% { opacity: 0.3; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-dot { animation: none; }
+}
+
+.completed-badge {
+  background: var(--wiof-warm-white);
+  color: var(--wiof-teal-shade-40);
+  border: 1.5px solid var(--wiof-brown-tint-40);
+}
+
+/* ── Past workshops: smaller, quieter cards with no Register ── */
+.past-section {
+  padding-top: 2.5rem;
+}
+
+.past-grid {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.25rem;
+}
+
+.past-card .poster-image {
+  filter: saturate(0.6);
+  opacity: 0.85;
+}
+
+.past-card .workshop-body {
+  padding: 14px 16px 16px;
+}
+
+.past-card .workshop-body h3 {
+  font-size: 0.98rem;
+}
+
+.past-card .workshop-when {
+  font-size: 0.82rem;
+  margin: 0;
+  color: rgba(43, 36, 32, 0.65);
+}
+
+/* Past cards stay in a grid on phones too (two across), so a full
+   history doesn't push the learning phases far down. */
+@media (max-width: 640px) {
+  .past-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem;
+  }
+
+  .past-card .workshop-poster {
+    aspect-ratio: 4 / 5;
+  }
+
+  .past-card .poster-backdrop {
+    display: block;
+  }
+
+  .past-card .poster-image {
+    height: 100%;
+  }
 }
 
 .poster-modal-content {

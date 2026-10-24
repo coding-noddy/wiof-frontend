@@ -29,35 +29,85 @@ export class WorkshopService {
     return GOOGLE_FORM_URL.test((url || '').trim());
   }
 
-  /** Today as 'YYYY-MM-DD' in the visitor's own time zone. */
-  static today(now: Date = new Date()): string {
-    const pad = (n: number) => String(n).padStart(2, '0');
-    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  /** '' (not set) or 'HH:MM' 24h — same check as firestore.rules. */
+  static isValidTime(time: string): boolean {
+    return !time || /^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(time);
   }
 
-  /** 'YYYY-MM-DD' as a local Date (new Date('YYYY-MM-DD') would be UTC). */
+  /** 'YYYY-MM-DD' as a local Date for showing the day (new Date('YYYY-MM-DD')
+   *  would be UTC and could show the previous day west of UTC). */
   static eventDateAsDate(eventDate: string): Date {
     const [y, m, d] = eventDate.split('-').map(Number);
     return new Date(y, m - 1, d);
   }
 
   /**
-   * Published workshops that haven't happened yet (today's still shows),
-   * soonest first, for /climatenlighten. The `published == true` filter is
-   * required: firestore.rules only let the public read published docs.
+   * Workshop times are India time (IST, UTC+5:30) for every visitor, so one
+   * abroad sees a workshop move to Past at the real moment it ends.
    */
-  getUpcomingWorkshops(now: Date = new Date()): Observable<Workshop[]> {
-    const today = WorkshopService.today(now);
+  private static istInstant(eventDate: string, time: string): Date {
+    return new Date(`${eventDate}T${time}+05:30`);
+  }
+
+  /** When it starts, or null if no start time is set. */
+  static startsAt(workshop: Workshop): Date | null {
+    return workshop.startTime ? WorkshopService.istInstant(workshop.eventDate, `${workshop.startTime}:00`) : null;
+  }
+
+  /** When it moves to Past: its end time, else the end of the day (IST). */
+  static endsAt(workshop: Workshop): Date {
+    return WorkshopService.istInstant(
+      workshop.eventDate,
+      workshop.endTime ? `${workshop.endTime}:00` : '23:59:59'
+    );
+  }
+
+  static isOver(workshop: Workshop, now: Date = new Date()): boolean {
+    return now.getTime() >= WorkshopService.endsAt(workshop).getTime();
+  }
+
+  /** Started (a start time is set and has passed) but not yet ended. */
+  static isLiveNow(workshop: Workshop, now: Date = new Date()): boolean {
+    const start = WorkshopService.startsAt(workshop);
+    return !!start && now.getTime() >= start.getTime() && !WorkshopService.isOver(workshop, now);
+  }
+
+  /** "5:00 PM – 7:00 PM IST", "5:00 PM IST", "Until 7:00 PM IST", or ''. */
+  static timeLabel(workshop: Workshop): string {
+    const fmt = (time: string) => {
+      const [h, m] = time.split(':').map(Number);
+      return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`;
+    };
+    const { startTime, endTime } = workshop;
+    if (startTime && endTime) return `${fmt(startTime)} – ${fmt(endTime)} IST`;
+    if (startTime) return `${fmt(startTime)} IST`;
+    if (endTime) return `Until ${fmt(endTime)} IST`;
+    return '';
+  }
+
+  /**
+   * Published workshops for /climatenlighten, split by whether they've ended:
+   * upcoming soonest first, past most recent first (at most `pastLimit`).
+   * The `published == true` filter is required: firestore.rules only let
+   * the public read published docs.
+   */
+  getPublishedWorkshops(now: Date = new Date(), pastLimit = 6): Observable<{ upcoming: Workshop[]; past: Workshop[] }> {
+    const byStart = (a: Workshop, b: Workshop) =>
+      `${a.eventDate} ${a.startTime || ''}`.localeCompare(`${b.eventDate} ${b.startTime || ''}`);
     return this.database
       .collection(FIREBASE_COLLECTION.WORKSHOPS, (ref) => ref.where('published', '==', true))
       .get()
       .pipe(
-        map((snapshot) =>
-          snapshot.docs
-            .map((doc) => ({ ...(doc.data() as Workshop), id: doc.id }))
-            .filter((w) => w.eventDate >= today)
-            .sort((a, b) => a.eventDate.localeCompare(b.eventDate))
-        )
+        map((snapshot) => {
+          const all = snapshot.docs.map((doc) => ({ ...(doc.data() as Workshop), id: doc.id }));
+          return {
+            upcoming: all.filter((w) => !WorkshopService.isOver(w, now)).sort(byStart),
+            past: all
+              .filter((w) => WorkshopService.isOver(w, now))
+              .sort((a, b) => byStart(b, a))
+              .slice(0, pastLimit)
+          };
+        })
       );
   }
 
@@ -96,6 +146,8 @@ export class WorkshopService {
           title: workshop.title.trim(),
           description: workshop.description.trim(),
           eventDate: workshop.eventDate,
+          startTime: workshop.startTime || '',
+          endTime: workshop.endTime || '',
           modeOrVenue: (workshop.modeOrVenue || '').trim(),
           registrationUrl: workshop.registrationUrl.trim(),
           posterName,

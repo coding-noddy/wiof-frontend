@@ -79,8 +79,15 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
 
+  &.three {
+    grid-template-columns: 1.4fr 1fr 1fr;
+  }
+
   @media (max-width: 560px) {
-    grid-template-columns: 1fr;
+    &,
+    &.three {
+      grid-template-columns: 1fr;
+    }
   }
 }
 

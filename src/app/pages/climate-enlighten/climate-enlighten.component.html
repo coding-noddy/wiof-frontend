@@ -7,14 +7,14 @@
       <p class="tagline">Simplifying climate and sustainability learning, one phase at a time.</p>
     </header>
 
-    <!-- Upcoming workshops (Admin → Workshops). Hidden entirely when there
-         are none, so the page looks the same as before between workshops. -->
-    <section class="workshops-section" *ngIf="workshops?.length" aria-labelledby="workshops-heading">
+    <!-- Upcoming workshops (Admin → Workshops). Each workshop section is
+         hidden when it has nothing to show. -->
+    <section class="workshops-section" *ngIf="upcoming.length" aria-labelledby="workshops-heading">
       <p class="section-eyebrow">Join us</p>
       <h2 id="workshops-heading" class="section-title">Upcoming Workshops</h2>
 
       <div class="workshops-grid">
-        <article class="workshop-card" *ngFor="let w of workshops">
+        <article class="workshop-card" *ngFor="let w of upcoming">
           <button type="button" class="workshop-poster" (click)="openPoster(w)"
             [attr.aria-label]="'View the ' + w.title + ' poster full size'">
             <!-- Same URL as the poster, so it's one download: a blurred copy
@@ -24,6 +24,9 @@
             <span class="poster-zoom" aria-hidden="true">
               <ion-icon name="expand-outline"></ion-icon>
             </span>
+            <span class="live-badge" *ngIf="isLiveNow(w)">
+              <span class="live-dot" aria-hidden="true"></span> Live now
+            </span>
           </button>
 
           <div class="workshop-body">
@@ -31,6 +34,10 @@
             <p class="workshop-when">
               <ion-icon aria-hidden="true" name="calendar-outline"></ion-icon>
               {{ eventDate(w) | date:'EEEE, d MMMM y' }}
+            </p>
+            <p class="workshop-when" *ngIf="timeLabel(w)">
+              <ion-icon aria-hidden="true" name="time-outline"></ion-icon>
+              {{ timeLabel(w) }}
             </p>
             <p class="workshop-when" *ngIf="w.modeOrVenue">
               <ion-icon aria-hidden="true" name="location-outline"></ion-icon>
@@ -44,6 +51,33 @@
               [attr.aria-label]="'Register for ' + w.title + ' (opens a Google Form)'">
               Register
             </a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Past workshops: the most recent few, as proof the sessions really
+         happen. Smaller and faded, no Register; the poster still opens. -->
+    <section class="workshops-section past-section" *ngIf="past.length" aria-labelledby="past-workshops-heading">
+      <h2 id="past-workshops-heading" class="section-title">Past Workshops</h2>
+
+      <div class="workshops-grid past-grid">
+        <article class="workshop-card past-card" *ngFor="let w of past">
+          <button type="button" class="workshop-poster" (click)="openPoster(w)"
+            [attr.aria-label]="'View the ' + w.title + ' poster full size'">
+            <img class="poster-backdrop" [src]="w.posterUrl" alt="" aria-hidden="true" loading="lazy" />
+            <img class="poster-image" [src]="w.posterUrl" [alt]="'Poster: ' + w.title" loading="lazy" />
+            <span class="completed-badge">
+              <ion-icon aria-hidden="true" name="checkmark-circle"></ion-icon> Completed
+            </span>
+          </button>
+
+          <div class="workshop-body">
+            <h3>{{ w.title }}</h3>
+            <p class="workshop-when">
+              <ion-icon aria-hidden="true" name="calendar-outline"></ion-icon>
+              {{ eventDate(w) | date:'d MMMM y' }}
+            </p>
           </div>
         </article>
       </div>
@@ -68,7 +102,7 @@
     </ion-modal>
 
     <section class="climate-container">
-      <h2 class="section-title" *ngIf="workshops?.length">Learning Phases</h2>
+      <h2 class="section-title" *ngIf="hasWorkshops">Learning Phases</h2>
       <div class="cards-grid">
         <div class="card" *ngFor="let card of cards">
 

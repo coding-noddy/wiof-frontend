@@ -18,7 +18,7 @@
     <div class="admin-page-header">
       <div>
         <h1>Manage Workshops</h1>
-        <p class="header-meta">Shown on the ClimatEnlighten page until the workshop date has passed</p>
+        <p class="header-meta">Shown on the ClimatEnlighten page: upcoming until they end, then under Past Workshops</p>
       </div>
       <div class="header-actions">
         <button class="btn-secondary" (click)="loadData()">
@@ -65,17 +65,30 @@
             <span class="field-hint">{{ editing.description.length }}/600</span>
           </label>
 
-          <div class="field-row">
+          <div class="field-row three">
             <label class="field">
               <span class="field-label">Workshop date *</span>
               <input type="date" class="field-input" [(ngModel)]="editing.eventDate" />
-              <span class="field-hint">It disappears from the website after this day.</span>
             </label>
             <label class="field">
-              <span class="field-label">Online or venue</span>
-              <input type="text" class="field-input" [(ngModel)]="editing.modeOrVenue" maxlength="120" placeholder="e.g. Online (Zoom)" />
+              <span class="field-label">Start time (IST)</span>
+              <input type="time" class="field-input" [(ngModel)]="editing.startTime" />
+            </label>
+            <label class="field">
+              <span class="field-label">End time (IST)</span>
+              <input type="time" class="field-input" [class.invalid]="!timesValid" [(ngModel)]="editing.endTime" />
             </label>
           </div>
+          <span class="field-hint error" *ngIf="!timesValid">The end time must be after the start time.</span>
+          <span class="field-hint" *ngIf="timesValid">
+            It moves from Upcoming to Past Workshops when it ends (at the end time, or at midnight if there's none).
+            Between the start and end times it shows a "Live now" badge.
+          </span>
+
+          <label class="field">
+            <span class="field-label">Online or venue</span>
+            <input type="text" class="field-input" [(ngModel)]="editing.modeOrVenue" maxlength="120" placeholder="e.g. Online (Zoom)" />
+          </label>
 
           <label class="field">
             <span class="field-label">Google Form registration link *</span>
@@ -120,18 +133,18 @@
     </div>
 
     <div class="workshop-list" *ngIf="!isLoading && !loadError && workshops.length">
-      <div class="workshop-row" *ngFor="let w of workshops" [class.is-past]="statusOf(w) === 'past'">
+      <div class="workshop-row" *ngFor="let w of workshops" [class.is-past]="statusOf(w) === 'past' || statusOf(w) === 'past-draft'">
         <img class="workshop-thumb" [src]="w.posterUrl" [alt]="'Poster for ' + w.title" loading="lazy" />
         <div class="workshop-info">
           <span class="cell-title">{{ w.title }}</span>
           <span class="cell-subtitle">
-            {{ eventDate(w) | date:'EEE, d MMM y' }}<ng-container *ngIf="w.modeOrVenue"> · {{ w.modeOrVenue }}</ng-container>
+            {{ eventDate(w) | date:'EEE, d MMM y' }}<ng-container *ngIf="timeLabel(w)"> · {{ timeLabel(w) }}</ng-container><ng-container *ngIf="w.modeOrVenue"> · {{ w.modeOrVenue }}</ng-container>
           </span>
           <span class="status-badge"
             [class.published]="statusOf(w) === 'live'"
             [class.submitted]="statusOf(w) === 'draft'"
-            [class.inactive]="statusOf(w) === 'past'">
-            {{ statusOf(w) === 'live' ? 'On the website' : statusOf(w) === 'draft' ? 'Draft' : 'Past — hidden' }}
+            [class.inactive]="statusOf(w) === 'past' || statusOf(w) === 'past-draft'">
+            {{ statusLabel(w) }}
           </span>
         </div>
         <div class="action-buttons">
