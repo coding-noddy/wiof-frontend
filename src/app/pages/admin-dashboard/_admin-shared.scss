@@ -108,6 +108,14 @@ ion-header {
     background: var(--wiof-teal-shade-20);
     transform: translateY(-1px);
   }
+
+  // Disabled buttons looked exactly like enabled ones on every admin page.
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: $accent;
+    transform: none;
+  }
 }
 
 .btn-secondary {
@@ -131,6 +139,13 @@ ion-header {
   &:hover {
     background: #f9fafb;
     border-color: #d1d5db;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: transparent;
+    border-color: $border-color;
   }
 }
 

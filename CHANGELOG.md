@@ -20,6 +20,7 @@ ClimatEnlighten workshops, and the brand identity credit.
 - **`workshops` rules:** the public can read published workshops only, so drafts stay hidden. Admin-only writes, with every field checked: the registration link must be a Google Form (`docs.google.com/forms/…` or `forms.gle/…`), the date `YYYY-MM-DD`, the poster a Firebase Storage URL, and no unknown fields. Covered by 7 new rules tests.
 
 ### Changed
+- **Disabled admin buttons now look disabled** (faded, not-allowed cursor) on every admin page. They looked exactly like enabled ones, e.g. a Save button with required fields still empty.
 - `compress-storage-images.js` and `delete-orphan-images.js` also cover the new `workshop-posters/` folder.
 - TODO.md: finished items removed (they're in this changelog and the git history); App Check added under "Security (Deferred)".
 
