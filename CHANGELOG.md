@@ -14,6 +14,7 @@ ClimatEnlighten workshops, and the brand identity credit.
 ### Added
 - **Upcoming Workshops on the ClimatEnlighten page.** Each workshop card shows its poster (any shape, tap to view full size), title, date, an optional online/venue line, a short description and a **Register** button that opens its Google Form. Workshops show soonest first and disappear automatically after their date. The section is hidden when there are none, so the page looks as before between workshops. The date, time and price go on the poster.
 - **Admin → Workshops** to add, edit and delete them on one page: poster upload (compressed automatically), title, description, date, online/venue, Google Form link, and a show-on-website switch for drafts. Replacing or deleting a workshop deletes its old poster from Storage. The poster's download URL is saved with the workshop, so the public page makes no per-card Storage lookups.
+- **ClimatEnlighten in the header menu,** right after Take Action, on desktop and in the mobile menu, so visitors can go straight to the workshops and learning phases. To fit five links plus Sign In at the narrowest desktop widths (768–899 px), the links use tighter spacing there and never wrap onto two lines.
 - **"Brand Identity by EcoFlyp"** in the footer's bottom bar, linking to EcoFlyp's ClimatEnlighten × WIOF case study. The link is followed (no `nofollow`) on purpose: it's the backlink EcoFlyp asked for in return for the brand identity work.
 
 ### Security
