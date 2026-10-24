@@ -113,14 +113,18 @@ describe('WorkshopService', () => {
     expect(workshops.map((w) => w.id)).toEqual(['b', 'c', 'a']);
   });
 
-  it('isGoogleFormUrl accepts Google Form links only', () => {
-    expect(WorkshopService.isGoogleFormUrl('https://forms.gle/abc123')).toBeTrue();
-    expect(WorkshopService.isGoogleFormUrl('https://docs.google.com/forms/d/e/1FAIpQLSf/viewform')).toBeTrue();
-    expect(WorkshopService.isGoogleFormUrl('  https://forms.gle/abc123  ')).toBeTrue();
-    expect(WorkshopService.isGoogleFormUrl('http://forms.gle/abc123')).toBeFalse();
-    expect(WorkshopService.isGoogleFormUrl('https://example.com/forms/x')).toBeFalse();
-    expect(WorkshopService.isGoogleFormUrl('https://docs.google.com/document/d/x')).toBeFalse();
-    expect(WorkshopService.isGoogleFormUrl('')).toBeFalse();
+  it('isValidRegistrationUrl accepts any http(s) web link, nothing else', () => {
+    const ok = WorkshopService.isValidRegistrationUrl;
+    expect(ok('https://forms.gle/abc123')).toBeTrue();
+    expect(ok('https://docs.google.com/forms/d/e/1FAIpQLSf/viewform')).toBeTrue();
+    expect(ok('https://rzp.io/l/wiof-workshop')).toBeTrue();
+    expect(ok('http://example.org:8080/register?id=1#top')).toBeTrue();
+    expect(ok('  https://example.com  ')).toBeTrue();
+    expect(ok('forms.gle/abc')).toBeFalse();
+    expect(ok('javascript:alert(1)')).toBeFalse();
+    expect(ok('https://localhost/x')).toBeFalse();
+    expect(ok('https://example.com/a b')).toBeFalse();
+    expect(ok('')).toBeFalse();
   });
 
   it('eventDateAsDate() is a local date, not UTC', () => {

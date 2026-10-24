@@ -598,18 +598,23 @@ describe('workshops/{workshopId} (ClimatEnlighten workshops)', () => {
     await assertSucceeds(db.collection('workshops').get());
   });
 
-  it('lets an admin create a valid workshop, with forms.gle or docs.google.com/forms links', async () => {
+  it('lets an admin create a valid workshop with any http(s) registration link', async () => {
     const db = await asAdmin();
     await assertSucceeds(db.collection('workshops').doc('a').set(workshop()));
     await assertSucceeds(db.collection('workshops').doc('b').set(workshop({
       registrationUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSf/viewform'
     })));
+    await assertSucceeds(db.collection('workshops').doc('c').set(workshop({ registrationUrl: 'https://rzp.io/l/wiof-workshop' })));
+    await assertSucceeds(db.collection('workshops').doc('d').set(workshop({ registrationUrl: 'http://example.org:8080/register?id=1#top' })));
   });
 
-  it('rejects a registration link that is not a Google Form', async () => {
+  it('rejects registration links that are not real web links', async () => {
     const db = await asAdmin();
-    await assertFails(db.collection('workshops').doc('a').set(workshop({ registrationUrl: 'https://example.com/pay' })));
-    await assertFails(db.collection('workshops').doc('b').set(workshop({ registrationUrl: 'http://forms.gle/abc' })));
+    await assertFails(db.collection('workshops').doc('a').set(workshop({ registrationUrl: 'javascript:alert(1)' })));
+    await assertFails(db.collection('workshops').doc('b').set(workshop({ registrationUrl: 'forms.gle/abc' })));
+    await assertFails(db.collection('workshops').doc('c').set(workshop({ registrationUrl: 'https://localhost/x' })));
+    await assertFails(db.collection('workshops').doc('d').set(workshop({ registrationUrl: 'https://example.com/a b' })));
+    await assertFails(db.collection('workshops').doc('e').set(workshop({ registrationUrl: 'data:text/html,hi' })));
   });
 
   it('rejects a bad date, an empty title, a non-Storage poster URL or an unknown field', async () => {

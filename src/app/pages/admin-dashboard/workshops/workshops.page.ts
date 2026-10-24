@@ -136,7 +136,7 @@ export class WorkshopsPage implements OnInit, OnDestroy {
   }
 
   get linkValid(): boolean {
-    return WorkshopService.isGoogleFormUrl(this.editing?.registrationUrl || '');
+    return WorkshopService.isValidRegistrationUrl(this.editing?.registrationUrl || '');
   }
 
   get canSave(): boolean {

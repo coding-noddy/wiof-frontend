@@ -91,14 +91,14 @@
           </label>
 
           <label class="field">
-            <span class="field-label">Google Form registration link *</span>
+            <span class="field-label">Registration link *</span>
             <input type="url" class="field-input" [class.invalid]="editing.registrationUrl && !linkValid"
-              [(ngModel)]="editing.registrationUrl" placeholder="https://forms.gle/…" />
+              [(ngModel)]="editing.registrationUrl" placeholder="https://… (Google Form, payment page, event page)" />
             <span class="field-hint error" *ngIf="editing.registrationUrl && !linkValid">
-              Use the Google Form's link (forms.gle/… or docs.google.com/forms/…).
+              Paste the full link, starting with https:// (for example https://forms.gle/…).
             </span>
             <span class="field-hint" *ngIf="linkValid">
-              <a [href]="editing.registrationUrl" target="_blank" rel="noopener">Open the form to check it</a>
+              <a [href]="editing.registrationUrl" target="_blank" rel="noopener">Open the link to check it</a>
             </span>
           </label>
 

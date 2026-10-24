@@ -172,7 +172,7 @@ service cloud.firestore {
     // ClimatEnlighten workshops (Admin → Workshops). The public reads only
     // published ones (so a draft isn't visible before it's announced), which
     // means a public list query must filter on published == true. Admin-only
-    // write; registration must be a Google Form, and every field is checked
+    // write; the registration link must be an http(s) web link, and every field is checked
     // so a typo can't store something the page can't show.
 
     match /workshops/{workshopId} {
@@ -192,7 +192,10 @@ service cloud.firestore {
           && (!('endTime' in d) || (d.endTime is string && d.endTime.matches('^(([01][0-9]|2[0-3]):[0-5][0-9])?$')))
           && d.modeOrVenue is string && d.modeOrVenue.size() <= 120
           && d.registrationUrl is string
-          && d.registrationUrl.matches('^https://(docs[.]google[.]com/forms/|forms[.]gle/)[^ ]+$')
+          // Any http(s) link to a real-looking host; blocks typos and
+          // javascript:/data: links. Same check as WorkshopService.
+          && d.registrationUrl.size() <= 2000
+          && d.registrationUrl.matches('^https?://[A-Za-z0-9-]+([.][A-Za-z0-9-]+)+(:[0-9]+)?([/?#][^ ]*)?$')
           && d.posterName is string && d.posterName.size() > 0
           && d.posterUrl is string && d.posterUrl.matches('^https://firebasestorage[.]googleapis[.]com/.*')
           && d.published is bool;

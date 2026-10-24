@@ -1,7 +1,7 @@
 /**
- * A ClimatEnlighten workshop, shown on /climatenlighten until its date has
- * passed. The poster image carries the details people scan for (date, time,
- * price); the card adds a short description and the Google Form link.
+ * A ClimatEnlighten workshop on /climatenlighten: under Upcoming until it
+ * ends, then under Past Workshops. The poster image carries the details people scan for (date, time,
+ * price); the card adds a short description and the registration link.
  */
 export interface Workshop {
   id?: string;
@@ -17,8 +17,8 @@ export interface Workshop {
   endTime?: string;
   /** Optional one-liner, e.g. "Online (Zoom)" or a venue. */
   modeOrVenue: string;
-  /** Google Forms link only (docs.google.com/forms/… or forms.gle/…),
-   *  enforced in firestore.rules too. */
+  /** Any http(s) web link (Google Form, payment page, event page…),
+   *  checked in firestore.rules too. */
   registrationUrl: string;
   /** File name in Storage `workshop-posters/`. */
   posterName: string;

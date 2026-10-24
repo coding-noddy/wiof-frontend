@@ -11,8 +11,13 @@ import { Workshop } from '../models/Workshop';
 import { uploadCompressedImage } from '../util/image-compression.util';
 import { AdminWriteGuardService } from './admin-write-guard.service';
 
-/** Same check as firestore.rules: a Google Forms link, nothing else. */
-const GOOGLE_FORM_URL = /^https:\/\/(docs\.google\.com\/forms\/|forms\.gle\/)\S+$/;
+/**
+ * Same check as firestore.rules: a web link (http/https) to a real-looking
+ * host (name.tld, optional port), with no spaces. Any site is fine (Google
+ * Form, payment page, event page); this only stops typos and unsafe links
+ * such as javascript: or data: URLs.
+ */
+const REGISTRATION_URL = /^https?:\/\/[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)+(:[0-9]+)?([\/?#][^\s]*)?$/;
 
 @Injectable({
   providedIn: 'root'
@@ -25,8 +30,8 @@ export class WorkshopService {
     private adminWriteGuard: AdminWriteGuardService
   ) {}
 
-  static isGoogleFormUrl(url: string): boolean {
-    return GOOGLE_FORM_URL.test((url || '').trim());
+  static isValidRegistrationUrl(url: string): boolean {
+    return REGISTRATION_URL.test((url || '').trim());
   }
 
   /** '' (not set) or 'HH:MM' 24h — same check as firestore.rules. */
