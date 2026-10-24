@@ -7,6 +7,19 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [6.3.0] - 2026-10-20
+
+Phase 1 performance: blog pages.
+
+### Performance
+- **Blog lists read small summary docs instead of whole blogs.** The element pages and `/blogs` were downloading every blog's full body to show a card (2 MB for 29 blogs on staging). They now read `blog_summaries/{blogId}`, with just the card fields and a ready-made cover image URL, so the cards no longer make one `getDownloadURL()` call each. A new `onBlogWritten` Cloud Function keeps the summaries in step with `Blogs` on every create, edit and delete. Both the function and the backfill script build them with `functions/blog-summary.js`. Until summaries exist the lists fall back to the old full read, so deploy order can't blank them. The admin Manage Blogs page still reads full blogs, because it edits from its list.
+- **Images embedded in blog bodies are moved to Storage.** Four blogs had images pasted in as base64 `data:` URLs stored inside the blog doc (800, 723, 213 and 117 KB; Firestore's limit is 1 MB per doc). **`scripts/optimize-blogs.js`** uploads each one as a ≤1600 px WebP, rewrites the blog to link to it and backfills `blog_summaries`. It's a dry run unless `--apply`, backs up the original content and has `--restore`. Staging dry run: 5 images, 1380 KB → 123 KB; those four blogs drop to 2–5 KB.
+- **The blog editor no longer embeds images.** On save, any `data:`/`blob:` image (pasted HTML, drag-and-drop) is compressed, uploaded and swapped for its URL, keeping its size and alignment. A copied image with no HTML (a screenshot) is uploaded like the toolbar's image button; before, it was silently dropped. The cover image now uploads before the blog is saved, so `onBlogWritten` can read its download token.
+- **Element pages fetched blogs and YouTube videos twice.** `blogs$` and `videos$` were subscribed by both the template and the section nav; they're now shared (`shareReplay`), which halves those Firestore reads and YouTube API calls.
+
+### Security
+- **`blog_summaries` rules:** public read, no client writes (written only through the Admin SDK). Covered in the rules tests.
+
 ## [6.2.0] - 2026-10-13
 
 Phase 1 hardening, part 2.

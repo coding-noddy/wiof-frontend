@@ -13,6 +13,7 @@
 // working after the upgrade (see functions/package.json).
 const functions = require('firebase-functions/v1');
 const admin = require('firebase-admin');
+const { BLOG_SUMMARIES, buildBlogSummary } = require('./blog-summary');
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -627,6 +628,25 @@ exports.onUserActionWritten = functions
     }
 
     await db.collection('user_metrics').doc(uid).set(update, { merge: true });
+    return null;
+  }));
+
+/**
+ * Keeps blog_summaries/{blogId} in step with Blogs/{blogId}, so blog lists
+ * read a small card doc instead of the whole blog body (see
+ * blog-summary.js). The admin editor uploads the cover image before saving
+ * the blog, so the image's download token exists by the time this runs.
+ */
+exports.onBlogWritten = functions
+  .region(REGION)
+  .firestore.document('Blogs/{blogId}')
+  .onWrite(withTriggerErrorLogging('onBlogWritten', async (change, context) => {
+    const summaryRef = db.collection(BLOG_SUMMARIES).doc(context.params.blogId);
+    if (!change.after.exists) {
+      await summaryRef.delete();
+      return null;
+    }
+    await summaryRef.set(await buildBlogSummary(change.after.data() || {}, storage.bucket()));
     return null;
   }));
 

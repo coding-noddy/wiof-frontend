@@ -547,6 +547,20 @@ describe('poll_results/{pollQuestionId} (sanitized public aggregate)', () => {
   });
 });
 
+describe('blog_summaries/{blogId} (card-sized blog copy for the lists)', () => {
+  it('lets anyone read a summary', async () => {
+    await seed((db) => db.collection('blog_summaries').doc('blog-1').set({ title: 'A blog', category: 'Earth' }));
+    const db = testEnv.unauthenticatedContext().firestore();
+    await assertSucceeds(db.collection('blog_summaries').where('category', '==', 'Earth').get());
+  });
+
+  it('denies a client write, even from an admin account (onBlogWritten via Admin SDK only)', async () => {
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    const db = testEnv.authenticatedContext('root').firestore();
+    await assertFails(db.collection('blog_summaries').doc('blog-1').set({ title: 'Forged' }));
+  });
+});
+
 describe('Subscriptions/{id}', () => {
   it('denies a direct client sign-up, even with the expected fields (only the subscribe function writes)', async () => {
     const db = testEnv.unauthenticatedContext().firestore();

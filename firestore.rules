@@ -320,6 +320,14 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /blog_summaries/{id} {
+      // Card-sized copy of each blog for the blog lists. Written only by the
+      // onBlogWritten Cloud Function and scripts/optimize-blogs.js (Admin
+      // SDK, bypasses these rules), so the client write path is closed.
+      allow read: if true;
+      allow write: if false;
+    }
+
     match /News/{id} {
       allow read: if true;
       allow write: if isAdmin();

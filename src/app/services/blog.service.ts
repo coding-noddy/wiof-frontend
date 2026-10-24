@@ -4,7 +4,7 @@ import {
   AngularFirestoreCollection
 } from '@angular/fire/compat/firestore';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-import { from, Observable } from 'rxjs';
+import { from, Observable, of } from 'rxjs';
 import { last, map, switchMap } from 'rxjs/operators';
 import { Blog } from '../models/Blog';
 import { FIREBASE_COLLECTION, AVG_WORD_READ_PER_MIN } from '../app.constants';
@@ -59,6 +59,39 @@ export class BlogService {
           // matching the admin blog list's own "Published" column logic.
           .sort((a, b) => this.blogSortDate(b) - this.blogSortDate(a))
       )
+    );
+  }
+
+  /**
+   * The blog list for cards (element pages, /blogs): reads the small
+   * blog_summaries docs (see functions/blog-summary.js) instead of the full
+   * blogs, and uses the summary's stored cover URL instead of one
+   * getDownloadURL() call per card. Summaries have no `content`, so these
+   * Blogs can't be edited or rendered; the admin pages use getBlogs().
+   * Falls back to getBlogs() while blog_summaries is still empty (e.g. hosting
+   * deployed before the backfill ran), so a list never goes blank.
+   */
+  getBlogSummaries(category?: string): Observable<Blog[]> {
+    const summaries = this.database.collection(
+      FIREBASE_COLLECTION.BLOG_SUMMARIES,
+      (ref) => (category !== undefined ? ref.where('category', '==', category) : ref)
+    );
+    return summaries.get().pipe(
+      switchMap((querySnapshot) => {
+        if (querySnapshot.empty) {
+          return this.getBlogs(category);
+        }
+        return of(
+          querySnapshot.docs
+            .map((doc) => {
+              const data = doc.data() as Blog & { imageUrl?: string };
+              data.id = doc.id;
+              data.image$ = data.imageUrl ? of(data.imageUrl) : this.getImage(data.imageName);
+              return data as Blog;
+            })
+            .sort((a, b) => this.blogSortDate(b) - this.blogSortDate(a))
+        );
+      })
     );
   }
 
