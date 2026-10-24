@@ -13,8 +13,10 @@
       <p class="section-eyebrow">Join us</p>
       <h2 id="workshops-heading" class="section-title">Upcoming Workshops</h2>
 
-      <div class="workshops-grid">
-        <article class="workshop-card" *ngFor="let w of upcoming">
+      <!-- Side by side: poster on the left, details and Register on the
+           right, so everything is visible without scrolling past the poster. -->
+      <div class="workshops-grid upcoming-grid">
+        <article class="workshop-card upcoming-card" *ngFor="let w of upcoming">
           <button type="button" class="workshop-poster" (click)="openPoster(w)"
             [attr.aria-label]="'View the ' + w.title + ' poster full size'">
             <!-- Same URL as the poster, so it's one download: a blurred copy
@@ -29,6 +31,7 @@
             </span>
           </button>
 
+          <div class="workshop-info">
           <div class="workshop-body">
             <h3>{{ w.title }}</h3>
             <p class="workshop-when">
@@ -51,6 +54,7 @@
               [attr.aria-label]="'Register for ' + w.title + ' (opens a Google Form)'">
               Register
             </a>
+          </div>
           </div>
         </article>
       </div>

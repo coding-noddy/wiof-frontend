@@ -70,10 +70,8 @@
 }
 
 /* Posters come in any shape and must never be cropped (the date and price
-   are on them). In the multi-column grid every card gets the same 4:5 frame
-   so rows line up, and a blurred copy of the poster fills whatever the
-   poster doesn't. In one column (phones) the poster shows at its own
-   shape instead, so there's no empty band at all. */
+   are on them): every card gets the same 4:5 frame so cards line up, and a
+   blurred copy of the poster fills whatever the poster doesn't. */
 .workshop-poster {
   position: relative;
   display: block;
@@ -104,21 +102,6 @@
   height: 100%;
   object-fit: contain;
   display: block;
-}
-
-@media (max-width: 640px) {
-  .workshop-poster {
-    aspect-ratio: auto;
-  }
-
-  .poster-backdrop {
-    display: none;
-  }
-
-  .poster-image {
-    height: auto;
-    max-height: 80vh;
-  }
 }
 
 .workshop-poster:focus-visible {
@@ -212,6 +195,103 @@
   border: 1.5px solid var(--wiof-brown-tint-40);
 }
 
+/* ── Upcoming: horizontal card, poster left and details right ── */
+.upcoming-grid {
+  /* Two side by side on wide screens, one per row below ~1180px. */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 540px), 1fr));
+}
+
+.upcoming-card {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  align-items: stretch;
+}
+
+.upcoming-card .workshop-poster {
+  height: 100%;
+  border-bottom: 0;
+  border-right: 1.5px solid var(--wiof-brown-tint-40);
+}
+
+/* Details column: Register sits at the bottom, level with the poster's
+   bottom edge, however short the text is. */
+.workshop-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.upcoming-card .workshop-body {
+  padding: 22px 24px 0;
+}
+
+.upcoming-card .card-footer {
+  padding: 18px 24px 22px;
+}
+
+/* Phones: still side by side (a narrower poster), so the title, date, time
+   and Register are all on screen at once. Long descriptions are trimmed to
+   a few lines; the full details are on the poster, which opens full size. */
+@media (max-width: 640px) {
+  .upcoming-card {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+
+  .upcoming-card .workshop-body {
+    padding: 14px 14px 0;
+  }
+
+  .upcoming-card .workshop-body h3 {
+    font-size: 1rem;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+  }
+
+  .upcoming-card .workshop-when {
+    font-size: 0.8rem;
+    align-items: flex-start;
+  }
+
+  .upcoming-card .workshop-when ion-icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .upcoming-card .workshop-description {
+    margin-top: 0.5rem;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .upcoming-card .card-footer {
+    padding: 12px 14px 14px;
+  }
+
+  .upcoming-card .enquire-btn {
+    padding: 10px 12px;
+    font-size: 0.92rem;
+  }
+
+  .upcoming-card .live-badge {
+    top: 8px;
+    left: 8px;
+    padding: 4px 9px;
+    font-size: 0.72rem;
+  }
+
+  .upcoming-card .poster-zoom {
+    width: 30px;
+    height: 30px;
+    right: 8px;
+    bottom: 8px;
+    font-size: 16px;
+  }
+}
+
 /* ── Past workshops: smaller, quieter cards with no Register ── */
 .past-section {
   padding-top: 2.5rem;
@@ -249,17 +329,6 @@
     gap: 0.9rem;
   }
 
-  .past-card .workshop-poster {
-    aspect-ratio: 4 / 5;
-  }
-
-  .past-card .poster-backdrop {
-    display: block;
-  }
-
-  .past-card .poster-image {
-    height: 100%;
-  }
 }
 
 .poster-modal-content {
