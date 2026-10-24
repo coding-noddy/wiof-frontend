@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { catchError, of } from 'rxjs';
+import { Workshop } from 'src/app/models/Workshop';
+import { WorkshopService } from 'src/app/services/workshop.service';
 
 interface PhaseCard {
   title: string;
@@ -13,8 +16,31 @@ interface PhaseCard {
   templateUrl: './climate-enlighten.component.html',
   styleUrls: ['./climate-enlighten.component.css']
 })
-export class ClimateEnlightenComponent {
-  
+export class ClimateEnlightenComponent implements OnInit {
+  /** Upcoming published workshops; empty (section hidden) if none or the read fails. */
+  workshops: Workshop[] = [];
+  expandedPoster: Workshop | null = null;
+
+  constructor(private workshopService: WorkshopService) {}
+
+  ngOnInit() {
+    this.workshopService
+      .getUpcomingWorkshops()
+      .pipe(catchError(() => of([] as Workshop[])))
+      .subscribe((workshops) => (this.workshops = workshops));
+  }
+
+  eventDate(workshop: Workshop): Date {
+    return WorkshopService.eventDateAsDate(workshop.eventDate);
+  }
+
+  openPoster(workshop: Workshop) {
+    this.expandedPoster = workshop;
+  }
+
+  closePoster() {
+    this.expandedPoster = null;
+  }
 
   googleFormLink = 'https://docs.google.com/forms/d/e/1FAIpQLSf7Z3TetzeVgfKR7xAC55s3sfxNHcMWzSId5VTn_ygsPJSxRg/viewform'; 
 

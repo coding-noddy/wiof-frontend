@@ -169,6 +169,33 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // ClimatEnlighten workshops (Admin → Workshops). The public reads only
+    // published ones (so a draft isn't visible before it's announced), which
+    // means a public list query must filter on published == true. Admin-only
+    // write; registration must be a Google Form, and every field is checked
+    // so a typo can't store something the page can't show.
+
+    match /workshops/{workshopId} {
+      allow read: if resource.data.published == true || isAdmin();
+      allow create, update: if isAdmin() && isValidWorkshop(request.resource.data);
+      allow delete: if isAdmin();
+
+      function isValidWorkshop(d) {
+        return d.keys().hasOnly(['title', 'description', 'eventDate', 'modeOrVenue',
+                                 'registrationUrl', 'posterName', 'posterUrl',
+                                 'published', 'updatedAt', 'updatedBy'])
+          && d.title is string && d.title.size() > 0 && d.title.size() <= 120
+          && d.description is string && d.description.size() <= 600
+          && d.eventDate is string && d.eventDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+          && d.modeOrVenue is string && d.modeOrVenue.size() <= 120
+          && d.registrationUrl is string
+          && d.registrationUrl.matches('^https://(docs[.]google[.]com/forms/|forms[.]gle/)[^ ]+$')
+          && d.posterName is string && d.posterName.size() > 0
+          && d.posterUrl is string && d.posterUrl.matches('^https://firebasestorage[.]googleapis[.]com/.*')
+          && d.published is bool;
+      }
+    }
+
     // ─── Take Action ────────────────────────────────────────────────────────
 
     match /actions/{actionId} {

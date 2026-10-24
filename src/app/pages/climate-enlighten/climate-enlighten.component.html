@@ -7,7 +7,65 @@
       <p class="tagline">Simplifying climate and sustainability learning, one phase at a time.</p>
     </header>
 
+    <!-- Upcoming workshops (Admin → Workshops). Hidden entirely when there
+         are none, so the page looks the same as before between workshops. -->
+    <section class="workshops-section" *ngIf="workshops?.length" aria-labelledby="workshops-heading">
+      <p class="section-eyebrow">Join us</p>
+      <h2 id="workshops-heading" class="section-title">Upcoming Workshops</h2>
+
+      <div class="workshops-grid">
+        <article class="workshop-card" *ngFor="let w of workshops">
+          <button type="button" class="workshop-poster" (click)="openPoster(w)"
+            [attr.aria-label]="'View the ' + w.title + ' poster full size'">
+            <img [src]="w.posterUrl" [alt]="'Poster: ' + w.title" loading="lazy" />
+            <span class="poster-zoom" aria-hidden="true">
+              <ion-icon name="expand-outline"></ion-icon>
+            </span>
+          </button>
+
+          <div class="workshop-body">
+            <h3>{{ w.title }}</h3>
+            <p class="workshop-when">
+              <ion-icon aria-hidden="true" name="calendar-outline"></ion-icon>
+              {{ eventDate(w) | date:'EEEE, d MMMM y' }}
+            </p>
+            <p class="workshop-when" *ngIf="w.modeOrVenue">
+              <ion-icon aria-hidden="true" name="location-outline"></ion-icon>
+              {{ w.modeOrVenue }}
+            </p>
+            <p class="workshop-description" *ngIf="w.description">{{ w.description }}</p>
+          </div>
+
+          <div class="card-footer">
+            <a [href]="w.registrationUrl" target="_blank" rel="noopener" class="enquire-btn"
+              [attr.aria-label]="'Register for ' + w.title + ' (opens a Google Form)'">
+              Register
+            </a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <ion-modal [isOpen]="!!expandedPoster" (didDismiss)="closePoster()" aria-label="Workshop poster">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>{{ expandedPoster?.title }}</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="closePoster()" aria-label="Close poster">
+                <ion-icon aria-hidden="true" name="close-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content class="poster-modal-content">
+          <img [src]="expandedPoster?.posterUrl" [alt]="'Poster: ' + expandedPoster?.title" class="poster-modal-image" />
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+
     <section class="climate-container">
+      <h2 class="section-title" *ngIf="workshops?.length">Learning Phases</h2>
       <div class="cards-grid">
         <div class="card" *ngFor="let card of cards">
 

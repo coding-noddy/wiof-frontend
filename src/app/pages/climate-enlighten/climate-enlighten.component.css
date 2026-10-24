@@ -26,6 +26,131 @@
   margin: 0 auto;
 }
 
+/* ── Upcoming workshops ── */
+.workshops-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 0;
+}
+
+.section-eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wiof-teal-text);
+}
+
+.section-title {
+  margin: 0 0 1.5rem;
+  font-family: 'Aleo', serif;
+  font-size: 1.6rem;
+  color: var(--wiof-ink);
+}
+
+.workshops-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.workshop-card {
+  background-color: var(--wiof-warm-white);
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: border-color 0.3s ease;
+}
+
+.workshop-card:hover {
+  border-color: var(--wiof-teal);
+}
+
+/* Posters come in any shape, so show the whole thing (contain) on a
+   neutral backdrop instead of cropping away the date or price. */
+.workshop-poster {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  padding: 0;
+  border: 0;
+  border-bottom: 1.5px solid var(--wiof-brown-tint-40);
+  background: var(--wiof-ivory);
+  cursor: zoom-in;
+}
+
+.workshop-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.workshop-poster:focus-visible {
+  outline: 3px solid var(--wiof-teal);
+  outline-offset: -3px;
+}
+
+.poster-zoom {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(43, 36, 32, 0.6);
+  color: #fff;
+  font-size: 18px;
+}
+
+.workshop-body {
+  padding: 20px 24px 0;
+  flex-grow: 1;
+}
+
+.workshop-body h3 {
+  margin: 0 0 0.6rem;
+  font-family: 'Aleo', serif;
+  font-size: 1.15rem;
+  line-height: 1.4;
+  color: var(--wiof-ink);
+}
+
+.workshop-when {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--wiof-teal-shade-40);
+}
+
+.workshop-description {
+  margin: 0.75rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: rgba(43, 36, 32, 0.8);
+}
+
+.poster-modal-content {
+  --background: #101418;
+}
+
+.poster-modal-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .climate-container {
   max-width: 1200px;
   margin: 0 auto;

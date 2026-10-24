@@ -7,6 +7,22 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [6.4.0] - 2026-10-24
+
+ClimatEnlighten workshops, and the brand identity credit.
+
+### Added
+- **Upcoming Workshops on the ClimatEnlighten page.** Each workshop card shows its poster (any shape, tap to view full size), title, date, an optional online/venue line, a short description and a **Register** button that opens its Google Form. Workshops show soonest first and disappear automatically after their date. The section is hidden when there are none, so the page looks as before between workshops. The date, time and price go on the poster.
+- **Admin → Workshops** to add, edit and delete them on one page: poster upload (compressed automatically), title, description, date, online/venue, Google Form link, and a show-on-website switch for drafts. Replacing or deleting a workshop deletes its old poster from Storage. The poster's download URL is saved with the workshop, so the public page makes no per-card Storage lookups.
+- **"Brand Identity by EcoFlyp"** in the footer's bottom bar, linking to EcoFlyp's ClimatEnlighten × WIOF case study. The link is followed (no `nofollow`) on purpose: it's the backlink EcoFlyp asked for in return for the brand identity work.
+
+### Security
+- **`workshops` rules:** the public can read published workshops only, so drafts stay hidden. Admin-only writes, with every field checked: the registration link must be a Google Form (`docs.google.com/forms/…` or `forms.gle/…`), the date `YYYY-MM-DD`, the poster a Firebase Storage URL, and no unknown fields. Covered by 7 new rules tests.
+
+### Changed
+- `compress-storage-images.js` and `delete-orphan-images.js` also cover the new `workshop-posters/` folder.
+- TODO.md: finished items removed (they're in this changelog and the git history); App Check added under "Security (Deferred)".
+
 ## [6.3.0] - 2026-10-20
 
 Phase 1 performance: blog pages.

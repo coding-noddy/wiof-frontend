@@ -1,0 +1,148 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Workshops</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="admin-page">
+    <nav class="breadcrumb">
+      <a routerLink="/admin-dashboard">Dashboard</a>
+      <span class="separator">/</span>
+      <span class="current">Workshops</span>
+    </nav>
+
+    <div class="admin-page-header">
+      <div>
+        <h1>Manage Workshops</h1>
+        <p class="header-meta">Shown on the ClimatEnlighten page until the workshop date has passed</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-secondary" (click)="loadData()">
+          <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon> Refresh
+        </button>
+        <button class="btn-primary" (click)="startAdd()" [disabled]="!!editing">
+          <ion-icon aria-hidden="true" name="add-outline"></ion-icon> Add workshop
+        </button>
+      </div>
+    </div>
+
+    <!-- Add / edit form -->
+    <div class="workshop-form" id="workshop-form" *ngIf="editing">
+      <h2>{{ editing.id ? 'Edit workshop' : 'New workshop' }}</h2>
+
+      <div class="workshop-form-grid">
+        <div class="poster-field">
+          <span class="field-label">Poster *</span>
+          <div class="poster-preview">
+            <img *ngIf="posterPreview" [src]="posterPreview" alt="Poster preview" />
+            <div class="poster-empty" *ngIf="!posterPreview">
+              <ion-icon aria-hidden="true" name="image-outline"></ion-icon>
+              <span>Put the date, time and price on the poster</span>
+            </div>
+          </div>
+          <label class="btn-secondary poster-upload">
+            <ion-icon aria-hidden="true" name="cloud-upload-outline"></ion-icon>
+            {{ posterPreview ? 'Change poster' : 'Upload poster' }}
+            <input type="file" accept="image/*" (change)="onPosterSelected($event)" hidden />
+          </label>
+          <span class="field-hint">Any shape works. It's compressed automatically when you save.</span>
+        </div>
+
+        <div class="text-fields">
+          <label class="field">
+            <span class="field-label">Title *</span>
+            <input type="text" class="field-input" [(ngModel)]="editing.title" maxlength="120" placeholder="e.g. Carbon Accounting Basics" />
+          </label>
+
+          <label class="field">
+            <span class="field-label">Short description</span>
+            <textarea class="field-input" rows="3" [(ngModel)]="editing.description" maxlength="600"
+              placeholder="Two or three lines on what people will learn"></textarea>
+            <span class="field-hint">{{ editing.description.length }}/600</span>
+          </label>
+
+          <div class="field-row">
+            <label class="field">
+              <span class="field-label">Workshop date *</span>
+              <input type="date" class="field-input" [(ngModel)]="editing.eventDate" />
+              <span class="field-hint">It disappears from the website after this day.</span>
+            </label>
+            <label class="field">
+              <span class="field-label">Online or venue</span>
+              <input type="text" class="field-input" [(ngModel)]="editing.modeOrVenue" maxlength="120" placeholder="e.g. Online (Zoom)" />
+            </label>
+          </div>
+
+          <label class="field">
+            <span class="field-label">Google Form registration link *</span>
+            <input type="url" class="field-input" [class.invalid]="editing.registrationUrl && !linkValid"
+              [(ngModel)]="editing.registrationUrl" placeholder="https://forms.gle/…" />
+            <span class="field-hint error" *ngIf="editing.registrationUrl && !linkValid">
+              Use the Google Form's link (forms.gle/… or docs.google.com/forms/…).
+            </span>
+            <span class="field-hint" *ngIf="linkValid">
+              <a [href]="editing.registrationUrl" target="_blank" rel="noopener">Open the form to check it</a>
+            </span>
+          </label>
+
+          <label class="publish-toggle">
+            <input type="checkbox" [(ngModel)]="editing.published" />
+            <span>Show on the website (untick to keep it as a draft)</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-secondary" (click)="cancelEdit()" [disabled]="saving">Cancel</button>
+        <button class="btn-primary" (click)="save()" [disabled]="!canSave">
+          <ion-icon aria-hidden="true" name="save-outline"></ion-icon> {{ saving ? 'Saving…' : 'Save workshop' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- List -->
+    <div class="empty-state" *ngIf="loadError">
+      <ion-icon aria-hidden="true" name="alert-circle-outline"></ion-icon>
+      <p>Couldn't load workshops. Check your connection and refresh.</p>
+    </div>
+
+    <div class="workshop-list" *ngIf="isLoading">
+      <div class="workshop-row skeleton workshop-row-skeleton" *ngFor="let i of [1,2,3]"></div>
+    </div>
+
+    <div class="empty-state" *ngIf="!isLoading && !loadError && workshops.length === 0">
+      <ion-icon aria-hidden="true" name="school-outline"></ion-icon>
+      <p>No workshops yet. Use "Add workshop" to create the first one.</p>
+    </div>
+
+    <div class="workshop-list" *ngIf="!isLoading && !loadError && workshops.length">
+      <div class="workshop-row" *ngFor="let w of workshops" [class.is-past]="statusOf(w) === 'past'">
+        <img class="workshop-thumb" [src]="w.posterUrl" [alt]="'Poster for ' + w.title" loading="lazy" />
+        <div class="workshop-info">
+          <span class="cell-title">{{ w.title }}</span>
+          <span class="cell-subtitle">
+            {{ eventDate(w) | date:'EEE, d MMM y' }}<ng-container *ngIf="w.modeOrVenue"> · {{ w.modeOrVenue }}</ng-container>
+          </span>
+          <span class="status-badge"
+            [class.published]="statusOf(w) === 'live'"
+            [class.submitted]="statusOf(w) === 'draft'"
+            [class.inactive]="statusOf(w) === 'past'">
+            {{ statusOf(w) === 'live' ? 'On the website' : statusOf(w) === 'draft' ? 'Draft' : 'Past — hidden' }}
+          </span>
+        </div>
+        <div class="action-buttons">
+          <button class="action-btn view" (click)="startEdit(w)" [attr.aria-label]="'Edit ' + w.title" title="Edit">
+            <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
+          </button>
+          <button class="action-btn delete" (click)="confirmDelete(w)" [attr.aria-label]="'Delete ' + w.title" title="Delete">
+            <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

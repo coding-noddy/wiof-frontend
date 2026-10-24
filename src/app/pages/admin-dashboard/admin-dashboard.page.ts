@@ -87,6 +87,13 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
       description: 'Featured courses and programs'
     },
     {
+      name: 'Workshops',
+      route: 'workshops',
+      icon: 'easel-outline',
+      color: AdminDashboardPage.GRADIENT_TEAL,
+      description: 'ClimatEnlighten workshops: poster and Google Form link'
+    },
+    {
       name: 'Team Profiles',
       route: 'manage-about-us',
       icon: 'people-outline',

@@ -561,6 +561,71 @@ describe('blog_summaries/{blogId} (card-sized blog copy for the lists)', () => {
   });
 });
 
+describe('workshops/{workshopId} (ClimatEnlighten workshops)', () => {
+  const workshop = (overrides = {}) => ({
+    title: 'Carbon Accounting Basics',
+    description: 'A hands-on session.',
+    eventDate: '2026-11-15',
+    modeOrVenue: 'Online (Zoom)',
+    registrationUrl: 'https://forms.gle/abc123',
+    posterName: 'workshop_1.webp',
+    posterUrl: 'https://firebasestorage.googleapis.com/v0/b/x/o/workshop-posters%2Fworkshop_1.webp?alt=media&token=t',
+    published: true,
+    updatedBy: 'admin@test.com',
+    ...overrides
+  });
+  const asAdmin = async () => {
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    return testEnv.authenticatedContext('root').firestore();
+  };
+
+  it('lets anyone list published workshops (with the published == true filter)', async () => {
+    await seed((db) => db.collection('workshops').doc('w1').set(workshop()));
+    const db = testEnv.unauthenticatedContext().firestore();
+    await assertSucceeds(db.collection('workshops').where('published', '==', true).get());
+  });
+
+  it('hides drafts from the public: an unfiltered list and a direct read of a draft both fail', async () => {
+    await seed((db) => db.collection('workshops').doc('draft').set(workshop({ published: false })));
+    const db = testEnv.unauthenticatedContext().firestore();
+    await assertFails(db.collection('workshops').get());
+    await assertFails(db.collection('workshops').doc('draft').get());
+  });
+
+  it('lets an admin list every workshop, drafts included', async () => {
+    await seed((db) => db.collection('workshops').doc('draft').set(workshop({ published: false })));
+    const db = await asAdmin();
+    await assertSucceeds(db.collection('workshops').get());
+  });
+
+  it('lets an admin create a valid workshop, with forms.gle or docs.google.com/forms links', async () => {
+    const db = await asAdmin();
+    await assertSucceeds(db.collection('workshops').doc('a').set(workshop()));
+    await assertSucceeds(db.collection('workshops').doc('b').set(workshop({
+      registrationUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSf/viewform'
+    })));
+  });
+
+  it('rejects a registration link that is not a Google Form', async () => {
+    const db = await asAdmin();
+    await assertFails(db.collection('workshops').doc('a').set(workshop({ registrationUrl: 'https://example.com/pay' })));
+    await assertFails(db.collection('workshops').doc('b').set(workshop({ registrationUrl: 'http://forms.gle/abc' })));
+  });
+
+  it('rejects a bad date, an empty title, a non-Storage poster URL or an unknown field', async () => {
+    const db = await asAdmin();
+    await assertFails(db.collection('workshops').doc('a').set(workshop({ eventDate: '15/11/2026' })));
+    await assertFails(db.collection('workshops').doc('b').set(workshop({ title: '' })));
+    await assertFails(db.collection('workshops').doc('c').set(workshop({ posterUrl: 'https://evil.example.com/x.png' })));
+    await assertFails(db.collection('workshops').doc('d').set(workshop({ price: 500 })));
+  });
+
+  it('denies any write from a signed-in non-admin', async () => {
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(db.collection('workshops').doc('a').set(workshop()));
+  });
+});
+
 describe('Subscriptions/{id}', () => {
   it('denies a direct client sign-up, even with the expected fields (only the subscribe function writes)', async () => {
     const db = testEnv.unauthenticatedContext().firestore();

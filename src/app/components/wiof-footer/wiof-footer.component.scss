@@ -173,6 +173,13 @@
   flex-wrap: wrap;
 }
 
+.footer-credit a {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .app-version {
   opacity: 0.7;
 }

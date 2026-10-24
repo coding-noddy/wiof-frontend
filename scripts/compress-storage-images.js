@@ -45,7 +45,8 @@ const FOLDERS = [
   'course-in-focus-images/',
   'ngo-in-focus-images/',
   'environment-calendar/',
-  'about-us/'
+  'about-us/',
+  'workshop-posters/'
 ];
 const MAX_WIDTH = 1600;
 const WEBP_QUALITY = 80;
