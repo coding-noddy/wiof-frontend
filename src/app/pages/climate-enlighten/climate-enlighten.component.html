@@ -17,7 +17,10 @@
         <article class="workshop-card" *ngFor="let w of workshops">
           <button type="button" class="workshop-poster" (click)="openPoster(w)"
             [attr.aria-label]="'View the ' + w.title + ' poster full size'">
-            <img [src]="w.posterUrl" [alt]="'Poster: ' + w.title" loading="lazy" />
+            <!-- Same URL as the poster, so it's one download: a blurred copy
+                 fills the frame around posters that aren't 4:5. -->
+            <img class="poster-backdrop" [src]="w.posterUrl" alt="" aria-hidden="true" loading="lazy" />
+            <img class="poster-image" [src]="w.posterUrl" [alt]="'Poster: ' + w.title" loading="lazy" />
             <span class="poster-zoom" aria-hidden="true">
               <ion-icon name="expand-outline"></ion-icon>
             </span>
