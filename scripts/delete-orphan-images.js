@@ -45,7 +45,8 @@ const FOLDERS = [
   'course-in-focus-images/',
   'ngo-in-focus-images/',
   'environment-calendar/',
-  'about-us/'
+  'about-us/',
+  'workshop-posters/'
 ];
 const PROJECTS = {
   staging: { id: 'wiof-staging', key: 'service-account.json', option: '--staging-key' },

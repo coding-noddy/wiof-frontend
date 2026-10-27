@@ -169,6 +169,39 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // ClimatEnlighten workshops (Admin → Workshops). The public reads only
+    // published ones (so a draft isn't visible before it's announced), which
+    // means a public list query must filter on published == true. Admin-only
+    // write; the registration link must be an http(s) web link, and every field is checked
+    // so a typo can't store something the page can't show.
+
+    match /workshops/{workshopId} {
+      allow read: if resource.data.published == true || isAdmin();
+      allow create, update: if isAdmin() && isValidWorkshop(request.resource.data);
+      allow delete: if isAdmin();
+
+      function isValidWorkshop(d) {
+        return d.keys().hasOnly(['title', 'description', 'eventDate', 'startTime', 'endTime',
+                                 'modeOrVenue', 'registrationUrl', 'posterName', 'posterUrl',
+                                 'published', 'updatedAt', 'updatedBy'])
+          && d.title is string && d.title.size() > 0 && d.title.size() <= 120
+          && d.description is string && d.description.size() <= 600
+          && d.eventDate is string && d.eventDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+          // Optional 'HH:MM' (IST); '' means not set.
+          && (!('startTime' in d) || (d.startTime is string && d.startTime.matches('^(([01][0-9]|2[0-3]):[0-5][0-9])?$')))
+          && (!('endTime' in d) || (d.endTime is string && d.endTime.matches('^(([01][0-9]|2[0-3]):[0-5][0-9])?$')))
+          && d.modeOrVenue is string && d.modeOrVenue.size() <= 120
+          && d.registrationUrl is string
+          // Any http(s) link to a real-looking host; blocks typos and
+          // javascript:/data: links. Same check as WorkshopService.
+          && d.registrationUrl.size() <= 2000
+          && d.registrationUrl.matches('^https?://[A-Za-z0-9-]+([.][A-Za-z0-9-]+)+(:[0-9]+)?([/?#][^ ]*)?$')
+          && d.posterName is string && d.posterName.size() > 0
+          && d.posterUrl is string && d.posterUrl.matches('^https://firebasestorage[.]googleapis[.]com/.*')
+          && d.published is bool;
+      }
+    }
+
     // ─── Take Action ────────────────────────────────────────────────────────
 
     match /actions/{actionId} {

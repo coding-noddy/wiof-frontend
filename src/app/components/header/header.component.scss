@@ -65,6 +65,19 @@ $mobile-breakpoint: 768px;
   color: var(--wiof-ink);
   text-decoration: none;
   letter-spacing: -0.01em;
+  white-space: nowrap;
+
+  // Five links + Sign In only just fit at the narrowest desktop widths
+  // (768–899px): tighter spacing there, so labels never wrap to two lines.
+  @media (min-width: $mobile-breakpoint) and (max-width: 899px) {
+    padding: 8px 9px;
+    font-size: 0.84rem;
+
+    &::after {
+      left: 9px !important;
+      right: 9px !important;
+    }
+  }
 
   // Marigold underline — grows in from the left on hover, stays fully
   // expanded (no hover needed) once this is the active route. transform:
@@ -108,8 +121,14 @@ $mobile-breakpoint: 768px;
   border-radius: 999px;
   cursor: pointer;
   margin-left: 12px;
+  white-space: nowrap;
   transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
   box-shadow: 0 2px 8px rgba(166, 135, 93, 0.25);
+
+  @media (min-width: $mobile-breakpoint) and (max-width: 899px) {
+    padding: 8px 14px;
+    margin-left: 6px;
+  }
 
   &:hover:not(:disabled) {
     background: var(--wiof-marigold-shade-20);

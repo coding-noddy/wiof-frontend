@@ -198,6 +198,13 @@ const routes: Routes = [
     ]
   },
   {
+    path: 'workshops',
+    loadChildren: () =>
+      import('./workshops/workshops.module').then(
+        (m) => m.WorkshopsPageModule
+      )
+  },
+  {
     path: 'hero-videos',
     loadChildren: () =>
       import('./hero-videos/hero-videos.module').then(

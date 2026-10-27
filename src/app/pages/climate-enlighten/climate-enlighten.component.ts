@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { catchError, of } from 'rxjs';
+import { Workshop } from 'src/app/models/Workshop';
+import { WorkshopService } from 'src/app/services/workshop.service';
 
 interface PhaseCard {
   title: string;
@@ -13,8 +16,48 @@ interface PhaseCard {
   templateUrl: './climate-enlighten.component.html',
   styleUrls: ['./climate-enlighten.component.css']
 })
-export class ClimateEnlightenComponent {
-  
+export class ClimateEnlightenComponent implements OnInit {
+  /** Published workshops that haven't ended / have ended (the 6 most
+   *  recent). Each section is hidden when empty, or if the read fails. */
+  upcoming: Workshop[] = [];
+  past: Workshop[] = [];
+  expandedPoster: Workshop | null = null;
+
+  constructor(private workshopService: WorkshopService) {}
+
+  ngOnInit() {
+    this.workshopService
+      .getPublishedWorkshops()
+      .pipe(catchError(() => of({ upcoming: [] as Workshop[], past: [] as Workshop[] })))
+      .subscribe(({ upcoming, past }) => {
+        this.upcoming = upcoming;
+        this.past = past;
+      });
+  }
+
+  get hasWorkshops(): boolean {
+    return this.upcoming.length > 0 || this.past.length > 0;
+  }
+
+  eventDate(workshop: Workshop): Date {
+    return WorkshopService.eventDateAsDate(workshop.eventDate);
+  }
+
+  timeLabel(workshop: Workshop): string {
+    return WorkshopService.timeLabel(workshop);
+  }
+
+  isLiveNow(workshop: Workshop): boolean {
+    return WorkshopService.isLiveNow(workshop);
+  }
+
+  openPoster(workshop: Workshop) {
+    this.expandedPoster = workshop;
+  }
+
+  closePoster() {
+    this.expandedPoster = null;
+  }
 
   googleFormLink = 'https://docs.google.com/forms/d/e/1FAIpQLSf7Z3TetzeVgfKR7xAC55s3sfxNHcMWzSId5VTn_ygsPJSxRg/viewform'; 
 

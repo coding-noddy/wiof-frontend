@@ -2,65 +2,26 @@
 
 > Track planned features, improvements, and technical debt here.
 > Format: **[Priority]** Description — *context / notes*
+> Finished work is recorded in CHANGELOG.md and the git history, not here.
 
 ---
 
 ## 🔴 WIOF Fixes (Next Sprint)
 
-### Bugs
-- ~~**[HIGH]** Poll section — shows previous user's voted option after logout/login with different account~~ ✅ FIXED
-  - ~~"You voted for" state is cached and not cleared on logout~~
-  - ~~Should reset poll vote state on user change so current user sees their own vote (or no vote if they haven't voted)~~
-
-- ~~Admin blog preview should match the public blog view~~ ✅ FIXED
-- ~~Public blog images should support expand/zoom for small text~~ ✅ FIXED (image modal)
+### Bugs / Open Questions
 - Arent the public user activities recorded for admin users, do we need to let them use different public account for their general application use purpose?? what do you suggest, let admin  users use public account also or better they create separate account for that purpose.
 
-
-- ~~**[HIGH]** My Journey page — shows stale data after switching users without page refresh~~ ✅ FIXED
-  - ~~If My Journey is already open and user logs in with a different account, the page still displays previous user's journey data~~
-  - ~~Profile icon updates but page content doesn't re-fetch for the new user~~
-  - ~~Should subscribe to auth state changes and reload journey data when user changes~~
-
-- ~~**[MED]** Poll votes not being recorded for admin users~~ ✅ FIXED
-  - ~~Voting as an admin may not persist — needs investigation~~
-  - ~~Could be a Firestore rules issue or activity_log rate-limiting (`timestamp == request.time`) blocking the write~~
-
-- ~~Some issue with analytics: when admin logged in first, then a public user logs in, the chart still shows one user only~~ ✅ FIXED
-
-- ~~Analytics page should provide an option to return to the admin dashboard home~~ ✅ FIXED
-- ~~Admin dashboard should show registered users with name, email, and interested elements~~ ✅ DONE (blocking deferred)
-
 ### Admin Dashboard
-- ~~**[HIGH]** Refine admin dashboard — modern card-based UI, better navigation, responsive layout~~ ✅ DONE
-- ~~**[MED]** All admin manage pages — consistent table/card designs, better mobile experience~~ ✅ DONE
-
+- **[LOW]** Registered users list — option to block/disable a user (the list itself is done; blocking was deferred)
 
 ### Pending Improvements
 - **[MED]** Environment Calendar — remove external padding, make calendar dates area bigger
-- ~~**[MED]** Polls widget — show results from previous polls, show correct answers~~ ✅ DONE
 - **[LOW]** AQI temperature — values come directly from monitoring stations via WAQI API (correct as reported)
 - **[LOW]** Admin Manage Polls — add optional "view voter emails" detail view for guest votes (not needed now)
 
 ### Responsiveness & Mobile
 - **[HIGH]** Widget responsiveness — ensure all 5 widgets display properly on mobile (proper padding, no overflow)
 - **[HIGH]** Card width and gaps should be consistent in responsive mode across all pages
-- ~~**[HIGH]** Breaking news — image/video not displayed in mobile mode~~ ✅ DONE
-- ~~**[HIGH]** Coffee conversation — too much upper/lower spacing on mobile element pages~~ ✅ DONE
-- ~~**[HIGH]** Course section — image not fully visible on mobile devices~~ ✅ DONE
-
-### Design Improvements
-- ~~**[HIGH]** Subscribe section — needs modern redesign (currently old side-drawer style)~~ ✅ DONE
-- ~~**[HIGH]** Privacy policy acceptance strip — redesign to look modern (cookie-consent style bar)~~ ✅ DONE
-- ~~**[MED]** Blog page design — individual blog post page needs better layout~~ ✅ DONE
-- ~~**[MED]** About us page — card designs should be improved~~ ✅ DONE
-- ~~**[MED]** Calendar loading — cards jump due to "loading calendar" text. Use skeleton/overlay instead.~~ ✅ DONE
-
-### Functional Fixes
-- ~~**[HIGH]** Privacy policy year range — should be dynamic: "2020-{currentYear}" not hardcoded~~ ✅ DONE
-- ~~**[MED]** "Discover More" button — should scroll to element section or coffee conversation on home page
-  instead of navigating away~~ ✅ DONE
-- ~~**[MED]** "About Us" → consider renaming to "Meet Our Team" (more personal, less corporate)~~ ✅ DONE (Header nav updated)
 
 ---
 
@@ -85,47 +46,27 @@
 
 ---
 
+## 🔒 Security (Deferred)
+
+- **[MED]** Turn on Firebase App Check (reCAPTCHA) — *deferred 2026-10-24; enable when there's spam/abuse, unusual Firestore usage spikes, or traffic big enough to attract bots*
+  - Already wired in the code (v6.2.0) and switched off: needs a reCAPTCHA site key in `appCheckSiteKey` (environment files) and `ENFORCE_APP_CHECK=true` in `functions/.env.<project>`, plus Firestore/Storage enforcement in the App Check console.
+  - Protects against scripts using the public Firebase config directly: spam feedback, poll-vote stuffing, flooding `subscribe`/callables, and bulk reads that run up the bill. Firestore rules stay the real data protection.
+  - Cost: 10k reCAPTCHA checks/month free, then $8 flat up to 100k, then $0.001 per check. At 10k visitors/day with the default 1-hour token that's ~$200+/month, more than Firestore itself, so use a longer token TTL (1–7 days) to stay near the $8 tier.
+  - Rollout: staging first → prod in monitor-only mode (watch the App Check metrics for legitimate requests that would fail) → enforce.
+
+---
+
 ## 🟡 Design Polish (Next Up)
 
-- ~~**[HIGH]** Energy Widget — redesign pump-station result (gas station JPG is very dated),
-  modern unit dropdown, better CO₂ output visualization~~ ✅ DONE
 - **[HIGH]** AQI Widget — internal tab switcher and ion-toolbar buttons need modern treatment
 - **[MED]** Take Action Content — fixed heights, iframe cards, hover font-size jump
-- ~~**[MED]** Food pH Indicator — input styling, layout consistency with other widgets~~ ✅ DONE
-- ~~**[LOW]** Subscribe side-panel — polish slide-in drawer, update deprecated floating labels~~ ✅ DONE
 
 ---
 
 ## 🟢 Future Features
 
-- ~~**[HIGH]** Blog sharing feature~~ ✅ DONE
-  - ~~Add share button on blog cards + blog detail page~~ ✅
-  - ~~Generate shareable link with blog hero image as Open Graph preview~~ ✅
-  - ~~Use Web Share API on mobile for native share sheet~~ ✅
-  - **[IN PROGRESS]** Dynamic Open Graph meta tags for rich link previews
-    - Cloud Function deployed to staging ✅
-    - Production deploy pending (IAM permission fix needed)
-    - Real user page loading fixed (serves index.html instead of redirect loop)
-
-- ~~**[HIGH]** Blog SEO-friendly URLs (slugs)~~ ✅ DONE
-  - ~~Store `slug` field in Firestore~~ ✅
-  - ~~Admin panel: auto-generate slug from title on save~~ ✅
-  - ~~Blog service: `getBlogBySlug(slug)`~~ ✅
-  - ~~One-time migration script: backfill slugs for existing blogs~~ ✅
-  - ~~Route: slug lookup first, fallback to ID~~ ✅
-
-- ~~**[HIGH]** Session idle timeout (security)~~ ✅ DONE
-  - ~~Auto-logout after 10 min of inactivity for any authenticated user (not just admins)~~ ✅
-  - ~~Track mouse, keyboard, touch events to detect idle state~~ ✅
-  - ~~Show warning toast ~1 min before logout~~ ✅
-  - ~~Redirect to /home on expiry (via existing AuthService.logout())~~ ✅
-
-- **[HIGH]** Rich blog content — multiple images in blog body
-  - Current: Only one hero image per blog
-  - Goal: Admin can insert images throughout the blog content (inline with text)
-  - Approach: Upgrade Quill editor to support image uploads within content
-  - Store additional images in Firebase Storage, embed URLs in blog HTML content
-  - Consider: Image gallery/carousel support within blog posts
+- **[MED]** Blog image gallery/carousel inside blog posts
+  - Inline images in the blog body are done (editor uploads them to Storage); a gallery/carousel block is the remaining idea
 
 - **[HIGH]** Home page design refresh
   - Make it more attractive and engaging
@@ -162,24 +103,21 @@
     - Phase 2: Impact calculator + badges
     - Phase 3: Leaderboard + games
 
-- ~~**[DONE]** Deployment automation script~~ ✅
-  - `npm run deploy:staging` / `npm run deploy:prod`
-
 - **[MED]** AI-powered "Did You Know?" facts for all element widgets
   - Each element widget (Air, Earth, Fire, Spirit) gets a verified fact strip
   - Single Firestore collection per element, managed from admin panel
   - AI suggests facts → admin verifies → publishes with source URL
 
 - **[LOW]** "Load more" pagination for Blogs & Videos list pages
-  - Current: both list pages load and render everything in one go. Blogs: one Firestore query
-    per element, no `limit`, plus one Storage `getDownloadURL` call per card for its image.
-    Videos: full playlist via `getAllPlaylistVideos()` (pages through YouTube 50 at a time,
-    capped at 500). Fine at current sizes (Oct 2026 playlists: Air 11, Water 11, Earth 20,
-    Energy 7, Spirit 8 videos).
+  - Current: both list pages load and render everything in one go. Blogs: one query per element
+    on the small `blog_summaries` docs (since v6.3.0, with stored cover URLs, so no per-card
+    Storage lookups). Videos: full playlist via `getAllPlaylistVideos()` (pages through YouTube
+    50 at a time, capped at 500). Fine at current sizes (Oct 2026 playlists: Air 11, Water 11,
+    Earth 20, Energy 7, Spirit 8 videos).
   - Trigger: revisit once any element passes ~50–100 blogs or videos
   - Approach: keep loading the full list into memory (so the client-side search still covers
     everything), but render the first ~24 and reveal more with a "Load more" button.
-    Unrendered cards don't fetch their image, which also cuts the Storage calls.
+    Unrendered cards don't load their image.
   - Not needed: real Firestore cursor paging (`limit` + `startAfter`) only matters in the
     thousands, and it would push search server-side (Firestore has no text search → Algolia etc.)
   - Reference: `src/app/pages/blogs/blogs.page.ts`, `src/app/pages/videos/videos.page.ts`,
@@ -190,71 +128,6 @@
   - If allowed: clicking a tile opens the map inline with close/expand button
 
 ---
-
-## ✅ Completed
-
-- Water Widget full redesign — modern card, category tabs, last-visited badge
-- Water Widget live rainfall via Open-Meteo (no API key, free tier)
-- Water Widget verified facts with official citations (World Bank, WHO, NITI Aayog, CGWB)
-- Energy Widget full redesign — CO₂ calculator with verified factors (CEA, IPCC)
-- Energy Widget fact strip with verified citations (PIB, MNRE, IEA, Newsonair)
-- Food pH Widget redesign — 543 foods, flip card, category dropdown, random button
-- Food pH Widget nutrition data via USDA FoodData Central API
-- Food pH Widget data verified against Clemson, USDA PMP, FDA tables (260 items)
-- EQ Widget (Spirit) — TMMS-24 scoring fix, gender selection, progress bar, result cards
-- AQI Widget (Air) — auto-search, scorecard, pollutant grid, suspicious data filtering, pastel colors
-- Code review: memory leaks fixed (takeUntil pattern)
-- Code review: race condition fixed (switchMap for nutrition requests)
-- Code review: dead code removed (selectedUnit, refreshCache)
-- Code review: timer typing fixed (ReturnType<typeof setInterval>)
-- Code review: aria-live added to dynamic content sections
-- Code review: input upper bound added (10,000 kWh max)
-- Element pages (Air, Earth, Fire, Spirit, Water) — full modern UI redesign
-- Blog card / Blog slider redesign
-- Environment calendar — modal image section + next/prev month
-- NGO in-focus description removal
-- Home page hero image and tagline cleanup
-- Section nav component (sticky pills menu on element pages)
-- Subscribe section — modern redesign (glass-morphism bar)
-- Privacy policy consent bar — modernized (top bar, glass-morphism)
-- Privacy policy year range — dynamic (2020-currentYear)
-- Blog post page — redesigned (blurred bg image, better layout)
-- About us page — content cards redesign
-- Team page — profile cards redesign
-- Calendar loading — skeleton overlay
-- "Discover More" — scrolls to elements section
-- Header nav — updated (About Us + Our Team links)
-- Back button — modernized
-- Loading skeletons — added across site
-- Breaking news — mobile media fix
-- Coffee conversation — mobile spacing fix
-- Course section — mobile image fix
-- Blog sharing — share button on cards + detail page (Web Share API + clipboard fallback)
-- Blog slugs — model, service, admin auto-generate, migration script
-- Blog listing page — modernized (sticky header, skeleton loading)
-- Video listing page — redesigned to match element page cards
-- Video detail page — 16:9 responsive player + article layout
-- Video card component — redesigned to match element page slider cards
-- Firm in Focus — multiple firms, publish/unpublish toggle, delete fix
-- Polls — correct answer feature, green highlight, checkmark
-- Deployment automation — unified PowerShell script, npm commands, git tagging
-- Version tracking — footer auto-reads from package.json, CHANGELOG.md
-- OG meta tags Cloud Function — deployed to staging (production pending)
-- Prod→Staging sync scripts (Firestore + Storage)
-- Old news cleanup script (archive + delete, configurable retention)
-- Admin Dashboard — full modern redesign (sidebar nav, stats cards, animations, dark/light theme)
-- Admin Manage Pages — modern table design with sorting, pagination, filter dropdowns + removable chips
-- Admin Add/Edit Forms — card-based layout, grouped sections, breadcrumbs, image previews
-- Admin Dark Theme — full dark mode across dashboard, manage pages, and forms (localStorage toggle)
-- Admin Filters — category, status, year, platform, media type, author filters per page
-- Admin Pagination — page size control (5/10/25/50), page numbers, item count
-- Admin Column Sorting — click-to-sort on all columns, default by most recent date
-- Admin Summary Cards — KPI metrics at top of each manage page (totals, breakdowns)
-- Admin Breadcrumbs — navigation context on all manage + form pages
-- Admin Responsive — mobile-first with collapsible sidebar, stacked layouts, scrollable tables
-- Admin Team Profiles — circular avatar thumbnails from Firebase Storage
-- Admin Calendar — occasion image thumbnails in table
-- Admin Polls — live vote count per poll, total votes, avg votes/poll metrics
 
 ## 📋 Known Limitations (Acceptable)
 

@@ -194,7 +194,9 @@ export const FIREBASE_COLLECTION = {
   USER_ACTION_COMPLETIONS: 'user_action_completions',
   HERO_VIDEOS: 'hero_videos',
   FEEDBACK: 'Feedback',
-  SITE_SETTINGS: 'site_settings'
+  SITE_SETTINGS: 'site_settings',
+  WORKSHOPS: 'workshops',
+  WORKSHOP_POSTER_STORAGE: 'workshop-posters'
 };
 
 export const ACTION_TYPE = {
