@@ -292,6 +292,48 @@
   }
 }
 
+/* Narrow phones (under 400px): side by side gets too cramped, so the card
+   stacks: poster on top (full width, capped so Register isn't pushed far
+   down), details and Register underneath. */
+@media (max-width: 399px) {
+  .upcoming-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .upcoming-card .workshop-poster {
+    height: auto;
+    aspect-ratio: 4 / 5;
+    max-height: 62vh;
+    border-right: 0;
+    border-bottom: 1.5px solid var(--wiof-brown-tint-40);
+  }
+
+  .upcoming-card .workshop-body {
+    padding: 16px 18px 0;
+  }
+
+  .upcoming-card .workshop-body h3 {
+    font-size: 1.08rem;
+  }
+
+  .upcoming-card .workshop-when {
+    font-size: 0.86rem;
+  }
+
+  .upcoming-card .workshop-description {
+    font-size: 0.9rem;
+  }
+
+  .upcoming-card .card-footer {
+    padding: 14px 18px 18px;
+  }
+
+  .upcoming-card .enquire-btn {
+    padding: 12px 16px;
+    font-size: 1rem;
+  }
+}
+
 /* ── Past workshops: smaller, quieter cards with no Register ── */
 .past-section {
   padding-top: 2.5rem;
