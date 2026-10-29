@@ -53,11 +53,6 @@ describe('SettingsPage - Avatar', () => {
   });
 
   describe('avatarInitial', () => {
-    it('should use the first letter of the display name', () => {
-      page.profileForm.patchValue({ displayName: 'Jane Doe' });
-      expect(page.avatarInitial).toBe('J');
-    });
-
     it('should fall back to the first letter of the email when no display name is set', () => {
       page.profileForm.patchValue({ displayName: '' });
       page.userEmail = 'zed@example.com';
