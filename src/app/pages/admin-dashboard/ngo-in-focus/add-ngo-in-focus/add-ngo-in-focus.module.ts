@@ -10,8 +10,10 @@ import { AddNgoInFocusPage } from './add-ngo-in-focus.page';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
+import { FileInputValueAccessorDirective } from '../../../../directives/file-input-value-accessor.directive';
 @NgModule({
   imports: [
+    FileInputValueAccessorDirective,
     CommonModule,
     FormsModule,
     IonicModule,

@@ -10,8 +10,10 @@ import { QuillModule } from 'ngx-quill';
 import { AddNewsPageRoutingModule } from './add-news-routing.module';
 import { AddNewsPage } from './add-news.page';
 
+import { FileInputValueAccessorDirective } from '../../../../directives/file-input-value-accessor.directive';
 @NgModule({
   imports: [
+    FileInputValueAccessorDirective,
     CommonModule,
     IonicModule,
     AddNewsPageRoutingModule,

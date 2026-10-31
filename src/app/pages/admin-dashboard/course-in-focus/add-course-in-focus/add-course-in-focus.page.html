@@ -33,50 +33,41 @@
         <div class="form-card-title"><ion-icon aria-hidden="true" name="school-outline"></ion-icon> Course Information</div>
         <div class="form-row">
           <ion-item>
-            <ion-label position="floating">{{ pageContent.nameLabel }} *</ion-label>
-            <ion-input formControlName="name"></ion-input>
+            <ion-input label="{{ pageContent.nameLabel }} *" labelPlacement="floating" formControlName="name"></ion-input>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">{{ pageContent.categoryLabel }} *</ion-label>
-            <ion-select formControlName="category">
+            <ion-select label="{{ pageContent.categoryLabel }} *" labelPlacement="floating" formControlName="category">
               <ion-select-option [value]="category" *ngFor="let category of categories">{{ category }}</ion-select-option>
             </ion-select>
           </ion-item>
         </div>
         <div class="form-row">
           <ion-item>
-            <ion-label position="floating">{{ pageContent.platformLabel }}</ion-label>
-            <ion-input formControlName="platform"></ion-input>
+            <ion-input label="{{ pageContent.platformLabel }}" labelPlacement="floating" formControlName="platform"></ion-input>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">{{ pageContent.offeredByLabel }}</ion-label>
-            <ion-input formControlName="offeredBy"></ion-input>
+            <ion-input label="{{ pageContent.offeredByLabel }}" labelPlacement="floating" formControlName="offeredBy"></ion-input>
           </ion-item>
         </div>
         <div class="form-row">
           <ion-item>
-            <ion-label position="floating">{{ pageContent.durationLabel }}</ion-label>
-            <ion-input formControlName="duration"></ion-input>
+            <ion-input label="{{ pageContent.durationLabel }}" labelPlacement="floating" formControlName="duration"></ion-input>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">{{ pageContent.approxCostLabel }}</ion-label>
-            <ion-input formControlName="approxCost"></ion-input>
+            <ion-input label="{{ pageContent.approxCostLabel }}" labelPlacement="floating" formControlName="approxCost"></ion-input>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">{{ pageContent.linkLabel }}</ion-label>
-            <ion-input formControlName="link"></ion-input>
+            <ion-input label="{{ pageContent.linkLabel }}" labelPlacement="floating" formControlName="link"></ion-input>
           </ion-item>
         </div>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="floating">{{ pageContent.keyTopicsLabel }}</ion-label>
-            <ion-input formControlName="keyTopics"></ion-input>
+            <ion-input label="{{ pageContent.keyTopicsLabel }}" labelPlacement="floating" formControlName="keyTopics"></ion-input>
           </ion-item>
         </div>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="floating">{{ pageContent.descriptionLabel }}</ion-label>
-            <ion-textarea formControlName="description" rows="3"></ion-textarea>
+            <ion-textarea label="{{ pageContent.descriptionLabel }}" labelPlacement="floating" formControlName="description" rows="3"></ion-textarea>
           </ion-item>
         </div>
       </div>
@@ -87,7 +78,7 @@
         <div class="form-row full-width">
           <ion-item>
             <ion-label position="stacked">{{ pageContent.imageLabel }}</ion-label>
-            <ion-input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="image"></ion-input>
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="image" class="file-input" />
           </ion-item>
         </div>
         <div class="form-image-preview" *ngIf="imageToDisplay">

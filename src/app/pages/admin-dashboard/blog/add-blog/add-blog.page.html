@@ -102,12 +102,10 @@
         <div class="form-card-title"><ion-icon aria-hidden="true" name="document-text-outline"></ion-icon> Basic Information</div>
         <div class="form-row">
           <ion-item>
-            <ion-label position="floating">Blog Title *</ion-label>
-            <ion-input formControlName="title"></ion-input>
+            <ion-input label="Blog Title *" labelPlacement="floating" formControlName="title"></ion-input>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">Author Name *</ion-label>
-            <ion-input formControlName="authorName"></ion-input>
+            <ion-input label="Author Name *" labelPlacement="floating" formControlName="authorName"></ion-input>
           </ion-item>
         </div>
         <!-- Slug preview -->
@@ -117,26 +115,22 @@
         </div>
         <div class="form-row">
           <ion-item>
-            <ion-label position="floating">Category *</ion-label>
-            <ion-select formControlName="category">
+            <ion-select label="Category *" labelPlacement="floating" formControlName="category">
               <ion-select-option [value]="category" *ngFor="let category of categories">{{ category }}</ion-select-option>
             </ion-select>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">Sub Category *</ion-label>
-            <ion-input formControlName="subCategory"></ion-input>
+            <ion-input label="Sub Category *" labelPlacement="floating" formControlName="subCategory"></ion-input>
           </ion-item>
         </div>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="floating">Short Description *</ion-label>
-            <ion-textarea formControlName="shortDescription" rows="2" auto-grow="true"></ion-textarea>
+            <ion-textarea label="Short Description *" labelPlacement="floating" formControlName="shortDescription" rows="2" auto-grow="true"></ion-textarea>
           </ion-item>
         </div>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="floating">About Author *</ion-label>
-            <ion-textarea formControlName="aboutAuthor" rows="2" auto-grow="true"></ion-textarea>
+            <ion-textarea label="About Author *" labelPlacement="floating" formControlName="aboutAuthor" rows="2" auto-grow="true"></ion-textarea>
           </ion-item>
         </div>
       </div>
@@ -147,9 +141,9 @@
         <div class="form-row full-width">
           <ion-item>
             <ion-label position="stacked">Upload Hero Image *</ion-label>
-            <ion-input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="image"></ion-input>
-            <ion-note slot="helper">Max file size {{ maxImageMB }} MB. Recommended JPG/PNG. This appears as the blog thumbnail and header.</ion-note>
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="image" class="file-input" />
           </ion-item>
+          <p class="field-help">Max file size {{ maxImageMB }} MB. Recommended JPG/PNG. This appears as the blog thumbnail and header.</p>
         </div>
         <div class="form-image-preview" *ngIf="imageToDisplay">
           <ion-img [src]="imageToDisplay"></ion-img>

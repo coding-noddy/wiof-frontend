@@ -8,8 +8,10 @@ import { AddOccasionPageRoutingModule } from './add-occasion-routing.module';
 
 import { AddOccasionPage } from './add-occasion.page';
 
+import { FileInputValueAccessorDirective } from '../../../../directives/file-input-value-accessor.directive';
 @NgModule({
   imports: [
+    FileInputValueAccessorDirective,
     CommonModule,
     FormsModule,
     IonicModule,

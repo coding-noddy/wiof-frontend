@@ -33,14 +33,12 @@
         <div class="form-card-title"><ion-icon aria-hidden="true" name="newspaper-outline"></ion-icon> News Details</div>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="floating">{{ pageContent.headlineLabel }} *</ion-label>
-            <ion-input formControlName="headline"></ion-input>
+            <ion-input label="{{ pageContent.headlineLabel }} *" labelPlacement="floating" formControlName="headline"></ion-input>
           </ion-item>
         </div>
         <div class="form-row">
           <ion-item>
-            <ion-label position="floating">{{ pageContent.categoryLabel }} *</ion-label>
-            <ion-select formControlName="category">
+            <ion-select label="{{ pageContent.categoryLabel }} *" labelPlacement="floating" formControlName="category">
               <ion-select-option [value]="category" *ngFor="let category of categories">{{ category }}</ion-select-option>
             </ion-select>
           </ion-item>
@@ -53,8 +51,7 @@
         </div>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="floating">{{ pageContent.newsSourceLabel }}</ion-label>
-            <ion-input formControlName="newsSource"></ion-input>
+            <ion-input label="{{ pageContent.newsSourceLabel }}" labelPlacement="floating" formControlName="newsSource"></ion-input>
           </ion-item>
         </div>
       </div>
@@ -64,8 +61,7 @@
         <div class="form-card-title"><ion-icon aria-hidden="true" name="videocam-outline"></ion-icon> Media</div>
         <div class="form-row">
           <ion-item>
-            <ion-label position="floating">{{ pageContent.mediaTypeLabel }} *</ion-label>
-            <ion-select formControlName="mediaType" #mediaType>
+            <ion-select label="{{ pageContent.mediaTypeLabel }} *" labelPlacement="floating" formControlName="mediaType" #mediaType>
               <ion-select-option [value]="'image'">Image</ion-select-option>
               <ion-select-option [value]="'video'">Video</ion-select-option>
             </ion-select>
@@ -74,7 +70,7 @@
         <div class="form-row full-width" *ngIf="mediaType.value === 'image'">
           <ion-item>
             <ion-label position="stacked">{{ pageContent.selectImageLabel }}</ion-label>
-            <ion-input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="image"></ion-input>
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="image" class="file-input" />
           </ion-item>
           <div class="form-image-preview" *ngIf="imageToDisplay">
             <ion-img [src]="imageToDisplay"></ion-img>
@@ -82,8 +78,7 @@
         </div>
         <div class="form-row full-width" *ngIf="mediaType.value === 'video'">
           <ion-item>
-            <ion-label position="floating">{{ pageContent.mediaLinkLabel }}</ion-label>
-            <ion-input formControlName="mediaLink"></ion-input>
+            <ion-input label="{{ pageContent.mediaLinkLabel }}" labelPlacement="floating" formControlName="mediaLink"></ion-input>
           </ion-item>
         </div>
       </div>

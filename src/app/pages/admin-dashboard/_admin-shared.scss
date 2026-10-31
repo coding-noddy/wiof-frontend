@@ -1302,3 +1302,38 @@ form {
     .current { color: #e2e8f0; }
   }
 }
+
+// ── Native file inputs (image uploads) ─────────────────────────────
+// Ionic 8 dropped <ion-input type="file">; uploads use a plain
+// <input type="file"> inside the ion-item, styled to sit under its label.
+.file-input {
+  display: block;
+  width: 100%;
+  margin: 8px 0 10px;
+  font: inherit;
+  font-size: 0.88rem;
+  color: $text-primary;
+
+  &::file-selector-button {
+    margin-right: 12px;
+    padding: 8px 14px;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    background: transparent;
+    color: $text-secondary;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  &::file-selector-button:hover {
+    border-color: $accent;
+    color: $accent;
+  }
+}
+
+.field-help {
+  margin: 6px 4px 0;
+  font-size: 0.78rem;
+  color: $text-muted;
+}

@@ -33,20 +33,17 @@
         <div class="form-card-title"><ion-icon aria-hidden="true" name="cafe-outline"></ion-icon> Conversation Details</div>
         <div class="form-row">
           <ion-item>
-            <ion-label position="floating">{{ pageContent.topicLabel }} *</ion-label>
-            <ion-input formControlName="topic"></ion-input>
+            <ion-input label="{{ pageContent.topicLabel }} *" labelPlacement="floating" formControlName="topic"></ion-input>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">{{ pageContent.categoryLabel }} *</ion-label>
-            <ion-select formControlName="category">
+            <ion-select label="{{ pageContent.categoryLabel }} *" labelPlacement="floating" formControlName="category">
               <ion-select-option [value]="category" *ngFor="let category of categories">{{ category }}</ion-select-option>
             </ion-select>
           </ion-item>
         </div>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="floating">{{ pageContent.topicShortDescLabel }}</ion-label>
-            <ion-input formControlName="topicShortDesc"></ion-input>
+            <ion-input label="{{ pageContent.topicShortDescLabel }}" labelPlacement="floating" formControlName="topicShortDesc"></ion-input>
           </ion-item>
         </div>
       </div>
@@ -56,12 +53,10 @@
         <div class="form-card-title"><ion-icon aria-hidden="true" name="people-outline"></ion-icon> People</div>
         <div class="form-row">
           <ion-item>
-            <ion-label position="floating">{{ pageContent.interviewerNameLabel }}</ion-label>
-            <ion-input formControlName="interviewerName"></ion-input>
+            <ion-input label="{{ pageContent.interviewerNameLabel }}" labelPlacement="floating" formControlName="interviewerName"></ion-input>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">{{ pageContent.intervieweeNameLabel }} *</ion-label>
-            <ion-input formControlName="intervieweeName"></ion-input>
+            <ion-input label="{{ pageContent.intervieweeNameLabel }} *" labelPlacement="floating" formControlName="intervieweeName"></ion-input>
           </ion-item>
           <mat-form-field appearance="standard" class="date-picker-field">
             <mat-label>{{ pageContent.interviewDateLabel }}</mat-label>
@@ -72,8 +67,7 @@
         </div>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="floating">{{ pageContent.intervieweeDescLabel }}</ion-label>
-            <ion-input formControlName="intervieweeDesc"></ion-input>
+            <ion-input label="{{ pageContent.intervieweeDescLabel }}" labelPlacement="floating" formControlName="intervieweeDesc"></ion-input>
           </ion-item>
         </div>
       </div>
@@ -83,12 +77,10 @@
         <div class="form-card-title"><ion-icon aria-hidden="true" name="link-outline"></ion-icon> Links</div>
         <div class="form-row">
           <ion-item>
-            <ion-label position="floating">{{ pageContent.videoLinkLabel }}</ion-label>
-            <ion-input formControlName="videoLink"></ion-input>
+            <ion-input label="{{ pageContent.videoLinkLabel }}" labelPlacement="floating" formControlName="videoLink"></ion-input>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">{{ pageContent.knowMoreLinkLabel }}</ion-label>
-            <ion-input formControlName="knowMoreLink"></ion-input>
+            <ion-input label="{{ pageContent.knowMoreLinkLabel }}" labelPlacement="floating" formControlName="knowMoreLink"></ion-input>
           </ion-item>
         </div>
       </div>

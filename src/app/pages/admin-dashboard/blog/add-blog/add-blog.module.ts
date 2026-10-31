@@ -6,8 +6,10 @@ import { QuillModule } from 'ngx-quill';
 import { AddBlogPageRoutingModule } from './add-blog-routing.module';
 import { AddBlogPage } from './add-blog.page';
 
+import { FileInputValueAccessorDirective } from '../../../../directives/file-input-value-accessor.directive';
 @NgModule({
   imports: [
+    FileInputValueAccessorDirective,
     CommonModule,
     IonicModule,
     AddBlogPageRoutingModule,
