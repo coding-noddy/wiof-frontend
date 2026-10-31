@@ -3,8 +3,10 @@ import { environment } from 'src/environments/environment';
 import { ModalController } from '@ionic/angular';
 import { SubscribePanelService } from 'src/app/services/subscribe-panel.service';
 import { FeedbackDialogComponent } from 'src/app/components/feedback-dialog/feedback-dialog.component';
+// A static import, not require(): the esbuild-based builder (Angular 17+)
+// doesn't support require() in browser code.
+import packageJson from '../../../../package.json';
 
-declare const require: any;
 
 @Component({
   selector: 'app-wiof-footer',
@@ -13,7 +15,7 @@ declare const require: any;
 })
 export class WiofFooterComponent implements OnInit {
   currentYear = new Date().getFullYear();
-  appVersion: string = require('../../../../package.json').version;
+  appVersion: string = packageJson.version;
   envLabel = environment.production ? 'prod' : 'staging';
   wiofLogo = '../../../assets/brand/logos/WIOF-full-logo.png';
 
@@ -44,4 +46,3 @@ export class WiofFooterComponent implements OnInit {
     FeedbackDialogComponent.present(this.modalCtrl, event);
   }
 }
-

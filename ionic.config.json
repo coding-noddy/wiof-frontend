@@ -1,7 +1,5 @@
 {
   "name": "wiof_frontend",
-  "integrations": {
-    "capacitor": {}
-  },
+  "integrations": {},
   "type": "angular"
 }

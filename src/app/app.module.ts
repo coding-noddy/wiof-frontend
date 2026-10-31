@@ -8,8 +8,6 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule, Meta } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
-import { SplashScreen } from '@ionic-native/splash-screen/ngx';
-import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { environment } from '../environments/environment';
 import { initWiofAppCheck } from './util/app-check';
@@ -41,8 +39,6 @@ import {
     BrowserAnimationsModule
   ],
   providers: [
-    StatusBar,
-    SplashScreen,
     Meta,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     // App Check before any Firebase request; FirebaseApp makes sure the app
