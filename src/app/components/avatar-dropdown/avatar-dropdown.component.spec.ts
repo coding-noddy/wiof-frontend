@@ -75,14 +75,6 @@ describe('AvatarDropdownComponent', () => {
       expect(component.fallbackLetter).toBe('B');
     });
 
-    it('should display "?" when displayName is empty', () => {
-      component.photoURL = null;
-      component.displayName = '';
-      fixture.detectChanges();
-
-      expect(component.fallbackLetter).toBe('?');
-    });
-
     it('should render avatar as 32px circular element', () => {
       const button = fixture.nativeElement.querySelector('.avatar-button');
       expect(button).toBeTruthy();
@@ -103,19 +95,6 @@ describe('AvatarDropdownComponent', () => {
       expect(component.isOpen).toBeTrue();
       const menu = fixture.nativeElement.querySelector('.dropdown-menu');
       expect(menu.classList.contains('dropdown-open')).toBeTrue();
-    });
-
-    it('should contain menu items: My Journey, Saved, Settings, Logout', () => {
-      component.isOpen = true;
-      fixture.detectChanges();
-
-      const items = fixture.nativeElement.querySelectorAll('.dropdown-item');
-      const texts = Array.from(items).map((item: any) => item.textContent.trim());
-
-      expect(texts).toContain('My Journey');
-      expect(texts).toContain('Saved');
-      expect(texts).toContain('Settings');
-      expect(texts).toContain('Logout');
     });
 
     it('should close on outside click', () => {

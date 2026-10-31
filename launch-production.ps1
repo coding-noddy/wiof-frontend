@@ -92,11 +92,24 @@ function Show-Step($name, $title) {
     Write-Host "================================================================" -ForegroundColor Cyan
 }
 
+# Every option this run was started with (except -StartAt), so the resume
+# command below repeats them exactly. It used to print only -AdminEmails,
+# so resuming silently dropped switches such as -LockRibbon.
+$script:ResumeArgs = foreach ($key in $PSBoundParameters.Keys) {
+    if ($key -eq 'StartAt') { continue }
+    $value = $PSBoundParameters[$key]
+    if ($value -is [System.Management.Automation.SwitchParameter]) {
+        if ($value.IsPresent) { "-$key" }
+    } else {
+        "-$key `"$value`""
+    }
+}
+
 function Stop-Launch($step, $message) {
     Write-Host ""
     Write-Host "[x] LAUNCH STOPPED at step '$step': $message" -ForegroundColor Red
     Write-Host "    Fix the problem, then resume with:" -ForegroundColor Yellow
-    Write-Host "    .\launch-production.ps1 -AdminEmails `"$AdminEmails`" -StartAt $step" -ForegroundColor Yellow
+    Write-Host "    .\launch-production.ps1 $($script:ResumeArgs -join ' ') -StartAt $step" -ForegroundColor Yellow
     Write-Host "    Log: $logFile" -ForegroundColor Yellow
     Stop-Transcript | Out-Null
     exit 1
