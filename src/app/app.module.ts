@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 //Firestore Integration Modules
 import { AngularFireModule, FirebaseApp } from '@angular/fire/compat';
@@ -30,7 +30,6 @@ import {
     FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,
-    HttpClientModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule,
     AngularFireStorageModule,
@@ -50,7 +49,9 @@ import {
       useFactory: () => () => initWiofAppCheck()
     },
     ScreenTrackingService,
-    UserTrackingService
+    UserTrackingService,
+    // Replaces HttpClientModule (deprecated in Angular 18).
+    provideHttpClient(withInterceptorsFromDi())
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

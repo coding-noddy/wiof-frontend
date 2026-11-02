@@ -9,12 +9,16 @@ import { CoffeeConversationService } from 'src/app/services/coffee-conversation.
 import { AppUtilService } from 'src/app/util/AppUtilService';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 
+import { quillSemanticHtml } from 'src/app/util/quill-html.util';
 @Component({
   selector: 'app-add-coffee-conversation',
   templateUrl: './add-coffee-conversation.page.html',
   styleUrls: ['./add-coffee-conversation.page.scss']
 })
 export class AddCoffeeConversationPage implements OnInit {
+  /** Saved HTML with normal spaces (see quillSemanticHtml). */
+  readonly quillHtml = quillSemanticHtml;
+
   isEditMode: boolean = false;
   coffeeConversation: CoffeeConversation = {} as CoffeeConversation;
   addCoffeeConversationForm: FormGroup;

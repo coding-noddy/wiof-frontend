@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 import { ElementWelcomeImageComponent } from './element-welcome-image.component';
 
@@ -6,7 +6,7 @@ describe('ElementWelcomeImageComponent', () => {
   let component: ElementWelcomeImageComponent;
   let fixture: ComponentFixture<ElementWelcomeImageComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ElementWelcomeImageComponent],
       imports: [IonicModule.forRoot()]

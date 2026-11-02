@@ -14,10 +14,14 @@ import { AppUtilService } from 'src/app/util/AppUtilService';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 import Quill from 'quill';
 import { compressImage } from 'src/app/util/image-compression.util';
-import 'src/app/util/quill-global';
-import ImageResize from 'quill-image-resize-module';
+import ResizeModule from '@botom/quill-resize-module';
 
-Quill.register('modules/imageResize', ImageResize);
+import { quillSemanticHtml } from 'src/app/util/quill-html.util';
+// Image/video resizing in the editor. Replaces quill-image-resize-module
+// (Quill 1 only, last published 2017). Sizes are stored as the image's
+// width/height formats, which Quill's own Image blot keeps, so the public
+// blog page shows them without loading this module.
+Quill.register('modules/resize', ResizeModule);
 
 @Component({
   selector: 'app-add-blog',
@@ -25,6 +29,9 @@ Quill.register('modules/imageResize', ImageResize);
   styleUrls: ['./add-blog.page.scss']
 })
 export class AddBlogPage implements OnInit, OnDestroy {
+  /** Saved HTML with normal spaces (see quillSemanticHtml). */
+  readonly quillHtml = quillSemanticHtml;
+
   categories: string[] = Object.values(ELEMENT_BLOG_CATEGORY);
   addBlogForm: FormGroup;
   imageToDisplay: string;
@@ -58,7 +65,19 @@ export class AddBlogPage implements OnInit, OnDestroy {
       }
     },
     history: { delay: 1000, maxStack: 50, userOnly: true },
-    imageResize: {}
+    resize: {
+      showSize: true,
+      // Always keep an image's proportions while resizing, so a drag can
+      // never squash or stretch it (no need to hold Alt).
+      constraints: { lockAspectRatio: true },
+      locale: {
+        altTip: 'Drag to resize; proportions are kept',
+        floatLeft: 'Left',
+        floatRight: 'Right',
+        center: 'Center',
+        restore: 'Original size'
+      }
+    }
   };
 
   // Writer stats
@@ -333,7 +352,9 @@ export class AddBlogPage implements OnInit, OnDestroy {
     // Add tooltips to toolbar buttons
     this.addToolbarTooltips();
 
-    // Paste handler for Word/Office cleanup
+    // Paste handler for Word/Office cleanup. Capture phase, so it runs before
+    // Quill 2's own paste listener on the same element; preventDefault() below
+    // then makes Quill skip its paste. (Bubble phase pasted everything twice.)
     try {
       this.editor.root.addEventListener('paste', (evt: ClipboardEvent) => {
         evt.preventDefault();
@@ -348,11 +369,13 @@ export class AddBlogPage implements OnInit, OnDestroy {
         if (imageFile && !html) {
           this.insertUploadedImage(imageFile as File);
         } else if (html) {
-          this.editor.clipboard.dangerouslyPasteHTML(rangeIndex, this.cleanPastedHTML(html));
+          // 'user' source: ngx-quill only updates the form control on user
+          // changes, so an 'api' paste wasn't saved if nothing was typed after it.
+          this.editor.clipboard.dangerouslyPasteHTML(rangeIndex, this.cleanPastedHTML(html), 'user');
         } else if (text) {
           this.editor.insertText(rangeIndex, text, 'user');
         }
-      });
+      }, true);
     } catch (e) { /* ignore */ }
   }
 

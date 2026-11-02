@@ -86,7 +86,7 @@
       <!-- Content Card -->
       <div class="form-card">
         <div class="form-card-title"><ion-icon aria-hidden="true" name="create-outline"></ion-icon> Content</div>
-        <quill-editor formControlName="content"></quill-editor>
+        <quill-editor formControlName="content" [valueGetter]="quillHtml"></quill-editor>
       </div>
     </form>
   </div>

@@ -155,6 +155,7 @@
         <div class="form-card-title"><ion-icon aria-hidden="true" name="create-outline"></ion-icon> Blog Content</div>
         <quill-editor
           formControlName="content"
+          [valueGetter]="quillHtml"
           [modules]="quillModules"
           (onEditorCreated)="onEditorCreated($event)"
           placeholder="Start writing your blog post... Use the toolbar above for formatting, or paste from Word/Google Docs."
