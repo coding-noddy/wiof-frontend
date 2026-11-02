@@ -147,12 +147,13 @@ export class AddBlogPage implements OnInit, OnDestroy {
     // Watch title changes for slug preview
     this.addBlogForm?.get('title')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(title => {
       this.slugPreview = Blog.generateSlug(title);
-      this.isDirty = true;
     });
 
-    // Mark dirty on any form change
-    this.addBlogForm?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      this.isDirty = true;
+    // Mark dirty on any form change. A new blog's form that is empty again
+    // (reset after publishing) isn't unsaved work, even though its controls
+    // report the reset as a change.
+    this.addBlogForm?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((value) => {
+      this.isDirty = this.isEditMode || Object.values(value).some((v) => v !== null && v !== undefined && v !== '');
     });
   }
 
@@ -284,7 +285,6 @@ export class AddBlogPage implements OnInit, OnDestroy {
         () => {
           this.loader.dismiss();
           this.isSaving = false;
-          this.isDirty = false;
           this.clearDraft();
           if (!this.isEditMode) {
             this.addBlogForm.reset();
@@ -294,7 +294,12 @@ export class AddBlogPage implements OnInit, OnDestroy {
             this.charCount = 0;
             this.readTime = 0;
             this.slugPreview = '';
+            // Publishing from the preview would otherwise leave it showing the
+            // now-empty form ("Untitled", "By Author").
+            this.showPreview = false;
           }
+          // After the reset: reset() fires valueChanges, which marks the form dirty.
+          this.isDirty = false;
           this.uiUtil.presentToast(
             UI_MESSAGES.SUCCESS_ADD_ITEM_DESC.replace(UI_MESSAGES.PLACEHOLDER, ITEMS.BLOG),
             'success'
@@ -344,9 +349,13 @@ export class AddBlogPage implements OnInit, OnDestroy {
 
     // Word count tracking
     this.updateWordCount();
-    this.editor.on('text-change', () => {
+    this.editor.on('text-change', (_delta, _oldDelta, source) => {
       this.updateWordCount();
-      this.isDirty = true;
+      // Only the admin's own edits: clearing the form after a save changes
+      // the text too, and isn't unsaved work.
+      if (source === 'user') {
+        this.isDirty = true;
+      }
     });
 
     // Add tooltips to toolbar buttons
