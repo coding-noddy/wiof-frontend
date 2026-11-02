@@ -79,6 +79,7 @@
           <div class="blog-author-row">
             <div class="author-info">
               <span class="author-name">By {{ addBlogForm.get('authorName')?.value || 'Author' }}</span>
+              <span class="blog-date" *ngIf="addBlogForm.get('publishDate')?.value">{{ addBlogForm.get('publishDate')?.value | date: 'MMM dd, yyyy' }}</span>
             </div>
           </div>
 
@@ -121,6 +122,12 @@
           </ion-item>
           <ion-item>
             <ion-input label="Sub Category *" labelPlacement="floating" formControlName="subCategory"></ion-input>
+          </ion-item>
+        </div>
+        <div class="form-row">
+          <ion-item>
+            <ion-input type="date" label="Published date *" labelPlacement="stacked" formControlName="publishDate"
+              helperText="Blogs are listed newest first by this date"></ion-input>
           </ion-item>
         </div>
         <div class="form-row full-width">

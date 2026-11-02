@@ -95,18 +95,8 @@ export class BlogService {
     );
   }
 
-  /**
-   * Resolves a blog's sortable timestamp: publishDate if set, else
-   * submitDate, else 0 (sorts undated legacy docs last).
-   */
   private blogSortDate(blog: Blog): number {
-    const raw = blog.publishDate || blog.submitDate;
-    if (!raw) return 0;
-    // Stored as epoch millis (`new Date().getTime()`) in this project's
-    // other date fields, but tolerate a Date/Firestore Timestamp too.
-    if (typeof raw === 'number') return raw;
-    if ((raw as any).toDate) return (raw as any).toDate().getTime();
-    return new Date(raw as any).getTime();
+    return Blog.sortDate(blog);
   }
 
   getTimeToRead(content: string): number {

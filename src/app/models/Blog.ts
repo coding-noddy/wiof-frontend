@@ -43,6 +43,24 @@ export class Blog {
   }
 
   /**
+   * A stored blog date (submitDate/publishDate) as epoch millis, or null.
+   * The editor stores epoch millis, but tolerate a Date/Firestore Timestamp/
+   * date string in hand-edited or imported docs.
+   */
+  static toMillis(raw: unknown): number | null {
+    if (raw === null || raw === undefined || raw === '') return null;
+    if (typeof raw === 'number') return raw;
+    if (typeof (raw as any).toDate === 'function') return (raw as any).toDate().getTime();
+    const ms = new Date(raw as any).getTime();
+    return isNaN(ms) ? null : ms;
+  }
+
+  /** The date a blog is listed under: publishDate, else submitDate, else 0 (sorts last). */
+  static sortDate(blog: Pick<Blog, 'publishDate' | 'submitDate'>): number {
+    return Blog.toMillis(blog.publishDate) ?? Blog.toMillis(blog.submitDate) ?? 0;
+  }
+
+  /**
    * Generate a URL-friendly slug from a title
    */
   static generateSlug(title: string): string {

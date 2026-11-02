@@ -152,7 +152,8 @@ export class AddBlogPage implements OnInit, OnDestroy {
     // Mark dirty on any form change. A new blog's form that is empty again
     // (reset after publishing) isn't unsaved work, even though its controls
     // report the reset as a change.
-    this.addBlogForm?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((value) => {
+    // publishDate is skipped: a new blog's form starts with today's date.
+    this.addBlogForm?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(({ publishDate, ...value }) => {
       this.isDirty = this.isEditMode || Object.values(value).some((v) => v !== null && v !== undefined && v !== '');
     });
   }
@@ -217,6 +218,7 @@ export class AddBlogPage implements OnInit, OnDestroy {
       aboutAuthor: new FormControl('', [Validators.required]),
       category: new FormControl('', [Validators.required]),
       subCategory: new FormControl('', [Validators.required]),
+      publishDate: new FormControl(this.toDayString(Date.now()), [Validators.required]),
       image: new FormControl('', [Validators.required]),
       shortDescription: new FormControl('', [Validators.required]),
       content: new FormControl('', [Validators.required])
@@ -230,6 +232,8 @@ export class AddBlogPage implements OnInit, OnDestroy {
       aboutAuthor: new FormControl(blog.aboutAuthor, [Validators.required]),
       category: new FormControl(blog.category, [Validators.required]),
       subCategory: new FormControl(blog.subCategory, [Validators.required]),
+      // Blank for an undated legacy blog, so saving it asks for its real date.
+      publishDate: new FormControl(this.toDayString(Blog.sortDate(blog) || null), [Validators.required]),
       image: new FormControl(blog.imageName, [Validators.required]),
       shortDescription: new FormControl(blog.shortDescription, [Validators.required]),
       content: new FormControl(blog.content, [Validators.required])
@@ -287,7 +291,7 @@ export class AddBlogPage implements OnInit, OnDestroy {
           this.isSaving = false;
           this.clearDraft();
           if (!this.isEditMode) {
-            this.addBlogForm.reset();
+            this.addBlogForm.reset({ publishDate: this.toDayString(Date.now()) });
             this.imageToDisplay = null;
             this.imageToSave = null;
             this.wordCount = 0;
@@ -334,7 +338,38 @@ export class AddBlogPage implements OnInit, OnDestroy {
       addBlogForm.value.content
     );
     result.contentDelta = safeContentDelta;
+    // submitDate: when the blog was first saved, never changed by an edit.
+    const submitDate = isEditMode ? Blog.toMillis(blog.submitDate) : Date.now();
+    if (submitDate !== null) {
+      result.submitDate = submitDate as any;
+    }
+    result.publishDate = this.toPublishTimestamp(
+      addBlogForm.value.publishDate,
+      isEditMode ? Blog.toMillis(blog.publishDate) : null
+    ) as any;
     return result;
+  }
+
+  /** Epoch millis as a local `yyyy-MM-dd` (the date input's value), or '' for none. */
+  private toDayString(ms: number | null): string {
+    if (!ms) return '';
+    const d = new Date(ms);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  /**
+   * The date input's `yyyy-MM-dd` as the publishDate to store. An unchanged
+   * date keeps its exact stored time and today's date gets the current time,
+   * so blogs published on the same day stay in publishing order; any other
+   * day is stored at midday UTC, which is that same calendar day in every
+   * timezone from UTC-11 to UTC+11.
+   */
+  private toPublishTimestamp(day: string, previous: number | null): number | null {
+    if (!day) return null;
+    if (previous !== null && this.toDayString(previous) === day) return previous;
+    if (day === this.toDayString(Date.now())) return Date.now();
+    const [y, m, d] = day.split('-').map(Number);
+    return Date.UTC(y, m - 1, d, 12);
   }
 
   onEditorCreated(editor: any) {
