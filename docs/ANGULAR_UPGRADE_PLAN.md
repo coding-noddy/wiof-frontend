@@ -76,6 +76,7 @@ Ionic 8 (8.8.x) covers Angular 16 → 22, so Ionic moves once, early. Angular Ma
 | 10 | ng2-charts 6+ needs `provideCharts(withDefaultRegisterables())` | 2 chart files | Add the provider when upgrading ng2-charts | When ng2-charts moves (end) |
 | 11 | Node.js on the dev machine | Local toolchain (nvm4w) | Install Node 22 LTS (works for 17–22; Cloud Functions already run Node 22) | Angular 20 |
 | 12 | TSLint target | `angular.json` | Remove, or replace with `@angular-eslint` | Any time |
+| 13 | **Found in step 4:** AngularFire 19+ compat Firestore wrappers (`AngularFirestoreCollection`/`Document`/`CollectionGroup`) call `inject()` in their constructors, so `afs.collection()`/`doc()` throw NG0203 outside an injection context. True for every version 19.0–21.0 | 145 call sites in 23 files (ngOnInit, handlers, service methods) | `InjectionSafeAngularFirestore` (`src/app/util/injection-safe-firestore.ts`), provided in place of `AngularFirestore` in `AppModule`, creates the wrappers in its own injector's context. No call sites changed. Goes away if the app moves to the modular API | Angular 19 (done) |
 
 **Not a problem (checked):** NgModules (still supported), Angular Material theme, Swiper web components, RxJS 7.8, the compat Firebase API (still shipped in AngularFire 21 and Firebase 13), Firestore/Storage rules, Cloud Functions, the security headers/CSP (re-verified per step).
 
