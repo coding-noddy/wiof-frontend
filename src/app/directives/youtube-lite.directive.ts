@@ -18,7 +18,8 @@ const YOUTUBE_ID = /^[A-Za-z0-9_-]{11}$/;
  * An id that isn't a valid YouTube id leaves the iframe as a normal embed.
  */
 @Directive({
-  selector: 'iframe[appYoutubeLite]'
+    selector: 'iframe[appYoutubeLite]',
+    standalone: false
 })
 export class YoutubeLiteDirective implements OnChanges {
   @Input('appYoutubeLite') videoId: string;

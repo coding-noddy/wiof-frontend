@@ -8,9 +8,10 @@ import { IdleTimeoutService } from './services/idle-timeout.service';
 import { SingleVideoPlaybackService } from './services/single-video-playback.service';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: 'app.component.html',
-  styleUrls: ['app.component.scss']
+    selector: 'app-root',
+    templateUrl: 'app.component.html',
+    styleUrls: ['app.component.scss'],
+    standalone: false
 })
 export class AppComponent implements OnInit {
   constructor(

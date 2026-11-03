@@ -5,9 +5,10 @@ import { SavedContentService, SaveContentInput } from 'src/app/services/saved-co
 import { UiUtilService } from 'src/app/util/UiUtilService';
 
 @Component({
-  selector: 'app-bookmark-icon',
-  templateUrl: './bookmark-icon.component.html',
-  styleUrls: ['./bookmark-icon.component.scss']
+    selector: 'app-bookmark-icon',
+    templateUrl: './bookmark-icon.component.html',
+    styleUrls: ['./bookmark-icon.component.scss'],
+    standalone: false
 })
 export class BookmarkIconComponent implements OnInit, OnDestroy {
   @Input() contentId: string;

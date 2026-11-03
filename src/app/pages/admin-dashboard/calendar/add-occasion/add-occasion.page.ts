@@ -10,9 +10,10 @@ import { UiUtilService } from 'src/app/util/UiUtilService';
 import { Months, UI_MESSAGES, ITEMS } from 'src/app/app.constants';
 
 @Component({
-  selector: 'app-add-occasion',
-  templateUrl: './add-occasion.page.html',
-  styleUrls: ['./add-occasion.page.scss']
+    selector: 'app-add-occasion',
+    templateUrl: './add-occasion.page.html',
+    styleUrls: ['./add-occasion.page.scss'],
+    standalone: false
 })
 export class AddOccasionPage implements OnInit {
   addOccasionForm: FormGroup;

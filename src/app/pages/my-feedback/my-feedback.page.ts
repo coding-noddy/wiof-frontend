@@ -18,9 +18,10 @@ import { FeedbackService } from 'src/app/services/feedback.service';
  * in carries a userId, so anonymous submissions never appear here.
  */
 @Component({
-  selector: 'app-my-feedback',
-  templateUrl: './my-feedback.page.html',
-  styleUrls: ['./my-feedback.page.scss']
+    selector: 'app-my-feedback',
+    templateUrl: './my-feedback.page.html',
+    styleUrls: ['./my-feedback.page.scss'],
+    standalone: false
 })
 export class MyFeedbackPage implements ViewWillEnter, OnDestroy {
   feedbackItems: Feedback[] = [];

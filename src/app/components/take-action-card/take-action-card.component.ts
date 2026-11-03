@@ -20,9 +20,10 @@ import { buildModalZoomAnimation } from 'src/app/util/modal-zoom-animation';
  * pattern for this kind of gated action in this codebase.
  */
 @Component({
-  selector: 'app-take-action-card',
-  templateUrl: './take-action-card.component.html',
-  styleUrls: ['./take-action-card.component.scss']
+    selector: 'app-take-action-card',
+    templateUrl: './take-action-card.component.html',
+    styleUrls: ['./take-action-card.component.scss'],
+    standalone: false
 })
 export class TakeActionCardComponent implements OnInit, OnChanges, OnDestroy {
   @Input() action: ActionItem;

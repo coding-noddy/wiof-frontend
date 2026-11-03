@@ -8,9 +8,10 @@ import { takeUntil } from 'rxjs/operators';
 import { UI_MESSAGES, ITEMS, normalizeElementCategory } from 'src/app/app.constants';
 
 @Component({
-  selector: 'app-manage-in-focus',
-  templateUrl: './manage-in-focus.page.html',
-  styleUrls: ['./manage-in-focus.page.scss']
+    selector: 'app-manage-in-focus',
+    templateUrl: './manage-in-focus.page.html',
+    styleUrls: ['./manage-in-focus.page.scss'],
+    standalone: false
 })
 export class ManageInFocusPage implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject();

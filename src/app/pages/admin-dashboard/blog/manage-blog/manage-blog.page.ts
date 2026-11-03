@@ -8,9 +8,10 @@ import { UiUtilService } from 'src/app/util/UiUtilService';
 import { UI_MESSAGES, ITEMS, normalizeElementCategory } from 'src/app/app.constants';
 
 @Component({
-  selector: 'app-manage-blog',
-  templateUrl: './manage-blog.page.html',
-  styleUrls: ['./manage-blog.page.scss']
+    selector: 'app-manage-blog',
+    templateUrl: './manage-blog.page.html',
+    styleUrls: ['./manage-blog.page.scss'],
+    standalone: false
 })
 export class ManageBlogPage implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject();

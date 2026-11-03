@@ -9,10 +9,11 @@ interface EQFact {
 }
 
 @Component({
-  selector: 'app-eq-widget',
-  templateUrl: './eq-widget.component.html',
-  styleUrls: ['./eq-widget.component.scss'],
-  animations: [expandCollapseAnimation]
+    selector: 'app-eq-widget',
+    templateUrl: './eq-widget.component.html',
+    styleUrls: ['./eq-widget.component.scss'],
+    animations: [expandCollapseAnimation],
+    standalone: false
 })
 export class EQWidgetComponent implements OnInit, OnDestroy {
 

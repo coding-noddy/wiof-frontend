@@ -11,9 +11,10 @@ import { PollsService } from 'src/app/services/polls.service';
 import { AppUtilService } from 'src/app/util/AppUtilService';
 
 @Component({
-  selector: 'app-add-poll',
-  templateUrl: './add-poll.page.html',
-  styleUrls: ['./add-poll.page.scss']
+    selector: 'app-add-poll',
+    templateUrl: './add-poll.page.html',
+    styleUrls: ['./add-poll.page.scss'],
+    standalone: false
 })
 export class AddPollPage implements OnInit, OnDestroy {
   addPollForm: FormGroup;

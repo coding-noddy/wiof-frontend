@@ -18,9 +18,10 @@ import { InFocusService } from 'src/app/services/in-focus.service';
 import { SectionNavComponent, SectionNavItem } from 'src/app/components/section-nav/section-nav.component';
 
 @Component({
-  selector: 'app-spirit',
-  templateUrl: './spirit.page.html',
-  styleUrls: ['./spirit.page.scss']
+    selector: 'app-spirit',
+    templateUrl: './spirit.page.html',
+    styleUrls: ['./spirit.page.scss'],
+    standalone: false
 })
 export class SpiritPage implements OnInit {
   @ViewChild(SectionNavComponent) sectionNav?: SectionNavComponent;

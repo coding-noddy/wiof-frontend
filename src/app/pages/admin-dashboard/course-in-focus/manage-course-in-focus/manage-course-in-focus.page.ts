@@ -8,9 +8,10 @@ import { takeUntil, switchMap } from 'rxjs/operators';
 import { UI_MESSAGES, ITEMS, normalizeElementCategory } from 'src/app/app.constants';
 
 @Component({
-  selector: 'app-manage-course-in-focus',
-  templateUrl: './manage-course-in-focus.page.html',
-  styleUrls: ['./manage-course-in-focus.page.scss']
+    selector: 'app-manage-course-in-focus',
+    templateUrl: './manage-course-in-focus.page.html',
+    styleUrls: ['./manage-course-in-focus.page.scss'],
+    standalone: false
 })
 export class ManageCourseInFocusPage implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject();

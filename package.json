@@ -33,16 +33,16 @@
   "private": true,
   "description": "An Ionic project",
   "dependencies": {
-    "@angular/animations": "~18.2.14",
+    "@angular/animations": "~19.2.25",
     "@angular/cdk": "^18.2.14",
-    "@angular/common": "~18.2.14",
-    "@angular/core": "~18.2.14",
+    "@angular/common": "~19.2.25",
+    "@angular/core": "~19.2.25",
     "@angular/fire": "^18.0.1",
-    "@angular/forms": "~18.2.14",
+    "@angular/forms": "~19.2.25",
     "@angular/material": "^18.2.14",
-    "@angular/platform-browser": "~18.2.14",
-    "@angular/platform-browser-dynamic": "~18.2.14",
-    "@angular/router": "~18.2.14",
+    "@angular/platform-browser": "~19.2.25",
+    "@angular/platform-browser-dynamic": "~19.2.25",
+    "@angular/router": "~19.2.25",
     "@botom/quill-resize-module": "^2.2.2",
     "@ionic/angular": "^8.8.19",
     "chart.js": "^4.5.1",
@@ -56,14 +56,14 @@
     "swiper": "^10.3.1",
     "tslib": "^2.6.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
-    "zone.js": "~0.14.10"
+    "zone.js": "~0.15.1"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^18.2.21",
-    "@angular/cli": "^18.2.21",
-    "@angular/compiler": "~18.2.14",
-    "@angular/compiler-cli": "~18.2.14",
-    "@angular/language-service": "~18.2.14",
+    "@angular-devkit/build-angular": "^19.2.27",
+    "@angular/cli": "^19.2.27",
+    "@angular/compiler": "~19.2.25",
+    "@angular/compiler-cli": "~19.2.25",
+    "@angular/language-service": "~19.2.25",
     "@firebase/rules-unit-testing": "^3.0.4",
     "@ionic/angular-toolkit": "^11.0.1",
     "@types/jasmine": "~4.6.0",
@@ -79,6 +79,6 @@
     "karma-jasmine-html-reporter": "^2.1.0",
     "papaparse": "^5.5.4",
     "ts-node": "~10.9.0",
-    "typescript": "~5.4.5"
+    "typescript": "~5.8.3"
   }
 }

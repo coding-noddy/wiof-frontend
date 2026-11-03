@@ -7,9 +7,10 @@ export interface SectionNavItem {
 }
 
 @Component({
-  selector: 'app-section-nav',
-  templateUrl: './section-nav.component.html',
-  styleUrls: ['./section-nav.component.scss']
+    selector: 'app-section-nav',
+    templateUrl: './section-nav.component.html',
+    styleUrls: ['./section-nav.component.scss'],
+    standalone: false
 })
 export class SectionNavComponent implements OnInit {
   @Input() sections: SectionNavItem[] = [];

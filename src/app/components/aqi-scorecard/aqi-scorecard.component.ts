@@ -4,9 +4,10 @@ import { AqiWidgetService } from '../../services/aqi-widget.service';
 import { map } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-aqi-scorecard',
-  templateUrl: './aqi-scorecard.component.html',
-  styleUrls: ['./aqi-scorecard.component.scss']
+    selector: 'app-aqi-scorecard',
+    templateUrl: './aqi-scorecard.component.html',
+    styleUrls: ['./aqi-scorecard.component.scss'],
+    standalone: false
 })
 export class AqiScorecardComponent implements OnInit, OnChanges {
   @Input() locationUrl!: string;

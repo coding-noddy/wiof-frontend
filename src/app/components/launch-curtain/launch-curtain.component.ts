@@ -36,9 +36,10 @@ interface ConfettiPiece {
 const CONFETTI_COLORS = ['#FFC26F', '#7AC2C5', '#FFFCF6', '#CAB79E', '#21999F'];
 
 @Component({
-  selector: 'app-launch-curtain',
-  templateUrl: './launch-curtain.component.html',
-  styleUrls: ['./launch-curtain.component.scss']
+    selector: 'app-launch-curtain',
+    templateUrl: './launch-curtain.component.html',
+    styleUrls: ['./launch-curtain.component.scss'],
+    standalone: false
 })
 export class LaunchCurtainComponent implements OnInit, OnDestroy {
   state: CurtainState = 'hidden';

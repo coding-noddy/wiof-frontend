@@ -7,7 +7,10 @@ import { Pipe, PipeTransform } from '@angular/core';
  * the underscore in place ('VERY_EASY' -> 'Very_easy') — this is the fix
  * for that, not a cosmetic duplicate of titlecase.
  */
-@Pipe({ name: 'enumLabel' })
+@Pipe({
+    name: 'enumLabel',
+    standalone: false
+})
 export class EnumLabelPipe implements PipeTransform {
   transform(value: string | null | undefined): string {
     if (!value) {

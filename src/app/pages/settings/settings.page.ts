@@ -12,9 +12,10 @@ import { noWhitespaceOnlyValidator, minArrayLength, maxArrayLength } from './set
 import { ELEMENTS } from 'src/app/app.constants';
 
 @Component({
-  selector: 'app-settings',
-  templateUrl: './settings.page.html',
-  styleUrls: ['./settings.page.scss']
+    selector: 'app-settings',
+    templateUrl: './settings.page.html',
+    styleUrls: ['./settings.page.scss'],
+    standalone: false
 })
 export class SettingsPage implements OnDestroy {
   private destroy$ = new Subject<void>();

@@ -8,9 +8,10 @@ import { takeUntil, catchError, switchMap } from 'rxjs/operators';
 import { UI_MESSAGES, ITEMS, MEDIA_TYPE, normalizeElementCategory } from 'src/app/app.constants';
 
 @Component({
-  selector: 'app-manage-ngo-in-focus',
-  templateUrl: './manage-ngo-in-focus.page.html',
-  styleUrls: ['./manage-ngo-in-focus.page.scss']
+    selector: 'app-manage-ngo-in-focus',
+    templateUrl: './manage-ngo-in-focus.page.html',
+    styleUrls: ['./manage-ngo-in-focus.page.scss'],
+    standalone: false
 })
 export class ManageNgoInFocusPage implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject();

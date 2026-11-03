@@ -8,9 +8,10 @@ import { FIREBASE_COLLECTION } from '../../../app.constants';
 import { buildAnalyticsChartData, AnalyticsChartData } from './analytics-utils';
 
 @Component({
-  selector: 'app-analytics',
-  templateUrl: './analytics.page.html',
-  styleUrls: ['./analytics.page.scss']
+    selector: 'app-analytics',
+    templateUrl: './analytics.page.html',
+    styleUrls: ['./analytics.page.scss'],
+    standalone: false
 })
 export class AnalyticsPage implements OnInit {
 

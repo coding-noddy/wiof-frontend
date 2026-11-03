@@ -11,9 +11,10 @@ import { ActionItem } from 'src/app/models/ActionItem';
  * EnvCalDialogComponent) instead of inventing a new one.
  */
 @Component({
-  selector: 'app-take-action-detail',
-  templateUrl: './take-action-detail.component.html',
-  styleUrls: ['./take-action-detail.component.scss']
+    selector: 'app-take-action-detail',
+    templateUrl: './take-action-detail.component.html',
+    styleUrls: ['./take-action-detail.component.scss'],
+    standalone: false
 })
 export class TakeActionDetailComponent {
   @Input() action: ActionItem;

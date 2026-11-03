@@ -10,9 +10,10 @@ import { NgoDetailDialogComponent } from 'src/app/components/ngo-detail-dialog/n
 import { buildModalZoomAnimation } from 'src/app/util/modal-zoom-animation';
 
 @Component({
-  selector: 'app-ngo-in-focus',
-  templateUrl: './ngo-in-focus.component.html',
-  styleUrls: ['./ngo-in-focus.component.scss']
+    selector: 'app-ngo-in-focus',
+    templateUrl: './ngo-in-focus.component.html',
+    styleUrls: ['./ngo-in-focus.component.scss'],
+    standalone: false
 })
 export class NgoInFocusComponent implements OnInit {
   @Input() ngosInFocus: Array<NgoInFocus>;

@@ -23,10 +23,11 @@ interface PhFact {
 }
 
 @Component({
-  selector: 'app-food-ph-indicator',
-  templateUrl: './food-ph-indicator.component.html',
-  styleUrls: ['./food-ph-indicator.component.scss'],
-  animations: [expandCollapseAnimation]
+    selector: 'app-food-ph-indicator',
+    templateUrl: './food-ph-indicator.component.html',
+    styleUrls: ['./food-ph-indicator.component.scss'],
+    animations: [expandCollapseAnimation],
+    standalone: false
 })
 export class FoodPhIndicatorComponent implements OnInit, OnDestroy {
 

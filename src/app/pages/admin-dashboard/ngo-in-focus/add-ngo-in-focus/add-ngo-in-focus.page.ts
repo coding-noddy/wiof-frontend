@@ -16,9 +16,10 @@ import { NgoInFocusService } from 'src/app/services/ngo-in-focus.service';
 import { AppUtilService } from 'src/app/util/AppUtilService';
 
 @Component({
-  selector: 'app-add-ngo-in-focus',
-  templateUrl: './add-ngo-in-focus.page.html',
-  styleUrls: ['./add-ngo-in-focus.page.scss']
+    selector: 'app-add-ngo-in-focus',
+    templateUrl: './add-ngo-in-focus.page.html',
+    styleUrls: ['./add-ngo-in-focus.page.scss'],
+    standalone: false
 })
 export class AddNgoInFocusPage implements OnInit, OnDestroy {
   isEditMode = false;

@@ -8,9 +8,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { MEDIA_TYPE, UI_MESSAGES, ITEMS, normalizeElementCategory } from 'src/app/app.constants';
 
 @Component({
-  selector: 'app-manage-news',
-  templateUrl: './manage-news.page.html',
-  styleUrls: ['./manage-news.page.scss']
+    selector: 'app-manage-news',
+    templateUrl: './manage-news.page.html',
+    styleUrls: ['./manage-news.page.scss'],
+    standalone: false
 })
 export class ManageNewsPage implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject();

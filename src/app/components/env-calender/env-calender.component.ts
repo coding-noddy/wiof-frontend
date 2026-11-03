@@ -7,23 +7,21 @@ import { EnvCalDialogComponent } from '../env-cal-dialog/env-cal-dialog.componen
 import { buildModalZoomAnimation } from '../../util/modal-zoom-animation';
 
 @Component({
-  selector: 'app-env-calender',
-  templateUrl: './env-calender.component.html',
-  styleUrls: ['./env-calender.component.scss'],
-  animations: [
-    // Re-runs on every monthKey change (prev/next both produce a new number),
-    // sliding the already-updated grid in from the direction the user
-    // navigated toward — a "changing slide" feel instead of a flat snap.
-    trigger('monthSlide', [
-      transition('* => *', [
-        style({ transform: 'translateX({{ enterX }}%)', opacity: 0 }),
-        animate(
-          '280ms cubic-bezier(0.22, 1, 0.36, 1)',
-          style({ transform: 'translateX(0%)', opacity: 1 })
-        )
-      ], { params: { enterX: 28 } })
-    ])
-  ]
+    selector: 'app-env-calender',
+    templateUrl: './env-calender.component.html',
+    styleUrls: ['./env-calender.component.scss'],
+    animations: [
+        // Re-runs on every monthKey change (prev/next both produce a new number),
+        // sliding the already-updated grid in from the direction the user
+        // navigated toward — a "changing slide" feel instead of a flat snap.
+        trigger('monthSlide', [
+            transition('* => *', [
+                style({ transform: 'translateX({{ enterX }}%)', opacity: 0 }),
+                animate('280ms cubic-bezier(0.22, 1, 0.36, 1)', style({ transform: 'translateX(0%)', opacity: 1 }))
+            ], { params: { enterX: 28 } })
+        ])
+    ],
+    standalone: false
 })
 export class EnvCalenderComponent implements OnInit {
   todayDate = new Date();

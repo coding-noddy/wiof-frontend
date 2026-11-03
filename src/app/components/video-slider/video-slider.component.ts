@@ -15,9 +15,10 @@ import { Video } from 'src/app/models/Video';
 const SLIDER_ITEM_LIMIT = 10;
 
 @Component({
-  selector: 'app-video-slider',
-  templateUrl: './video-slider.component.html',
-  styleUrls: ['./video-slider.component.scss']
+    selector: 'app-video-slider',
+    templateUrl: './video-slider.component.html',
+    styleUrls: ['./video-slider.component.scss'],
+    standalone: false
 })
 export class VideoSliderComponent implements OnInit, AfterViewInit {
   @Input() videoList: Array<Video>;

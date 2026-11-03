@@ -8,9 +8,10 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
  * via a template ref) emits '' immediately.
  */
 @Component({
-  selector: 'app-search-box',
-  templateUrl: './search-box.component.html',
-  styleUrls: ['./search-box.component.scss']
+    selector: 'app-search-box',
+    templateUrl: './search-box.component.html',
+    styleUrls: ['./search-box.component.scss'],
+    standalone: false
 })
 export class SearchBoxComponent implements OnInit, OnDestroy {
   @Input() placeholder = 'Search';

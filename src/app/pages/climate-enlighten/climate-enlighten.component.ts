@@ -12,9 +12,10 @@ interface PhaseCard {
 }
 
 @Component({
-  selector: 'app-climate-enlighten',
-  templateUrl: './climate-enlighten.component.html',
-  styleUrls: ['./climate-enlighten.component.css']
+    selector: 'app-climate-enlighten',
+    templateUrl: './climate-enlighten.component.html',
+    styleUrls: ['./climate-enlighten.component.css'],
+    standalone: false
 })
 export class ClimateEnlightenComponent implements OnInit {
   /** Published workshops that haven't ended / have ended (the 6 most

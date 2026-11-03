@@ -8,9 +8,10 @@ import { takeUntil, switchMap, map, catchError } from 'rxjs/operators';
 import { Months, UI_MESSAGES, ITEMS } from 'src/app/app.constants';
 
 @Component({
-  selector: 'app-manage-calendar',
-  templateUrl: './manage-calendar.page.html',
-  styleUrls: ['./manage-calendar.page.scss']
+    selector: 'app-manage-calendar',
+    templateUrl: './manage-calendar.page.html',
+    styleUrls: ['./manage-calendar.page.scss'],
+    standalone: false
 })
 export class ManageCalendarPage implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject();

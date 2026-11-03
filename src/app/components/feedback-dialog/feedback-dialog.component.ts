@@ -16,9 +16,10 @@ import { buildModalZoomAnimation } from 'src/app/util/modal-zoom-animation';
  * and the uid is attached so admins can follow up.
  */
 @Component({
-  selector: 'app-feedback-dialog',
-  templateUrl: './feedback-dialog.component.html',
-  styleUrls: ['./feedback-dialog.component.scss']
+    selector: 'app-feedback-dialog',
+    templateUrl: './feedback-dialog.component.html',
+    styleUrls: ['./feedback-dialog.component.scss'],
+    standalone: false
 })
 export class FeedbackDialogComponent implements OnInit {
   categories = FEEDBACK_CATEGORIES;

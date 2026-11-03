@@ -8,9 +8,10 @@ import { UiUtilService } from 'src/app/util/UiUtilService';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 
 @Component({
-  selector: 'app-manage-about-us',
-  templateUrl: './manage-about-us.page.html',
-  styleUrls: ['./manage-about-us.page.scss']
+    selector: 'app-manage-about-us',
+    templateUrl: './manage-about-us.page.html',
+    styleUrls: ['./manage-about-us.page.scss'],
+    standalone: false
 })
 export class ManageAboutUsPage implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject();

@@ -11,9 +11,10 @@ import {
 } from 'src/app/services/saved-content.service';
 
 @Component({
-  selector: 'app-my-library',
-  templateUrl: './my-library.page.html',
-  styleUrls: ['./my-library.page.scss']
+    selector: 'app-my-library',
+    templateUrl: './my-library.page.html',
+    styleUrls: ['./my-library.page.scss'],
+    standalone: false
 })
 export class MyLibraryPage implements OnInit, OnDestroy, ViewWillEnter {
   savedItems: SavedContentDocument[] = [];

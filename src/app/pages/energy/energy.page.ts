@@ -18,9 +18,10 @@ import { InFocusService } from 'src/app/services/in-focus.service';
 import { SectionNavComponent, SectionNavItem } from 'src/app/components/section-nav/section-nav.component';
 
 @Component({
-  selector: 'app-energy',
-  templateUrl: './energy.page.html',
-  styleUrls: ['./energy.page.scss']
+    selector: 'app-energy',
+    templateUrl: './energy.page.html',
+    styleUrls: ['./energy.page.scss'],
+    standalone: false
 })
 export class EnergyPage implements OnInit {
   @ViewChild(SectionNavComponent) sectionNav?: SectionNavComponent;

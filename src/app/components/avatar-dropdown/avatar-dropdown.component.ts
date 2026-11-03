@@ -3,9 +3,10 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'app-avatar-dropdown',
-  templateUrl: './avatar-dropdown.component.html',
-  styleUrls: ['./avatar-dropdown.component.scss']
+    selector: 'app-avatar-dropdown',
+    templateUrl: './avatar-dropdown.component.html',
+    styleUrls: ['./avatar-dropdown.component.scss'],
+    standalone: false
 })
 export class AvatarDropdownComponent implements OnInit {
   @Input() photoURL: string | null = null;

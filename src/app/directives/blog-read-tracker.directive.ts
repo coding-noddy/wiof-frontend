@@ -35,7 +35,10 @@ export interface BlogReadCompleteEvent {
  * </div>
  * ```
  */
-@Directive({ selector: '[appBlogReadTracker]' })
+@Directive({
+    selector: '[appBlogReadTracker]',
+    standalone: false
+})
 export class BlogReadTrackerDirective implements OnInit, OnDestroy {
   @Input() contentId: string = '';
   @Input() wordCount: number = 0;

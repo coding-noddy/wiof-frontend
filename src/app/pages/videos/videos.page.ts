@@ -12,9 +12,10 @@ import { SearchBoxComponent } from 'src/app/components/search-box/search-box.com
 import { searchItems, searchTerms } from 'src/app/util/text-search';
 
 @Component({
-  selector: 'app-videos',
-  templateUrl: './videos.page.html',
-  styleUrls: ['./videos.page.scss']
+    selector: 'app-videos',
+    templateUrl: './videos.page.html',
+    styleUrls: ['./videos.page.scss'],
+    standalone: false
 })
 export class VideosPage implements OnInit, OnDestroy {
   @ViewChild('searchBox') searchBox: SearchBoxComponent;

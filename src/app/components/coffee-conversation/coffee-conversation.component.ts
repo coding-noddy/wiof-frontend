@@ -8,9 +8,10 @@ import { VideoWatchCompleteEvent } from 'src/app/directives/youtube-watch-tracke
 import { first } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-coffee-conversation',
-  templateUrl: './coffee-conversation.component.html',
-  styleUrls: ['./coffee-conversation.component.scss']
+    selector: 'app-coffee-conversation',
+    templateUrl: './coffee-conversation.component.html',
+    styleUrls: ['./coffee-conversation.component.scss'],
+    standalone: false
 })
 export class CoffeeConversationComponent
   implements OnInit, OnDestroy, OnChanges {

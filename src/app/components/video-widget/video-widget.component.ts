@@ -10,9 +10,10 @@ import { Subject } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-video-widget',
-  templateUrl: './video-widget.component.html',
-  styleUrls: ['./video-widget.component.scss']
+    selector: 'app-video-widget',
+    templateUrl: './video-widget.component.html',
+    styleUrls: ['./video-widget.component.scss'],
+    standalone: false
 })
 export class VideoWidgetComponent implements OnInit, OnDestroy {
   @Input() element: string;

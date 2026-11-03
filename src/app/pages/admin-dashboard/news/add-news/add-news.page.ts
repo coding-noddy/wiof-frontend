@@ -16,9 +16,10 @@ import { UiUtilService } from 'src/app/util/UiUtilService';
 
 import { quillSemanticHtml } from 'src/app/util/quill-html.util';
 @Component({
-  selector: 'app-add-news',
-  templateUrl: './add-news.page.html',
-  styleUrls: ['./add-news.page.scss']
+    selector: 'app-add-news',
+    templateUrl: './add-news.page.html',
+    styleUrls: ['./add-news.page.scss'],
+    standalone: false
 })
 export class AddNewsPage implements OnInit {
   /** Saved HTML with normal spaces (see quillSemanticHtml). */

@@ -11,9 +11,10 @@ import { AuthService } from '../../services/auth.service';
 export const WELCOME_PATHS = ['/', '/home'];
 
 @Component({
-  selector: 'app-onboarding-overlay',
-  templateUrl: './onboarding-overlay.component.html',
-  styleUrls: ['./onboarding-overlay.component.scss']
+    selector: 'app-onboarding-overlay',
+    templateUrl: './onboarding-overlay.component.html',
+    styleUrls: ['./onboarding-overlay.component.scss'],
+    standalone: false
 })
 export class OnboardingOverlayComponent implements OnInit, OnDestroy {
   visible = false;

@@ -25,9 +25,10 @@ interface EQResult {
 }
 
 @Component({
-  selector: 'app-eq-widget-question-card',
-  templateUrl: './eq-widget-question-card.component.html',
-  styleUrls: ['./eq-widget-question-card.component.scss']
+    selector: 'app-eq-widget-question-card',
+    templateUrl: './eq-widget-question-card.component.html',
+    styleUrls: ['./eq-widget-question-card.component.scss'],
+    standalone: false
 })
 export class EqWidgetQuestionCardComponent implements OnInit {
 

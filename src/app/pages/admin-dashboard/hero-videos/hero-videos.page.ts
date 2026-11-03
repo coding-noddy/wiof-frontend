@@ -20,9 +20,10 @@ interface HeroVideoSlotForm {
  * delete, only "change which video plays here".
  */
 @Component({
-  selector: 'app-hero-videos',
-  templateUrl: './hero-videos.page.html',
-  styleUrls: ['./hero-videos.page.scss']
+    selector: 'app-hero-videos',
+    templateUrl: './hero-videos.page.html',
+    styleUrls: ['./hero-videos.page.scss'],
+    standalone: false
 })
 export class HeroVideosPage implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject();

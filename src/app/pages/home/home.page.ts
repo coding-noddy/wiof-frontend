@@ -17,9 +17,10 @@ import { News } from 'src/app/models/News';
 import { HomeJourneyPanelComponent } from 'src/app/components/home-journey-panel/home-journey-panel.component';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.page.html',
-  styleUrls: ['./home.page.scss']
+    selector: 'app-home',
+    templateUrl: './home.page.html',
+    styleUrls: ['./home.page.scss'],
+    standalone: false
 })
 export class HomePage implements OnInit, ViewWillEnter {
   viewConsentPopup = true;

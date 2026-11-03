@@ -21,9 +21,10 @@ interface ElementTab {
 const ELEMENT_TAB_ORDER = ['air', 'energy', 'water', 'earth', 'spirit'];
 
 @Component({
-  selector: 'app-take-action',
-  templateUrl: './take-action.page.html',
-  styleUrls: ['./take-action.page.scss']
+    selector: 'app-take-action',
+    templateUrl: './take-action.page.html',
+    styleUrls: ['./take-action.page.scss'],
+    standalone: false
 })
 export class TakeActionPage implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject();

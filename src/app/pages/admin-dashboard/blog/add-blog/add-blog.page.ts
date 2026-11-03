@@ -24,9 +24,10 @@ import { quillSemanticHtml } from 'src/app/util/quill-html.util';
 Quill.register('modules/resize', ResizeModule);
 
 @Component({
-  selector: 'app-add-blog',
-  templateUrl: './add-blog.page.html',
-  styleUrls: ['./add-blog.page.scss']
+    selector: 'app-add-blog',
+    templateUrl: './add-blog.page.html',
+    styleUrls: ['./add-blog.page.scss'],
+    standalone: false
 })
 export class AddBlogPage implements OnInit, OnDestroy {
   /** Saved HTML with normal spaces (see quillSemanticHtml). */

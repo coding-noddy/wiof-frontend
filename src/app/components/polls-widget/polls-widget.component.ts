@@ -16,9 +16,10 @@ import { AuthService } from 'src/app/services/auth.service';
 import firebase from 'firebase/compat/app';
 
 @Component({
-  selector: 'app-polls-widget',
-  templateUrl: './polls-widget.component.html',
-  styleUrls: ['./polls-widget.component.scss']
+    selector: 'app-polls-widget',
+    templateUrl: './polls-widget.component.html',
+    styleUrls: ['./polls-widget.component.scss'],
+    standalone: false
 })
 export class PollsWidgetComponent implements OnInit, OnDestroy {
   pollQuestion: PollQuestion;

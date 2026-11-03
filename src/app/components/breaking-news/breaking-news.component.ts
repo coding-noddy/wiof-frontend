@@ -8,9 +8,10 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { AppUtilService } from 'src/app/util/AppUtilService';
 
 @Component({
-  selector: 'app-breaking-news',
-  templateUrl: './breaking-news.component.html',
-  styleUrls: ['./breaking-news.component.scss']
+    selector: 'app-breaking-news',
+    templateUrl: './breaking-news.component.html',
+    styleUrls: ['./breaking-news.component.scss'],
+    standalone: false
 })
 export class BreakingNewsComponent implements OnChanges {
   @Input() newsList: Array<News>;
