@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 //Firestore Integration Modules
 import { AngularFireModule, FirebaseApp } from '@angular/fire/compat';
@@ -8,8 +8,6 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule, Meta } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
-import { SplashScreen } from '@ionic-native/splash-screen/ngx';
-import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { environment } from '../environments/environment';
 import { initWiofAppCheck } from './util/app-check';
@@ -32,7 +30,6 @@ import {
     FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,
-    HttpClientModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule,
     AngularFireStorageModule,
@@ -41,8 +38,6 @@ import {
     BrowserAnimationsModule
   ],
   providers: [
-    StatusBar,
-    SplashScreen,
     Meta,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     // App Check before any Firebase request; FirebaseApp makes sure the app
@@ -54,7 +49,9 @@ import {
       useFactory: () => () => initWiofAppCheck()
     },
     ScreenTrackingService,
-    UserTrackingService
+    UserTrackingService,
+    // Replaces HttpClientModule (deprecated in Angular 18).
+    provideHttpClient(withInterceptorsFromDi())
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

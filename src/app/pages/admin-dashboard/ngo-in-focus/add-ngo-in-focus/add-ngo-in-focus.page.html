@@ -33,32 +33,27 @@
         <div class="form-card-title"><ion-icon aria-hidden="true" name="business-outline"></ion-icon> Firm Details</div>
         <div class="form-row">
           <ion-item>
-            <ion-label position="floating">{{ pageContent.nameLabel }} *</ion-label>
-            <ion-input formControlName="ngoName"></ion-input>
+            <ion-input label="{{ pageContent.nameLabel }} *" labelPlacement="floating" formControlName="ngoName"></ion-input>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">{{ pageContent.categoryLabel }} *</ion-label>
-            <ion-select formControlName="category">
+            <ion-select label="{{ pageContent.categoryLabel }} *" labelPlacement="floating" formControlName="category">
               <ion-select-option [value]="category" *ngFor="let category of categories">{{ category }}</ion-select-option>
             </ion-select>
           </ion-item>
         </div>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="floating">{{ pageContent.linkLabel }}</ion-label>
-            <ion-input formControlName="knowMoreLink"></ion-input>
+            <ion-input label="{{ pageContent.linkLabel }}" labelPlacement="floating" formControlName="knowMoreLink"></ion-input>
           </ion-item>
         </div>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="floating">{{ pageContent.keyActivitiesLabel }}</ion-label>
-            <ion-input formControlName="keyActivities"></ion-input>
+            <ion-input label="{{ pageContent.keyActivitiesLabel }}" labelPlacement="floating" formControlName="keyActivities"></ion-input>
           </ion-item>
         </div>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="floating">{{ pageContent.descriptionLabel }}</ion-label>
-            <ion-textarea formControlName="description"></ion-textarea>
+            <ion-textarea label="{{ pageContent.descriptionLabel }}" labelPlacement="floating" formControlName="description"></ion-textarea>
           </ion-item>
         </div>
       </div>
@@ -68,8 +63,7 @@
         <div class="form-card-title"><ion-icon aria-hidden="true" name="image-outline"></ion-icon> Media</div>
         <div class="form-row">
           <ion-item>
-            <ion-label position="floating">{{ pageContent.mediaTypeLabel }}</ion-label>
-            <ion-select formControlName="mediaType" #mediaType (ngModelChange)="updateMediaTypeValidation()">
+            <ion-select label="{{ pageContent.mediaTypeLabel }}" labelPlacement="floating" formControlName="mediaType" #mediaType (ngModelChange)="updateMediaTypeValidation()">
               <ion-select-option [value]="'image'">Image</ion-select-option>
               <ion-select-option [value]="'video'">Video</ion-select-option>
             </ion-select>
@@ -77,14 +71,13 @@
         </div>
         <div class="form-row full-width" *ngIf="mediaType.value === 'video'">
           <ion-item>
-            <ion-label position="floating">{{ pageContent.mediaLinkLabel }}</ion-label>
-            <ion-input formControlName="mediaLink"></ion-input>
+            <ion-input label="{{ pageContent.mediaLinkLabel }}" labelPlacement="floating" formControlName="mediaLink"></ion-input>
           </ion-item>
         </div>
         <div class="form-row full-width">
           <ion-item>
             <ion-label position="stacked">{{ pageContent.ngoLogoLabel }}</ion-label>
-            <ion-input type="file" accept="image/*" (change)="onFileSelected($event, true)" formControlName="ngoLogo"></ion-input>
+            <input type="file" accept="image/*" (change)="onFileSelected($event, true)" formControlName="ngoLogo" class="file-input" />
           </ion-item>
           <div class="form-image-preview" *ngIf="logoImageToDisplay">
             <ion-img [src]="logoImageToDisplay"></ion-img>
@@ -93,7 +86,7 @@
         <div class="form-row full-width" *ngIf="mediaType.value === 'image'">
           <ion-item>
             <ion-label position="stacked">{{ pageContent.ngoImageLabel }}</ion-label>
-            <ion-input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="image"></ion-input>
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="image" class="file-input" />
           </ion-item>
           <div class="form-image-preview" *ngIf="imageToDisplay">
             <ion-img [src]="imageToDisplay"></ion-img>

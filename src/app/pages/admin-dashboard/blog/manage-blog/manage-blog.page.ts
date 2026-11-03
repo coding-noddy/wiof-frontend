@@ -81,8 +81,10 @@ export class ManageBlogPage implements OnInit, OnDestroy {
 
     // Sort
     filtered.sort((a, b) => {
-      let valA = a[this.sortColumn];
-      let valB = b[this.sortColumn];
+      // The "Published" column shows publishDate, falling back to submitDate;
+      // sort by that same date.
+      let valA = this.sortColumn === 'submitDate' ? Blog.sortDate(a) : a[this.sortColumn];
+      let valB = this.sortColumn === 'submitDate' ? Blog.sortDate(b) : b[this.sortColumn];
       if (valA == null) valA = '';
       if (valB == null) valB = '';
       if (typeof valA === 'string') valA = valA.toLowerCase();

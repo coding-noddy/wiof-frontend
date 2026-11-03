@@ -1,8 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SplashScreen } from '@ionic-native/splash-screen/ngx';
-import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Meta, MetaDefinition } from '@angular/platform-browser';
-import { Platform } from '@ionic/angular';
 import { distinctUntilChanged, filter } from 'rxjs/operators';
 import { ActivityService } from './services/activity.service';
 import { AuthService } from './services/auth.service';
@@ -17,9 +14,6 @@ import { SingleVideoPlaybackService } from './services/single-video-playback.ser
 })
 export class AppComponent implements OnInit {
   constructor(
-    private platform: Platform,
-    private splashScreen: SplashScreen,
-    private statusBar: StatusBar,
     private metaService: Meta,
     private authService: AuthService,
     private userProfileService: UserProfileService,
@@ -27,7 +21,6 @@ export class AppComponent implements OnInit {
     private idleTimeoutService: IdleTimeoutService,
     private singleVideoPlayback: SingleVideoPlaybackService
   ) {
-    this.initializeApp();
     // this.addMetaTags();
   }
 
@@ -50,13 +43,6 @@ export class AppComponent implements OnInit {
       this.activityService.logDailyVisit(user!.uid).catch(err => {
         console.warn('Daily visit logging failed:', err);
       });
-    });
-  }
-
-  initializeApp() {
-    this.platform.ready().then(() => {
-      this.statusBar.styleDefault();
-      this.splashScreen.hide();
     });
   }
 

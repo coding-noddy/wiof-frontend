@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
 import { EqWidgetResultComponent } from './eq-widget-result.component';
@@ -7,7 +7,7 @@ describe('EqWidgetResultComponent', () => {
   let component: EqWidgetResultComponent;
   let fixture: ComponentFixture<EqWidgetResultComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [EqWidgetResultComponent],
       imports: [IonicModule.forRoot()]

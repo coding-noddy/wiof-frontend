@@ -14,12 +14,16 @@ import { NewsService } from 'src/app/services/news.service';
 import { AppUtilService } from 'src/app/util/AppUtilService';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 
+import { quillSemanticHtml } from 'src/app/util/quill-html.util';
 @Component({
   selector: 'app-add-news',
   templateUrl: './add-news.page.html',
   styleUrls: ['./add-news.page.scss']
 })
 export class AddNewsPage implements OnInit {
+  /** Saved HTML with normal spaces (see quillSemanticHtml). */
+  readonly quillHtml = quillSemanticHtml;
+
   isEditMode = false;
   news: News = {} as News;
   addNewsForm: FormGroup;

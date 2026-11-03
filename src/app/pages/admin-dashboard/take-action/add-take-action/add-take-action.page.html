@@ -33,26 +33,22 @@
         <div class="form-card-title"><ion-icon aria-hidden="true" name="document-text-outline"></ion-icon> Basic Information</div>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="floating">Title *</ion-label>
-            <ion-input formControlName="title"></ion-input>
+            <ion-input label="Title *" labelPlacement="floating" formControlName="title"></ion-input>
           </ion-item>
         </div>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="floating">Short Description *</ion-label>
-            <ion-textarea formControlName="shortDescription" rows="2" auto-grow="true"></ion-textarea>
+            <ion-textarea label="Short Description *" labelPlacement="floating" formControlName="shortDescription" rows="2" auto-grow="true"></ion-textarea>
           </ion-item>
         </div>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="floating">Full Description *</ion-label>
-            <ion-textarea formControlName="description" rows="4" auto-grow="true"></ion-textarea>
+            <ion-textarea label="Full Description *" labelPlacement="floating" formControlName="description" rows="4" auto-grow="true"></ion-textarea>
           </ion-item>
         </div>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="stacked">Instructions (one per line)</ion-label>
-            <ion-textarea formControlName="instructions" rows="4" auto-grow="true" placeholder="Identify lights that are not needed.&#10;Switch them off when leaving the room."></ion-textarea>
+            <ion-textarea label="Instructions (one per line)" labelPlacement="stacked" formControlName="instructions" rows="4" auto-grow="true" placeholder="Identify lights that are not needed.&#10;Switch them off when leaving the room."></ion-textarea>
           </ion-item>
         </div>
       </div>
@@ -77,12 +73,10 @@
         </div>
         <div class="form-row">
           <ion-item>
-            <ion-label position="floating">Categories (comma separated)</ion-label>
-            <ion-input formControlName="categories" placeholder="energy-saving, daily-habit"></ion-input>
+            <ion-input label="Categories (comma separated)" labelPlacement="floating" formControlName="categories" placeholder="energy-saving, daily-habit"></ion-input>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">Tags (comma separated)</ion-label>
-            <ion-input formControlName="tags" placeholder="energy, home, daily"></ion-input>
+            <ion-input label="Tags (comma separated)" labelPlacement="floating" formControlName="tags" placeholder="energy, home, daily"></ion-input>
           </ion-item>
         </div>
       </div>
@@ -92,40 +86,34 @@
         <div class="form-card-title"><ion-icon aria-hidden="true" name="settings-outline"></ion-icon> Behavior</div>
         <div class="form-row">
           <ion-item>
-            <ion-label position="floating">Action Type *</ion-label>
-            <ion-select formControlName="actionType">
+            <ion-select label="Action Type *" labelPlacement="floating" formControlName="actionType">
               <ion-select-option [value]="type" *ngFor="let type of actionTypes">{{ type }}</ion-select-option>
             </ion-select>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">Repeat Type *</ion-label>
-            <ion-select formControlName="repeatType">
+            <ion-select label="Repeat Type *" labelPlacement="floating" formControlName="repeatType">
               <ion-select-option [value]="type" *ngFor="let type of repeatTypes">{{ type }}</ion-select-option>
             </ion-select>
           </ion-item>
         </div>
         <div class="form-row">
           <ion-item>
-            <ion-label position="floating">Completion Type *</ion-label>
-            <ion-select formControlName="completionType">
+            <ion-select label="Completion Type *" labelPlacement="floating" formControlName="completionType">
               <ion-select-option [value]="type" *ngFor="let type of completionTypes">{{ type }}</ion-select-option>
             </ion-select>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">Difficulty *</ion-label>
-            <ion-select formControlName="difficulty">
+            <ion-select label="Difficulty *" labelPlacement="floating" formControlName="difficulty">
               <ion-select-option [value]="d" *ngFor="let d of difficulties">{{ d | enumLabel }}</ion-select-option>
             </ion-select>
           </ion-item>
         </div>
         <div class="form-row">
           <ion-item>
-            <ion-label position="floating">Estimated Duration (minutes) *</ion-label>
-            <ion-input type="number" formControlName="estimatedDurationMinutes"></ion-input>
+            <ion-input label="Estimated Duration (minutes) *" labelPlacement="floating" type="number" formControlName="estimatedDurationMinutes"></ion-input>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">Display Order</ion-label>
-            <ion-input type="number" formControlName="displayOrder"></ion-input>
+            <ion-input label="Display Order" labelPlacement="floating" type="number" formControlName="displayOrder"></ion-input>
           </ion-item>
         </div>
       </div>
@@ -135,23 +123,19 @@
         <div class="form-card-title"><ion-icon aria-hidden="true" name="image-outline"></ion-icon> Presentation</div>
         <div class="form-row">
           <ion-item>
-            <ion-label position="floating">Icon Name</ion-label>
-            <ion-input formControlName="iconName" placeholder="leaf-outline"></ion-input>
-            <ion-note slot="helper">Any Ionicons name, e.g. leaf-outline, water-outline.</ion-note>
+            <ion-input label="Icon Name" labelPlacement="floating" formControlName="iconName" placeholder="leaf-outline"
+              helperText="Any Ionicons name, e.g. leaf-outline, water-outline."></ion-input>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">YouTube URL</ion-label>
-            <ion-input formControlName="mediaUrl" placeholder="https://www.youtube.com/embed/..."></ion-input>
+            <ion-input label="YouTube URL" labelPlacement="floating" formControlName="mediaUrl" placeholder="https://www.youtube.com/embed/..."></ion-input>
           </ion-item>
         </div>
         <div class="form-row">
           <ion-item lines="none">
-            <ion-checkbox slot="start" formControlName="isActive"></ion-checkbox>
-            <ion-label>Active (visible to users)</ion-label>
+            <ion-checkbox formControlName="isActive" labelPlacement="end" justify="start">Active (visible to users)</ion-checkbox>
           </ion-item>
           <ion-item lines="none">
-            <ion-checkbox slot="start" formControlName="isFeatured"></ion-checkbox>
-            <ion-label>Featured</ion-label>
+            <ion-checkbox formControlName="isFeatured" labelPlacement="end" justify="start">Featured</ion-checkbox>
           </ion-item>
         </div>
       </div>
@@ -164,14 +148,12 @@
         </ion-note>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="stacked">Safety Notes (one per line)</ion-label>
-            <ion-textarea formControlName="safetyNotes" rows="3" auto-grow="true" placeholder="Never unplug medical devices, safety equipment, or anything that must remain powered."></ion-textarea>
+            <ion-textarea label="Safety Notes (one per line)" labelPlacement="stacked" formControlName="safetyNotes" rows="3" auto-grow="true" placeholder="Never unplug medical devices, safety equipment, or anything that must remain powered."></ion-textarea>
           </ion-item>
         </div>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="stacked">Accessibility Notes (one per line)</ion-label>
-            <ion-textarea formControlName="accessibilityNotes" rows="2" auto-grow="true" placeholder="Users should adapt or choose another action where mobility, health, safety, or access make this unsuitable."></ion-textarea>
+            <ion-textarea label="Accessibility Notes (one per line)" labelPlacement="stacked" formControlName="accessibilityNotes" rows="2" auto-grow="true" placeholder="Users should adapt or choose another action where mobility, health, safety, or access make this unsuitable."></ion-textarea>
           </ion-item>
         </div>
       </div>
@@ -184,37 +166,31 @@
         </ion-note>
         <div class="form-row">
           <ion-item>
-            <ion-label position="floating">Evidence Level</ion-label>
-            <ion-select formControlName="evidenceLevel">
+            <ion-select label="Evidence Level" labelPlacement="floating" formControlName="evidenceLevel">
               <ion-select-option value="">None</ion-select-option>
               <ion-select-option [value]="level" *ngFor="let level of evidenceLevels">{{ level | enumLabel }}</ion-select-option>
             </ion-select>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">Reviewed Date</ion-label>
-            <ion-input formControlName="evidenceReviewedAt" placeholder="2026-10-01"></ion-input>
+            <ion-input label="Reviewed Date" labelPlacement="floating" formControlName="evidenceReviewedAt" placeholder="2026-10-01"></ion-input>
           </ion-item>
         </div>
         <div class="form-row">
           <ion-item>
-            <ion-label position="floating">Source Organization</ion-label>
-            <ion-input formControlName="evidenceSourceOrganization" placeholder="U.S. Environmental Protection Agency"></ion-input>
+            <ion-input label="Source Organization" labelPlacement="floating" formControlName="evidenceSourceOrganization" placeholder="U.S. Environmental Protection Agency"></ion-input>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">Source Title</ion-label>
-            <ion-input formControlName="evidenceSourceTitle" placeholder="What You Can Do About Climate Change"></ion-input>
+            <ion-input label="Source Title" labelPlacement="floating" formControlName="evidenceSourceTitle" placeholder="What You Can Do About Climate Change"></ion-input>
           </ion-item>
         </div>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="floating">Source URL</ion-label>
-            <ion-input formControlName="evidenceSourceUrl" placeholder="https://..."></ion-input>
+            <ion-input label="Source URL" labelPlacement="floating" formControlName="evidenceSourceUrl" placeholder="https://..."></ion-input>
           </ion-item>
         </div>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="floating">Rationale</ion-label>
-            <ion-textarea formControlName="evidenceRationale" rows="2" auto-grow="true"></ion-textarea>
+            <ion-textarea label="Rationale" labelPlacement="floating" formControlName="evidenceRationale" rows="2" auto-grow="true"></ion-textarea>
           </ion-item>
         </div>
       </div>

@@ -33,32 +33,27 @@
         <div class="form-card-title"><ion-icon aria-hidden="true" name="calendar-outline"></ion-icon> Occasion Details</div>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="floating">Occasion Name *</ion-label>
-            <ion-input formControlName="occasion"></ion-input>
+            <ion-input label="Occasion Name *" labelPlacement="floating" formControlName="occasion"></ion-input>
           </ion-item>
         </div>
         <div class="form-row">
           <ion-item>
-            <ion-label position="floating">Day *</ion-label>
-            <ion-input formControlName="day"></ion-input>
+            <ion-input label="Day *" labelPlacement="floating" formControlName="day"></ion-input>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">Month *</ion-label>
-            <ion-select formControlName="month">
+            <ion-select label="Month *" labelPlacement="floating" formControlName="month">
               <ion-select-option [value]="i" *ngFor="let month of months; let i = index;">{{ month }}</ion-select-option>
             </ion-select>
           </ion-item>
         </div>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="floating">Short Description</ion-label>
-            <ion-textarea formControlName="description" rows="2" auto-grow="true"></ion-textarea>
+            <ion-textarea label="Short Description" labelPlacement="floating" formControlName="description" rows="2" auto-grow="true"></ion-textarea>
           </ion-item>
         </div>
         <div class="form-row full-width">
           <ion-item>
-            <ion-label position="floating">External Link (Know More)</ion-label>
-            <ion-input formControlName="showMoreLink"></ion-input>
+            <ion-input label="External Link (Know More)" labelPlacement="floating" formControlName="showMoreLink"></ion-input>
           </ion-item>
         </div>
       </div>
@@ -69,7 +64,7 @@
         <div class="form-row full-width">
           <ion-item>
             <ion-label position="stacked">Upload Image</ion-label>
-            <ion-input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="imageName"></ion-input>
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="imageName" class="file-input" />
           </ion-item>
         </div>
         <div class="form-image-preview" *ngIf="imageToDisplay">

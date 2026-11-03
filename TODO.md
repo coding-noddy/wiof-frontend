@@ -46,6 +46,15 @@
 
 ---
 
+## ⚠️ Reliability
+
+- **[HIGH]** Cache the YouTube playlists server-side — *found 2026-10-31: the YouTube Data API daily quota ran out (`quotaExceeded`), so Videos sections were empty on prod and staging until the reset at midnight Pacific*
+  - Today every visitor's browser calls the YouTube Data API directly (`youtube-video.service.ts`: element pages, the Videos pages via `getAllPlaylistVideos()`), all on one key with the default 10,000 units/day. Traffic growth (or heavy testing) exhausts it.
+  - Fix: a scheduled Cloud Function fetches each playlist every few hours into Firestore (or a public JSON in Storage/Hosting); the app reads that cache and never calls YouTube itself. Also removes the API key from the client bundle.
+  - Until then: request a quota increase in Google Cloud Console if it recurs.
+
+---
+
 ## 🔒 Security (Deferred)
 
 - **[MED]** Turn on Firebase App Check (reCAPTCHA) — *deferred 2026-10-24; enable when there's spam/abuse, unusual Firestore usage spikes, or traffic big enough to attract bots*

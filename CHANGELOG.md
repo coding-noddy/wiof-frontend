@@ -7,6 +7,36 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [7.0.0] - 2026-11-03
+
+Angular upgrade, Release A: Angular 16 → 18, Ionic 7 → 8, and the Quill 2 blog editor. The plan, compatibility research and remaining steps (Angular 19 → 21, Release B) are in `docs/ANGULAR_UPGRADE_PLAN.md`.
+
+### Changed
+- **Angular 16 → 18** (in two steps, 17 then 18), with Angular Material/CDK 18, AngularFire 18 and Firebase 10.14, TypeScript 5.4 and zone.js 0.14. `HttpClientModule` (deprecated in 18) is replaced by `provideHttpClient(withInterceptorsFromDi())`. Angular 16 has been out of support since 2024.
+- **Ionic 7 → 8.** Form fields use Ionic 8's built-in labels (`label` / `labelPlacement`) instead of a separate `ion-label` (87 fields across the admin and account pages). The Take Action checkboxes put their text inside `ion-checkbox`, helper text moved to `helperText`, and the image pickers are native file inputs (Ionic 8 dropped `ion-input type="file"`), with a small `FileInputValueAccessorDirective` so they still work with reactive forms. The browser support list follows Ionic 8's minimums.
+- **The blog, news and coffee conversation editors use Quill 2** (ngx-quill 26). Image resizing uses `@botom/quill-resize-module` (maintained, Quill 2 compatible) in place of `quill-image-resize-module`. All 29 existing blogs render exactly as before (compared page by page against Quill 1).
+- **The footer's version number** comes from `package.json`, so it can't fall behind a release.
+
+### Added
+- **"Published date" in the blog editor.** Blogs are listed newest first by this date, and it shows on the blog page and in the editor's preview. It defaults to today; when an old blog without a date is edited, it must be filled in before saving.
+
+### Fixed
+- **Blogs had no dates,** so the blog lists were in effectively random order and the admin list's Published column was blank. The editor never saved `submitDate` or `publishDate`. Saving now sets `submitDate` once (first save) and `publishDate` from the new field. The admin Published column also sorts by the date it shows. Existing blogs on prod and staging were given dates from their Firestore creation time (the 22 blogs imported on 23 May 2021 show that date, as their original dates aren't recorded anywhere).
+- **Quill 2 issues found and fixed during the upgrade:**
+  - every space was saved as `&nbsp;`, so text couldn't wrap: the editors now save normal spaces (`quillSemanticHtml`);
+  - pasting from Word/Google Docs inserted the text twice: the paste clean-up now runs before Quill's own paste handling;
+  - dragging an image's resize handle squashed it: resizing keeps the image's proportions;
+  - text pasted as the very last action before saving could be left out of the save.
+- **Publishing a new blog from the preview** left the preview open on the emptied form ("Untitled", "By Author") and showed "Unsaved changes" (with a leave-page prompt) although everything was saved. The preview now closes and the form is ready for the next blog.
+
+### Removed
+- Unused packages and tooling: `d3`, the Ionic Native and Capacitor packages (the site isn't built as a native app), the TSLint and Protractor setups (both long deprecated) with their `lint`/`e2e` scripts, and the unused Cordova build targets.
+- `xlsx` now comes from SheetJS's own CDN (0.20.3); the npm registry copy is no longer updated and has known vulnerabilities.
+
+### Tests
+- Unit tests: 141, all passing (16 specs moved from the removed `async` helper to `waitForAsync`; new tests for the Quill HTML and blog date helpers). `@firebase/rules-unit-testing` 3, matching Firebase 10.
+- Checked on staging: the blog editor end to end, admin forms and the Excel export, Workshops, the public pages, and a manual admin check of the blog, news and coffee conversation editors.
+
 ## [6.4.1] - 2026-10-29
 
 Phase 1 wrap-up.

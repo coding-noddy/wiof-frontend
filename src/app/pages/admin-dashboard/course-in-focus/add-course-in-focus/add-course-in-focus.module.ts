@@ -10,8 +10,10 @@ import { AddCourseInFocusPage } from './add-course-in-focus.page';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
+import { FileInputValueAccessorDirective } from '../../../../directives/file-input-value-accessor.directive';
 @NgModule({
   imports: [
+    FileInputValueAccessorDirective,
     CommonModule,
     FormsModule,
     IonicModule,
