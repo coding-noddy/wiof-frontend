@@ -403,6 +403,22 @@ async function deleteAllOwnedBy(collectionName, uid) {
 }
 
 /**
+ * Deletes a user's activity_log events except action_completed (Take Action
+ * progress survives a reset). Reads the user's events once and deletes in
+ * batches of 400; safe to retry, like deleteAllOwnedBy.
+ */
+async function deleteActivityExceptActions(uid) {
+  const snapshot = await db.collection('activity_log').where('userId', '==', uid).get();
+  const toDelete = snapshot.docs.filter((doc) => doc.get('activityType') !== 'action_completed');
+  for (let i = 0; i < toDelete.length; i += 400) {
+    const batch = db.batch();
+    toDelete.slice(i, i + 400).forEach((doc) => batch.delete(doc.ref));
+    await batch.commit();
+  }
+  return toDelete.length;
+}
+
+/**
  * "Clear My Engagement Data" — the trusted, idempotent version of what used
  * to be three separate sequential client-side calls (delete activity_log,
  * delete user_saved_content, reset users/{uid} counters), each independently
@@ -417,10 +433,15 @@ async function deleteAllOwnedBy(collectionName, uid) {
  * and re-zeroing already-zero counters are both no-ops, so calling this
  * twice converges to the same clean state.
  *
- * Also zeroes user_metrics/{uid} directly: onActivityLogCreated only fires
- * on document *create*, never on delete, so without this the materialized
- * dashboard summary would keep showing pre-reset counts indefinitely after
- * the raw activity_log entries behind them are gone.
+ * Also zeroes the reading/watching/poll/EQ fields of user_metrics/{uid}
+ * directly: onActivityLogCreated only fires on document *create*, never on
+ * delete, so without this the dashboard summary would keep showing
+ * pre-reset counts after the raw activity_log entries behind them are gone.
+ *
+ * Take Action progress is kept (docs/METRICS.md "Resets"): user_actions, its
+ * action_completed events and the action counters are not touched, so the
+ * counters always agree with the action cards and a recompute can't undo
+ * the reset.
  */
 exports.resetEngagementData = functions
   .region(REGION)
@@ -432,7 +453,7 @@ exports.resetEngagementData = functions
 
     const uid = context.auth.uid;
 
-    const deletedActivityCount = await deleteAllOwnedBy('activity_log', uid);
+    const deletedActivityCount = await deleteActivityExceptActions(uid);
     const deletedSavedContentCount = await deleteAllOwnedBy('user_saved_content', uid);
 
     await db.collection('users').doc(uid).update({
@@ -444,6 +465,7 @@ exports.resetEngagementData = functions
       lastLogin: admin.firestore.FieldValue.serverTimestamp()
     });
 
+    // merge: keeps the Take Action counters (see above).
     await db.collection('user_metrics').doc(uid).set({
       blogsRead: 0,
       qualityReads: 0,
@@ -454,7 +476,7 @@ exports.resetEngagementData = functions
       lastEqDate: null,
       lastBlogReadDate: null,
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
-    });
+    }, { merge: true });
 
     return { ok: true, deletedActivityCount, deletedSavedContentCount };
   }));
@@ -571,6 +593,9 @@ exports.onActivityLogCreated = functions
   .firestore.document('activity_log/{docId}')
   .onCreate(withTriggerErrorLogging('onActivityLogCreated', async (snap) => {
     const entry = snap.data() || {};
+    if (entry.validation) {
+      return null; // written by the server with its verdict (onUserActionWritten, submitEqAssessment)
+    }
     const verdict = await validateActivityEvent(snap.id, entry, activityLookups);
     if (verdict.status === 'rejected') {
       console.warn(JSON.stringify({
@@ -615,6 +640,14 @@ const KNOWN_ELEMENTS = new Set(['air', 'water', 'earth', 'energy', 'spirit']);
  * increased — covers both a first-ever completion (create or IN_PROGRESS ->
  * COMPLETE update) and a repeat completion. Each write credits exactly one
  * completion (firestore.rules only allow completionCount to step by +1).
+ *
+ * Each completion also gets one immutable, server-written `action_completed`
+ * event in activity_log (Phase 2 step 3): the per-completion ledger Planet
+ * Passport rules read, alongside reads and watches. Its ID is fixed per
+ * completion ({uid}_action_completed_{actionId}_{n}, n = completionCount),
+ * and the event and the counters commit in one transaction that does
+ * nothing if the event already exists, so a redelivered trigger can't count
+ * a completion twice. Clients can't write action_completed (firestore.rules).
  */
 exports.onUserActionWritten = functions
   .region(REGION)
@@ -666,7 +699,41 @@ exports.onUserActionWritten = functions
       update.actionsByElement = byElement;
     }
 
-    await db.collection('user_metrics').doc(uid).set(update, { merge: true });
+    const event = {
+      userId: uid,
+      activityType: 'action_completed',
+      schemaVersion: 1,
+      contentId: after.actionId,
+      completionNumber: afterCount,
+      elementIds: [...new Set(elements)].filter((element) => KNOWN_ELEMENTS.has(element)),
+      actionVersion: after.actionVersion || 1,
+      completionMethod: after.completionMethod || 'SELF_REPORTED',
+      // Nothing confirms a self-reported completion; a future verified
+      // method (photo, partner check) would set VERIFIED here.
+      verificationStatus: 'SELF_REPORTED',
+      timestamp: after.lastCompletedAt || admin.firestore.FieldValue.serverTimestamp(),
+      validation: {
+        status: 'accepted',
+        reason: null,
+        validatorVersion: VALIDATOR_VERSION,
+        checkedAt: admin.firestore.FieldValue.serverTimestamp(),
+        source: 'server'
+      }
+    };
+    // The user's local day is only known for DAILY actions (the day their
+    // completion guard claimed); other completions are dated by timestamp.
+    if (after.lastCompletionDay) {
+      event.calendarDay = after.lastCompletionDay;
+    }
+
+    const eventRef = db.collection('activity_log').doc(`${uid}_action_completed_${after.actionId}_${afterCount}`);
+    await db.runTransaction(async (tx) => {
+      if ((await tx.get(eventRef)).exists) {
+        return; // trigger redelivered: this completion is already recorded and counted
+      }
+      tx.create(eventRef, event);
+      tx.set(db.collection('user_metrics').doc(uid), update, { merge: true });
+    });
     return null;
   }));
 

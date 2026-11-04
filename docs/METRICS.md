@@ -1,6 +1,6 @@
 # WIOF Metric Definitions
 
-**Status:** draft for approval (Phase 2 step 2, 2026-11-04). Written from the code as it is on `feat/phase2-step2-metrics`.
+**Status:** draft for approval (Phase 2 steps 2–3, 2026-11-04). Written from the code as of 8.3.0.
 **Why this exists:** Planet Passport milestones will be built on these numbers, so each one needs a written definition: its source, formula, unit, time basis, whether a reset clears it, and how far it can be trusted (Foundation Hardening Plan v4 §16).
 
 ## How a number is made
@@ -58,6 +58,7 @@ A Passport milestone must state the trust level of the metric it uses. Self-repo
 | `uniqueActionsCompleted` | home panel | Number of distinct actions completed at least once. | actions · lifetime | Self-reported |
 | `actionsByElement` | element progress | Completions per element (air, water, earth, energy, spirit), from each action's elements when it was completed. An action with two elements counts toward both. | completions per element | Self-reported |
 | `lastActionAt` | — | Latest completion time. | timestamp | Self-reported |
+| Completion events | (Passport) | One immutable `action_completed` event per completion, written by the server (`onUserActionWritten`) with ID `{uid}_action_completed_{actionId}_{n}`, where n is the completion number. It carries the elements, the action version, `completionMethod` and `verificationStatus` (both `SELF_REPORTED` today), the server timestamp, and, for DAILY actions, the local day. Browsers can't write these. Server-written events exist from 8.3.0; earlier completions have browser-written events (random IDs) and are counted in the totals through `user_actions`. | one per completion | Self-reported |
 | Action streak | flame badge on a DAILY card | Consecutive local days, ending today or yesterday, with a completion of that action (`user_action_completions`). Computed when the card loads, not stored. | days | Self-reported |
 
 ### Visits (on the user profile, `users/{uid}`)
@@ -72,13 +73,9 @@ A Passport milestone must state the trust level of the metric it uses. Self-repo
 
 ## Resets
 
-"Clear My Engagement Data" (`resetEngagementData`) deletes the user's `activity_log` and saved content, and zeroes the visit counters and every `user_metrics` field.
+"Clear My Engagement Data" (`resetEngagementData`) deletes the user's reading, watching, poll, EQ, visit and widget events and their saved content. It also zeroes the visit counters and those fields of `user_metrics`.
 
-**Open question:** it zeroes the Take Action counters in `user_metrics` but keeps `user_actions`, so "Actions Taken" shows 0 while each action card still shows its completions. The next recompute then brings the counters back from `user_actions`. Options:
-- also clear `user_actions` (a full reset);
-- keep the action counters (a reset clears reading/watching only).
-
-Recommendation: keep the action counters. Clearing them is what users would least expect from a button about engagement data, and it stops the recompute from undoing the reset.
+**Take Action progress is kept** (decided 2026-11-04, 8.3.0): `user_actions`, the `action_completed` events and the action counters stay. A reset therefore never makes "Actions Taken" disagree with the action cards, and a recompute can't undo a reset. The Settings page says so before the user confirms.
 
 ## Changing a definition
 

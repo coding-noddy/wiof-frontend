@@ -1,6 +1,6 @@
 # Phase 2 Plan: Journey & Engagement Foundations
 
-**Status:** approved 2026-11-04 with the recommended defaults (section 6). Step 1 in progress.
+**Status:** approved 2026-11-04 with the recommended defaults (section 6). Step 1 shipped in 8.1.0, step 2 in 8.2.0 (prod metrics recomputed 2026-11-04), step 3 in 8.3.0. Steps 1–3 are the Planet Passport foundation; next is step 4 (connected content).
 **Sources:** `WIOF_Plan_v4/WIOF_Future_Enhancements_and_Product_Roadmap_v4.md` (sections 0, 5–10, 14), `WIOF_Plan_v4/WIOF_Foundation_Hardening_Plan_v4.md` (sections 16–18), and the current code on `master` (8.0.2).
 
 ## 1. What Phase 2 is for
