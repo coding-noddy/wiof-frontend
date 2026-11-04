@@ -11,7 +11,8 @@ import {
   mergeExploreItems,
   RelatedRef,
   relatedKey,
-  RelatedType
+  RelatedType,
+  seededOrder
 } from '../models/RelatedContent';
 import { ActionService } from './action.service';
 
@@ -24,9 +25,13 @@ export interface ExploreSource {
   links?: RelatedRef[] | null;
   /** Element for the "more from this element" fallback; none means no fallback. */
   element?: string;
+  /** A blog's sub-category: fallback stories on the same topic come first. */
+  subCategory?: string;
 }
 
 const REVERSE_LIMIT = 6;
+// The fallback picks from the element's newest stories and first actions, up to this many each.
+const FALLBACK_POOL = 12;
 
 /**
  * Builds the "Explore next" cards for a blog, video, action or calendar
@@ -53,7 +58,7 @@ export class RelatedContentService {
         if (enough || !source.element) {
           return of(mergeExploreItems(selfKey, linked, [], max));
         }
-        return this.moreFromElement(source.element).pipe(
+        return this.moreFromElement(source.element, selfKey || source.element, source.subCategory).pipe(
           map((fallback) => mergeExploreItems(selfKey, linked, fallback, max))
         );
       }),
@@ -102,24 +107,41 @@ export class RelatedContentService {
     );
   }
 
-  /** Newest stories and first actions of the element, alternating. */
-  private moreFromElement(element: string): Observable<ExploreItem[]> {
+  /**
+   * Stories and actions from the element, alternating. Each page gets its own
+   * selection (seededOrder) from the element's newest stories and first
+   * actions, with stories on the same sub-category first, instead of every
+   * page showing the same four.
+   */
+  private moreFromElement(element: string, seed: string, subCategory?: string): Observable<ExploreItem[]> {
     const category = element.charAt(0).toUpperCase() + element.slice(1).toLowerCase();
+    const topic = (subCategory || '').trim().toLowerCase();
     const blogs$ = this.database
       .collection(FIREBASE_COLLECTION.BLOG_SUMMARIES, (ref) => ref.where('category', '==', category))
       .get()
       .pipe(
-        map((snap) =>
-          snap.docs
-            .map((doc) => ({ ...(doc.data() as any), id: doc.id }))
+        map((snap) => {
+          const all = snap.docs.map((doc) => ({ ...(doc.data() as any), id: doc.id }));
+          const sameTopic = topic ? all.filter((b) => String(b.subCategory || '').trim().toLowerCase() === topic) : [];
+          const newest = all
+            .filter((b) => !sameTopic.includes(b))
             .sort((a, b) => Blog.sortDate(b) - Blog.sortDate(a))
-            .slice(0, 4)
-            .map((blog) => this.blogItem(blog, 'element'))
-        )
+            .slice(0, FALLBACK_POOL);
+          const byKey = (b: any) => `blog:${b.id}`;
+          return [...seededOrder(sameTopic, seed, byKey), ...seededOrder(newest, seed, byKey)]
+            .slice(0, 5)
+            .map((blog) => this.blogItem(blog, 'element'));
+        })
       );
     const actions$ = this.actionService
-      .getActionsForElement(element, 4)
-      .pipe(map((actions) => actions.map((a) => this.actionItem(a, 'element', element))));
+      .getActionsForElement(element, FALLBACK_POOL)
+      .pipe(
+        map((actions) =>
+          seededOrder(actions, seed, (a) => `action:${a.id}`)
+            .slice(0, 5)
+            .map((a) => this.actionItem(a, 'element', element))
+        )
+      );
     return combineLatest([blogs$, actions$]).pipe(map(([blogs, actions]) => interleave(blogs, actions)));
   }
 

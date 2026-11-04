@@ -12,7 +12,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Phase 2 step 4: connected content, "What can I explore next?" (see `docs/PHASE2_PLAN.md` section C).
 
 ### Added
-- An **Explore next** block on blog and video pages, in the Take Action details and in the calendar occasion popup: up to four cards (story, video or action). It shows the item's own related links first, then items that link to it (a link works both ways), then more from the same element. With nothing linked it reads "More from Earth" (etc.); the calendar popup shows linked items only.
+- An **Explore next** block on blog and video pages, in the Take Action details and in the calendar occasion popup: up to four cards (story, video or action). It shows the item's own related links first, then items that link to it (a link works both ways), then more from the same element: stories on the same topic first, and a different pick per page from the element's newest stories and its actions (stable on revisits), so pages don't all show the same four. With nothing linked it reads "More from Earth" (etc.); the calendar popup shows linked items only.
 - **Related Content** in the admin blog, Take Action and calendar forms: pick stories and actions by title, or add a YouTube video by link (the title is looked up on YouTube). Up to six links, in order. Stored as `relatedContent` plus `relatedKeys` (`type:id`) for the reverse lookup; `blog_summaries` copies the keys.
 - Take Action links (`/element/{element}/take-action?action={id}`) open that action's details.
 

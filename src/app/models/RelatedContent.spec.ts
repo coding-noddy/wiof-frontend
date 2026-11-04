@@ -1,4 +1,4 @@
-import { ExploreItem, interleave, MAX_RELATED, mergeExploreItems, relatedFields, youtubeIdFrom } from './RelatedContent';
+import { ExploreItem, interleave, MAX_RELATED, mergeExploreItems, relatedFields, seededOrder, youtubeIdFrom } from './RelatedContent';
 
 const item = (type: ExploreItem['type'], id: string, reason: ExploreItem['reason'] = 'linked'): ExploreItem =>
   ({ type, id, title: id, image: null, link: [], reason });
@@ -55,5 +55,13 @@ describe('Related content', () => {
   it('interleave alternates two lists of any length', () => {
     expect(interleave<number | string>([1, 2, 3], ['a'])).toEqual([1, 'a', 2, 3]);
     expect(interleave([], [1, 2])).toEqual([1, 2]);
+  });
+
+  it('seededOrder is stable per page but differs between pages', () => {
+    const pool = Array.from({ length: 12 }, (_, i) => `b${i}`);
+    const order = (seed: string) => seededOrder(pool, seed, (x) => x);
+    expect(order('blog:one')).toEqual(order('blog:one'));
+    expect(order('blog:one').slice(0, 4)).not.toEqual(order('blog:two').slice(0, 4));
+    expect([...order('video:x')].sort()).toEqual([...pool].sort());
   });
 });

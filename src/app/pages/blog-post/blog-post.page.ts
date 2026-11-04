@@ -54,7 +54,8 @@ export class BlogPostPage implements OnInit {
             type: 'blog' as const,
             id: blog.id,
             links: blog.relatedContent,
-            element: String(blog.category || this.element).toLowerCase()
+            element: String(blog.category || this.element).toLowerCase(),
+            subCategory: blog.subCategory
           })
         );
 

@@ -106,3 +106,25 @@ export function interleave<T>(a: T[], b: T[]): T[] {
   }
   return result;
 }
+
+/** FNV-1a: a small, stable string hash. */
+function hash(value: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < value.length; i++) {
+    h ^= value.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return h >>> 0;
+}
+
+/**
+ * `items` in an order that differs per `seed` but is the same on every visit,
+ * so each page gets its own selection from the same pool without the cards
+ * changing on reload.
+ */
+export function seededOrder<T>(items: T[], seed: string, keyOf: (item: T) => string): T[] {
+  return items
+    .map((item) => ({ item, rank: hash(`${seed}|${keyOf(item)}`) }))
+    .sort((a, b) => a.rank - b.rank)
+    .map((x) => x.item);
+}
