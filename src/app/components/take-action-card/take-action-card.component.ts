@@ -128,16 +128,35 @@ export class TakeActionCardComponent implements OnInit, OnChanges, OnDestroy {
     if (this.action.repeatType === REPEAT_TYPE.DAILY) {
       return this.completedToday;
     }
-    if (this.action.repeatType === REPEAT_TYPE.REPEATABLE || this.action.repeatType === REPEAT_TYPE.OCCASIONAL) {
+    if (this.isRepeatable) {
       return false;
     }
     return true;
   }
 
+  /** REPEATABLE/OCCASIONAL: can be marked done again any time. */
+  get isRepeatable(): boolean {
+    return this.action.repeatType === REPEAT_TYPE.REPEATABLE || this.action.repeatType === REPEAT_TYPE.OCCASIONAL;
+  }
+
+  /**
+   * Shown above the button from the first completion, so a repeatable
+   * action (whose button never turns into "Completed") still shows it was
+   * recorded. ONCE actions already say "Completed" on the button.
+   */
+  get completionLabel(): string {
+    const count = this.userAction?.completionCount || 0;
+    if (count < 1 || this.action.repeatType === REPEAT_TYPE.ONCE) {
+      return '';
+    }
+    const today = this.isRepeatable && this.completedToday ? ' · last today' : '';
+    return `Completed ${count}x${today}`;
+  }
+
   /** "Completed" alone doesn't tell a DAILY user when they can do it again. */
   get buttonLabel(): string {
     if (!this.isDone) {
-      return 'Mark as Done';
+      return this.isRepeatable && this.userAction?.completionCount ? 'Do it again' : 'Mark as Done';
     }
     return this.action.repeatType === REPEAT_TYPE.DAILY ? 'Come back tomorrow' : 'Completed';
   }
@@ -154,8 +173,15 @@ export class TakeActionCardComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     this.isLoading = true;
+    const doneBefore = this.userAction?.completionCount || 0;
     try {
       await this.userActionService.completeAction(this.userId!, this.action);
+      // Not awaited: a toast failure mustn't show the "could not record" error.
+      void this.uiUtil.presentToast(
+        doneBefore > 0 ? `Marked as done again (${doneBefore + 1}x)` : 'Marked as done. Nice work!',
+        'success',
+        2500
+      );
       // getUserActionStatus()/getActionStreak() are one-time reads, not live
       // listeners — without re-running them here the button would silently
       // stay in its pre-completion state until something else happened to

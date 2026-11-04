@@ -30,10 +30,8 @@
   </div>
 
   <div class="card-action">
-    @if (userAction?.completionCount > 1) {
-      <span class="completion-count">
-        Completed {{ userAction.completionCount }}x
-      </span>
+    @if (completionLabel) {
+      <span class="completion-count">{{ completionLabel }}</span>
     }
     <button
       class="action-btn"
