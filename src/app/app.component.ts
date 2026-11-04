@@ -6,6 +6,7 @@ import { AuthService } from './services/auth.service';
 import { UserProfileService } from './services/user-profile.service';
 import { IdleTimeoutService } from './services/idle-timeout.service';
 import { SingleVideoPlaybackService } from './services/single-video-playback.service';
+import { ChunkLoadRecoveryService } from './services/chunk-load-recovery.service';
 
 @Component({
     selector: 'app-root',
@@ -20,7 +21,8 @@ export class AppComponent implements OnInit {
     private userProfileService: UserProfileService,
     private activityService: ActivityService,
     private idleTimeoutService: IdleTimeoutService,
-    private singleVideoPlayback: SingleVideoPlaybackService
+    private singleVideoPlayback: SingleVideoPlaybackService,
+    private chunkLoadRecovery: ChunkLoadRecoveryService
   ) {
     // this.addMetaTags();
   }
@@ -31,6 +33,9 @@ export class AppComponent implements OnInit {
 
     // Starting one YouTube video pauses any other playing on the page.
     this.singleVideoPlayback.start();
+
+    // A page whose code can't load (old file names after a deploy) reloads once.
+    this.chunkLoadRecovery.start();
 
     // Record a visit whenever the authenticated account changes.
     this.authService.currentUser$.pipe(
