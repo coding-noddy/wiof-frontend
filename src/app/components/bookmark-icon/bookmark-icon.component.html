@@ -16,23 +16,24 @@
   </button>
 
   <!-- Sign-In Prompt for Guest Users -->
-  <div
-    class="sign-in-prompt"
-    *ngIf="showSignInPrompt"
-    role="tooltip"
-    aria-label="Sign in to save content">
-    <p class="prompt-text">Sign in to save this</p>
-    <button
-      class="prompt-google-btn"
-      (click)="signInWithGoogle()">
-      <ion-icon aria-hidden="true" name="logo-google"></ion-icon>
-      Continue with Google
-    </button>
-    <button
-      class="prompt-dismiss-btn"
-      (click)="dismissPrompt()"
-      aria-label="Dismiss sign-in prompt">
-      <ion-icon aria-hidden="true" name="close-outline"></ion-icon>
-    </button>
-  </div>
+  @if (showSignInPrompt) {
+    <div
+      class="sign-in-prompt"
+      role="tooltip"
+      aria-label="Sign in to save content">
+      <p class="prompt-text">Sign in to save this</p>
+      <button
+        class="prompt-google-btn"
+        (click)="signInWithGoogle()">
+        <ion-icon aria-hidden="true" name="logo-google"></ion-icon>
+        Continue with Google
+      </button>
+      <button
+        class="prompt-dismiss-btn"
+        (click)="dismissPrompt()"
+        aria-label="Dismiss sign-in prompt">
+        <ion-icon aria-hidden="true" name="close-outline"></ion-icon>
+      </button>
+    </div>
+  }
 </div>

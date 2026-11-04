@@ -25,74 +25,73 @@
   <div class="eq-widget-body">
 
     <!-- Landing view (before test) -->
-    <div class="eq-landing" *ngIf="!showTest">
-
-      <!-- Hero section -->
-      <div class="eq-hero">
-        <div class="eq-hero-icon">🧠</div>
-        <h3 class="eq-hero-title">Discover Your Emotional Intelligence</h3>
-        <p class="eq-hero-desc">
-          Answer 24 research-backed questions to understand how you
-          perceive, understand, and regulate your emotions.
-        </p>
+    @if (!showTest) {
+      <div class="eq-landing">
+        <!-- Hero section -->
+        <div class="eq-hero">
+          <div class="eq-hero-icon">🧠</div>
+          <h3 class="eq-hero-title">Discover Your Emotional Intelligence</h3>
+          <p class="eq-hero-desc">
+            Answer 24 research-backed questions to understand how you
+            perceive, understand, and regulate your emotions.
+          </p>
+        </div>
+        <!-- 3 Dimensions -->
+        <div class="eq-dimensions">
+          <div class="eq-dim-card">
+            <span class="dim-emoji">👁️</span>
+            <div class="dim-info">
+              <strong>Attention</strong>
+              <span>How well you perceive and express feelings</span>
+            </div>
+          </div>
+          <div class="eq-dim-card">
+            <span class="dim-emoji">💡</span>
+            <div class="dim-info">
+              <strong>Clarity</strong>
+              <span>How clearly you understand your emotional states</span>
+            </div>
+          </div>
+          <div class="eq-dim-card">
+            <span class="dim-emoji">🔄</span>
+            <div class="dim-info">
+              <strong>Reparation</strong>
+              <span>How effectively you regulate and repair your mood</span>
+            </div>
+          </div>
+        </div>
+        <!-- Gender + CTA -->
+        <div class="eq-cta">
+          <div class="eq-gender-select">
+            <span class="gender-label">I identify as:</span>
+            <div class="gender-pills">
+              <button class="gender-pill" [class.active]="gender === 'M'" (click)="gender = 'M'">
+                ♂️ Male
+              </button>
+              <button class="gender-pill" [class.active]="gender === 'F'" (click)="gender = 'F'">
+                ♀️ Female
+              </button>
+            </div>
+          </div>
+          <p class="gender-note">
+            Scoring thresholds differ by gender based on TMMS-24 research norms (Fernández-Berrocal et al., 2004).
+          </p>
+          <button class="wiof-primary-btn eq-start-btn" (click)="startTest()">
+            <ion-icon aria-hidden="true" name="play-outline"></ion-icon>
+            Start EQ Assessment
+          </button>
+          <span class="eq-meta">24 questions • ~5 minutes • free</span>
+        </div>
       </div>
-
-      <!-- 3 Dimensions -->
-      <div class="eq-dimensions">
-        <div class="eq-dim-card">
-          <span class="dim-emoji">👁️</span>
-          <div class="dim-info">
-            <strong>Attention</strong>
-            <span>How well you perceive and express feelings</span>
-          </div>
-        </div>
-        <div class="eq-dim-card">
-          <span class="dim-emoji">💡</span>
-          <div class="dim-info">
-            <strong>Clarity</strong>
-            <span>How clearly you understand your emotional states</span>
-          </div>
-        </div>
-        <div class="eq-dim-card">
-          <span class="dim-emoji">🔄</span>
-          <div class="dim-info">
-            <strong>Reparation</strong>
-            <span>How effectively you regulate and repair your mood</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Gender + CTA -->
-      <div class="eq-cta">
-        <div class="eq-gender-select">
-          <span class="gender-label">I identify as:</span>
-          <div class="gender-pills">
-            <button class="gender-pill" [class.active]="gender === 'M'" (click)="gender = 'M'">
-              ♂️ Male
-            </button>
-            <button class="gender-pill" [class.active]="gender === 'F'" (click)="gender = 'F'">
-              ♀️ Female
-            </button>
-          </div>
-        </div>
-        <p class="gender-note">
-          Scoring thresholds differ by gender based on TMMS-24 research norms (Fernández-Berrocal et al., 2004).
-        </p>
-        <button class="wiof-primary-btn eq-start-btn" (click)="startTest()">
-          <ion-icon aria-hidden="true" name="play-outline"></ion-icon>
-          Start EQ Assessment
-        </button>
-        <span class="eq-meta">24 questions • ~5 minutes • free</span>
-      </div>
-
-    </div>
+    }
 
     <!-- Test view -->
-    <app-eq-widget-question-card
-      *ngIf="showTest"
-      [gender]="gender"
-      (back)="showTest = false"
-    ></app-eq-widget-question-card>
+    @if (showTest) {
+      <app-eq-widget-question-card
+        [gender]="gender"
+        (back)="showTest = false"
+      ></app-eq-widget-question-card>
+    }
 
   </div>
 

@@ -38,8 +38,10 @@
           (ngModelChange)="onCityChange($event)"
           [compareWith]="compareCities"
           aria-label="Select city"
-        >
-          <option *ngFor="let city of cities" [ngValue]="city">{{ city.name }}</option>
+          >
+          @for (city of cities; track city) {
+            <option [ngValue]="city">{{ city.name }}</option>
+          }
         </select>
         <ion-icon aria-hidden="true" name="chevron-down-outline" class="select-chevron"></ion-icon>
       </div>
@@ -49,152 +51,171 @@
     </div>
 
     <!-- City search panel -->
-    <div class="city-search-panel" *ngIf="showCitySearch">
-      <input
-        class="city-search-input"
-        type="text"
-        placeholder="Search any city worldwide..."
-        [ngModel]="citySearchQuery"
-        (ngModelChange)="onCitySearchInput($event)"
-        aria-label="Search city"
-        autofocus
-      />
-      <div class="city-search-results" *ngIf="citySearchResults.length > 0">
-        <button
-          class="city-result-item"
-          *ngFor="let city of citySearchResults"
-          (click)="selectSearchedCity(city)"
-        >
-          <ion-icon aria-hidden="true" name="location-outline"></ion-icon>
-          <span>{{ city.name }}</span>
-        </button>
-      </div>
-      <div class="city-searching" *ngIf="citySearching">
-        Searching...
-      </div>
-      <div class="city-no-results" *ngIf="!citySearching && citySearchQuery.length >= 2 && citySearchResults.length === 0">
-        No cities found. Try a different name.
-      </div>
-    </div>
-
-    <!-- Loading state -->
-    <div class="rainfall-loading" *ngIf="rainfallLoading">
-      <div class="skeleton" style="height: 24px; width: 40%; border-radius: 6px;"></div>
-      <div class="skeleton" style="height: 6px; width: 100%; border-radius: 999px; margin-top: 8px;"></div>
-      <div style="display: flex; justify-content: space-between; margin-top: 6px;">
-        <div class="skeleton" style="height: 10px; width: 30%; border-radius: 4px;"></div>
-        <div class="skeleton" style="height: 10px; width: 25%; border-radius: 4px;"></div>
-      </div>
-    </div>
-
-    <!-- Error state -->
-    <div class="rainfall-error" *ngIf="rainfallError && !rainfallLoading">
-      <ion-icon aria-hidden="true" name="cloud-offline-outline"></ion-icon>
-      <span>Could not fetch rainfall data.</span>
-      <button class="retry-btn" (click)="fetchRainfall()">Retry</button>
-    </div>
-
-    <!-- Data state -->
-    <div class="rainfall-data" *ngIf="rainfall && !rainfallLoading" aria-live="polite">
-      <div class="rainfall-value-row">
-        <span class="rainfall-value">{{ rainfall.precipitationToday }}</span>
-        <span class="rainfall-unit">{{ rainfall.precipitationUnit }}</span>
-        <span class="rainfall-desc">{{ rainfallDescription }}</span>
-      </div>
-      <div class="rainfall-bar-wrap">
-        <div
-          class="rainfall-bar-fill"
-          [style.width]="rainfallBarWidth"
-          [style.background]="rainfallBarColor"
-        ></div>
-      </div>
-      <div class="rainfall-meta">
-        <span>Source: Open-Meteo</span>
-        <span>Updated: {{ rainfall.fetchedAt | date: 'h:mm a' }}</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Body ───────────────────────────────────────────────── -->
-  <div class="water-widget-body">
-
-    <!-- Category filter tabs -->
-    <div class="category-tabs" role="tablist" aria-label="Water data categories">
-      <button
-        *ngFor="let cat of categories"
-        class="cat-tab"
-        role="tab"
-        [class.active]="activeCategory === cat.key"
-        [attr.aria-selected]="activeCategory === cat.key"
-        (click)="setCategory(cat.key)"
-      >
-        <ion-icon aria-hidden="true" [name]="cat.icon"></ion-icon>
-        <span>{{ cat.label }}</span>
-      </button>
-    </div>
-
-    <!-- Items grid -->
-    <div class="water-items-grid">
-      <a
-        class="water-item"
-        *ngFor="let item of filteredItems"
-        [href]="item.url"
-        target="_blank"
-        rel="noopener noreferrer"
-        [attr.aria-label]="'Open ' + item.name + ' on India WRIS'"
-        (click)="onItemClick(item)"
-      >
-        <span class="last-visited-badge" *ngIf="isLastVisited(item)">
-          <ion-icon aria-hidden="true" name="time-outline"></ion-icon> Last visited
-        </span>
-        <div class="water-item-icon-wrap">
-          <img [src]="item.icon" [alt]="item.name" class="water-item-icon" />
+    @if (showCitySearch) {
+      <div class="city-search-panel">
+        <input
+          class="city-search-input"
+          type="text"
+          placeholder="Search any city worldwide..."
+          [ngModel]="citySearchQuery"
+          (ngModelChange)="onCitySearchInput($event)"
+          aria-label="Search city"
+          autofocus
+          />
+          @if (citySearchResults.length > 0) {
+            <div class="city-search-results">
+              @for (city of citySearchResults; track city) {
+                <button
+                  class="city-result-item"
+                  (click)="selectSearchedCity(city)"
+                  >
+                  <ion-icon aria-hidden="true" name="location-outline"></ion-icon>
+                  <span>{{ city.name }}</span>
+                </button>
+              }
+            </div>
+          }
+          @if (citySearching) {
+            <div class="city-searching">
+              Searching...
+            </div>
+          }
+          @if (!citySearching && citySearchQuery.length >= 2 && citySearchResults.length === 0) {
+            <div class="city-no-results">
+              No cities found. Try a different name.
+            </div>
+          }
         </div>
-        <span class="water-item-label">{{ item.name }}</span>
-        <ion-icon aria-hidden="true" name="open-outline" class="water-item-external"></ion-icon>
-      </a>
+      }
+
+      <!-- Loading state -->
+      @if (rainfallLoading) {
+        <div class="rainfall-loading">
+          <div class="skeleton" style="height: 24px; width: 40%; border-radius: 6px;"></div>
+          <div class="skeleton" style="height: 6px; width: 100%; border-radius: 999px; margin-top: 8px;"></div>
+          <div style="display: flex; justify-content: space-between; margin-top: 6px;">
+            <div class="skeleton" style="height: 10px; width: 30%; border-radius: 4px;"></div>
+            <div class="skeleton" style="height: 10px; width: 25%; border-radius: 4px;"></div>
+          </div>
+        </div>
+      }
+
+      <!-- Error state -->
+      @if (rainfallError && !rainfallLoading) {
+        <div class="rainfall-error">
+          <ion-icon aria-hidden="true" name="cloud-offline-outline"></ion-icon>
+          <span>Could not fetch rainfall data.</span>
+          <button class="retry-btn" (click)="fetchRainfall()">Retry</button>
+        </div>
+      }
+
+      <!-- Data state -->
+      @if (rainfall && !rainfallLoading) {
+        <div class="rainfall-data" aria-live="polite">
+          <div class="rainfall-value-row">
+            <span class="rainfall-value">{{ rainfall.precipitationToday }}</span>
+            <span class="rainfall-unit">{{ rainfall.precipitationUnit }}</span>
+            <span class="rainfall-desc">{{ rainfallDescription }}</span>
+          </div>
+          <div class="rainfall-bar-wrap">
+            <div
+              class="rainfall-bar-fill"
+              [style.width]="rainfallBarWidth"
+              [style.background]="rainfallBarColor"
+            ></div>
+          </div>
+          <div class="rainfall-meta">
+            <span>Source: Open-Meteo</span>
+            <span>Updated: {{ rainfall.fetchedAt | date: 'h:mm a' }}</span>
+          </div>
+        </div>
+      }
     </div>
 
-    <!-- Footer disclaimer (inside body) -->
-    <div class="water-widget-disclaimer">
-      <ion-icon aria-hidden="true" name="shield-checkmark-outline"></ion-icon>
-      <span>Links open India WRIS — a third-party interactive map portal.</span>
-    </div>
+    <!-- ── Body ───────────────────────────────────────────────── -->
+    <div class="water-widget-body">
 
-  </div>
+      <!-- Category filter tabs -->
+      <div class="category-tabs" role="tablist" aria-label="Water data categories">
+        @for (cat of categories; track cat) {
+          <button
+            class="cat-tab"
+            role="tab"
+            [class.active]="activeCategory === cat.key"
+            [attr.aria-selected]="activeCategory === cat.key"
+            (click)="setCategory(cat.key)"
+            >
+            <ion-icon aria-hidden="true" [name]="cat.icon"></ion-icon>
+            <span>{{ cat.label }}</span>
+          </button>
+        }
+      </div>
 
-  <!-- ── Did You Know strip (sticks to bottom like energy/pH) ── -->
-  <div class="fact-strip" [class.fact-strip--expanded]="factExpanded">
-    <div class="fact-content">
-      <ion-icon aria-hidden="true" name="bulb-outline" class="fact-icon"></ion-icon>
-      <div class="fact-body">
-        <p class="fact-text" [class.expanded]="factExpanded">{{ currentFact.text }}</p>
-        <div class="fact-meta-row">
+      <!-- Items grid -->
+      <div class="water-items-grid">
+        @for (item of filteredItems; track item) {
           <a
-            class="fact-source"
-            [href]="currentFact.url"
+            class="water-item"
+            [href]="item.url"
             target="_blank"
             rel="noopener noreferrer"
-          >
-            <ion-icon aria-hidden="true" name="link-outline"></ion-icon>
-            {{ currentFact.source }}
+            [attr.aria-label]="'Open ' + item.name + ' on India WRIS'"
+            (click)="onItemClick(item)"
+            >
+            @if (isLastVisited(item)) {
+              <span class="last-visited-badge">
+                <ion-icon aria-hidden="true" name="time-outline"></ion-icon> Last visited
+              </span>
+            }
+            <div class="water-item-icon-wrap">
+              <img [src]="item.icon" [alt]="item.name" class="water-item-icon" />
+            </div>
+            <span class="water-item-label">{{ item.name }}</span>
+            <ion-icon aria-hidden="true" name="open-outline" class="water-item-external"></ion-icon>
           </a>
-          <button class="fact-expand-btn" (click)="factExpanded = !factExpanded">
-            {{ factExpanded ? 'Show less' : 'Read more' }}
-            <ion-icon aria-hidden="true" [name]="factExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
-          </button>
+        }
+      </div>
+
+      <!-- Footer disclaimer (inside body) -->
+      <div class="water-widget-disclaimer">
+        <ion-icon aria-hidden="true" name="shield-checkmark-outline"></ion-icon>
+        <span>Links open India WRIS — a third-party interactive map portal.</span>
+      </div>
+
+    </div>
+
+    <!-- ── Did You Know strip (sticks to bottom like energy/pH) ── -->
+    <div class="fact-strip" [class.fact-strip--expanded]="factExpanded">
+      <div class="fact-content">
+        <ion-icon aria-hidden="true" name="bulb-outline" class="fact-icon"></ion-icon>
+        <div class="fact-body">
+          <p class="fact-text" [class.expanded]="factExpanded">{{ currentFact.text }}</p>
+          <div class="fact-meta-row">
+            <a
+              class="fact-source"
+              [href]="currentFact.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              >
+              <ion-icon aria-hidden="true" name="link-outline"></ion-icon>
+              {{ currentFact.source }}
+            </a>
+            <button class="fact-expand-btn" (click)="factExpanded = !factExpanded">
+              {{ factExpanded ? 'Show less' : 'Read more' }}
+              <ion-icon aria-hidden="true" [name]="factExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+            </button>
+          </div>
         </div>
       </div>
+      <div class="fact-controls">
+        <button class="fact-btn" (click)="prevFact()" aria-label="Previous fact">
+          <ion-icon aria-hidden="true" name="chevron-back-outline"></ion-icon>
+        </button>
+        <span class="fact-counter">{{ currentFactIndex + 1 }} / {{ waterFacts.length }}</span>
+        <button class="fact-btn" (click)="nextFact()" aria-label="Next fact">
+          <ion-icon aria-hidden="true" name="chevron-forward-outline"></ion-icon>
+        </button>
+      </div>
     </div>
-    <div class="fact-controls">
-      <button class="fact-btn" (click)="prevFact()" aria-label="Previous fact">
-        <ion-icon aria-hidden="true" name="chevron-back-outline"></ion-icon>
-      </button>
-      <span class="fact-counter">{{ currentFactIndex + 1 }} / {{ waterFacts.length }}</span>
-      <button class="fact-btn" (click)="nextFact()" aria-label="Next fact">
-        <ion-icon aria-hidden="true" name="chevron-forward-outline"></ion-icon>
-      </button>
-    </div>
-  </div>
 
-</div>
+  </div>

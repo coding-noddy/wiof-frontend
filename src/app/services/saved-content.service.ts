@@ -18,6 +18,8 @@ export interface SavedContentDocument {
   contentTitle: string;
   contentThumbnail: string;
   savedAt: any;
+  /** Display only, never stored: set by My Journey when the thumbnail fails to load. */
+  imageLoadFailed?: boolean;
 }
 
 export interface SaveContentInput {

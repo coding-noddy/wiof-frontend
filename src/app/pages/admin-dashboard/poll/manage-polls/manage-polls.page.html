@@ -68,72 +68,85 @@
         <button class="filter-dropdown-btn" [class.has-selection]="filterStatus" (click)="toggleDropdown('status')">
           <ion-icon aria-hidden="true" name="funnel-outline"></ion-icon> Status <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
         </button>
-        <div class="filter-dropdown-menu" *ngIf="openDropdown === 'status'">
-          <div class="menu-item" [class.selected]="filterStatus === 'published'" (click)="filterStatus = 'published'; onFilterChange()">🟢 Published</div>
-          <div class="menu-item" [class.selected]="filterStatus === 'submitted'" (click)="filterStatus = 'submitted'; onFilterChange()">🟡 Submitted</div>
-          <div class="menu-item" [class.selected]="filterStatus === 'inactive'" (click)="filterStatus = 'inactive'; onFilterChange()">⚪ Inactive</div>
-        </div>
+        @if (openDropdown === 'status') {
+          <div class="filter-dropdown-menu">
+            <div class="menu-item" [class.selected]="filterStatus === 'published'" (click)="filterStatus = 'published'; onFilterChange()">🟢 Published</div>
+            <div class="menu-item" [class.selected]="filterStatus === 'submitted'" (click)="filterStatus = 'submitted'; onFilterChange()">🟡 Submitted</div>
+            <div class="menu-item" [class.selected]="filterStatus === 'inactive'" (click)="filterStatus = 'inactive'; onFilterChange()">⚪ Inactive</div>
+          </div>
+        }
       </div>
     </div>
-    <div class="active-filters" *ngIf="hasActiveFilters">
-      <div class="active-chip" *ngIf="filterStatus">
-        <span class="chip-label">Status:</span>
-        <span class="chip-value">{{ filterStatus }}</span>
-        <button class="chip-remove" (click)="removeFilter('filterStatus')">×</button>
+    @if (hasActiveFilters) {
+      <div class="active-filters">
+        @if (filterStatus) {
+          <div class="active-chip">
+            <span class="chip-label">Status:</span>
+            <span class="chip-value">{{ filterStatus }}</span>
+            <button class="chip-remove" (click)="removeFilter('filterStatus')">×</button>
+          </div>
+        }
       </div>
-    </div>
+    }
 
     <!-- Table -->
     <div class="admin-table-card">
-      <table class="admin-table" *ngIf="pollQuestionList$ | async as pollQuestions">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th (click)="sortBy('question')" [class.sorted]="sortColumn === 'question'">
-              <span class="sort-header">Question <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'question' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
-            </th>
-            <th>Options</th>
-            <th>Votes</th>
-            <th (click)="sortBy('status')" [class.sorted]="sortColumn === 'status'">
-              <span class="sort-header">Status <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'status' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
-            </th>
-            <th (click)="sortBy('submitDate')" [class.sorted]="sortColumn === 'submitDate'">
-              <span class="sort-header">Created <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'submitDate' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
-            </th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let poll of pollQuestions; let i = index">
-            <td>{{ i + 1 }}</td>
-            <td>
-              <span class="cell-title">{{ poll.question }}</span>
-              <div class="cell-subtitle" *ngIf="poll.correctAnswer">✓ Has correct answer</div>
-            </td>
-            <td>{{ poll.options?.length || 0 }}</td>
-            <td>
-              <strong>{{ voteCounts[poll.pollId] != null ? voteCounts[poll.pollId] : '...' }}</strong>
-            </td>
-            <td><span class="status-badge" [ngClass]="poll.status">{{ poll.status }}</span></td>
-            <td><span class="cell-date">{{ poll.submitDate | date:'dd MMM yyyy' }}</span></td>
-            <td>
-              <div class="action-buttons">
-                <button class="action-btn publish" title="Publish this poll"
-                  *ngIf="poll.status === 'submitted' || poll.status === 'inactive'"
-                  (click)="publishPollQuestion(poll.pollId)">
-                  <ion-icon aria-hidden="true" name="rocket-outline"></ion-icon>
-                </button>
-                <button class="action-btn view" title="Edit poll" (click)="viewPollDetails(poll)">
-                  <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
-                </button>
-                <button class="action-btn delete" title="Delete poll" (click)="deletePollQuestion(pollQuestions, i, poll.pollId)">
-                  <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      @if (pollQuestionList$ | async; as pollQuestions) {
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th (click)="sortBy('question')" [class.sorted]="sortColumn === 'question'">
+                <span class="sort-header">Question <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'question' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              </th>
+              <th>Options</th>
+              <th>Votes</th>
+              <th (click)="sortBy('status')" [class.sorted]="sortColumn === 'status'">
+                <span class="sort-header">Status <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'status' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              </th>
+              <th (click)="sortBy('submitDate')" [class.sorted]="sortColumn === 'submitDate'">
+                <span class="sort-header">Created <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'submitDate' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              </th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (poll of pollQuestions; track poll; let i = $index) {
+              <tr>
+                <td>{{ i + 1 }}</td>
+                <td>
+                  <span class="cell-title">{{ poll.question }}</span>
+                  @if (poll.correctAnswer) {
+                    <div class="cell-subtitle">✓ Has correct answer</div>
+                  }
+                </td>
+                <td>{{ poll.options?.length || 0 }}</td>
+                <td>
+                  <strong>{{ voteCounts[poll.pollId] != null ? voteCounts[poll.pollId] : '...' }}</strong>
+                </td>
+                <td><span class="status-badge" [ngClass]="poll.status">{{ poll.status }}</span></td>
+                <td><span class="cell-date">{{ poll.submitDate | date:'dd MMM yyyy' }}</span></td>
+                <td>
+                  <div class="action-buttons">
+                    @if (poll.status === 'submitted' || poll.status === 'inactive') {
+                      <button class="action-btn publish" title="Publish this poll"
+                        (click)="publishPollQuestion(poll.pollId)">
+                        <ion-icon aria-hidden="true" name="rocket-outline"></ion-icon>
+                      </button>
+                    }
+                    <button class="action-btn view" title="Edit poll" (click)="viewPollDetails(poll)">
+                      <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
+                    </button>
+                    <button class="action-btn delete" title="Delete poll" (click)="deletePollQuestion(pollQuestions, i, poll.pollId)">
+                      <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
     </div>
   </div>
 </ion-content>

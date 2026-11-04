@@ -69,7 +69,9 @@
             "namedChunks": true,
             "allowedCommonJsDependencies": [
               "quill",
-              "xlsx"
+              "xlsx",
+              "file-saver",
+              "papaparse"
             ],
             "browser": "src/main.ts"
           },

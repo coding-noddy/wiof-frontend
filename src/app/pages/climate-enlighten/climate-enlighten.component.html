@@ -8,84 +8,95 @@
     </header>
 
     <!-- Upcoming workshops (Admin → Workshops). Each workshop section is
-         hidden when it has nothing to show. -->
-    <section class="workshops-section" *ngIf="upcoming.length" aria-labelledby="workshops-heading">
-      <p class="section-eyebrow">Join us</p>
-      <h2 id="workshops-heading" class="section-title">Upcoming Workshops</h2>
-
-      <!-- Side by side: poster on the left, details and Register on the
-           right, so everything is visible without scrolling past the poster. -->
-      <div class="workshops-grid upcoming-grid">
-        <article class="workshop-card upcoming-card" *ngFor="let w of upcoming">
-          <button type="button" class="workshop-poster" (click)="openPoster(w)"
-            [attr.aria-label]="'View the ' + w.title + ' poster full size'">
-            <!-- Same URL as the poster, so it's one download: a blurred copy
-                 fills the frame around posters that aren't 4:5. -->
-            <img class="poster-backdrop" [src]="w.posterUrl" alt="" aria-hidden="true" loading="lazy" />
-            <img class="poster-image" [src]="w.posterUrl" [alt]="'Poster: ' + w.title" loading="lazy" />
-            <span class="poster-zoom" aria-hidden="true">
-              <ion-icon name="expand-outline"></ion-icon>
-            </span>
-            <span class="live-badge" *ngIf="isLiveNow(w)">
-              <span class="live-dot" aria-hidden="true"></span> Live now
-            </span>
-          </button>
-
-          <div class="workshop-info">
-          <div class="workshop-body">
-            <h3>{{ w.title }}</h3>
-            <p class="workshop-when">
-              <ion-icon aria-hidden="true" name="calendar-outline"></ion-icon>
-              {{ eventDate(w) | date:'EEEE, d MMMM y' }}
-            </p>
-            <p class="workshop-when" *ngIf="timeLabel(w)">
-              <ion-icon aria-hidden="true" name="time-outline"></ion-icon>
-              {{ timeLabel(w) }}
-            </p>
-            <p class="workshop-when" *ngIf="w.modeOrVenue">
-              <ion-icon aria-hidden="true" name="location-outline"></ion-icon>
-              {{ w.modeOrVenue }}
-            </p>
-            <p class="workshop-description" *ngIf="w.description">{{ w.description }}</p>
-          </div>
-
-          <div class="card-footer">
-            <a [href]="w.registrationUrl" target="_blank" rel="noopener" class="enquire-btn"
-              [attr.aria-label]="'Register for ' + w.title + ' (opens in a new tab)'">
-              Register
-            </a>
-          </div>
-          </div>
-        </article>
-      </div>
-    </section>
+    hidden when it has nothing to show. -->
+    @if (upcoming.length) {
+      <section class="workshops-section" aria-labelledby="workshops-heading">
+        <p class="section-eyebrow">Join us</p>
+        <h2 id="workshops-heading" class="section-title">Upcoming Workshops</h2>
+        <!-- Side by side: poster on the left, details and Register on the
+        right, so everything is visible without scrolling past the poster. -->
+        <div class="workshops-grid upcoming-grid">
+          @for (w of upcoming; track w) {
+            <article class="workshop-card upcoming-card">
+              <button type="button" class="workshop-poster" (click)="openPoster(w)"
+                [attr.aria-label]="'View the ' + w.title + ' poster full size'">
+                <!-- Same URL as the poster, so it's one download: a blurred copy
+                fills the frame around posters that aren't 4:5. -->
+                <img class="poster-backdrop" [src]="w.posterUrl" alt="" aria-hidden="true" loading="lazy" />
+                <img class="poster-image" [src]="w.posterUrl" [alt]="'Poster: ' + w.title" loading="lazy" />
+                <span class="poster-zoom" aria-hidden="true">
+                  <ion-icon name="expand-outline"></ion-icon>
+                </span>
+                @if (isLiveNow(w)) {
+                  <span class="live-badge">
+                    <span class="live-dot" aria-hidden="true"></span> Live now
+                  </span>
+                }
+              </button>
+              <div class="workshop-info">
+                <div class="workshop-body">
+                  <h3>{{ w.title }}</h3>
+                  <p class="workshop-when">
+                    <ion-icon aria-hidden="true" name="calendar-outline"></ion-icon>
+                    {{ eventDate(w) | date:'EEEE, d MMMM y' }}
+                  </p>
+                  @if (timeLabel(w)) {
+                    <p class="workshop-when">
+                      <ion-icon aria-hidden="true" name="time-outline"></ion-icon>
+                      {{ timeLabel(w) }}
+                    </p>
+                  }
+                  @if (w.modeOrVenue) {
+                    <p class="workshop-when">
+                      <ion-icon aria-hidden="true" name="location-outline"></ion-icon>
+                      {{ w.modeOrVenue }}
+                    </p>
+                  }
+                  @if (w.description) {
+                    <p class="workshop-description">{{ w.description }}</p>
+                  }
+                </div>
+                <div class="card-footer">
+                  <a [href]="w.registrationUrl" target="_blank" rel="noopener" class="enquire-btn"
+                    [attr.aria-label]="'Register for ' + w.title + ' (opens in a new tab)'">
+                    Register
+                  </a>
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+    }
 
     <!-- Past workshops: the most recent few, as proof the sessions really
-         happen. Smaller and faded, no Register; the poster still opens. -->
-    <section class="workshops-section past-section" *ngIf="past.length" aria-labelledby="past-workshops-heading">
-      <h2 id="past-workshops-heading" class="section-title">Past Workshops</h2>
-
-      <div class="workshops-grid past-grid">
-        <article class="workshop-card past-card" *ngFor="let w of past">
-          <button type="button" class="workshop-poster" (click)="openPoster(w)"
-            [attr.aria-label]="'View the ' + w.title + ' poster full size'">
-            <img class="poster-backdrop" [src]="w.posterUrl" alt="" aria-hidden="true" loading="lazy" />
-            <img class="poster-image" [src]="w.posterUrl" [alt]="'Poster: ' + w.title" loading="lazy" />
-            <span class="completed-badge">
-              <ion-icon aria-hidden="true" name="checkmark-circle"></ion-icon> Completed
-            </span>
-          </button>
-
-          <div class="workshop-body">
-            <h3>{{ w.title }}</h3>
-            <p class="workshop-when">
-              <ion-icon aria-hidden="true" name="calendar-outline"></ion-icon>
-              {{ eventDate(w) | date:'d MMMM y' }}
-            </p>
-          </div>
-        </article>
-      </div>
-    </section>
+    happen. Smaller and faded, no Register; the poster still opens. -->
+    @if (past.length) {
+      <section class="workshops-section past-section" aria-labelledby="past-workshops-heading">
+        <h2 id="past-workshops-heading" class="section-title">Past Workshops</h2>
+        <div class="workshops-grid past-grid">
+          @for (w of past; track w) {
+            <article class="workshop-card past-card">
+              <button type="button" class="workshop-poster" (click)="openPoster(w)"
+                [attr.aria-label]="'View the ' + w.title + ' poster full size'">
+                <img class="poster-backdrop" [src]="w.posterUrl" alt="" aria-hidden="true" loading="lazy" />
+                <img class="poster-image" [src]="w.posterUrl" [alt]="'Poster: ' + w.title" loading="lazy" />
+                <span class="completed-badge">
+                  <ion-icon aria-hidden="true" name="checkmark-circle"></ion-icon> Completed
+                </span>
+              </button>
+              <div class="workshop-body">
+                <h3>{{ w.title }}</h3>
+                <p class="workshop-when">
+                  <ion-icon aria-hidden="true" name="calendar-outline"></ion-icon>
+                  {{ eventDate(w) | date:'d MMMM y' }}
+                </p>
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+    }
 
     <ion-modal [isOpen]="!!expandedPoster" (didDismiss)="closePoster()" aria-label="Workshop poster">
       <ng-template>
@@ -106,32 +117,37 @@
     </ion-modal>
 
     <section class="climate-container">
-      <h2 class="section-title" *ngIf="hasWorkshops">Learning Phases</h2>
+      @if (hasWorkshops) {
+        <h2 class="section-title">Learning Phases</h2>
+      }
       <div class="cards-grid">
-        <div class="card" *ngFor="let card of cards">
-
-          <div class="card-header">
-            <span class="launch-badge">{{ card.launchDate }}</span>
-            <h2>{{ card.title }}</h2>
+        @for (card of cards; track card) {
+          <div class="card">
+            <div class="card-header">
+              <span class="launch-badge">{{ card.launchDate }}</span>
+              <h2>{{ card.title }}</h2>
+            </div>
+            <div class="card-body">
+              <ul class="topic-list">
+                @for (topic of card.topics; track topic) {
+                  <li>{{ topic }}</li>
+                }
+              </ul>
+            </div>
+            <div class="card-footer">
+              @if (!card.isDisabled) {
+                <a [href]="card.formLink" target="_blank" class="enquire-btn">
+                  Enquire Now
+                </a>
+              }
+              @if (card.isDisabled) {
+                <a class="enquire-btn disabled-btn">
+                  Coming Soon
+                </a>
+              }
+            </div>
           </div>
-
-          <div class="card-body">
-            <ul class="topic-list">
-              <li *ngFor="let topic of card.topics">{{ topic }}</li>
-            </ul>
-          </div>
-
-          <div class="card-footer">
-            <a *ngIf="!card.isDisabled" [href]="card.formLink" target="_blank" class="enquire-btn">
-              Enquire Now
-            </a>
-
-            <a *ngIf="card.isDisabled" class="enquire-btn disabled-btn">
-              Coming Soon
-            </a>
-          </div>
-
-        </div>
+        }
       </div>
     </section>
   </div>

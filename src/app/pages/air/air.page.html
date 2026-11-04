@@ -66,20 +66,21 @@
   </div>
 
   <!-- ── Reflect: Coffee Conversation + EQ tie-in ────────────────── -->
-  <div
-    class="reflect-band air"
-    id="air-conversations"
-    *ngIf="this.coffeeConversations$ | async as coffeeConversations"
-  >
-    <div class="section-header">
-      <p class="eyebrow">Reflect</p>
-      <h2>Coffee Conversations: Air</h2>
+  @if (this.coffeeConversations$ | async; as coffeeConversations) {
+    <div
+      class="reflect-band air"
+      id="air-conversations"
+      >
+      <div class="section-header">
+        <p class="eyebrow">Reflect</p>
+        <h2>Coffee Conversations: Air</h2>
+      </div>
+      <app-coffee-conversation
+        [element]="elementName"
+        [coffeeConvList]="coffeeConversations"
+      ></app-coffee-conversation>
     </div>
-    <app-coffee-conversation
-      [element]="elementName"
-      [coffeeConvList]="coffeeConversations"
-    ></app-coffee-conversation>
-  </div>
+  }
 
   <div class="page-container">
     <!-- ── Keep Exploring: Blogs + Videos ──────────────────────── -->
@@ -95,15 +96,17 @@
           [element]="elementName"
         ></app-blog-slider>
       </div>
-      <div id="air-videos" *ngIf="videos$ | async as videos">
-        <ng-container *ngIf="videos.length > 0">
-          <p class="keep-exploring-sub-label">Videos</p>
-          <app-video-slider
-            [videoList]="videos"
-            [element]="elementName"
-          ></app-video-slider>
-        </ng-container>
-      </div>
+      @if (videos$ | async; as videos) {
+        <div id="air-videos">
+          @if (videos.length > 0) {
+            <p class="keep-exploring-sub-label">Videos</p>
+            <app-video-slider
+              [videoList]="videos"
+              [element]="elementName"
+            ></app-video-slider>
+          }
+        </div>
+      }
     </section>
 
     <!-- ── Continue The Journey ────────────────────────────────── -->

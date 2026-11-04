@@ -1,61 +1,66 @@
-<div class="aqi-scorecard" *ngIf="aqiData$ | async as aqiData; else loadingTpl">
-
-  <!-- Main AQI card -->
-  <div class="aqi-hero" [ngClass]="aqiColor(aqiData.aqi)">
-    <div class="aqi-hero-left">
-      <span class="aqi-number">{{ aqiData.aqi }}</span>
-      <span class="aqi-label">{{ aqiLabel(aqiData.aqi) }}</span>
-    </div>
-    <div class="aqi-hero-right">
-      <span class="aqi-station" [title]="aqiData.city.name | titlecase">
-        <ion-icon aria-hidden="true" name="location-outline"></ion-icon>
-        <span class="aqi-station-name">{{ aqiData.city.name | titlecase }}</span>
-      </span>
-      <span class="aqi-pollutant">
-        Dominant: <strong>{{ aqiData.dominentpol | uppercase }}</strong>
-      </span>
-    </div>
-  </div>
-
-  <!-- Health advice -->
-  <div class="aqi-advice">
-    <ion-icon aria-hidden="true" [name]="getAdviceIcon(aqiData.aqi)"></ion-icon>
-    <span>{{ getAdvice(aqiData.aqi) }}</span>
-  </div>
-
-  <!-- Pollutant parameters grid -->
-  <div class="pollutant-grid" *ngIf="getAqiParameters(aqiData.iaqi).length > 0">
-    <p class="pollutant-heading">Pollutant Levels</p>
-    <div class="pollutant-cards">
-      <div
-        class="pollutant-card"
-        *ngFor="let param of getAqiParameters(aqiData.iaqi)"
-        [class.suspicious]="isValueSuspicious(param[0], param[1].v)"
-      >
-        <span class="pollutant-name">{{ getParameterLabel(param[0]) }}</span>
-        <span class="pollutant-value" *ngIf="!isValueSuspicious(param[0], param[1].v)">{{ param[1].v | number: '1.0-1' }}</span>
-        <span class="pollutant-value suspicious-text" *ngIf="isValueSuspicious(param[0], param[1].v)">N/A</span>
-        <span class="pollutant-unit">{{ getParameterUnit(param[0]) }}</span>
+@if (aqiData$ | async; as aqiData) {
+  <div class="aqi-scorecard">
+    <!-- Main AQI card -->
+    <div class="aqi-hero" [ngClass]="aqiColor(aqiData.aqi)">
+      <div class="aqi-hero-left">
+        <span class="aqi-number">{{ aqiData.aqi }}</span>
+        <span class="aqi-label">{{ aqiLabel(aqiData.aqi) }}</span>
+      </div>
+      <div class="aqi-hero-right">
+        <span class="aqi-station" [title]="aqiData.city.name | titlecase">
+          <ion-icon aria-hidden="true" name="location-outline"></ion-icon>
+          <span class="aqi-station-name">{{ aqiData.city.name | titlecase }}</span>
+        </span>
+        <span class="aqi-pollutant">
+          Dominant: <strong>{{ aqiData.dominentpol | uppercase }}</strong>
+        </span>
       </div>
     </div>
+    <!-- Health advice -->
+    <div class="aqi-advice">
+      <ion-icon aria-hidden="true" [name]="getAdviceIcon(aqiData.aqi)"></ion-icon>
+      <span>{{ getAdvice(aqiData.aqi) }}</span>
+    </div>
+    <!-- Pollutant parameters grid -->
+    @if (getAqiParameters(aqiData.iaqi).length > 0) {
+      <div class="pollutant-grid">
+        <p class="pollutant-heading">Pollutant Levels</p>
+        <div class="pollutant-cards">
+          @for (param of getAqiParameters(aqiData.iaqi); track param) {
+            <div
+              class="pollutant-card"
+              [class.suspicious]="isValueSuspicious(param[0], param[1].v)"
+              >
+              <span class="pollutant-name">{{ getParameterLabel(param[0]) }}</span>
+              @if (!isValueSuspicious(param[0], param[1].v)) {
+                <span class="pollutant-value">{{ param[1].v | number: '1.0-1' }}</span>
+              }
+              @if (isValueSuspicious(param[0], param[1].v)) {
+                <span class="pollutant-value suspicious-text">N/A</span>
+              }
+              <span class="pollutant-unit">{{ getParameterUnit(param[0]) }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+    <!-- Data credit -->
+    <div class="aqi-credit">
+      <span>Data: </span>
+      <a href="https://waqi.info/" target="_blank" rel="noopener noreferrer">
+        World Air Quality Index Project
+      </a>
+    </div>
   </div>
-
-  <!-- Data credit -->
-  <div class="aqi-credit">
-    <span>Data: </span>
-    <a href="https://waqi.info/" target="_blank" rel="noopener noreferrer">
-      World Air Quality Index Project
-    </a>
-  </div>
-
-</div>
-
-<ng-template #loadingTpl>
+} @else {
   <div class="aqi-scorecard-skeleton">
     <div class="skeleton-card" style="height: 72px;"></div>
     <div class="skeleton" style="height: 40px; border-radius: 10px;"></div>
     <div class="skeleton-pollutant-grid">
-      <div class="skeleton" style="height: 60px; border-radius: 10px;" *ngFor="let i of [1,2,3,4,5,6]"></div>
+      @for (i of [1,2,3,4,5,6]; track i) {
+        <div class="skeleton" style="height: 60px; border-radius: 10px;"></div>
+      }
     </div>
   </div>
-</ng-template>
+}
+

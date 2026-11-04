@@ -6,25 +6,35 @@
   <div class="card-body">
     <div class="card-title-row">
       <h3 class="card-title">{{ action.title }}</h3>
-      <span class="streak-badge" *ngIf="streak > 0">
-        <ion-icon aria-hidden="true" name="flame-outline"></ion-icon> {{ streak }}
-      </span>
+      @if (streak > 0) {
+        <span class="streak-badge">
+          <ion-icon aria-hidden="true" name="flame-outline"></ion-icon> {{ streak }}
+        </span>
+      }
     </div>
     <p class="card-desc">{{ action.shortDescription }}</p>
-    <div class="card-chips" *ngIf="action.elementIds?.length">
-      <span class="chip" *ngFor="let element of action.elementIds" [ngClass]="element">{{ element }}</span>
-    </div>
+    @if (action.elementIds?.length) {
+      <div class="card-chips">
+        @for (element of action.elementIds; track element) {
+          <span class="chip" [ngClass]="element">{{ element }}</span>
+        }
+      </div>
+    }
 
-    <button type="button" class="details-toggle" *ngIf="hasDetails" (click)="openDetails($event)">
-      Learn more
-      <ion-icon aria-hidden="true" name="chevron-forward-outline"></ion-icon>
-    </button>
+    @if (hasDetails) {
+      <button type="button" class="details-toggle" (click)="openDetails($event)">
+        Learn more
+        <ion-icon aria-hidden="true" name="chevron-forward-outline"></ion-icon>
+      </button>
+    }
   </div>
 
   <div class="card-action">
-    <span class="completion-count" *ngIf="userAction?.completionCount > 1">
-      Completed {{ userAction.completionCount }}x
-    </span>
+    @if (userAction?.completionCount > 1) {
+      <span class="completion-count">
+        Completed {{ userAction.completionCount }}x
+      </span>
+    }
     <button
       class="action-btn"
       [class.done]="isDone"
@@ -32,20 +42,22 @@
       (click)="onActionClick()"
       [disabled]="isLoading || isDone"
       type="button"
-    >
+      >
       <ion-icon aria-hidden="true" [name]="isDone ? 'checkmark-circle' : 'checkmark-circle-outline'"></ion-icon>
       {{ buttonLabel }}
     </button>
 
-    <div class="sign-in-prompt" *ngIf="showSignInPrompt" role="tooltip" aria-label="Sign in to save your progress">
-      <p class="prompt-text">Sign in to save your progress</p>
-      <button class="prompt-google-btn" (click)="signInWithGoogle()">
-        <ion-icon aria-hidden="true" name="logo-google"></ion-icon>
-        Continue with Google
-      </button>
-      <button class="prompt-dismiss-btn" (click)="dismissPrompt()" aria-label="Dismiss sign-in prompt">
-        <ion-icon aria-hidden="true" name="close-outline"></ion-icon>
-      </button>
-    </div>
+    @if (showSignInPrompt) {
+      <div class="sign-in-prompt" role="tooltip" aria-label="Sign in to save your progress">
+        <p class="prompt-text">Sign in to save your progress</p>
+        <button class="prompt-google-btn" (click)="signInWithGoogle()">
+          <ion-icon aria-hidden="true" name="logo-google"></ion-icon>
+          Continue with Google
+        </button>
+        <button class="prompt-dismiss-btn" (click)="dismissPrompt()" aria-label="Dismiss sign-in prompt">
+          <ion-icon aria-hidden="true" name="close-outline"></ion-icon>
+        </button>
+      </div>
+    }
   </div>
 </div>

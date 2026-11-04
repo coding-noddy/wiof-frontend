@@ -32,51 +32,64 @@
       </div>
     </div>
 
-    <div class="state-panel" *ngIf="loading">
-      <ion-spinner name="crescent"></ion-spinner>
-      <span>Loading users...</span>
-    </div>
+    @if (loading) {
+      <div class="state-panel">
+        <ion-spinner name="crescent"></ion-spinner>
+        <span>Loading users...</span>
+      </div>
+    }
 
-    <div class="state-panel error" *ngIf="!loading && hasError">
-      Unable to load registered users.
-    </div>
+    @if (!loading && hasError) {
+      <div class="state-panel error">
+        Unable to load registered users.
+      </div>
+    }
 
-    <div class="state-panel" *ngIf="!loading && !hasError && users.length === 0">
-      No registered users yet.
-    </div>
+    @if (!loading && !hasError && users.length === 0) {
+      <div class="state-panel">
+        No registered users yet.
+      </div>
+    }
 
-    <div class="admin-table-card" *ngIf="!loading && !hasError && users.length > 0">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th (click)="sortBy('displayName')" [class.sorted]="sortColumn === 'displayName'">
-              <span class="sort-header">Name <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'displayName' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
-            </th>
-            <th (click)="sortBy('email')" [class.sorted]="sortColumn === 'email'">
-              <span class="sort-header">Email <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'email' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
-            </th>
-            <th>Interested Elements</th>
-            <th (click)="sortBy('joinedDate')" [class.sorted]="sortColumn === 'joinedDate'">
-              <span class="sort-header">Registered <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'joinedDate' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let user of users; let i = index">
-            <td>{{ i + 1 }}</td>
-            <td><span class="cell-title">{{ user.displayName || '—' }}</span></td>
-            <td>{{ user.email || '—' }}</td>
-            <td>
-              <span class="element-list" *ngIf="user.preferredElements?.length; else noElements">
-                {{ user.preferredElements.join(', ') }}
-              </span>
-              <ng-template #noElements>—</ng-template>
-            </td>
-            <td><span class="cell-date">{{ formatJoinedDate(user.joinedDate) }}</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    @if (!loading && !hasError && users.length > 0) {
+      <div class="admin-table-card">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th (click)="sortBy('displayName')" [class.sorted]="sortColumn === 'displayName'">
+                <span class="sort-header">Name <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'displayName' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              </th>
+              <th (click)="sortBy('email')" [class.sorted]="sortColumn === 'email'">
+                <span class="sort-header">Email <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'email' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              </th>
+              <th>Interested Elements</th>
+              <th (click)="sortBy('joinedDate')" [class.sorted]="sortColumn === 'joinedDate'">
+                <span class="sort-header">Registered <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'joinedDate' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of users; track user; let i = $index) {
+              <tr>
+                <td>{{ i + 1 }}</td>
+                <td><span class="cell-title">{{ user.displayName || '—' }}</span></td>
+                <td>{{ user.email || '—' }}</td>
+                <td>
+                  @if (user.preferredElements?.length) {
+                    <span class="element-list">
+                      {{ user.preferredElements.join(', ') }}
+                    </span>
+                  } @else {
+                    —
+                  }
+                </td>
+                <td><span class="cell-date">{{ formatJoinedDate(user.joinedDate) }}</span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
   </div>
 </ion-content>

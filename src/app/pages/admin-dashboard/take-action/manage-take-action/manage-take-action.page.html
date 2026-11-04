@@ -74,9 +74,13 @@
           <ion-icon aria-hidden="true" name="funnel-outline"></ion-icon> Element
           <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
         </button>
-        <div class="filter-dropdown-menu" *ngIf="openDropdown === 'element'">
-          <div class="menu-item" *ngFor="let element of elements" [class.selected]="filterElement === element" (click)="filterElement = element; onFilterChange()">{{ element | titlecase }}</div>
-        </div>
+        @if (openDropdown === 'element') {
+          <div class="filter-dropdown-menu">
+            @for (element of elements; track element) {
+              <div class="menu-item" [class.selected]="filterElement === element" (click)="filterElement = element; onFilterChange()">{{ element | titlecase }}</div>
+            }
+          </div>
+        }
       </div>
 
       <div class="filter-dropdown">
@@ -84,9 +88,13 @@
           <ion-icon aria-hidden="true" name="pricetag-outline"></ion-icon> Type
           <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
         </button>
-        <div class="filter-dropdown-menu" *ngIf="openDropdown === 'type'">
-          <div class="menu-item" *ngFor="let type of actionTypes" [class.selected]="filterActionType === type" (click)="filterActionType = type; onFilterChange()">{{ type | titlecase }}</div>
-        </div>
+        @if (openDropdown === 'type') {
+          <div class="filter-dropdown-menu">
+            @for (type of actionTypes; track type) {
+              <div class="menu-item" [class.selected]="filterActionType === type" (click)="filterActionType = type; onFilterChange()">{{ type | titlecase }}</div>
+            }
+          </div>
+        }
       </div>
 
       <div class="filter-dropdown">
@@ -94,10 +102,12 @@
           <ion-icon aria-hidden="true" name="toggle-outline"></ion-icon> Status
           <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
         </button>
-        <div class="filter-dropdown-menu" *ngIf="openDropdown === 'active'">
-          <div class="menu-item" [class.selected]="filterActive === 'true'" (click)="filterActive = 'true'; onFilterChange()">Active</div>
-          <div class="menu-item" [class.selected]="filterActive === 'false'" (click)="filterActive = 'false'; onFilterChange()">Inactive</div>
-        </div>
+        @if (openDropdown === 'active') {
+          <div class="filter-dropdown-menu">
+            <div class="menu-item" [class.selected]="filterActive === 'true'" (click)="filterActive = 'true'; onFilterChange()">Active</div>
+            <div class="menu-item" [class.selected]="filterActive === 'false'" (click)="filterActive = 'false'; onFilterChange()">Inactive</div>
+          </div>
+        }
       </div>
 
       <div class="filter-dropdown">
@@ -105,37 +115,49 @@
           <ion-icon aria-hidden="true" name="star-outline"></ion-icon> Featured
           <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
         </button>
-        <div class="filter-dropdown-menu" *ngIf="openDropdown === 'featured'">
-          <div class="menu-item" [class.selected]="filterFeatured === 'true'" (click)="filterFeatured = 'true'; onFilterChange()">Featured</div>
-          <div class="menu-item" [class.selected]="filterFeatured === 'false'" (click)="filterFeatured = 'false'; onFilterChange()">Not Featured</div>
-        </div>
+        @if (openDropdown === 'featured') {
+          <div class="filter-dropdown-menu">
+            <div class="menu-item" [class.selected]="filterFeatured === 'true'" (click)="filterFeatured = 'true'; onFilterChange()">Featured</div>
+            <div class="menu-item" [class.selected]="filterFeatured === 'false'" (click)="filterFeatured = 'false'; onFilterChange()">Not Featured</div>
+          </div>
+        }
       </div>
     </div>
 
     <!-- Active Filter Chips -->
-    <div class="active-filters" *ngIf="hasActiveFilters">
-      <div class="active-chip" *ngIf="filterElement">
-        <span class="chip-label">Element:</span>
-        <span class="chip-value">{{ filterElement }}</span>
-        <button class="chip-remove" (click)="removeFilter('filterElement')">×</button>
+    @if (hasActiveFilters) {
+      <div class="active-filters">
+        @if (filterElement) {
+          <div class="active-chip">
+            <span class="chip-label">Element:</span>
+            <span class="chip-value">{{ filterElement }}</span>
+            <button class="chip-remove" (click)="removeFilter('filterElement')">×</button>
+          </div>
+        }
+        @if (filterActionType) {
+          <div class="active-chip">
+            <span class="chip-label">Type:</span>
+            <span class="chip-value">{{ filterActionType }}</span>
+            <button class="chip-remove" (click)="removeFilter('filterActionType')">×</button>
+          </div>
+        }
+        @if (filterActive) {
+          <div class="active-chip">
+            <span class="chip-label">Status:</span>
+            <span class="chip-value">{{ filterActive === 'true' ? 'Active' : 'Inactive' }}</span>
+            <button class="chip-remove" (click)="removeFilter('filterActive')">×</button>
+          </div>
+        }
+        @if (filterFeatured) {
+          <div class="active-chip">
+            <span class="chip-label">Featured:</span>
+            <span class="chip-value">{{ filterFeatured === 'true' ? 'Yes' : 'No' }}</span>
+            <button class="chip-remove" (click)="removeFilter('filterFeatured')">×</button>
+          </div>
+        }
+        <button class="clear-all-btn" (click)="clearAllFilters()">Clear all</button>
       </div>
-      <div class="active-chip" *ngIf="filterActionType">
-        <span class="chip-label">Type:</span>
-        <span class="chip-value">{{ filterActionType }}</span>
-        <button class="chip-remove" (click)="removeFilter('filterActionType')">×</button>
-      </div>
-      <div class="active-chip" *ngIf="filterActive">
-        <span class="chip-label">Status:</span>
-        <span class="chip-value">{{ filterActive === 'true' ? 'Active' : 'Inactive' }}</span>
-        <button class="chip-remove" (click)="removeFilter('filterActive')">×</button>
-      </div>
-      <div class="active-chip" *ngIf="filterFeatured">
-        <span class="chip-label">Featured:</span>
-        <span class="chip-value">{{ filterFeatured === 'true' ? 'Yes' : 'No' }}</span>
-        <button class="chip-remove" (click)="removeFilter('filterFeatured')">×</button>
-      </div>
-      <button class="clear-all-btn" (click)="clearAllFilters()">Clear all</button>
-    </div>
+    }
 
     <!-- Table -->
     <div class="admin-table-card">
@@ -158,61 +180,75 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let action of displayedActions; let i = index">
-            <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
-            <td>
-              <span class="cell-title">{{ action.title }}</span>
-              <div class="cell-subtitle">{{ action.shortDescription | slice:0:60 }}{{ action.shortDescription?.length > 60 ? '...' : '' }}</div>
-            </td>
-            <td>
-              <span class="cell-category" *ngFor="let element of action.elementIds" [ngClass]="element">{{ element }}</span>
-            </td>
-            <td>{{ action.actionType }}</td>
-            <td><span class="cell-date">{{ action.displayOrder }}</span></td>
-            <td>
-              <span class="status-badge" [ngClass]="action.isActive ? 'published' : 'inactive'">{{ action.isActive ? 'Active' : 'Inactive' }}</span>
-              <span class="status-badge" *ngIf="action.isFeatured">Featured</span>
-            </td>
-            <td>
-              <div class="action-buttons">
-                <button class="action-btn view" title="Edit action" (click)="viewActionDetails(action)">
-                  <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
-                </button>
-                <button class="action-btn delete" title="Deactivate action" *ngIf="action.isActive" (click)="deactivateAction(action)">
-                  <ion-icon aria-hidden="true" name="eye-off-outline"></ion-icon>
-                </button>
-              </div>
-            </td>
-          </tr>
+          @for (action of displayedActions; track action; let i = $index) {
+            <tr>
+              <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+              <td>
+                <span class="cell-title">{{ action.title }}</span>
+                <div class="cell-subtitle">{{ action.shortDescription | slice:0:60 }}{{ action.shortDescription?.length > 60 ? '...' : '' }}</div>
+              </td>
+              <td>
+                @for (element of action.elementIds; track element) {
+                  <span class="cell-category" [ngClass]="element">{{ element }}</span>
+                }
+              </td>
+              <td>{{ action.actionType }}</td>
+              <td><span class="cell-date">{{ action.displayOrder }}</span></td>
+              <td>
+                <span class="status-badge" [ngClass]="action.isActive ? 'published' : 'inactive'">{{ action.isActive ? 'Active' : 'Inactive' }}</span>
+                @if (action.isFeatured) {
+                  <span class="status-badge">Featured</span>
+                }
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <button class="action-btn view" title="Edit action" (click)="viewActionDetails(action)">
+                    <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
+                  </button>
+                  @if (action.isActive) {
+                    <button class="action-btn delete" title="Deactivate action" (click)="deactivateAction(action)">
+                      <ion-icon aria-hidden="true" name="eye-off-outline"></ion-icon>
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
         </tbody>
       </table>
 
-      <div class="empty-state" *ngIf="!displayedActions.length">
-        <ion-icon aria-hidden="true" name="checkmark-done-outline"></ion-icon>
-        <p>No actions match the current filters.</p>
-      </div>
+      @if (!displayedActions.length) {
+        <div class="empty-state">
+          <ion-icon aria-hidden="true" name="checkmark-done-outline"></ion-icon>
+          <p>No actions match the current filters.</p>
+        </div>
+      }
 
       <!-- Pagination -->
-      <div class="pagination-bar" *ngIf="filteredCount > 0">
-        <span class="pagination-info">
-          Page {{ currentPage }} of {{ totalPages }} · {{ filteredCount }} items
-        </span>
-        <div class="pagination-controls">
-          <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
-            <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
-          </button>
-          <button class="page-btn" *ngFor="let p of pageNumbers" [class.active]="p === currentPage" (click)="goToPage(p)">{{ p }}</button>
-          <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
-            <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
-          </button>
-          <select class="page-size-select" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
-            <option [ngValue]="5">5 / page</option>
-            <option [ngValue]="10">10 / page</option>
-            <option [ngValue]="25">25 / page</option>
-            <option [ngValue]="50">50 / page</option>
-          </select>
+      @if (filteredCount > 0) {
+        <div class="pagination-bar">
+          <span class="pagination-info">
+            Page {{ currentPage }} of {{ totalPages }} · {{ filteredCount }} items
+          </span>
+          <div class="pagination-controls">
+            <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+              <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
+            </button>
+            @for (p of pageNumbers; track p) {
+              <button class="page-btn" [class.active]="p === currentPage" (click)="goToPage(p)">{{ p }}</button>
+            }
+            <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+              <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
+            </button>
+            <select class="page-size-select" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
+              <option [ngValue]="5">5 / page</option>
+              <option [ngValue]="10">10 / page</option>
+              <option [ngValue]="25">25 / page</option>
+              <option [ngValue]="50">50 / page</option>
+            </select>
+          </div>
         </div>
-      </div>
+      }
     </div>
   </div>
 </ion-content>

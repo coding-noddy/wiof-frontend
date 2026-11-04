@@ -1,42 +1,47 @@
-<div class="blog-slider-section" *ngIf="blogList && blogList.length > 0">
-
-  <!-- Slider -->
-  <div *ngIf="blogList; else loading" class="slider-wrap">
-    <swiper-container
-      #swiperRef
-      [attr.space-between]="10"
-      [attr.free-mode]="true"
-      breakpoints='{"0":{"slidesPerView":1},"600":{"slidesPerView":2},"767":{"slidesPerView":3},"1024":{"slidesPerView":4}}'
-    >
-      <swiper-slide *ngFor="let blog of displayList">
-        <app-blog-card [blog]="blog" [element]="element"></app-blog-card>
-      </swiper-slide>
-    </swiper-container>
-
-    <button aria-label="Previous slide" class="swiper-nav-btn prev" (click)="swiperRef.swiper.slidePrev()" *ngIf="showNavigator()">
-      <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
-    </button>
-    <button aria-label="Next slide" class="swiper-nav-btn next" (click)="swiperRef.swiper.slideNext()" *ngIf="showNavigator()">
-      <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
-    </button>
-  </div>
-
-  <!-- Trailing action, below the cards -->
-  <div class="blog-slider-actions">
-    <a
-      [routerLink]="['blogs']"
-      class="view-more-link"
-      title="Explore more {{ element }} blogs"
-      attr.aria-label="Explore more {{ element }} blogs"
-    >
-      Explore More {{ element | titlecase }} Blogs
-      <ion-icon aria-hidden="true" name="arrow-forward-outline"></ion-icon>
-    </a>
-  </div>
-
-  <ng-template #loading>
-    <div class="loading-wrap">
-      <ion-spinner name="crescent"></ion-spinner>
+@if (blogList && blogList.length > 0) {
+  <div class="blog-slider-section">
+    <!-- Slider -->
+    @if (blogList) {
+      <div class="slider-wrap">
+        <swiper-container
+          #swiperRef
+          [attr.space-between]="10"
+          [attr.free-mode]="true"
+          breakpoints='{"0":{"slidesPerView":1},"600":{"slidesPerView":2},"767":{"slidesPerView":3},"1024":{"slidesPerView":4}}'
+          >
+          @for (blog of displayList; track blog) {
+            <swiper-slide>
+              <app-blog-card [blog]="blog" [element]="element"></app-blog-card>
+            </swiper-slide>
+          }
+        </swiper-container>
+        @if (showNavigator()) {
+          <button aria-label="Previous slide" class="swiper-nav-btn prev" (click)="swiperRef.swiper.slidePrev()">
+            <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
+          </button>
+        }
+        @if (showNavigator()) {
+          <button aria-label="Next slide" class="swiper-nav-btn next" (click)="swiperRef.swiper.slideNext()">
+            <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
+          </button>
+        }
+      </div>
+    } @else {
+      <div class="loading-wrap">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+    }
+    <!-- Trailing action, below the cards -->
+    <div class="blog-slider-actions">
+      <a
+        [routerLink]="['blogs']"
+        class="view-more-link"
+        title="Explore more {{ element }} blogs"
+        attr.aria-label="Explore more {{ element }} blogs"
+        >
+        Explore More {{ element | titlecase }} Blogs
+        <ion-icon aria-hidden="true" name="arrow-forward-outline"></ion-icon>
+      </a>
     </div>
-  </ng-template>
-</div>
+  </div>
+}

@@ -18,7 +18,9 @@
     <div class="admin-page-header">
       <div>
         <h1>Manage Calendar</h1>
-        <p class="header-meta" *ngIf="occasionsList$ | async as occasionsList">{{ occasionsList.length }} occasions</p>
+        @if (occasionsList$ | async; as occasionsList) {
+          <p class="header-meta">{{ occasionsList.length }} occasions</p>
+        }
       </div>
       <div class="header-actions">
         <button class="btn-secondary" (click)="refreshData()">
@@ -30,46 +32,56 @@
       </div>
     </div>
 
-    <div class="filter-bar" *ngIf="occasionsList$ | async as occasionsList">
-      <select class="filter-select" [ngModel]="selectedMonth" (ngModelChange)="onSelectMonth($event)">
-        <option [ngValue]="i" *ngFor="let month of months; let i = index">{{ month }}</option>
-      </select>
-      <span class="filter-count">{{ occasionsList.length }} occasions in {{ months[selectedMonth] }}</span>
-    </div>
+    @if (occasionsList$ | async; as occasionsList) {
+      <div class="filter-bar">
+        <select class="filter-select" [ngModel]="selectedMonth" (ngModelChange)="onSelectMonth($event)">
+          @for (month of months; track month; let i = $index) {
+            <option [ngValue]="i">{{ month }}</option>
+          }
+        </select>
+        <span class="filter-count">{{ occasionsList.length }} occasions in {{ months[selectedMonth] }}</span>
+      </div>
+    }
 
     <div class="admin-table-card">
-      <table class="admin-table" *ngIf="occasionsList$ | async as occasionsList">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Occasion</th>
-            <th>Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let occasion of occasionsList; let i = index">
-            <td>{{ i + 1 }}</td>
-            <td>
-              <div class="cell-with-thumb">
-                <img class="cell-thumbnail" *ngIf="occasion.image | async as imgUrl" [src]="imgUrl" [alt]="occasion.occasion">
-                <span class="cell-title">{{ occasion.occasion }}</span>
-              </div>
-            </td>
-            <td><span class="cell-date">{{ months[occasion.month] }} {{ occasion.day }}</span></td>
-            <td>
-              <div class="action-buttons">
-                <button class="action-btn view" title="Edit occasion" (click)="viewOccasionDetails(occasion)">
-                  <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
-                </button>
-                <button class="action-btn delete" title="Delete occasion" (click)="deleteOccasion(occasionsList, i, occasion.id, occasion.imageName)">
-                  <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      @if (occasionsList$ | async; as occasionsList) {
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Occasion</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (occasion of occasionsList; track occasion; let i = $index) {
+              <tr>
+                <td>{{ i + 1 }}</td>
+                <td>
+                  <div class="cell-with-thumb">
+                    @if (occasion.image | async; as imgUrl) {
+                      <img class="cell-thumbnail" [src]="imgUrl" [alt]="occasion.occasion">
+                    }
+                    <span class="cell-title">{{ occasion.occasion }}</span>
+                  </div>
+                </td>
+                <td><span class="cell-date">{{ months[occasion.month] }} {{ occasion.day }}</span></td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="action-btn view" title="Edit occasion" (click)="viewOccasionDetails(occasion)">
+                      <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
+                    </button>
+                    <button class="action-btn delete" title="Delete occasion" (click)="deleteOccasion(occasionsList, i, occasion.id, occasion.imageName)">
+                      <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
     </div>
   </div>
 </ion-content>

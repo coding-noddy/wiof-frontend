@@ -1,94 +1,95 @@
-<ion-card
-  *ngIf="coursesInFocus?.length > 0"
-  class="wiof-course-in-focus-container"
->
-  <ion-card-header class="wiof-slider-header">
-    <span class="header-badge">
-      <ion-icon aria-hidden="true" name="school-outline"></ion-icon>
-      Course in Focus
-    </span>
-  </ion-card-header>
-
-  <ion-card-content class="background ion-no-padding">
-    <div *ngIf="coursesInFocus; else loading">
-      <swiper-container #swiperCourse [attr.slides-per-view]="1" [attr.space-between]="10">
-        <swiper-slide *ngFor="let courseInFocus of coursesInFocus">
-          <div class="course-card">
-
-            <!-- ── Top row: title + thumbnail ─────────────────────── -->
-            <div class="course-top">
-              <div class="course-title-block">
-                <a [href]="courseInFocus.link" target="_blank" class="course-name-link">
-                  {{ courseInFocus.name }}
-                </a>
-              </div>
-              <div class="course-thumb-wrap">
-                <img
-                  class="course-thumb"
-                  [src]="courseInFocus.image$ | async"
-                  [alt]="courseInFocus.name"
-                />
-              </div>
-            </div>
-
-            <!-- ── Metadata pills ─────────────────────────────────── -->
-            <div class="course-meta">
-              <div class="meta-item">
-                <span class="meta-label">Offered By</span>
-                <span class="meta-value">{{ courseInFocus.offeredBy }}</span>
-              </div>
-              <div class="meta-item">
-                <span class="meta-label">Platform</span>
-                <span class="meta-value">{{ courseInFocus.platform }}</span>
-              </div>
-              <div class="meta-item">
-                <span class="meta-label">Duration</span>
-                <span class="meta-value">{{ courseInFocus.duration }}</span>
-              </div>
-              <div class="meta-item">
-                <span class="meta-label">Cost</span>
-                <span class="meta-value">{{ courseInFocus.approxCost }}</span>
-              </div>
-            </div>
-
-            <!-- ── Key topics ─────────────────────────────────────── -->
-            <div class="course-topics">
-              <span class="meta-label">Key Topics</span>
-              <div class="topics-list">
-                <span
-                  class="home-key-tag"
-                  *ngFor="let topic of courseInFocus.keyTopics.split(',')"
-                >{{ topic.trim() }}</span>
-              </div>
-            </div>
-
-            <!-- ── Description ────────────────────────────────────── -->
-            <p class="course-description">{{ courseInFocus.description }}</p>
-
-            <!-- ── CTA ───────────────────────────────────────────── -->
-            <div class="course-cta">
-              <a [href]="courseInFocus.link" target="_blank" class="wiof-primary-link">
-                Know More
-              </a>
-            </div>
-
+@if (coursesInFocus?.length > 0) {
+  <ion-card
+    class="wiof-course-in-focus-container"
+    >
+    <ion-card-header class="wiof-slider-header">
+      <span class="header-badge">
+        <ion-icon aria-hidden="true" name="school-outline"></ion-icon>
+        Course in Focus
+      </span>
+    </ion-card-header>
+    <ion-card-content class="background ion-no-padding">
+      @if (coursesInFocus) {
+        <div>
+          <swiper-container #swiperCourse [attr.slides-per-view]="1" [attr.space-between]="10">
+            @for (courseInFocus of coursesInFocus; track courseInFocus) {
+              <swiper-slide>
+                <div class="course-card">
+                  <!-- ── Top row: title + thumbnail ─────────────────────── -->
+                  <div class="course-top">
+                    <div class="course-title-block">
+                      <a [href]="courseInFocus.link" target="_blank" class="course-name-link">
+                        {{ courseInFocus.name }}
+                      </a>
+                    </div>
+                    <div class="course-thumb-wrap">
+                      <img
+                        class="course-thumb"
+                        [src]="courseInFocus.image$ | async"
+                        [alt]="courseInFocus.name"
+                        />
+                      </div>
+                    </div>
+                    <!-- ── Metadata pills ─────────────────────────────────── -->
+                    <div class="course-meta">
+                      <div class="meta-item">
+                        <span class="meta-label">Offered By</span>
+                        <span class="meta-value">{{ courseInFocus.offeredBy }}</span>
+                      </div>
+                      <div class="meta-item">
+                        <span class="meta-label">Platform</span>
+                        <span class="meta-value">{{ courseInFocus.platform }}</span>
+                      </div>
+                      <div class="meta-item">
+                        <span class="meta-label">Duration</span>
+                        <span class="meta-value">{{ courseInFocus.duration }}</span>
+                      </div>
+                      <div class="meta-item">
+                        <span class="meta-label">Cost</span>
+                        <span class="meta-value">{{ courseInFocus.approxCost }}</span>
+                      </div>
+                    </div>
+                    <!-- ── Key topics ─────────────────────────────────────── -->
+                    <div class="course-topics">
+                      <span class="meta-label">Key Topics</span>
+                      <div class="topics-list">
+                        @for (topic of courseInFocus.keyTopics.split(','); track topic) {
+                          <span
+                            class="home-key-tag"
+                          >{{ topic.trim() }}</span>
+                        }
+                      </div>
+                    </div>
+                    <!-- ── Description ────────────────────────────────────── -->
+                    <p class="course-description">{{ courseInFocus.description }}</p>
+                    <!-- ── CTA ───────────────────────────────────────────── -->
+                    <div class="course-cta">
+                      <a [href]="courseInFocus.link" target="_blank" class="wiof-primary-link">
+                        Know More
+                      </a>
+                    </div>
+                  </div>
+                </swiper-slide>
+              }
+            </swiper-container>
+            @if (coursesInFocus.length > 1) {
+              <button aria-label="Previous slide" class="swiper-nav-btn prev" (click)="swiperCourse.swiper.slidePrev()">
+                <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
+              </button>
+            }
+            @if (coursesInFocus.length > 1) {
+              <button aria-label="Next slide" class="swiper-nav-btn next" (click)="swiperCourse.swiper.slideNext()">
+                <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
+              </button>
+            }
           </div>
-        </swiper-slide>
-      </swiper-container>
-      <button aria-label="Previous slide" class="swiper-nav-btn prev" *ngIf="coursesInFocus.length > 1" (click)="swiperCourse.swiper.slidePrev()">
-        <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
-      </button>
-      <button aria-label="Next slide" class="swiper-nav-btn next" *ngIf="coursesInFocus.length > 1" (click)="swiperCourse.swiper.slideNext()">
-        <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
-      </button>
-    </div>
-
-    <ng-template #loading>
-      <div style="padding: 1rem;">
-        <div class="skeleton" style="height: 200px; border-radius: 12px; margin-bottom: 0.75rem;"></div>
-        <div class="skeleton" style="height: 16px; width: 60%; border-radius: 6px; margin-bottom: 0.5rem;"></div>
-        <div class="skeleton" style="height: 12px; width: 80%; border-radius: 6px;"></div>
-      </div>
-    </ng-template>
-  </ion-card-content>
-</ion-card>
+        } @else {
+          <div style="padding: 1rem;">
+            <div class="skeleton" style="height: 200px; border-radius: 12px; margin-bottom: 0.75rem;"></div>
+            <div class="skeleton" style="height: 16px; width: 60%; border-radius: 6px; margin-bottom: 0.5rem;"></div>
+            <div class="skeleton" style="height: 12px; width: 80%; border-radius: 6px;"></div>
+          </div>
+        }
+      </ion-card-content>
+    </ion-card>
+  }

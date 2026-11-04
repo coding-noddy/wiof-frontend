@@ -9,8 +9,10 @@
     [ngModel]="value"
     (ngModelChange)="onInput($event)"
     (keydown.escape)="clear()"
-  />
-  <button type="button" class="search-clear" *ngIf="value" (click)="clear()" aria-label="Clear search">
-    <ion-icon aria-hidden="true" name="close-circle"></ion-icon>
-  </button>
-</div>
+    />
+    @if (value) {
+      <button type="button" class="search-clear" (click)="clear()" aria-label="Clear search">
+        <ion-icon aria-hidden="true" name="close-circle"></ion-icon>
+      </button>
+    }
+  </div>

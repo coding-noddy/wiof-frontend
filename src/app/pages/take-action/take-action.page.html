@@ -17,12 +17,16 @@
     </p>
   </section>
 
-  <section class="hub-section" *ngIf="isLoading">
-    <h2 class="section-heading"><span class="skeleton skeleton-text-short"></span></h2>
-    <div class="action-grid">
-      <div class="skeleton skeleton-action-card" *ngFor="let i of [1,2,3,4]"></div>
-    </div>
-  </section>
+  @if (isLoading) {
+    <section class="hub-section">
+      <h2 class="section-heading"><span class="skeleton skeleton-text-short"></span></h2>
+      <div class="action-grid">
+        @for (i of [1,2,3,4]; track i) {
+          <div class="skeleton skeleton-action-card"></div>
+        }
+      </div>
+    </section>
+  }
 
   <div class="hub-search" [hidden]="isLoading || !allActions.length">
     <app-search-box
@@ -33,80 +37,111 @@
     ></app-search-box>
   </div>
 
-  <section class="hub-section" *ngIf="!isLoading && isSearching" aria-live="polite">
-    <h2 class="section-heading">
-      {{ searchResults.length }} {{ searchResults.length === 1 ? 'result' : 'results' }} for “{{ searchQuery.trim() }}”
-    </h2>
-    <div class="action-grid" *ngIf="searchResults.length">
-      <app-take-action-card *ngFor="let action of searchResults" [action]="action"></app-take-action-card>
-    </div>
-    <p class="empty-note" *ngIf="!searchResults.length">
-      No actions match “{{ searchQuery.trim() }}”. Try a different word, or
-      <button type="button" class="wiof-link-button" (click)="searchBox.clear()">browse by element</button>.
-    </p>
-  </section>
-
-  <ng-container *ngIf="!isLoading && !isSearching">
-    <section class="hub-section" *ngIf="featuredActions.length">
-      <h2 class="section-heading">Featured Actions</h2>
-      <div class="action-grid">
-        <app-take-action-card *ngFor="let action of featuredActions" [action]="action"></app-take-action-card>
-      </div>
+  @if (!isLoading && isSearching) {
+    <section class="hub-section" aria-live="polite">
+      <h2 class="section-heading">
+        {{ searchResults.length }} {{ searchResults.length === 1 ? 'result' : 'results' }} for “{{ searchQuery.trim() }}”
+      </h2>
+      @if (searchResults.length) {
+        <div class="action-grid">
+          @for (action of searchResults; track action) {
+            <app-take-action-card [action]="action"></app-take-action-card>
+          }
+        </div>
+      }
+      @if (!searchResults.length) {
+        <p class="empty-note">
+          No actions match “{{ searchQuery.trim() }}”. Try a different word, or
+          <button type="button" class="wiof-link-button" (click)="searchBox.clear()">browse by element</button>.
+        </p>
+      }
     </section>
+  }
 
+  @if (!isLoading && !isSearching) {
+    @if (featuredActions.length) {
+      <section class="hub-section">
+        <h2 class="section-heading">Featured Actions</h2>
+        <div class="action-grid">
+          @for (action of featuredActions; track action) {
+            <app-take-action-card [action]="action"></app-take-action-card>
+          }
+        </div>
+      </section>
+    }
     <section class="hub-section">
       <h2 class="section-heading">Browse by Element</h2>
-
       <app-life-elements
         variant="pills"
         [element]="selectedElement"
         [navigate]="false"
         (elementSelect)="selectElement($event)"
       ></app-life-elements>
-
-      <div class="action-grid tab-action-grid" *ngIf="activeElementTab?.actions?.length">
-        <app-take-action-card *ngFor="let action of activeElementTab.actions" [action]="action"></app-take-action-card>
-      </div>
-      <p class="empty-note" *ngIf="!activeElementTab?.actions?.length">
-        No actions yet for {{ selectedElement | titlecase }} — check back soon.
-      </p>
+      @if (activeElementTab?.actions?.length) {
+        <div class="action-grid tab-action-grid">
+          @for (action of activeElementTab.actions; track action) {
+            <app-take-action-card [action]="action"></app-take-action-card>
+          }
+        </div>
+      }
+      @if (!activeElementTab?.actions?.length) {
+        <p class="empty-note">
+          No actions yet for {{ selectedElement | titlecase }} — check back soon.
+        </p>
+      }
     </section>
+    @if (categories.length) {
+      <section class="hub-section">
+        <h2 class="section-heading">Browse by Category</h2>
+        <div class="category-pill-row">
+          <button type="button" class="category-pill" [class.active]="!selectedCategory" (click)="selectCategory('')">All</button>
+          @for (category of categories; track category) {
+            <button
+              type="button"
+              class="category-pill"
+              [class.active]="selectedCategory === category"
+              (click)="selectCategory(category)"
+            >{{ category }}</button>
+          }
+        </div>
+        <div class="action-grid">
+          @for (action of categoryFilteredActions; track action) {
+            <app-take-action-card [action]="action"></app-take-action-card>
+          }
+        </div>
+      </section>
+    }
+  }
 
-    <section class="hub-section" *ngIf="categories.length">
-      <h2 class="section-heading">Browse by Category</h2>
-      <div class="category-pill-row">
-        <button type="button" class="category-pill" [class.active]="!selectedCategory" (click)="selectCategory('')">All</button>
-        <button
-          type="button"
-          *ngFor="let category of categories"
-          class="category-pill"
-          [class.active]="selectedCategory === category"
-          (click)="selectCategory(category)"
-        >{{ category }}</button>
-      </div>
-      <div class="action-grid">
-        <app-take-action-card *ngFor="let action of categoryFilteredActions" [action]="action"></app-take-action-card>
-      </div>
+  @if (isAuthenticated) {
+    <section class="hub-section">
+      <h2 class="section-heading">Recently Completed</h2>
+      @if (!myActionsLoading && !recentlyCompleted.length) {
+        <p class="empty-note">
+          You haven't completed any actions yet — pick one above to get started.
+        </p>
+      }
+      @if (recentlyCompleted.length) {
+        <ul class="recent-list">
+          @for (item of recentlyCompleted; track item) {
+            <li>
+              <ion-icon aria-hidden="true" name="checkmark-circle"></ion-icon>
+              <span class="recent-title">{{ getActionTitle(item.actionId) }}</span>
+              @if (item.lastCompletedAt?.toDate) {
+                <span class="recent-date">{{ item.lastCompletedAt.toDate() | date:'mediumDate' }}</span>
+              }
+            </li>
+          }
+        </ul>
+      }
     </section>
-  </ng-container>
+  }
 
-  <section class="hub-section" *ngIf="isAuthenticated">
-    <h2 class="section-heading">Recently Completed</h2>
-    <p class="empty-note" *ngIf="!myActionsLoading && !recentlyCompleted.length">
-      You haven't completed any actions yet — pick one above to get started.
-    </p>
-    <ul class="recent-list" *ngIf="recentlyCompleted.length">
-      <li *ngFor="let item of recentlyCompleted">
-        <ion-icon aria-hidden="true" name="checkmark-circle"></ion-icon>
-        <span class="recent-title">{{ getActionTitle(item.actionId) }}</span>
-        <span class="recent-date" *ngIf="item.lastCompletedAt?.toDate">{{ item.lastCompletedAt.toDate() | date:'mediumDate' }}</span>
-      </li>
-    </ul>
-  </section>
-
-  <section class="hub-section guest-cta" *ngIf="!isAuthenticated">
-    <p>Sign in to save your progress and see your own action history here.</p>
-  </section>
+  @if (!isAuthenticated) {
+    <section class="hub-section guest-cta">
+      <p>Sign in to save your progress and see your own action history here.</p>
+    </section>
+  }
 
   <app-wiof-footer></app-wiof-footer>
 </ion-content>

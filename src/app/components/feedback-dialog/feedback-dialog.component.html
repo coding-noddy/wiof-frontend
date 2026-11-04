@@ -13,18 +13,19 @@
     <fieldset class="feedback-field">
       <legend class="field-label">What is it about?</legend>
       <div class="category-grid" role="radiogroup">
-        <button
-          type="button"
-          *ngFor="let c of categories"
-          class="category-chip"
-          role="radio"
-          [attr.aria-checked]="feedbackForm.value.category === c.value"
-          [class.selected]="feedbackForm.value.category === c.value"
-          (click)="selectCategory(c.value)"
-        >
-          <ion-icon aria-hidden="true" [name]="c.icon"></ion-icon>
-          <span>{{ c.label }}</span>
-        </button>
+        @for (c of categories; track c) {
+          <button
+            type="button"
+            class="category-chip"
+            role="radio"
+            [attr.aria-checked]="feedbackForm.value.category === c.value"
+            [class.selected]="feedbackForm.value.category === c.value"
+            (click)="selectCategory(c.value)"
+            >
+            <ion-icon aria-hidden="true" [name]="c.icon"></ion-icon>
+            <span>{{ c.label }}</span>
+          </button>
+        }
       </div>
     </fieldset>
 
@@ -38,12 +39,13 @@
         placeholder="Tell us what's on your mind. For an issue, tell us what you were trying to do and what went wrong."
       ></textarea>
       <div class="field-meta">
-        <span
-          class="field-error"
-          *ngIf="feedbackForm.controls.message.touched && feedbackForm.controls.message.invalid"
-        >
-          Please write at least {{ limits.MESSAGE_MIN }} characters.
-        </span>
+        @if (feedbackForm.controls.message.touched && feedbackForm.controls.message.invalid) {
+          <span
+            class="field-error"
+            >
+            Please write at least {{ limits.MESSAGE_MIN }} characters.
+          </span>
+        }
         <span class="char-count">{{ messageLength }} / {{ limits.MESSAGE_MAX }}</span>
       </div>
     </div>
@@ -56,20 +58,25 @@
       <div class="feedback-field">
         <label class="field-label" for="feedback-email">Email <span class="optional">(optional)</span></label>
         <input id="feedback-email" type="email" formControlName="email" placeholder="If you want a reply" />
-        <span
-          class="field-error"
-          *ngIf="feedbackForm.controls.email.touched && feedbackForm.controls.email.invalid"
-        >
-          Please enter a valid email.
-        </span>
+        @if (feedbackForm.controls.email.touched && feedbackForm.controls.email.invalid) {
+          <span
+            class="field-error"
+            >
+            Please enter a valid email.
+          </span>
+        }
       </div>
     </div>
 
     <div class="feedback-actions">
       <p class="feedback-note">
         We also note which page you were on.
-        <ng-container *ngIf="isSignedIn">Track it under <strong>My Feedback</strong>.</ng-container>
-        <ng-container *ngIf="!isSignedIn">Sign in to track its status.</ng-container>
+        @if (isSignedIn) {
+          Track it under <strong>My Feedback</strong>.
+        }
+        @if (!isSignedIn) {
+          Sign in to track its status.
+        }
       </p>
       <button type="button" class="wiof-secondary-btn" (click)="close()">Cancel</button>
       <button type="submit" class="wiof-primary-btn" [disabled]="submitting">

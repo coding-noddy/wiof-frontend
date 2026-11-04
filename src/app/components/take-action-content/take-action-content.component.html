@@ -8,34 +8,35 @@
     <div>
       <ion-grid class="actions-container" style="margin: 0 auto">
         <ion-row>
-          <ion-col
-            *ngFor="let action of actionData.links"
-            size="12"
-            size-md="6"
-            size-lg="3"
-          >
-            <ion-card class="action-card" [ngClass]="selectedElement">
-              <ion-card-content
-                class="ion-no-padding ion-text-left"
-                style="height: 100%"
+          @for (action of actionData.links; track action) {
+            <ion-col
+              size="12"
+              size-md="6"
+              size-lg="3"
               >
-                <div class="action-media-container">
-                  <iframe loading="lazy"
-                    [title]="'Video for ' + action.heading"
-                    [src]="action.linkSafe"
-                    style="border: none; width: 100%; min-height: 200px"
+              <ion-card class="action-card" [ngClass]="selectedElement">
+                <ion-card-content
+                  class="ion-no-padding ion-text-left"
+                  style="height: 100%"
                   >
-                  </iframe>
-                </div>
-                <h3 class="action-card-title">
-                  {{ action.heading }}
-                </h3>
-                <p class="action-card-content ion-padding-horizontal">
-                  {{ action.desc }}
-                </p>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
+                  <div class="action-media-container">
+                    <iframe loading="lazy"
+                      [title]="'Video for ' + action.heading"
+                      [src]="action.linkSafe"
+                      style="border: none; width: 100%; min-height: 200px"
+                      >
+                    </iframe>
+                  </div>
+                  <h3 class="action-card-title">
+                    {{ action.heading }}
+                  </h3>
+                  <p class="action-card-content ion-padding-horizontal">
+                    {{ action.desc }}
+                  </p>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+          }
         </ion-row>
       </ion-grid>
     </div>

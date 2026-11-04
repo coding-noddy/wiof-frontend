@@ -1,63 +1,75 @@
-<ion-card *ngIf="newsList?.length > 0" class="breaking-news-container">
-  <ion-card-header class="bn-header">
-    <span class="bn-badge">
-      <span class="bn-badge-dot"></span>
-      Breaking News
-    </span>
-  </ion-card-header>
-
-  <ion-card-content class="breaking-news-content">
-    <div class="bn-body" *ngIf="newsList; else loading">
-      <swiper-container #swiperNews [attr.slides-per-view]="1" [attr.space-between]="1" [attr.loop]="true" [attr.autoplay-delay]="5000" class="breaking-news-slides" (slidechange)="onSlideChange(swiperNews.swiper.realIndex)">
-        <swiper-slide *ngFor="let news of newsList; let i = index">
-          <div class="news-card">
-            <div class="media-panel">
-              <img *ngIf="news.mediaType === 'image' && isLoaded(i)" class="news-media" [src]="news.image$ | async" [alt]="news.headline" decoding="async" />
-              <div *ngIf="news.mediaType === 'video' && isLoaded(i)" class="video-wrap">
-                <iframe loading="lazy" class="news-media" [title]="'Video for news ' + news.headline" [src]="news.sanitizedLink" [appYoutubeLite]="news.mediaLink" allowfullscreen></iframe>
-              </div>
-              <span class="news-date-badge">{{ news.date | date: 'MMM d' }}</span>
-            </div>
-
-            <div class="detail-panel">
-              <h3 class="news-headline">{{ news.headline }}</h3>
-              <div class="news-content" [innerHTML]="news.content"></div>
-              <a *ngIf="news.newsSource" [href]="news.newsSource" target="_blank" rel="noopener" class="news-cta">
-                Read Full Story
-                <ion-icon aria-hidden="true" name="arrow-forward"></ion-icon>
-              </a>
-            </div>
+@if (newsList?.length > 0) {
+  <ion-card class="breaking-news-container">
+    <ion-card-header class="bn-header">
+      <span class="bn-badge">
+        <span class="bn-badge-dot"></span>
+        Breaking News
+      </span>
+    </ion-card-header>
+    <ion-card-content class="breaking-news-content">
+      @if (newsList) {
+        <div class="bn-body">
+          <swiper-container #swiperNews [attr.slides-per-view]="1" [attr.space-between]="1" [attr.loop]="true" [attr.autoplay-delay]="5000" class="breaking-news-slides" (slidechange)="onSlideChange(swiperNews.swiper.realIndex)">
+            @for (news of newsList; track news; let i = $index) {
+              <swiper-slide>
+                <div class="news-card">
+                  <div class="media-panel">
+                    @if (news.mediaType === 'image' && isLoaded(i)) {
+                      <img class="news-media" [src]="news.image$ | async" [alt]="news.headline" decoding="async" />
+                    }
+                    @if (news.mediaType === 'video' && isLoaded(i)) {
+                      <div class="video-wrap">
+                        <iframe loading="lazy" class="news-media" [title]="'Video for news ' + news.headline" [src]="news.sanitizedLink" [appYoutubeLite]="news.mediaLink" allowfullscreen></iframe>
+                      </div>
+                    }
+                    <span class="news-date-badge">{{ news.date | date: 'MMM d' }}</span>
+                  </div>
+                  <div class="detail-panel">
+                    <h3 class="news-headline">{{ news.headline }}</h3>
+                    <div class="news-content" [innerHTML]="news.content"></div>
+                    @if (news.newsSource) {
+                      <a [href]="news.newsSource" target="_blank" rel="noopener" class="news-cta">
+                        Read Full Story
+                        <ion-icon aria-hidden="true" name="arrow-forward"></ion-icon>
+                      </a>
+                    }
+                  </div>
+                </div>
+              </swiper-slide>
+            }
+          </swiper-container>
+          @if (newsList.length > 1) {
+            <button class="bn-nav-btn prev" (click)="swiperNews.swiper.slidePrev()" aria-label="Previous story">
+              <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
+            </button>
+          }
+          @if (newsList.length > 1) {
+            <button class="bn-nav-btn next" (click)="swiperNews.swiper.slideNext()" aria-label="Next story">
+              <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
+            </button>
+          }
+        </div>
+      } @else {
+        <div class="loading-wrap">
+          <div class="skeleton" style="height: 220px; width: 33%; border-radius: 12px;"></div>
+          <div style="flex: 1; padding: 1.5rem; display: flex; flex-direction: column; gap: 0.6rem;">
+            <div class="skeleton" style="height: 14px; width: 40%; border-radius: 6px;"></div>
+            <div class="skeleton" style="height: 20px; width: 80%; border-radius: 6px;"></div>
+            <div class="skeleton" style="height: 12px; width: 100%; border-radius: 6px;"></div>
+            <div class="skeleton" style="height: 12px; width: 90%; border-radius: 6px;"></div>
           </div>
-        </swiper-slide>
-      </swiper-container>
-
-      <button class="bn-nav-btn prev" *ngIf="newsList.length > 1" (click)="swiperNews.swiper.slidePrev()" aria-label="Previous story">
-        <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
-      </button>
-      <button class="bn-nav-btn next" *ngIf="newsList.length > 1" (click)="swiperNews.swiper.slideNext()" aria-label="Next story">
-        <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
-      </button>
-    </div>
-
-    <div class="news-marquee">
-      <span class="news-marquee-label">This Week</span>
-      <div class="news-marquee-track">
-        <div class="news-marquee-content" [ngStyle]="{ 'animation-duration': newsList.length * 10 + 's' }">
-          <span *ngFor="let news of newsList">{{ news.headline }}</span>
+        </div>
+      }
+      <div class="news-marquee">
+        <span class="news-marquee-label">This Week</span>
+        <div class="news-marquee-track">
+          <div class="news-marquee-content" [ngStyle]="{ 'animation-duration': newsList.length * 10 + 's' }">
+            @for (news of newsList; track news) {
+              <span>{{ news.headline }}</span>
+            }
+          </div>
         </div>
       </div>
-    </div>
-
-    <ng-template #loading>
-      <div class="loading-wrap">
-        <div class="skeleton" style="height: 220px; width: 33%; border-radius: 12px;"></div>
-        <div style="flex: 1; padding: 1.5rem; display: flex; flex-direction: column; gap: 0.6rem;">
-          <div class="skeleton" style="height: 14px; width: 40%; border-radius: 6px;"></div>
-          <div class="skeleton" style="height: 20px; width: 80%; border-radius: 6px;"></div>
-          <div class="skeleton" style="height: 12px; width: 100%; border-radius: 6px;"></div>
-          <div class="skeleton" style="height: 12px; width: 90%; border-radius: 6px;"></div>
-        </div>
-      </div>
-    </ng-template>
-  </ion-card-content>
-</ion-card>
+    </ion-card-content>
+  </ion-card>
+}

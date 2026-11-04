@@ -37,145 +37,166 @@
     </div>
 
     <!-- Auto-save indicator -->
-    <div class="autosave-bar" *ngIf="!isEditMode">
-      <span class="autosave-status" *ngIf="lastSavedAt">
-        <ion-icon aria-hidden="true" name="cloud-done-outline"></ion-icon> Draft saved {{ lastSavedAt | date:'shortTime' }}
-      </span>
-      <span class="autosave-status unsaved" *ngIf="isDirty && !lastSavedAt">
-        <ion-icon aria-hidden="true" name="ellipse"></ion-icon> Unsaved changes
-      </span>
-    </div>
+    @if (!isEditMode) {
+      <div class="autosave-bar">
+        @if (lastSavedAt) {
+          <span class="autosave-status">
+            <ion-icon aria-hidden="true" name="cloud-done-outline"></ion-icon> Draft saved {{ lastSavedAt | date:'shortTime' }}
+          </span>
+        }
+        @if (isDirty && !lastSavedAt) {
+          <span class="autosave-status unsaved">
+            <ion-icon aria-hidden="true" name="ellipse"></ion-icon> Unsaved changes
+          </span>
+        }
+      </div>
+    }
 
     <!-- Keyboard shortcuts panel -->
-    <div class="shortcuts-panel" *ngIf="showShortcuts">
-      <div class="shortcuts-title">Keyboard Shortcuts</div>
-      <div class="shortcuts-grid">
-        <div class="shortcut-item" *ngFor="let s of shortcuts">
-          <kbd>{{ s.keys }}</kbd>
-          <span>{{ s.action }}</span>
+    @if (showShortcuts) {
+      <div class="shortcuts-panel">
+        <div class="shortcuts-title">Keyboard Shortcuts</div>
+        <div class="shortcuts-grid">
+          @for (s of shortcuts; track s) {
+            <div class="shortcut-item">
+              <kbd>{{ s.keys }}</kbd>
+              <span>{{ s.action }}</span>
+            </div>
+          }
         </div>
       </div>
-    </div>
+    }
 
     <!-- Preview Mode -->
-    <div class="preview-panel" *ngIf="showPreview">
-      <div class="blog-post-wrapper">
-        <div class="blog-hero" *ngIf="imageToDisplay">
-          <div class="blog-hero-blur" [style.backgroundImage]="'url(' + imageToDisplay + ')'" ></div>
-          <img [src]="imageToDisplay" [alt]="addBlogForm.get('title')?.value || 'Blog image'" class="blog-hero-img">
-        </div>
-
-        <article class="blog-article">
-          <div class="blog-meta-top">
-            <span class="preview-category">{{ addBlogForm.get('category')?.value | uppercase }}</span>
-            <span class="blog-read-time">
-              <ion-icon aria-hidden="true" name="time-outline"></ion-icon>
-              {{ readTime }} min read
-            </span>
-          </div>
-
-          <h1 class="blog-title">{{ addBlogForm.get('title')?.value || 'Untitled' }}</h1>
-
-          <div class="blog-author-row">
-            <div class="author-info">
-              <span class="author-name">By {{ addBlogForm.get('authorName')?.value || 'Author' }}</span>
-              <span class="blog-date" *ngIf="addBlogForm.get('publishDate')?.value">{{ addBlogForm.get('publishDate')?.value | date: 'MMM dd, yyyy' }}</span>
+    @if (showPreview) {
+      <div class="preview-panel">
+        <div class="blog-post-wrapper">
+          @if (imageToDisplay) {
+            <div class="blog-hero">
+              <div class="blog-hero-blur" [style.backgroundImage]="'url(' + imageToDisplay + ')'" ></div>
+              <img [src]="imageToDisplay" [alt]="addBlogForm.get('title')?.value || 'Blog image'" class="blog-hero-img">
             </div>
-          </div>
-
-          <hr class="blog-divider">
-          <p class="blog-description">{{ addBlogForm.get('shortDescription')?.value }}</p>
-          <div class="blog-content" [innerHTML]="addBlogForm.get('content')?.value"></div>
-
-          <hr class="blog-divider">
-          <div class="blog-about-author" *ngIf="addBlogForm.get('aboutAuthor')?.value">
-            <h4>About {{ addBlogForm.get('authorName')?.value || 'the author' }}</h4>
-            <p>{{ addBlogForm.get('aboutAuthor')?.value }}</p>
-          </div>
-        </article>
+          }
+          <article class="blog-article">
+            <div class="blog-meta-top">
+              <span class="preview-category">{{ addBlogForm.get('category')?.value | uppercase }}</span>
+              <span class="blog-read-time">
+                <ion-icon aria-hidden="true" name="time-outline"></ion-icon>
+                {{ readTime }} min read
+              </span>
+            </div>
+            <h1 class="blog-title">{{ addBlogForm.get('title')?.value || 'Untitled' }}</h1>
+            <div class="blog-author-row">
+              <div class="author-info">
+                <span class="author-name">By {{ addBlogForm.get('authorName')?.value || 'Author' }}</span>
+                @if (addBlogForm.get('publishDate')?.value) {
+                  <span class="blog-date">{{ addBlogForm.get('publishDate')?.value | date: 'MMM dd, yyyy' }}</span>
+                }
+              </div>
+            </div>
+            <hr class="blog-divider">
+            <p class="blog-description">{{ addBlogForm.get('shortDescription')?.value }}</p>
+            <div class="blog-content" [innerHTML]="addBlogForm.get('content')?.value"></div>
+            <hr class="blog-divider">
+            @if (addBlogForm.get('aboutAuthor')?.value) {
+              <div class="blog-about-author">
+                <h4>About {{ addBlogForm.get('authorName')?.value || 'the author' }}</h4>
+                <p>{{ addBlogForm.get('aboutAuthor')?.value }}</p>
+              </div>
+            }
+          </article>
+        </div>
       </div>
-    </div>
+    }
 
     <!-- Edit Mode Form -->
-    <form [formGroup]="addBlogForm" *ngIf="!showPreview">
-      <!-- Basic Info Card -->
-      <div class="form-card">
-        <div class="form-card-title"><ion-icon aria-hidden="true" name="document-text-outline"></ion-icon> Basic Information</div>
-        <div class="form-row">
-          <ion-item>
-            <ion-input label="Blog Title *" labelPlacement="floating" formControlName="title"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-input label="Author Name *" labelPlacement="floating" formControlName="authorName"></ion-input>
-          </ion-item>
-        </div>
-        <!-- Slug preview -->
-        <div class="slug-preview" *ngIf="slugPreview">
-          <ion-icon aria-hidden="true" name="link-outline"></ion-icon>
-          <span>/element/{{ addBlogForm.get('category')?.value || '...' }}/blog/<strong>{{ slugPreview }}</strong></span>
-        </div>
-        <div class="form-row">
-          <ion-item>
-            <ion-select label="Category *" labelPlacement="floating" formControlName="category">
-              <ion-select-option [value]="category" *ngFor="let category of categories">{{ category }}</ion-select-option>
-            </ion-select>
-          </ion-item>
-          <ion-item>
-            <ion-input label="Sub Category *" labelPlacement="floating" formControlName="subCategory"></ion-input>
-          </ion-item>
-        </div>
-        <div class="form-row">
-          <ion-item>
-            <ion-input type="date" label="Published date *" labelPlacement="stacked" formControlName="publishDate"
+    @if (!showPreview) {
+      <form [formGroup]="addBlogForm">
+        <!-- Basic Info Card -->
+        <div class="form-card">
+          <div class="form-card-title"><ion-icon aria-hidden="true" name="document-text-outline"></ion-icon> Basic Information</div>
+          <div class="form-row">
+            <ion-item>
+              <ion-input label="Blog Title *" labelPlacement="floating" formControlName="title"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Author Name *" labelPlacement="floating" formControlName="authorName"></ion-input>
+            </ion-item>
+          </div>
+          <!-- Slug preview -->
+          @if (slugPreview) {
+            <div class="slug-preview">
+              <ion-icon aria-hidden="true" name="link-outline"></ion-icon>
+              <span>/element/{{ addBlogForm.get('category')?.value || '...' }}/blog/<strong>{{ slugPreview }}</strong></span>
+            </div>
+          }
+          <div class="form-row">
+            <ion-item>
+              <ion-select label="Category *" labelPlacement="floating" formControlName="category">
+                @for (category of categories; track category) {
+                  <ion-select-option [value]="category">{{ category }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Sub Category *" labelPlacement="floating" formControlName="subCategory"></ion-input>
+            </ion-item>
+          </div>
+          <div class="form-row">
+            <ion-item>
+              <ion-input type="date" label="Published date *" labelPlacement="stacked" formControlName="publishDate"
               helperText="Blogs are listed newest first by this date"></ion-input>
-          </ion-item>
+            </ion-item>
+          </div>
+          <div class="form-row full-width">
+            <ion-item>
+              <ion-textarea label="Short Description *" labelPlacement="floating" formControlName="shortDescription" rows="2" auto-grow="true"></ion-textarea>
+            </ion-item>
+          </div>
+          <div class="form-row full-width">
+            <ion-item>
+              <ion-textarea label="About Author *" labelPlacement="floating" formControlName="aboutAuthor" rows="2" auto-grow="true"></ion-textarea>
+            </ion-item>
+          </div>
         </div>
-        <div class="form-row full-width">
-          <ion-item>
-            <ion-textarea label="Short Description *" labelPlacement="floating" formControlName="shortDescription" rows="2" auto-grow="true"></ion-textarea>
-          </ion-item>
+        <!-- Image Card -->
+        <div class="form-card">
+          <div class="form-card-title"><ion-icon aria-hidden="true" name="image-outline"></ion-icon> Blog Image</div>
+          <div class="form-row full-width">
+            <ion-item>
+              <ion-label position="stacked">Upload Hero Image *</ion-label>
+              <input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="image" class="file-input" />
+            </ion-item>
+            <p class="field-help">Max file size {{ maxImageMB }} MB. Recommended JPG/PNG. This appears as the blog thumbnail and header.</p>
+          </div>
+          @if (imageToDisplay) {
+            <div class="form-image-preview">
+              <ion-img [src]="imageToDisplay"></ion-img>
+            </div>
+          }
         </div>
-        <div class="form-row full-width">
-          <ion-item>
-            <ion-textarea label="About Author *" labelPlacement="floating" formControlName="aboutAuthor" rows="2" auto-grow="true"></ion-textarea>
-          </ion-item>
+        <!-- Content Card -->
+        <div class="form-card">
+          <div class="form-card-title"><ion-icon aria-hidden="true" name="create-outline"></ion-icon> Blog Content</div>
+          <quill-editor
+            formControlName="content"
+            [valueGetter]="quillHtml"
+            [modules]="quillModules"
+            (onEditorCreated)="onEditorCreated($event)"
+            placeholder="Start writing your blog post... Use the toolbar above for formatting, or paste from Word/Google Docs."
+          ></quill-editor>
+          <div class="editor-stats">
+            <span><ion-icon aria-hidden="true" name="text-outline"></ion-icon> {{ wordCount }} words</span>
+            <span><ion-icon aria-hidden="true" name="code-outline"></ion-icon> {{ charCount }} chars</span>
+            <span><ion-icon aria-hidden="true" name="time-outline"></ion-icon> ~{{ readTime }} min read</span>
+            @if (isDirty) {
+              <span class="editor-stats-right">
+                <ion-icon aria-hidden="true" name="ellipse" color="warning"></ion-icon> Unsaved
+              </span>
+            }
+          </div>
         </div>
-      </div>
-
-      <!-- Image Card -->
-      <div class="form-card">
-        <div class="form-card-title"><ion-icon aria-hidden="true" name="image-outline"></ion-icon> Blog Image</div>
-        <div class="form-row full-width">
-          <ion-item>
-            <ion-label position="stacked">Upload Hero Image *</ion-label>
-            <input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="image" class="file-input" />
-          </ion-item>
-          <p class="field-help">Max file size {{ maxImageMB }} MB. Recommended JPG/PNG. This appears as the blog thumbnail and header.</p>
-        </div>
-        <div class="form-image-preview" *ngIf="imageToDisplay">
-          <ion-img [src]="imageToDisplay"></ion-img>
-        </div>
-      </div>
-
-      <!-- Content Card -->
-      <div class="form-card">
-        <div class="form-card-title"><ion-icon aria-hidden="true" name="create-outline"></ion-icon> Blog Content</div>
-        <quill-editor
-          formControlName="content"
-          [valueGetter]="quillHtml"
-          [modules]="quillModules"
-          (onEditorCreated)="onEditorCreated($event)"
-          placeholder="Start writing your blog post... Use the toolbar above for formatting, or paste from Word/Google Docs."
-        ></quill-editor>
-        <div class="editor-stats">
-          <span><ion-icon aria-hidden="true" name="text-outline"></ion-icon> {{ wordCount }} words</span>
-          <span><ion-icon aria-hidden="true" name="code-outline"></ion-icon> {{ charCount }} chars</span>
-          <span><ion-icon aria-hidden="true" name="time-outline"></ion-icon> ~{{ readTime }} min read</span>
-          <span class="editor-stats-right" *ngIf="isDirty">
-            <ion-icon aria-hidden="true" name="ellipse" color="warning"></ion-icon> Unsaved
-          </span>
-        </div>
-      </div>
-    </form>
+      </form>
+    }
   </div>
 </ion-content>

@@ -59,69 +59,85 @@
     <div class="filter-bar">
       <select class="filter-select" [(ngModel)]="categoryFilter" (ngModelChange)="applyFilters()" aria-label="Filter by category">
         <option value="">All categories</option>
-        <option *ngFor="let c of categories" [value]="c.value">{{ c.label }}</option>
+        @for (c of categories; track c) {
+          <option [value]="c.value">{{ c.label }}</option>
+        }
       </select>
       <select class="filter-select" [(ngModel)]="statusFilter" (ngModelChange)="applyFilters()" aria-label="Filter by status">
         <option value="">All statuses</option>
-        <option *ngFor="let s of statuses" [value]="s">{{ s | titlecase }}</option>
+        @for (s of statuses; track s) {
+          <option [value]="s">{{ s | titlecase }}</option>
+        }
       </select>
       <span class="filter-count">{{ filteredFeedback.length }} of {{ summary.total }} shown</span>
     </div>
 
     <!-- Table -->
-    <div class="admin-table-card" *ngIf="filteredFeedback.length > 0">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Category</th>
-            <th>Feedback</th>
-            <th>From</th>
-            <th>Status</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let f of filteredFeedback">
-            <td><span class="cell-date">{{ (toDate(f.createdAt) | date: 'd MMM y, h:mm a') || '—' }}</span></td>
-            <td><span class="cell-category">{{ categoryLabel(f.category) }}</span></td>
-            <td class="message-cell">
-              <p class="feedback-message" [class.expanded]="expandedId === f.id" (click)="toggleExpand(f.id)">{{ f.message }}</p>
-              <a *ngIf="f.pageUrl" class="cell-link page-link" [href]="f.pageUrl" target="_blank" rel="noopener">{{ f.pageUrl }}</a>
-            </td>
-            <td>
-              <span class="cell-title">{{ f.name || 'Anonymous' }}</span>
-              <a *ngIf="f.email" class="cell-subtitle email-link" [href]="'mailto:' + f.email">{{ f.email }}</a>
-            </td>
-            <td>
-              <select
-                class="status-select"
-                [ngClass]="f.status"
-                [ngModel]="f.status"
-                (ngModelChange)="changeStatus(f, $event)"
-                aria-label="Feedback status"
-              >
-                <option *ngFor="let s of statuses" [value]="s">{{ s | titlecase }}</option>
-              </select>
-            </td>
-            <td>
-              <div class="action-buttons">
-                <button class="action-btn delete" title="Delete" (click)="deleteFeedback(f)">
-                  <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="admin-table-card" *ngIf="!loading && filteredFeedback.length === 0">
-      <div class="empty-state">
-        <ion-icon aria-hidden="true" name="chatbubbles-outline"></ion-icon>
-        <h3>No feedback {{ summary.total ? 'matches these filters' : 'yet' }}</h3>
-        <p>Feedback visitors send from the site footer will appear here.</p>
+    @if (filteredFeedback.length > 0) {
+      <div class="admin-table-card">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Category</th>
+              <th>Feedback</th>
+              <th>From</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (f of filteredFeedback; track f) {
+              <tr>
+                <td><span class="cell-date">{{ (toDate(f.createdAt) | date: 'd MMM y, h:mm a') || '—' }}</span></td>
+                <td><span class="cell-category">{{ categoryLabel(f.category) }}</span></td>
+                <td class="message-cell">
+                  <p class="feedback-message" [class.expanded]="expandedId === f.id" (click)="toggleExpand(f.id)">{{ f.message }}</p>
+                  @if (f.pageUrl) {
+                    <a class="cell-link page-link" [href]="f.pageUrl" target="_blank" rel="noopener">{{ f.pageUrl }}</a>
+                  }
+                </td>
+                <td>
+                  <span class="cell-title">{{ f.name || 'Anonymous' }}</span>
+                  @if (f.email) {
+                    <a class="cell-subtitle email-link" [href]="'mailto:' + f.email">{{ f.email }}</a>
+                  }
+                </td>
+                <td>
+                  <select
+                    class="status-select"
+                    [ngClass]="f.status"
+                    [ngModel]="f.status"
+                    (ngModelChange)="changeStatus(f, $event)"
+                    aria-label="Feedback status"
+                    >
+                    @for (s of statuses; track s) {
+                      <option [value]="s">{{ s | titlecase }}</option>
+                    }
+                  </select>
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="action-btn delete" title="Delete" (click)="deleteFeedback(f)">
+                      <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
       </div>
-    </div>
+    }
+
+    @if (!loading && filteredFeedback.length === 0) {
+      <div class="admin-table-card">
+        <div class="empty-state">
+          <ion-icon aria-hidden="true" name="chatbubbles-outline"></ion-icon>
+          <h3>No feedback {{ summary.total ? 'matches these filters' : 'yet' }}</h3>
+          <p>Feedback visitors send from the site footer will appear here.</p>
+        </div>
+      </div>
+    }
   </div>
 </ion-content>

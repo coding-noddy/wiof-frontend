@@ -46,46 +46,58 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let person of displayedItems; let i = index">
-            <td>{{ person.serialNo }}</td>
-            <td>
-              <div class="cell-with-thumb">
-                <img class="cell-thumbnail round" *ngIf="imageUrls[person.id]" [src]="imageUrls[person.id]" [alt]="person.name">
-                <span class="cell-title">{{ person.name }}</span>
-              </div>
-            </td>
-            <td><span class="cell-subtitle-inline">{{ person.bio | slice:0:40 }}{{ person.bio?.length > 40 ? '...' : '' }}</span></td>
-            <td>
-              <a class="cell-link" *ngIf="person.socialLink" [href]="person.socialLink" target="_blank">Profile ↗</a>
-              <span *ngIf="!person.socialLink">—</span>
-            </td>
-            <td>
-              <div class="action-buttons">
-                <button class="action-btn view" title="Edit profile" (click)="viewAboutUsDetails(person)">
-                  <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
-                </button>
-                <button class="action-btn delete" title="Delete profile" (click)="deleteAboutUs(person.id)">
-                  <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
-                </button>
-              </div>
-            </td>
-          </tr>
+          @for (person of displayedItems; track person; let i = $index) {
+            <tr>
+              <td>{{ person.serialNo }}</td>
+              <td>
+                <div class="cell-with-thumb">
+                  @if (imageUrls[person.id]) {
+                    <img class="cell-thumbnail round" [src]="imageUrls[person.id]" [alt]="person.name">
+                  }
+                  <span class="cell-title">{{ person.name }}</span>
+                </div>
+              </td>
+              <td><span class="cell-subtitle-inline">{{ person.bio | slice:0:40 }}{{ person.bio?.length > 40 ? '...' : '' }}</span></td>
+              <td>
+                @if (person.socialLink) {
+                  <a class="cell-link" [href]="person.socialLink" target="_blank">Profile ↗</a>
+                }
+                @if (!person.socialLink) {
+                  <span>—</span>
+                }
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <button class="action-btn view" title="Edit profile" (click)="viewAboutUsDetails(person)">
+                    <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
+                  </button>
+                  <button class="action-btn delete" title="Delete profile" (click)="deleteAboutUs(person.id)">
+                    <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
         </tbody>
       </table>
 
-      <div class="pagination-bar" *ngIf="allItems.length > 0">
-        <span class="pagination-info">Page {{ currentPage }} of {{ totalPages }} · {{ allItems.length }} members</span>
-        <div class="pagination-controls">
-          <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"><ion-icon aria-hidden="true" name="chevron-back"></ion-icon></button>
-          <button class="page-btn" *ngFor="let p of pageNumbers" [class.active]="p === currentPage" (click)="goToPage(p)">{{ p }}</button>
-          <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"><ion-icon aria-hidden="true" name="chevron-forward"></ion-icon></button>
-          <select class="page-size-select" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
-            <option [ngValue]="5">5 / page</option>
-            <option [ngValue]="10">10 / page</option>
-            <option [ngValue]="25">25 / page</option>
-          </select>
+      @if (allItems.length > 0) {
+        <div class="pagination-bar">
+          <span class="pagination-info">Page {{ currentPage }} of {{ totalPages }} · {{ allItems.length }} members</span>
+          <div class="pagination-controls">
+            <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"><ion-icon aria-hidden="true" name="chevron-back"></ion-icon></button>
+            @for (p of pageNumbers; track p) {
+              <button class="page-btn" [class.active]="p === currentPage" (click)="goToPage(p)">{{ p }}</button>
+            }
+            <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"><ion-icon aria-hidden="true" name="chevron-forward"></ion-icon></button>
+            <select class="page-size-select" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
+              <option [ngValue]="5">5 / page</option>
+              <option [ngValue]="10">10 / page</option>
+              <option [ngValue]="25">25 / page</option>
+            </select>
+          </div>
         </div>
-      </div>
+      }
     </div>
   </div>
 </ion-content>

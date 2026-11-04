@@ -36,39 +36,53 @@
         <button class="filter-dropdown-btn" [class.has-selection]="filterCategory" (click)="toggleDropdown('category')">
           <ion-icon aria-hidden="true" name="funnel-outline"></ion-icon> Category <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
         </button>
-        <div class="filter-dropdown-menu" *ngIf="openDropdown === 'category'">
-          <div class="menu-item" [class.selected]="filterCategory === 'home'" (click)="filterCategory = 'home'; onFilterChange()">🏠 Home</div>
-          <div class="menu-item" [class.selected]="filterCategory === 'earth'" (click)="filterCategory = 'earth'; onFilterChange()">🌍 Earth</div>
-          <div class="menu-item" [class.selected]="filterCategory === 'water'" (click)="filterCategory = 'water'; onFilterChange()">💧 Water</div>
-          <div class="menu-item" [class.selected]="filterCategory === 'air'" (click)="filterCategory = 'air'; onFilterChange()">🌬️ Air</div>
-          <div class="menu-item" [class.selected]="filterCategory === 'energy'" (click)="filterCategory = 'energy'; onFilterChange()">⚡ Energy</div>
-          <div class="menu-item" [class.selected]="filterCategory === 'spirit'" (click)="filterCategory = 'spirit'; onFilterChange()">✨ Spirit</div>
-        </div>
+        @if (openDropdown === 'category') {
+          <div class="filter-dropdown-menu">
+            <div class="menu-item" [class.selected]="filterCategory === 'home'" (click)="filterCategory = 'home'; onFilterChange()">🏠 Home</div>
+            <div class="menu-item" [class.selected]="filterCategory === 'earth'" (click)="filterCategory = 'earth'; onFilterChange()">🌍 Earth</div>
+            <div class="menu-item" [class.selected]="filterCategory === 'water'" (click)="filterCategory = 'water'; onFilterChange()">💧 Water</div>
+            <div class="menu-item" [class.selected]="filterCategory === 'air'" (click)="filterCategory = 'air'; onFilterChange()">🌬️ Air</div>
+            <div class="menu-item" [class.selected]="filterCategory === 'energy'" (click)="filterCategory = 'energy'; onFilterChange()">⚡ Energy</div>
+            <div class="menu-item" [class.selected]="filterCategory === 'spirit'" (click)="filterCategory = 'spirit'; onFilterChange()">✨ Spirit</div>
+          </div>
+        }
       </div>
-      <div class="filter-dropdown" *ngIf="availableYears.length > 0">
-        <button class="filter-dropdown-btn" [class.has-selection]="filterYear" (click)="toggleDropdown('year')">
-          <ion-icon aria-hidden="true" name="calendar-outline"></ion-icon> Year <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
-        </button>
-        <div class="filter-dropdown-menu" *ngIf="openDropdown === 'year'">
-          <div class="menu-item" *ngFor="let year of availableYears" [class.selected]="filterYear === year" (click)="filterYear = year; onFilterChange()">{{ year }}</div>
+      @if (availableYears.length > 0) {
+        <div class="filter-dropdown">
+          <button class="filter-dropdown-btn" [class.has-selection]="filterYear" (click)="toggleDropdown('year')">
+            <ion-icon aria-hidden="true" name="calendar-outline"></ion-icon> Year <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
+          </button>
+          @if (openDropdown === 'year') {
+            <div class="filter-dropdown-menu">
+              @for (year of availableYears; track year) {
+                <div class="menu-item" [class.selected]="filterYear === year" (click)="filterYear = year; onFilterChange()">{{ year }}</div>
+              }
+            </div>
+          }
         </div>
-      </div>
+      }
     </div>
 
     <!-- Active Filter Chips -->
-    <div class="active-filters" *ngIf="hasActiveFilters">
-      <div class="active-chip" *ngIf="filterCategory">
-        <span class="chip-label">Category:</span>
-        <span class="chip-value">{{ filterCategory }}</span>
-        <button class="chip-remove" (click)="removeFilter('filterCategory')">×</button>
+    @if (hasActiveFilters) {
+      <div class="active-filters">
+        @if (filterCategory) {
+          <div class="active-chip">
+            <span class="chip-label">Category:</span>
+            <span class="chip-value">{{ filterCategory }}</span>
+            <button class="chip-remove" (click)="removeFilter('filterCategory')">×</button>
+          </div>
+        }
+        @if (filterYear) {
+          <div class="active-chip">
+            <span class="chip-label">Year:</span>
+            <span class="chip-value">{{ filterYear }}</span>
+            <button class="chip-remove" (click)="removeFilter('filterYear')">×</button>
+          </div>
+        }
+        <button class="clear-all-btn" (click)="clearAllFilters()">Clear all</button>
       </div>
-      <div class="active-chip" *ngIf="filterYear">
-        <span class="chip-label">Year:</span>
-        <span class="chip-value">{{ filterYear }}</span>
-        <button class="chip-remove" (click)="removeFilter('filterYear')">×</button>
-      </div>
-      <button class="clear-all-btn" (click)="clearAllFilters()">Clear all</button>
-    </div>
+    }
 
     <div class="admin-table-card">
       <table class="admin-table">
@@ -91,42 +105,48 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let cc of displayedItems; let i = index">
-            <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
-            <td>
-              <span class="cell-title">{{ cc.topic }}</span>
-              <div class="cell-subtitle">{{ cc.topicShortDesc }}</div>
-            </td>
-            <td>{{ cc.intervieweeName || '—' }}</td>
-            <td><span class="cell-category" [ngClass]="cc.category?.toLowerCase()">{{ cc.category || '—' }}</span></td>
-            <td><span class="cell-date">{{ cc.interviewDate | date:'dd MMM yyyy' }}</span></td>
-            <td>
-              <div class="action-buttons">
-                <button class="action-btn view" title="Edit conversation" (click)="viewCoffeeConversationDetails(cc)">
-                  <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
-                </button>
-                <button class="action-btn delete" title="Delete conversation" (click)="deleteCoffeeConversation(i, cc)">
-                  <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
-                </button>
-              </div>
-            </td>
-          </tr>
+          @for (cc of displayedItems; track cc; let i = $index) {
+            <tr>
+              <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+              <td>
+                <span class="cell-title">{{ cc.topic }}</span>
+                <div class="cell-subtitle">{{ cc.topicShortDesc }}</div>
+              </td>
+              <td>{{ cc.intervieweeName || '—' }}</td>
+              <td><span class="cell-category" [ngClass]="cc.category?.toLowerCase()">{{ cc.category || '—' }}</span></td>
+              <td><span class="cell-date">{{ cc.interviewDate | date:'dd MMM yyyy' }}</span></td>
+              <td>
+                <div class="action-buttons">
+                  <button class="action-btn view" title="Edit conversation" (click)="viewCoffeeConversationDetails(cc)">
+                    <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
+                  </button>
+                  <button class="action-btn delete" title="Delete conversation" (click)="deleteCoffeeConversation(i, cc)">
+                    <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
         </tbody>
       </table>
 
-      <div class="pagination-bar" *ngIf="allItems.length > 0">
-        <span class="pagination-info">Page {{ currentPage }} of {{ totalPages }} · {{ allItems.length }} items</span>
-        <div class="pagination-controls">
-          <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"><ion-icon aria-hidden="true" name="chevron-back"></ion-icon></button>
-          <button class="page-btn" *ngFor="let p of pageNumbers" [class.active]="p === currentPage" (click)="goToPage(p)">{{ p }}</button>
-          <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"><ion-icon aria-hidden="true" name="chevron-forward"></ion-icon></button>
-          <select class="page-size-select" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
-            <option [ngValue]="5">5 / page</option>
-            <option [ngValue]="10">10 / page</option>
-            <option [ngValue]="25">25 / page</option>
-          </select>
+      @if (allItems.length > 0) {
+        <div class="pagination-bar">
+          <span class="pagination-info">Page {{ currentPage }} of {{ totalPages }} · {{ allItems.length }} items</span>
+          <div class="pagination-controls">
+            <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"><ion-icon aria-hidden="true" name="chevron-back"></ion-icon></button>
+            @for (p of pageNumbers; track p) {
+              <button class="page-btn" [class.active]="p === currentPage" (click)="goToPage(p)">{{ p }}</button>
+            }
+            <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"><ion-icon aria-hidden="true" name="chevron-forward"></ion-icon></button>
+            <select class="page-size-select" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
+              <option [ngValue]="5">5 / page</option>
+              <option [ngValue]="10">10 / page</option>
+              <option [ngValue]="25">25 / page</option>
+            </select>
+          </div>
         </div>
-      </div>
+      }
     </div>
   </div>
 </ion-content>
