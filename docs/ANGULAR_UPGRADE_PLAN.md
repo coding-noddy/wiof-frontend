@@ -30,7 +30,7 @@ This document is the research the team asked for before touching the upgrade: wh
 | Carousel | `swiper` 10 (web components, `CUSTOM_ELEMENTS_SCHEMA` in 3 modules) | No Angular dependency; can stay |
 | App structure | 106 NgModules, 101 components, 0 standalone | NgModules remain supported |
 | Templates | 618 `*ngIf` / `*ngFor` / `*ngSwitch` | Deprecated since Angular 20; official automatic converter exists |
-| Guards | 2 class-based (`auth.guard.ts`, `public-user.guard.ts`) | Deprecated style, still works; convert to functional guards |
+| Guards | 2 class-based (`auth.guard.ts`, `public-user.guard.ts`) | Supported (the deprecation was reverted in Angular 16); no change needed |
 | Unit tests | Karma + Jasmine, 134 passing | Karma still works; Vitest is the new default for *new* projects |
 | Linting | `@angular-devkit/build-angular:tslint` | TSLint was retired years ago; `ng lint` doesn't work. Replace with angular-eslint or remove |
 | Dev machine Node.js | 20.11.1 | Angular 20/21 need **20.19+**, Angular 22 needs **22.22+ or 24.15+** |
@@ -72,11 +72,14 @@ Ionic 8 (8.8.x) covers Angular 16 → 22, so Ionic moves once, early. Angular Ma
 | 6 | `HttpClientModule` deprecated | `app.module.ts` | `ng update` migrates to `provideHttpClient()` | Angular 18 |
 | 7 | `*ngIf` / `*ngFor` / `*ngSwitch` deprecated | 618 template uses | `ng generate @angular/core:control-flow`, then review the diff (the converter is good but not perfect; `@for` needs a `track` expression) | Angular 20 (do then) |
 | 8 | Builder packages move (`@angular-devkit/build-angular` → `@angular/build`) | `angular.json`, `package.json` | `ng update` migration; keep `inlineCritical: false` (needed for the strict CSP); re-verify **0 CSP violations** on staging | Angular 20 |
-| 9 | Class-based guards deprecated | 2 guards | Convert to functional guards (small) | Any time |
+| 9 | ~~Class-based guards deprecated~~ Not an issue: the deprecation was reverted in Angular 16, and class guards work in 20 and 21 | 2 guards | None | — |
 | 10 | ng2-charts 6+ needs `provideCharts(withDefaultRegisterables())` | 2 chart files | Add the provider when upgrading ng2-charts | When ng2-charts moves (end) |
 | 11 | Node.js on the dev machine | Local toolchain (nvm4w) | Install Node 22 LTS (works for 17–22; Cloud Functions already run Node 22) | Angular 20 |
 | 12 | TSLint target | `angular.json` | Remove, or replace with `@angular-eslint` | Any time |
 | 13 | **Found in step 4:** AngularFire 19+ compat Firestore wrappers (`AngularFirestoreCollection`/`Document`/`CollectionGroup`) call `inject()` in their constructors, so `afs.collection()`/`doc()` throw NG0203 outside an injection context. True for every version 19.0–21.0 | 145 call sites in 23 files (ngOnInit, handlers, service methods) | `InjectionSafeAngularFirestore` (`src/app/util/injection-safe-firestore.ts`), provided in place of `AngularFirestore` in `AppModule`, creates the wrappers in its own injector's context. No call sites changed. Goes away if the app moves to the modular API | Angular 19 (done) |
+| 14 | **Found in step 5:** the esbuild builder names hashed files `name-XXXXXXXX.js`, so `firebase.json`'s one-year cache rule (written for webpack's `name.<16 hex>.js`) stopped matching and every file would have been served `no-cache` | `firebase.json` | The cache regex matches both naming styles | Angular 20 (done) |
+| 15 | **Found in step 5:** from Node 22, `node --test <folder>` treats the folder as a glob/file, so the rules tests (and with them every deploy) failed | `scripts/run-rules-tests.js` | Pass the test files explicitly | Angular 20 (done) |
+| 16 | **Found in step 5:** the block control flow type-checks `@for` items, exposing template reads of fields the models don't have (`coffeeConv.id`, `inFocus.id` were always undefined) | 3 templates | Bind what was actually used (topic/title); declare the UI-only `imageLoadFailed` flag | Angular 20 (done) |
 
 **Not a problem (checked):** NgModules (still supported), Angular Material theme, Swiper web components, RxJS 7.8, the compat Firebase API (still shipped in AngularFire 21 and Firebase 13), Firestore/Storage rules, Cloud Functions, the security headers/CSP (re-verified per step).
 
@@ -94,7 +97,7 @@ Each step is one branch, built and tested before the next. After each step: prod
 | **3. Angular 17 → 18 + Quill 2** | `ng update` to 18; AngularFire 18; ngx-quill 26 + Quill 2 + new resize plugin; `provideHttpClient` migration | **Highest** (blog editor) | **Admin: write a blog with pasted text + images, resize an image, edit an old blog, check preview and public post** |
 | → **Release A to prod (v7.0)** | Ionic 8 + Angular 18 + Quill 2 live; real users exercise it before the remaining hops | | Full smoke on prod |
 | **4. Angular 18 → 19** | `ng update` (adds `standalone: false`); AngularFire 19 + Firebase 11 | Low | Smoke |
-| **5. Angular 19 → 20** | `ng update`; switch to the `application` builder; fix output path; control-flow migration (618 uses, reviewed); functional guards | Medium (build/deploy) | **Deploy check: full site served, 0 CSP violations** |
+| **5. Angular 19 → 20** | `ng update`; switch to the `application` builder; fix output path; control-flow migration (618 uses, reviewed) | Medium (build/deploy) | **Deploy check: full site served, 0 CSP violations** |
 | **6. Angular 20 → 21** | `ng update`; AngularFire 21 + Firebase 12.18; ng2-charts 10; Material 21; TS 5.9 | Low–medium | Smoke + admin spot-check |
 | → **Release B to prod (v7.1)** | On a supported Angular (until Jun 2027) | | Full smoke on prod |
 | **7. Later: 21 → 22** | When AngularFire 22 is released; TS 6.0, Node 22.22+ | Low | Smoke |
