@@ -225,6 +225,15 @@ export class MyJourneyPage implements OnInit, OnDestroy {
   }
 
   /**
+   * Quality Reads tile: the server counter (user_metrics.qualityReads), or
+   * the fetched list if longer. The list is capped at 50 and the counter is
+   * missing for anyone whose metrics weren't recomputed since it was added.
+   */
+  get qualityReadTotal(): number {
+    return Math.max(this.metrics?.qualityReads ?? 0, this.qualityReadCount);
+  }
+
+  /**
    * Collapsed-by-default history lists (Quality Reads, Videos Watched,
    * Actions Taken) — "See more" expands to the full fetched list instead of
    * always rendering everything, so the page doesn't grow tall with several
@@ -305,6 +314,7 @@ export class MyJourneyPage implements OnInit, OnDestroy {
           console.warn('Failed to load metrics:', err);
           this.metrics = {
             blogsRead: 0,
+            qualityReads: 0,
             videosWatched: 0,
             videosCompleted: 0,
             pollsVoted: 0,

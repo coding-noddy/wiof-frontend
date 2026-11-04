@@ -1,6 +1,6 @@
 {
   "name": "wiof_frontend",
-  "version": "8.1.0",
+  "version": "8.2.0",
   "author": "Ionic Framework",
   "homepage": "https://ionicframework.com/",
   "scripts": {
@@ -10,7 +10,7 @@
     "build:prod": "ng build --configuration production",
     "test": "ng test",
     "test:rules": "node scripts/run-rules-tests.js",
-    "test:functions": "node --test functions/activity-validation.test.js",
+    "test:functions": "node --test functions/activity-validation.test.js functions/user-metrics.test.js",
     "predeploy:staging": "npm run test:functions && npm run test:rules",
     "deploy:staging": "powershell -ExecutionPolicy Bypass -File ./deploy.ps1 -Target staging",
     "predeploy:prod": "npm run test:functions && npm run test:rules",

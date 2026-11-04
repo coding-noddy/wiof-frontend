@@ -4,7 +4,9 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
+import { httpsCallable } from 'firebase/functions';
 import { FIREBASE_COLLECTION } from '../app.constants';
+import { getWiofFunctions } from '../util/cloud-functions.util';
 import { RateLimiterService } from './rate-limiter.service';
 import { AnalyticsService } from './analytics.service';
 import { QualityReadEntry, EqHistoryEntry, PollHistoryEntry, VideoWatchHistoryEntry } from '../models/engagement-history';
@@ -70,6 +72,8 @@ function isNotRejected(data: ActivityLogEntry): boolean {
 
 export interface EngagementMetrics {
   blogsRead: number;
+  /** Distinct blogs read to the quality threshold (docs/METRICS.md). */
+  qualityReads: number;
   videosWatched: number;
   videosCompleted: number;
   pollsVoted: number;
@@ -325,46 +329,24 @@ export class ActivityService {
   }
 
   /**
-   * Logs an EQ assessment completion with dimension breakdowns.
-   * Each completion creates a new entry — no deduplication (multiple completions allowed).
-   * Uses RateLimiterService to throttle writes; on throttle, schedules a retry.
+   * Records an EQ assessment by sending the 24 answers (1-5) to the
+   * submitEqAssessment Cloud Function, which scores them and writes the
+   * eq_completion event itself: firestore.rules don't let a browser write
+   * that event, so the stored score is always the server's (Phase 2 step 2).
+   * Each completion is recorded (retakes allowed). Failures are swallowed —
+   * they never disrupt the user experience.
    */
-  async logEqCompletion(
-    userId: string,
-    overallScore: number,
-    dimensions: { attentionScore: number; clarityScore: number; reparationScore: number }
-  ): Promise<void> {
+  async submitEqAssessment(responses: number[], overallScore: number): Promise<void> {
     this.analyticsService.logEqCompleted(overallScore);
 
-    const calendarDay = toCalendarDay(new Date());
-    const logEntry: Omit<ActivityLogEntry, 'id'> = {
-      userId,
-      activityType: 'eq_completion',
-      schemaVersion: ActivityService.SCHEMA_VERSION,
-      score: overallScore,
-      eqDimensions: {
-        attentionScore: dimensions.attentionScore,
-        clarityScore: dimensions.clarityScore,
-        reparationScore: dimensions.reparationScore
-      },
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      calendarDay
-    };
-
-    const rateLimitKey = `activity_log_${userId}`;
-
-    const writeFn = async (): Promise<void> => {
-      await this.firestore.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
-    };
-
-    if (this.rateLimiter.canWrite(rateLimitKey)) {
-      try {
-        await writeFn();
-      } catch (error) {
-        console.warn('EQ completion logging failed:', error);
-      }
-    } else {
-      this.rateLimiter.scheduleRetry(rateLimitKey, writeFn);
+    try {
+      const submit = httpsCallable<{ responses: number[]; calendarDay: string }, { score: number }>(
+        getWiofFunctions(),
+        'submitEqAssessment'
+      );
+      await submit({ responses, calendarDay: toCalendarDay(new Date()) });
+    } catch (error) {
+      console.warn('EQ assessment submission failed:', error);
     }
   }
 
@@ -459,6 +441,7 @@ export class ActivityService {
       .pipe(
         map(doc => ({
           blogsRead: doc?.blogsRead || 0,
+          qualityReads: doc?.qualityReads || 0,
           videosWatched: doc?.videosWatched || 0,
           videosCompleted: doc?.videosCompleted || 0,
           pollsVoted: doc?.pollsVoted || 0,
