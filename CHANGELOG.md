@@ -7,6 +7,18 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.0.2] - 2026-11-04
+
+Post-migration clean-up.
+
+### Changed
+- **Faster first load on most pages.** The slider library (Swiper, about 47 KB gzip) used to load on every page. It now loads only with the pages that have sliders (home and the five element pages), and on demand for the calendar's event popup. The initial download drops from 485 KB to 444 KB (gzip); blog posts, the blog and video lists, ClimatEnlighten, Take Action and the signed-in pages no longer load it at all. The slider components live in a new `SlidersModule`.
+- **Stylesheets use Sass modules** (`@use` instead of the deprecated `@import`, and `color.adjust()` instead of `darken()`/`lighten()`), so the build has no deprecation warnings and is ready for Dart Sass 3. The compiled CSS is unchanged, except that the blog and video list pages no longer include the theme twice.
+
+### Fixed
+- **The home page requested `/null` (a 404).** The calendar's event background was set to `url(null)` until its image had loaded.
+- **The site's code included the whole `package.json`** (the list of development tools and versions) because the footer imported it for the version number. It now imports only the version.
+
 ## [8.0.1] - 2026-11-04
 
 ### Fixed
