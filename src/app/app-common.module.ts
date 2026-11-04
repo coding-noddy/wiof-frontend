@@ -7,7 +7,6 @@ import { AqiScorecardComponent } from './components/aqi-scorecard/aqi-scorecard.
 import { ConcentPopupComponent } from './components/concent-popup/concent-popup.component';
 import { AqiWidgetComponent } from './components/aqi-widget/aqi-widget.component';
 import { BlogCardComponent } from './components/blog-card/blog-card.component';
-import { BlogSliderComponent } from './components/blog-slider/blog-slider.component';
 import { ElementWelcomeImageComponent } from './components/element-welcome-image/element-welcome-image.component';
 import { EnergyWidgetComponent } from './components/energy-widget/energy-widget.component';
 import { EQWidgetComponent } from './components/eq-widget/eq-widget.component';
@@ -23,7 +22,6 @@ import { EnvCalendarAgendaComponent } from './components/env-calendar-agenda/env
 import { PollResultComponent } from './components/poll-result/poll-result.component';
 import { PollsWidgetComponent } from './components/polls-widget/polls-widget.component';
 import { SubscribeComponent } from './components/subscribe/subscribe.component';
-import { VideoSliderComponent } from './components/video-slider/video-slider.component';
 import { VideoWidgetComponent } from './components/video-widget/video-widget.component';
 import { WaterWidgetComponent } from './components/water-widget/water-widget.component';
 import { WiofFooterComponent } from './components/wiof-footer/wiof-footer.component';
@@ -31,11 +29,8 @@ import { FeedbackDialogComponent } from './components/feedback-dialog/feedback-d
 import { SearchBoxComponent } from './components/search-box/search-box.component';
 import { WiofSpinnerComponent } from './components/wiof-spinner/wiof-spinner.component';
 import { VideoCardComponent } from './components/video-card/video-card.component';
-import { BreakingNewsComponent } from './components/breaking-news/breaking-news.component';
 import { EnvCalDialogComponent } from './components/env-cal-dialog/env-cal-dialog.component';
 import { TakeActionContentComponent } from './components/take-action-content/take-action-content.component';
-import { CoffeeConversationComponent } from './components/coffee-conversation/coffee-conversation.component';
-import { InFocusWidgetComponent } from './components/in-focus-widget/in-focus-widget.component';
 import { SectionNavComponent } from './components/section-nav/section-nav.component';
 import { AvatarDropdownComponent } from './components/avatar-dropdown/avatar-dropdown.component';
 import { BookmarkIconComponent } from './components/bookmark-icon/bookmark-icon.component';
@@ -55,8 +50,6 @@ const COMPONENTS = [
   LifeElementsComponent,
   WiofFooterComponent,
   FeedbackDialogComponent,
-  VideoSliderComponent,
-  BlogSliderComponent,
   BlogCardComponent,
   ConcentPopupComponent,
   ElementWelcomeImageComponent,
@@ -78,12 +71,9 @@ const COMPONENTS = [
   PollResultComponent,
   WiofSpinnerComponent,
   VideoCardComponent,
-  BreakingNewsComponent,
   EqWidgetTestComponent,
   EnvCalDialogComponent,
   TakeActionContentComponent,
-  CoffeeConversationComponent,
-  InFocusWidgetComponent,
   SectionNavComponent,
   AvatarDropdownComponent,
   BookmarkIconComponent,

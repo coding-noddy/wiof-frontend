@@ -1,4 +1,4 @@
-@import '../../wiof-custom-theming.scss';
+@use '../../wiof-custom-theming' as *;
 
 .ph-widget-scale-text {
   font-size: clamp(0.75rem, 1vw, 0.95rem);

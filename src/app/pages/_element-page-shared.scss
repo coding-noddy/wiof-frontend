@@ -1,4 +1,4 @@
-@import '../wiof-custom-theming.scss';
+@use '../wiof-custom-theming' as *;
 
 // ─── Shared layout for all element pages ──────────────────────────────────────
 // Mirrors the home page design tokens and patterns

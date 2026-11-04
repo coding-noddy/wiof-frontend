@@ -1,4 +1,4 @@
-@import '../admin-shared';
+@use '../admin-shared' as *;
 
 .chart-card {
   background: $card-bg;

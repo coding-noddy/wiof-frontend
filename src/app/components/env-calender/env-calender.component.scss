@@ -1,4 +1,4 @@
-@import '../../wiof-custom-theming.scss';
+@use '../../wiof-custom-theming' as *;
 
 .wiof-env-calender-content {
   display: flex;

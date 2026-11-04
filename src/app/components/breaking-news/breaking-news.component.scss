@@ -1,4 +1,4 @@
-@import '../../wiof-custom-theming.scss';
+@use '../../wiof-custom-theming' as *;
 
 .breaking-news-container {
   border-radius: 18px;

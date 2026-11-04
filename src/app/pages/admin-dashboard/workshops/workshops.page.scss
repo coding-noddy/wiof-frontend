@@ -1,5 +1,5 @@
-@import '../admin-shared';
-@import '../../../wiof-custom-theming.scss';
+@use '../admin-shared' as *;
+@use '../../../wiof-custom-theming' as *;
 
 .workshop-form {
   margin-bottom: 24px;

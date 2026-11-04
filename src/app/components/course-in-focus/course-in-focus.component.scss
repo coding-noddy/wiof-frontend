@@ -1,4 +1,4 @@
-@import '../../wiof-custom-theming.scss';
+@use '../../wiof-custom-theming' as *;
 
 // ── Card shell ────────────────────────────────────────────────────────────────
 // Warm-white badge header, matching Breaking News/Poll's treatment — one

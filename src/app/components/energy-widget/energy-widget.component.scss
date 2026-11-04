@@ -1,10 +1,11 @@
-@import '../../wiof-custom-theming.scss';
+@use 'sass:color';
+@use '../../wiof-custom-theming' as *;
 
 // ── Token shortcuts ──────────────────────────────────────────────
 $e:      $energy-color;           // rgb(255,235,184)
-$e-mid:  darken($e, 12%);
-$e-dark: darken($e, 28%);
-$e-bg:   lighten($e, 3%);
+$e-mid:  color.adjust($e, $lightness: -12%);
+$e-dark: color.adjust($e, $lightness: -28%);
+$e-bg:   color.adjust($e, $lightness: 3%);
 // $e-dark (#DF8100) is fine for borders/tints but only ~2.6:1 as text on
 // ivory — text uses the shared text-safe Marigold instead.
 $e-text: var(--wiof-marigold-text);
@@ -219,7 +220,7 @@ $radius-item: 14px;
   padding: 0 1.1rem !important;
   font-size: 0.86rem !important;
   // Energy theme — dark amber on light amber
-  background: linear-gradient(135deg, darken($e, 15%) 0%, darken($e, 28%) 100%) !important;
+  background: linear-gradient(135deg, color.adjust($e, $lightness: -15%) 0%, color.adjust($e, $lightness: -28%) 100%) !important;
   color: $dark-color !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
 

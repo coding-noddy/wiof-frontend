@@ -2,7 +2,7 @@
 // Non-blocking inline tooltip/banner with glass-morphism styling
 // Consistent with the consent bar and avatar dropdown patterns
 
-@import '../../wiof-custom-theming.scss';
+@use '../../wiof-custom-theming' as *;
 
 .sign-in-prompt {
   display: flex;

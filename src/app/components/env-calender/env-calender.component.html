@@ -61,9 +61,11 @@
                   </div>
                   <!-- Occasion image as cell background via inline style -->
                   @if (day.occasion?.length && day.occasion[day.selectedOccasionIndex]) {
+                    <!-- No background until the image URL has loaded: url(null) made the browser request /null. -->
+                    @let occasionImage = day.occasion[day.selectedOccasionIndex].image | async;
                     <div
                       class="occasion-bg-image"
-                      [style.backgroundImage]="'url(' + (day.occasion[day.selectedOccasionIndex].image | async) + ')'"
+                      [style.backgroundImage]="occasionImage ? 'url(' + occasionImage + ')' : null"
                     ></div>
                   }
                   @if (day.occasion && day.occasion.length > 1) {

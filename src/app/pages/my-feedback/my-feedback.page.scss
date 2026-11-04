@@ -1,4 +1,4 @@
-@import "../../wiof-custom-theming.scss";
+@use "../../wiof-custom-theming" as *;
 
 // Breadcrumb / header / empty / error states follow My Library's local
 // patterns so the two account pages read as a set.
@@ -164,7 +164,13 @@
   opacity: 0.6;
 }
 
-.skeleton {
+// Also the theme's skeleton variants: the theme @extends .skeleton for them,
+// which doesn't reach this file's rule under @use.
+.skeleton,
+.skeleton-text,
+.skeleton-text-short,
+.skeleton-circle,
+.skeleton-card {
   border-radius: 6px;
   background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
   background-size: 200% 100%;

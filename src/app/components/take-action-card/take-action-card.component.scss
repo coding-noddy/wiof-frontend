@@ -1,4 +1,4 @@
-@import '../../wiof-custom-theming.scss';
+@use '../../wiof-custom-theming' as *;
 
 // Card convention: flat warm-white, bordered, no shadow (brand guide rule —
 // shadows are reserved for genuine overlays, which the sign-in prompt below

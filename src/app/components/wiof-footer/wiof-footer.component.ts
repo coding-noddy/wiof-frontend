@@ -3,9 +3,9 @@ import { environment } from 'src/environments/environment';
 import { ModalController } from '@ionic/angular';
 import { SubscribePanelService } from 'src/app/services/subscribe-panel.service';
 import { FeedbackDialogComponent } from 'src/app/components/feedback-dialog/feedback-dialog.component';
-// A static import, not require(): the esbuild-based builder (Angular 17+)
-// doesn't support require() in browser code.
-import packageJson from '../../../../package.json';
+// Only `version`: a named import lets the build leave out the rest of
+// package.json (dependency names and versions) instead of shipping it.
+import { version as packageVersion } from '../../../../package.json';
 
 
 @Component({
@@ -16,7 +16,7 @@ import packageJson from '../../../../package.json';
 })
 export class WiofFooterComponent implements OnInit {
   currentYear = new Date().getFullYear();
-  appVersion: string = packageJson.version;
+  appVersion: string = packageVersion;
   envLabel = environment.production ? 'prod' : 'staging';
   wiofLogo = '../../../assets/brand/logos/WIOF-full-logo.png';
 
