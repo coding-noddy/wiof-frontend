@@ -1,5 +1,5 @@
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule, inject, provideAppInitializer } from '@angular/core';
 //Firestore Integration Modules
 import { AngularFireModule, FirebaseApp } from '@angular/fire/compat';
 import { AngularFirestore, AngularFirestoreModule } from '@angular/fire/compat/firestore';
@@ -43,12 +43,10 @@ import {
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     // App Check before any Firebase request; FirebaseApp makes sure the app
     // AngularFire creates exists first.
-    {
-      provide: APP_INITIALIZER,
-      multi: true,
-      deps: [FirebaseApp],
-      useFactory: () => () => initWiofAppCheck()
-    },
+    provideAppInitializer(() => {
+      inject(FirebaseApp);
+      return initWiofAppCheck();
+    }),
     ScreenTrackingService,
     UserTrackingService,
     // AngularFire 19+ compat Firestore needs an injection context for
