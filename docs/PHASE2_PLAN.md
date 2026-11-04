@@ -1,6 +1,6 @@
 # Phase 2 Plan: Journey & Engagement Foundations
 
-**Status:** approved 2026-11-04 with the recommended defaults (section 6). Step 1 shipped in 8.1.0, step 2 in 8.2.0 (prod metrics recomputed 2026-11-04), step 3 in 8.3.0. Steps 1–3 are the Planet Passport foundation; next is step 4 (connected content).
+**Status:** approved 2026-11-04 with the recommended defaults (section 6). Step 1 shipped in 8.1.0, step 2 in 8.2.0 (prod metrics recomputed 2026-11-04), step 3 in 8.3.0, step 4 (connected content) in 8.4.0. Steps 1–3 are the Planet Passport foundation; next is step 5 (journey experience).
 **Sources:** `WIOF_Plan_v4/WIOF_Future_Enhancements_and_Product_Roadmap_v4.md` (sections 0, 5–10, 14), `WIOF_Plan_v4/WIOF_Foundation_Hardening_Plan_v4.md` (sections 16–18), and the current code on `master` (8.0.2).
 
 ## 1. What Phase 2 is for
@@ -115,3 +115,12 @@ Each step ships on its own (staging first, then a prod release), like the Angula
 - **Readers:** My Journey history lists leave out rejected events; `backfillUserMetrics` skips them. Events from before step 1 have no verdict and keep counting until the step 2 recompute.
 - **Tests:** 19 unit tests for the checks (`npm run test:functions`, now run before every deploy) and the activity_log rules tests rewritten: every type accepted, and extra fields, wrong IDs, spoofed users, forged verdicts, bad scores and ranges rejected.
 - **Known limit:** repeatable events (EQ, widget use, action analytics) can still be written many times. They don't inflate any counter (EQ keeps only the latest score; action counts come from `user_actions`), so a per-day cap is left for when a Passport rule needs one.
+
+## 8. Step 4 as built
+
+- **Links:** blogs (`Blogs`), actions and calendar occasions (`Envcal`) carry `relatedContent` (up to six `{type, id, title, element?}`, type story/video/action, in the admin's order) and `relatedKeys` (`type:id`). Videos are YouTube videos with no doc of their own, so a video link keeps its title and element in the ref. `blog_summaries` copies `relatedKeys` (`functions/blog-summary.js`).
+- **Both directions:** a page also shows the blogs and active actions whose `relatedKeys` contain it (one `array-contains` query each, on the small `blog_summaries` and `actions` docs). So a video page shows the stories and actions that link to it, without anyone editing the video, and an editor links two items once.
+- **Explore next** (`components/explore-next`, `services/related-content.service.ts`): up to four cards, on blog and video pages, in the Take Action details and in the calendar popup. Order: own links, then reverse links, then the fallback: the newest stories and first actions of the element, alternating (heading "More from {Element}" when nothing is linked). The calendar popup shows linked items only. Deleted or inactive targets drop out.
+- **Admin:** a Related Content card in the blog, Take Action and calendar forms (`components/related-content-editor`): search stories and actions by title, add a video by YouTube link (checked and titled through the YouTube API), reorder, remove. The rules are unchanged: these collections are already admin-write only.
+- **Action links:** `/element/{element}/take-action?action={id}` opens that action's details.
+- **Tests:** unit tests for the link clean-up, merge and YouTube-link parsing; function tests for the summary keys; a staging E2E (admin picker → blog, video, action, fallback and calendar views).

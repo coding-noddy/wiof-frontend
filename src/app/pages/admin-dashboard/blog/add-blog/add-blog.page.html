@@ -202,6 +202,10 @@
           }
         </div>
       </div>
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="compass-outline"></ion-icon> Related Content (Explore next)</div>
+        <app-related-content-editor formControlName="relatedContent" selfType="blog" [selfId]="blog?.id" [defaultElement]="(addBlogForm.value.category || '').toLowerCase()"></app-related-content-editor>
+      </div>
     </form>
   </div>
 </ion-content>

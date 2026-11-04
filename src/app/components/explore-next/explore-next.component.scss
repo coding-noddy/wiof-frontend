@@ -1,0 +1,132 @@
+:host {
+  display: block;
+}
+
+.explore-next {
+  margin: 2rem 0 0;
+}
+
+.explore-next-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--wiof-ink);
+
+  ion-icon {
+    color: var(--wiof-teal);
+    font-size: 1.3rem;
+  }
+}
+
+.explore-next-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 0.85rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.explore-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  height: 100%;
+  padding: 0.65rem;
+  background: var(--wiof-warm-white);
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  border-radius: 14px;
+  color: var(--wiof-ink);
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--wiof-teal);
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--wiof-teal);
+    outline-offset: 2px;
+  }
+}
+
+.explore-media {
+  flex: 0 0 auto;
+  width: 88px;
+  height: 60px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--wiof-ivory);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  &.is-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-icon {
+      font-size: 1.8rem;
+      color: var(--wiof-teal);
+    }
+  }
+}
+
+.explore-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.explore-type {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--wiof-teal-text);
+
+  &[data-type='action'] {
+    color: var(--wiof-marigold-text);
+  }
+}
+
+.explore-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.compact {
+  margin-top: 1.25rem;
+
+  .explore-next-heading {
+    font-size: 1rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .explore-next-list {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .explore-media {
+    width: 64px;
+    height: 44px;
+  }
+}

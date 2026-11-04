@@ -205,6 +205,10 @@
           </ion-item>
         </div>
       </div>
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="compass-outline"></ion-icon> Related Content (Explore next)</div>
+        <app-related-content-editor formControlName="relatedContent" selfType="action" [selfId]="action?.id" [defaultElement]="addActionForm.value.elementIds?.[0] || ''"></app-related-content-editor>
+      </div>
     </form>
   </div>
 </ion-content>

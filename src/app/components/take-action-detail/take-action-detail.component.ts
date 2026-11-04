@@ -1,6 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { ActionItem } from 'src/app/models/ActionItem';
+import { ExploreSource } from 'src/app/services/related-content.service';
 
 /**
  * Full-detail modal for one action — description, instructions, evidence,
@@ -16,10 +17,23 @@ import { ActionItem } from 'src/app/models/ActionItem';
     styleUrls: ['./take-action-detail.component.scss'],
     standalone: false
 })
-export class TakeActionDetailComponent {
+export class TakeActionDetailComponent implements OnInit {
   @Input() action: ActionItem;
+  /** The element page the modal was opened from, for links and the fallback. */
+  @Input() element?: string;
+  exploreSource: ExploreSource;
 
   constructor(private modalCtrl: ModalController) {}
+
+  ngOnInit(): void {
+    const elements = this.action.elementIds || [];
+    this.exploreSource = {
+      type: 'action',
+      id: this.action.id,
+      links: this.action.relatedContent,
+      element: elements.includes(this.element) ? this.element : elements[0]
+    };
+  }
 
   close(): void {
     this.modalCtrl.dismiss();

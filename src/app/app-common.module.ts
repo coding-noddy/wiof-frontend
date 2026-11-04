@@ -37,6 +37,8 @@ import { HomeJourneyPanelComponent } from './components/home-journey-panel/home-
 import { ElementTakeActionTeaserComponent } from './components/element-take-action-teaser/element-take-action-teaser.component';
 import { TakeActionCardComponent } from './components/take-action-card/take-action-card.component';
 import { TakeActionDetailComponent } from './components/take-action-detail/take-action-detail.component';
+import { ExploreNextComponent } from './components/explore-next/explore-next.component';
+import { RelatedContentEditorComponent } from './components/related-content-editor/related-content-editor.component';
 import { ContinueJourneyBannerComponent } from './components/continue-journey-banner/continue-journey-banner.component';
 import { BlogReadTrackerDirective } from './directives/blog-read-tracker.directive';
 import { YoutubeWatchTrackerDirective } from './directives/youtube-watch-tracker.directive';
@@ -79,6 +81,8 @@ const COMPONENTS = [
   ElementTakeActionTeaserComponent,
   TakeActionCardComponent,
   TakeActionDetailComponent,
+  ExploreNextComponent,
+  RelatedContentEditorComponent,
   ContinueJourneyBannerComponent,
   SearchBoxComponent,
   BlogReadTrackerDirective,

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { of, Subject, throwError } from 'rxjs';
 import { catchError, switchMap, takeUntil } from 'rxjs/operators';
 import { EnvDay } from 'src/app/models/env-cal-data';
+import { relatedFields } from 'src/app/models/RelatedContent';
 import { EnvcalService } from 'src/app/services/envcal-service';
 import { AppUtilService } from 'src/app/util/AppUtilService';
 import { UiUtilService } from 'src/app/util/UiUtilService';
@@ -70,7 +71,8 @@ export class AddOccasionPage implements OnInit {
       occasion: new FormControl('', [Validators.required]),
       imageName: new FormControl('', [Validators.required]),
       description: new FormControl('', [Validators.required]),
-      showMoreLink: new FormControl('', [Validators.required])
+      showMoreLink: new FormControl('', [Validators.required]),
+      relatedContent: new FormControl([])
     });
   }
 
@@ -83,7 +85,8 @@ export class AddOccasionPage implements OnInit {
       description: new FormControl(occasion.description, [Validators.required]),
       showMoreLink: new FormControl(occasion.showMoreLink, [
         Validators.required
-      ])
+      ]),
+      relatedContent: new FormControl(occasion.relatedContent || [])
     });
   }
 
@@ -160,7 +163,7 @@ export class AddOccasionPage implements OnInit {
     occasion: EnvDay,
     isEditMode: boolean
   ) {
-    return new EnvDay(
+    const result = new EnvDay(
       isEditMode ? occasion.id : null,
       addOccasionForm.value.day,
       addOccasionForm.value.month,
@@ -171,6 +174,7 @@ export class AddOccasionPage implements OnInit {
       addOccasionForm.value.description,
       addOccasionForm.value.showMoreLink
     );
+    return Object.assign(result, relatedFields(addOccasionForm.value.relatedContent));
   }
 
   ngOnDestroy(): void {

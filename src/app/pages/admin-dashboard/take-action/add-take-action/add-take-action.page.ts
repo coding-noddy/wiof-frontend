@@ -14,6 +14,7 @@ import {
   ITEMS
 } from 'src/app/app.constants';
 import { ActionItem } from 'src/app/models/ActionItem';
+import { relatedFields } from 'src/app/models/RelatedContent';
 import { ActionService } from 'src/app/services/action.service';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 
@@ -110,7 +111,8 @@ export class AddTakeActionPage implements OnInit, OnDestroy {
       evidenceReviewedAt: new FormControl(''),
       displayOrder: new FormControl(0),
       isActive: new FormControl(true),
-      isFeatured: new FormControl(false)
+      isFeatured: new FormControl(false),
+      relatedContent: new FormControl([])
     });
   }
 
@@ -140,7 +142,8 @@ export class AddTakeActionPage implements OnInit, OnDestroy {
       evidenceReviewedAt: new FormControl(action.evidence?.reviewedAt || ''),
       displayOrder: new FormControl(action.displayOrder || 0),
       isActive: new FormControl(action.isActive),
-      isFeatured: new FormControl(action.isFeatured)
+      isFeatured: new FormControl(action.isFeatured),
+      relatedContent: new FormControl(action.relatedContent || [])
     });
   }
 
@@ -191,7 +194,8 @@ export class AddTakeActionPage implements OnInit, OnDestroy {
             reviewedAt: (form.value.evidenceReviewedAt || '').trim()
           }
         : null,
-      displayOrder: form.value.displayOrder || 0
+      displayOrder: form.value.displayOrder || 0,
+      ...relatedFields(form.value.relatedContent, { type: 'action', id: isEditMode ? existing.id : null })
     } as ActionItem;
   }
 

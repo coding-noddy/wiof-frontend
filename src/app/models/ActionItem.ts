@@ -1,3 +1,5 @@
+import { RelatedRef } from './RelatedContent';
+
 /**
  * Firestore-backed Take Action catalogue entry (`actions/{actionId}`).
  * Named `ActionItem` (not `TakeAction`, the retired static-data model).
@@ -56,6 +58,10 @@ export interface ActionItem {
   accessibilityNotes?: string[];
 
   displayOrder: number;
+
+  // Explore next links (see RelatedContent.ts).
+  relatedContent?: RelatedRef[];
+  relatedKeys?: string[];
 
   // Bumped by ActionService.saveAction() on every admin edit (starts at 1
   // on create). Optional because every action seeded before this field

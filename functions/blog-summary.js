@@ -57,7 +57,11 @@ async function buildBlogSummary(blog, bucket) {
     imageUrl: await coverImageUrl(bucket, blog.imageName),
     timeToRead: timeToRead(blog.content),
     submitDate: pick('submitDate'),
-    publishDate: pick('publishDate')
+    publishDate: pick('publishDate'),
+    // The blog's Explore next links as 'type:id' keys, so the linked video
+    // or action page can find the blog with one array-contains query on
+    // these small docs (src/app/models/RelatedContent.ts).
+    relatedKeys: Array.isArray(blog.relatedKeys) ? blog.relatedKeys.filter((key) => typeof key === 'string') : []
   };
 }
 

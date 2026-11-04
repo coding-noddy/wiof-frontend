@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
+import { AppCommonModule } from 'src/app/app-common.module';
 
 import { AddOccasionPageRoutingModule } from './add-occasion-routing.module';
 
@@ -16,6 +17,7 @@ import { FileInputValueAccessorDirective } from '../../../../directives/file-inp
     FormsModule,
     IonicModule,
     ReactiveFormsModule,
+    AppCommonModule,
     AddOccasionPageRoutingModule
   ],
   declarations: [AddOccasionPage]

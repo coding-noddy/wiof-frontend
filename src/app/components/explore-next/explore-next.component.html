@@ -1,0 +1,29 @@
+@if (items$ | async; as items) {
+  @if (items.length) {
+    <section class="explore-next" [class.compact]="compact" [attr.aria-labelledby]="headingId">
+      <h2 [id]="headingId" class="explore-next-heading">
+        <ion-icon aria-hidden="true" name="compass-outline"></ion-icon>
+        {{ heading(items) }}
+      </h2>
+      <ul class="explore-next-list">
+        @for (item of items; track item.type + item.id) {
+          <li>
+            <a class="explore-card" [routerLink]="item.link" [queryParams]="item.queryParams" (click)="navigate.emit()">
+              <span class="explore-media" [class.is-icon]="!item.image">
+                @if (item.image) {
+                  <img [src]="item.image" alt="" loading="lazy" />
+                } @else {
+                  <ion-icon aria-hidden="true" [name]="item.icon"></ion-icon>
+                }
+              </span>
+              <span class="explore-text">
+                <span class="explore-type" [attr.data-type]="item.type">{{ typeLabel(item) }}</span>
+                <span class="explore-title">{{ item.title }}</span>
+              </span>
+            </a>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+}

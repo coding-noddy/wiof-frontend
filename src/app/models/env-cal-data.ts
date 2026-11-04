@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs';
+import { RelatedRef } from './RelatedContent';
 
 export class EnvDay {
   id: string;
@@ -10,6 +11,9 @@ export class EnvDay {
   description: string;
   showMoreLink: string;
   category: string;
+  // Explore next links (see RelatedContent.ts).
+  relatedContent?: RelatedRef[];
+  relatedKeys?: string[];
 
   constructor(id, day, month, occasion, imageName, description, showMoreLink) {
     this.id = id;

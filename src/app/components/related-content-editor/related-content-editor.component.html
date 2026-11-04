@@ -1,0 +1,84 @@
+<div class="related-editor">
+  <p class="related-hint">
+    Shown as "Explore next" on this item, and on each linked story and action (links work both ways).
+    With no links, readers see more from the same element. Up to {{ max }}.
+  </p>
+
+  @if (refs.length) {
+    <ol class="related-list">
+      @for (ref of refs; track ref.type + ref.id; let i = $index; let first = $first; let last = $last) {
+        <li class="related-row">
+          <span class="related-type" [attr.data-type]="ref.type">{{ typeLabel(ref.type) }}</span>
+          <span class="related-title">
+            {{ ref.title || ref.id }}
+            @if (ref.element) {
+              <small>({{ ref.element }})</small>
+            }
+          </span>
+          <button type="button" class="icon-btn" [disabled]="disabled || first" (click)="move(i, -1)" aria-label="Move up">
+            <ion-icon aria-hidden="true" name="chevron-up-outline"></ion-icon>
+          </button>
+          <button type="button" class="icon-btn" [disabled]="disabled || last" (click)="move(i, 1)" aria-label="Move down">
+            <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
+          </button>
+          <button type="button" class="icon-btn danger" [disabled]="disabled" (click)="remove(i)" [attr.aria-label]="'Remove ' + (ref.title || ref.id)">
+            <ion-icon aria-hidden="true" name="close-outline"></ion-icon>
+          </button>
+        </li>
+      }
+    </ol>
+  } @else {
+    <p class="related-empty">No related items yet.</p>
+  }
+
+  @if (!isFull && !disabled) {
+    <div class="related-add">
+      <div class="related-type-switch" role="radiogroup" aria-label="Type of item to add">
+        @for (type of ['blog', 'video', 'action']; track type) {
+          <button type="button" role="radio" [attr.aria-checked]="addType === type" [class.active]="addType === type"
+            (click)="addType = $any(type); videoError = ''">
+            {{ typeLabel($any(type)) }}
+          </button>
+        }
+      </div>
+
+      @if (addType === 'video') {
+        <div class="related-video-row">
+          <input class="related-input" type="text" [(ngModel)]="videoInput" [ngModelOptions]="{ standalone: true }"
+            placeholder="YouTube link or video ID" aria-label="YouTube link or video ID" (keydown.enter)="$event.preventDefault(); addVideo()" />
+          <select class="related-select" [(ngModel)]="videoElement" [ngModelOptions]="{ standalone: true }" aria-label="Element the video opens under">
+            @for (element of elements; track element) {
+              <option [value]="element">{{ element }}</option>
+            }
+          </select>
+          <button type="button" class="btn-secondary" [disabled]="isAddingVideo" (click)="addVideo()">
+            {{ isAddingVideo ? 'Checking…' : 'Add video' }}
+          </button>
+        </div>
+        @if (videoError) {
+          <p class="related-error" role="alert">{{ videoError }}</p>
+        }
+      } @else {
+        <input class="related-input" type="search" [(ngModel)]="query" [ngModelOptions]="{ standalone: true }"
+          [placeholder]="addType === 'blog' ? 'Search stories by title' : 'Search actions by title'"
+          [attr.aria-label]="addType === 'blog' ? 'Search stories by title' : 'Search actions by title'" />
+        @if (query.trim()) {
+          <ul class="related-matches">
+            @for (option of matches; track option.id) {
+              <li>
+                <button type="button" (click)="pick(option)">
+                  {{ option.title }}
+                  @if (option.note) {
+                    <small>{{ option.note }}</small>
+                  }
+                </button>
+              </li>
+            } @empty {
+              <li class="related-empty">No matches.</li>
+            }
+          </ul>
+        }
+      }
+    </div>
+  }
+</div>

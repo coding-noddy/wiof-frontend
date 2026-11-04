@@ -77,7 +77,8 @@ export class EnvCalendarAgendaComponent implements OnInit {
       name: day.occasion,
       image: day.image,
       desc: day.description,
-      link: day.showMoreLink
+      link: day.showMoreLink,
+      explore: { links: day.relatedContent }
     }));
 
     const originEl = event?.currentTarget as HTMLElement;

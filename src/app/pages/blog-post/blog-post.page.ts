@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { first, map, shareReplay } from 'rxjs/operators';
 import { Blog } from 'src/app/models/Blog';
 import { BlogService } from 'src/app/services/blog.service';
+import { ExploreSource } from 'src/app/services/related-content.service';
 import { ActivityService } from 'src/app/services/activity.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { BlogReadCompleteEvent } from 'src/app/directives/blog-read-tracker.directive';
@@ -16,6 +17,7 @@ import { BlogReadCompleteEvent } from 'src/app/directives/blog-read-tracker.dire
 })
 export class BlogPostPage implements OnInit {
   public blogDetails: Observable<Blog>;
+  public exploreSource$: Observable<ExploreSource | null>;
   expandedImageSrc: string | null = null;
   expandedImageAlt = '';
   // Each element ('air', 'earth', ...) is its own literal top-level route
@@ -46,6 +48,15 @@ export class BlogPostPage implements OnInit {
         } else {
           this.blogDetails = this.blogService.getBlogBySlug(blogParam);
         }
+        this.blogDetails = this.blogDetails.pipe(shareReplay(1));
+        this.exploreSource$ = this.blogDetails.pipe(
+          map((blog) => blog && {
+            type: 'blog' as const,
+            id: blog.id,
+            links: blog.relatedContent,
+            element: String(blog.category || this.element).toLowerCase()
+          })
+        );
 
         // Log activity for authenticated users (fire-and-forget)
         this.logBlogRead(blogParam);

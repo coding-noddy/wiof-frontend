@@ -7,6 +7,15 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.4.0] - 2026-11-05
+
+Phase 2 step 4: connected content, "What can I explore next?" (see `docs/PHASE2_PLAN.md` section C).
+
+### Added
+- An **Explore next** block on blog and video pages, in the Take Action details and in the calendar occasion popup: up to four cards (story, video or action). It shows the item's own related links first, then items that link to it (a link works both ways), then more from the same element. With nothing linked it reads "More from Earth" (etc.); the calendar popup shows linked items only.
+- **Related Content** in the admin blog, Take Action and calendar forms: pick stories and actions by title, or add a YouTube video by link (the title is looked up on YouTube). Up to six links, in order. Stored as `relatedContent` plus `relatedKeys` (`type:id`) for the reverse lookup; `blog_summaries` copies the keys.
+- Take Action links (`/element/{element}/take-action?action={id}`) open that action's details.
+
 ## [8.3.0] - 2026-11-04
 
 Phase 2 step 3: the action model, ready for Planet Passport (see `docs/PHASE2_PLAN.md`, `docs/METRICS.md`).
