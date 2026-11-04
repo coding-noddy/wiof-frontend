@@ -1,4 +1,5 @@
-@import '../../wiof-custom-theming.scss';
+@use 'sass:color';
+@use '../../wiof-custom-theming' as *;
 
 // ── Subscribe toggle button (right edge) ─────────────────────────
 .wiof-subscribe-button {
@@ -97,12 +98,12 @@
   // Ivory, not a Marigold tint: "home" isn't tied to any one element's
   // identity colour, and brand guidelines reserve Marigold for accents/CTAs.
   &.home   { background-color: var(--wiof-ivory); }
-  &.earth  { background-color: lighten($earth-color, 5%); }
-  &.water  { background-color: lighten($water-color, 3%); }
-  &.air    { background-color: lighten($air-color, 5%); }
+  &.earth  { background-color: color.adjust($earth-color, $lightness: 5%); }
+  &.water  { background-color: color.adjust($water-color, $lightness: 3%); }
+  &.air    { background-color: color.adjust($air-color, $lightness: 5%); }
   // Ink form text on a darkened teal was ~4:1 — use the light teal tint.
   &.spirit { background-color: var(--wiof-teal-tint-40); }
-  &.energy { background-color: lighten($energy-color, 5%); }
+  &.energy { background-color: color.adjust($energy-color, $lightness: 5%); }
 
   @media (max-width: 767px) {
     width: calc(100vw - 50px);

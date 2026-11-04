@@ -1,7 +1,8 @@
-@import '../../wiof-custom-theming.scss';
+@use 'sass:color';
+@use '../../wiof-custom-theming' as *;
 
 $s: $spirit-color;
-$s-dark: darken($s, 22%);
+$s-dark: color.adjust($s, $lightness: -22%);
 
 // ── Gender selection ─────────────────────────────────────────
 .eq-gender-select {
@@ -97,7 +98,7 @@ $s-dark: darken($s, 22%);
 .progress-bar-fill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, $s-dark, darken($s-dark, 8%));
+  background: linear-gradient(90deg, $s-dark, color.adjust($s-dark, $lightness: -8%));
   transition: width .3s ease;
 }
 

@@ -1,4 +1,5 @@
-@import '../../wiof-custom-theming.scss';
+@use 'sass:color';
+@use '../../wiof-custom-theming' as *;
 
 // ── Nav bar — sits below the header, at the top of the page, always visible.
 .section-nav {
@@ -73,31 +74,31 @@
   background: var(--wiof-brown-fill);
   color: $light-color;
 }
-.theme-earth .nav-item:hover { background: rgba($earth-color, 0.15); color: darken($earth-color, 30%); }
+.theme-earth .nav-item:hover { background: rgba($earth-color, 0.15); color: color.adjust($earth-color, $lightness: -30%); }
 
 .theme-water .nav-item.active {
   background: var(--wiof-teal-fill);
   color: $light-color;
 }
-.theme-water .nav-item:hover { background: rgba($water-color, 0.15); color: darken($water-color, 30%); }
+.theme-water .nav-item:hover { background: rgba($water-color, 0.15); color: color.adjust($water-color, $lightness: -30%); }
 
 .theme-energy .nav-item.active {
   background: $energy-color;
   color: $dark-color;
 }
-.theme-energy .nav-item:hover { background: rgba($energy-color, 0.15); color: darken($energy-color, 30%); }
+.theme-energy .nav-item:hover { background: rgba($energy-color, 0.15); color: color.adjust($energy-color, $lightness: -30%); }
 
 .theme-air .nav-item.active {
   background: var(--wiof-teal-fill);
   color: $light-color;
 }
-.theme-air .nav-item:hover { background: rgba($water-color, 0.15); color: darken($water-color, 30%); }
+.theme-air .nav-item:hover { background: rgba($water-color, 0.15); color: color.adjust($water-color, $lightness: -30%); }
 
 .theme-spirit .nav-item.active {
   background: var(--wiof-teal-fill);
   color: $light-color;
 }
-.theme-spirit .nav-item:hover { background: rgba($water-color, 0.15); color: darken($water-color, 30%); }
+.theme-spirit .nav-item:hover { background: rgba($water-color, 0.15); color: color.adjust($water-color, $lightness: -30%); }
 
 // ── Responsive ────────────────────────────────────────────────────────────────
 @media (max-width: 767px) {

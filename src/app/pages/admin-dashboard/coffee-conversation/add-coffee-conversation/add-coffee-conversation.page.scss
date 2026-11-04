@@ -1,4 +1,4 @@
-@import '../../admin-shared';
+@use '../../admin-shared' as *;
 
 .date-picker-field {
   width: 100%;

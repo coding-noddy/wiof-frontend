@@ -1,4 +1,4 @@
-@import '../../wiof-custom-theming.scss';
+@use '../../wiof-custom-theming' as *;
 
 // ── Shared icon badge ────────────────────────────────────────────────────────
 // The icon_*.png assets (240px renders of the icon_*.svg masters — PNG per

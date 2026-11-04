@@ -1,6 +1,7 @@
-@import '../../wiof-custom-theming.scss';
+@use 'sass:color';
+@use '../../wiof-custom-theming' as *;
 
-$a-dark: darken($air-color, 24%);
+$a-dark: color.adjust($air-color, $lightness: -24%);
 
 // ── Scorecard container ──────────────────────────────────────────
 .aqi-scorecard {

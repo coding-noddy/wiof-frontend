@@ -3,6 +3,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { AppCommonModule } from 'src/app/app-common.module';
+import { SlidersModule } from 'src/app/sliders.module';
 import { HomePageRoutingModule } from './home-routing.module';
 import { HomePage } from './home.page';
 import { NgoInFocusComponent } from '../../components/ngo/ngo-in-focus.component';
@@ -15,7 +16,8 @@ import { NgoDetailDialogComponent } from '../../components/ngo-detail-dialog/ngo
     FormsModule,
     IonicModule,
     HomePageRoutingModule,
-    AppCommonModule
+    AppCommonModule,
+    SlidersModule
   ],
   declarations: [HomePage, NgoInFocusComponent, CourseInFocusComponent, NgoDetailDialogComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

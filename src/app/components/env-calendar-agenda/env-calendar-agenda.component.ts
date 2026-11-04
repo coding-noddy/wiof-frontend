@@ -83,6 +83,8 @@ export class EnvCalendarAgendaComponent implements OnInit {
     const originEl = event?.currentTarget as HTMLElement;
     const originRect = originEl?.getBoundingClientRect();
 
+    // The dialog's slider needs Swiper (instant where a page already loaded it).
+    await import('../../util/swiper-elements');
     const modal = await this.modalCtrl.create({
       component: EnvCalDialogComponent,
       componentProps: { occasionDetails: { occasion } },

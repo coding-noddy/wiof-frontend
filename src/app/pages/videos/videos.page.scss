@@ -1,5 +1,5 @@
-@import '../../wiof-custom-theming.scss';
-@import '../_element-page-shared.scss';
+@use '../../wiof-custom-theming' as *;
+@use '../_element-page-shared' as *;
 
 ion-content {
   --background: var(--wiof-ivory);

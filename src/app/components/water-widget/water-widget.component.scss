@@ -1,10 +1,11 @@
-@import '../../wiof-custom-theming.scss';
+@use 'sass:color';
+@use '../../wiof-custom-theming' as *;
 
 // ── Token shortcuts ──────────────────────────────────────────────
 $w:       $water-color;           // rgb(223,243,255)
-$w-mid:   darken($w, 10%);
-$w-dark:  darken($w, 24%);
-$w-bg:    lighten($w, 3%);
+$w-mid:   color.adjust($w, $lightness: -10%);
+$w-dark:  color.adjust($w, $lightness: -24%);
+$w-bg:    color.adjust($w, $lightness: 3%);
 $radius-card: 18px;
 $radius-item: 14px;
 

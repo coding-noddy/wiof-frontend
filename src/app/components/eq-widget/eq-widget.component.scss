@@ -1,8 +1,9 @@
-@import '../../wiof-custom-theming.scss';
+@use 'sass:color';
+@use '../../wiof-custom-theming' as *;
 
 $s: $spirit-color;
-$s-dark: darken($s, 22%);
-$s-mid: darken($s, 10%);
+$s-dark: color.adjust($s, $lightness: -22%);
+$s-mid: color.adjust($s, $lightness: -10%);
 $radius-card: 18px;
 
 // ── Card shell ───────────────────────────────────────────────────

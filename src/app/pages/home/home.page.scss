@@ -1,4 +1,4 @@
-@import "../../wiof-custom-theming.scss";
+@use "../../wiof-custom-theming" as *;
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 // Centralise values so every card on the home page is identical

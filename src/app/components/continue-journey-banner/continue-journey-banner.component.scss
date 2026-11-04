@@ -1,4 +1,4 @@
-@import '../../wiof-custom-theming.scss';
+@use '../../wiof-custom-theming' as *;
 
 // Colored to match the NEXT element being linked to (not always Marigold)
 // — so the user already sees that element's color before reading the

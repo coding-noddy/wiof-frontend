@@ -1,4 +1,5 @@
-@import "../../wiof-custom-theming.scss";
+@use 'sass:color';
+@use "../../wiof-custom-theming" as *;
 
 /* ==========================================================
    Design Tokens
@@ -13,7 +14,7 @@
 // aqi-widget, $w/$w-dark in water-widget, $e/$e-dark in energy-widget) so
 // the pattern stays traceable across all five files.
 $f: $earth-color;
-$f-dark: darken($f, 24%);
+$f-dark: color.adjust($f, $lightness: -24%);
 
 $card-radius: 18px;
 $panel-radius: 22px;
@@ -575,7 +576,7 @@ $panel-shadow:
     font-size: .9rem;
     flex-shrink: 0;
     margin-top: 2px;
-    color: darken($earth-color, 15%);
+    color: color.adjust($earth-color, $lightness: -15%);
   }
 }
 
@@ -1117,7 +1118,7 @@ input:focus-visible {
 
   &:hover {
     background: rgba($f-dark, .2);
-    color: darken($earth-color, 30%);
+    color: color.adjust($earth-color, $lightness: -30%);
   }
 }
 
@@ -1400,7 +1401,7 @@ input:focus-visible {
 .status-chip.verified { background: rgba(46,125,50,.12); color: #2e7d32; }
 .status-chip.approximate { background: rgba(245,124,0,.12); color: #ef6c00; }
 .status-chip.estimated { background: rgba(198,40,40,.12); color: #c62828; }
-.detail-badge { background: rgba($f-dark, .12); color: darken($earth-color,18%); }
+.detail-badge { background: rgba($f-dark, .12); color: color.adjust($earth-color, $lightness: -18%); }
 
 /* Confidence Stars */
 .confidence-stars {

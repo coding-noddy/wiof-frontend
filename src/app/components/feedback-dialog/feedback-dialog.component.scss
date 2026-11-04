@@ -1,4 +1,4 @@
-@import '../../wiof-custom-theming.scss';
+@use '../../wiof-custom-theming' as *;
 
 // Presented inside an ion-modal (sized via the `.feedback-modal` cssClass
 // in global.scss) — no overlay/backdrop here, Ionic already provides one.
