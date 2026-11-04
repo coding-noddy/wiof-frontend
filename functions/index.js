@@ -14,6 +14,7 @@
 const functions = require('firebase-functions/v1');
 const admin = require('firebase-admin');
 const { BLOG_SUMMARIES, buildBlogSummary } = require('./blog-summary');
+const { VALIDATOR_VERSION, validateActivityEvent } = require('./activity-validation');
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -510,54 +511,91 @@ exports.migrateSavedContentIds = functions
     return { migrated, skipped };
   }));
 
+/** The user_metrics change one accepted event makes, or null if it feeds no tally. */
+function metricsUpdateFor(entry) {
+  const update = { updatedAt: admin.firestore.FieldValue.serverTimestamp() };
+  switch (entry.activityType) {
+    case 'blog_read':
+      update.blogsRead = admin.firestore.FieldValue.increment(1);
+      update.lastBlogReadDate = entry.timestamp;
+      break;
+    case 'video_view':
+      update.videosWatched = admin.firestore.FieldValue.increment(1);
+      break;
+    case 'video_watch_complete':
+      update.videosCompleted = admin.firestore.FieldValue.increment(1);
+      break;
+    case 'poll_vote':
+      update.pollsVoted = admin.firestore.FieldValue.increment(1);
+      break;
+    case 'eq_completion':
+      update.lastEqScore = entry.score !== undefined ? entry.score : null;
+      update.lastEqDate = entry.timestamp;
+      break;
+    default:
+      return null; // blog_read_complete, daily_visit, widget_usage, action_completed don't feed a dashboard tally
+  }
+  return update;
+}
+
+/** Content lookups for validateActivityEvent (activity-validation.js). */
+const activityLookups = {
+  getBlog,
+  pollExists: async (id) => (await db.collection('Poll').doc(String(id)).get()).exists,
+  actionExists: async (id) => (await db.collection('actions').doc(String(id)).get()).exists
+};
+
 /**
- * Maintains `user_metrics/{uid}` — a materialized summary of activity_log,
- * so My Journey's dashboard tallies read one small document instead of
- * scanning a user's entire activity history on every page load (Foundation
- * Hardening Plan v4 §8, §12.1). Derived data only: if it's ever wrong, it is
- * fully recomputable from activity_log via backfillUserMetrics below — raw
- * events remain the source of truth.
+ * Validates each new activity_log event and maintains `user_metrics/{uid}`,
+ * a materialized summary of the accepted events, so My Journey's dashboard
+ * tallies read one small document instead of scanning a user's entire
+ * activity history on every page load (Foundation Hardening Plan v4 §8,
+ * §12.1). Derived data only: if it's ever wrong, it is recomputable from
+ * activity_log via backfillUserMetrics below; raw events stay the source of
+ * truth.
  *
- * blogsRead/videosWatched increment safely without a Set/dedup check here
- * because activity_log's own rules make a second blog_read/video_view for
- * the same contentId impossible to create (deterministic ID, update denied)
- * — this trigger fires at most once per unique piece of content.
+ * Every event gets a `validation` verdict ({status: accepted|rejected,
+ * reason, validatorVersion, checkedAt}); only accepted events are counted
+ * (Phase 2 step 1, docs/PHASE2_PLAN.md G1/G2). Rejected events are kept as
+ * evidence, never deleted. Repeats of a count-once event can't reach this
+ * function: firestore.rules pins those events to a deterministic doc ID and
+ * denies a second create there.
+ *
+ * The verdict and the metrics update commit in one transaction that first
+ * checks the event has no verdict yet, so a redelivered trigger (Cloud
+ * Functions delivers at least once) can never count an event twice.
  */
 exports.onActivityLogCreated = functions
   .region(REGION)
   .firestore.document('activity_log/{docId}')
   .onCreate(withTriggerErrorLogging('onActivityLogCreated', async (snap) => {
     const entry = snap.data() || {};
-    const uid = entry.userId;
-    if (!uid) {
-      return null;
+    const verdict = await validateActivityEvent(snap.id, entry, activityLookups);
+    if (verdict.status === 'rejected') {
+      console.warn(JSON.stringify({
+        fn: 'onActivityLogCreated', rejected: verdict.reason, docId: snap.id, activityType: entry.activityType || null
+      }));
     }
+    const update = verdict.status === 'accepted' && entry.userId ? metricsUpdateFor(entry) : null;
 
-    const update = { updatedAt: admin.firestore.FieldValue.serverTimestamp() };
-
-    switch (entry.activityType) {
-      case 'blog_read':
-        update.blogsRead = admin.firestore.FieldValue.increment(1);
-        update.lastBlogReadDate = entry.timestamp;
-        break;
-      case 'video_view':
-        update.videosWatched = admin.firestore.FieldValue.increment(1);
-        break;
-      case 'video_watch_complete':
-        update.videosCompleted = admin.firestore.FieldValue.increment(1);
-        break;
-      case 'poll_vote':
-        update.pollsVoted = admin.firestore.FieldValue.increment(1);
-        break;
-      case 'eq_completion':
-        update.lastEqScore = entry.score !== undefined ? entry.score : null;
-        update.lastEqDate = entry.timestamp;
-        break;
-      default:
-        return null; // blog_read_complete, daily_visit, widget_usage don't feed a dashboard tally
-    }
-
-    await db.collection('user_metrics').doc(uid).set(update, { merge: true });
+    await db.runTransaction(async (tx) => {
+      const current = await tx.get(snap.ref);
+      // Gone (engagement reset) or already validated (trigger redelivery).
+      if (!current.exists || current.get('validation')) {
+        return;
+      }
+      tx.update(snap.ref, {
+        validation: {
+          status: verdict.status,
+          reason: verdict.reason,
+          validatorVersion: VALIDATOR_VERSION,
+          checkedAt: admin.firestore.FieldValue.serverTimestamp()
+        }
+      });
+      if (update) {
+        tx.set(db.collection('user_metrics').doc(entry.userId), update, { merge: true });
+      }
+    });
     return null;
   }));
 
@@ -711,6 +749,11 @@ exports.backfillUserMetrics = functions
       const entry = doc.data();
       const uid = entry.userId;
       if (!uid) {
+        return;
+      }
+      // Events onActivityLogCreated rejected never count. Events from before
+      // validation existed have no verdict and still count, as before.
+      if (entry.validation && entry.validation.status === 'rejected') {
         return;
       }
       const u = getUser(uid);

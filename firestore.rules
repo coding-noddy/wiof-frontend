@@ -105,21 +105,110 @@ service cloud.firestore {
 
     // ─── Activity Log ───────────────────────────────────────────────────────
 
+    // Each event type has an exact shape: unknown types and extra fields are
+    // rejected, so a client can't invent events or pad them with data the
+    // metrics might later read (Phase 2 step 1, docs/PHASE2_PLAN.md G1).
+    // Events that count once per piece of content (or once per day, for
+    // daily_visit) must use their deterministic doc ID: a second create at
+    // the same ID is an update, which is denied, so a repeat is impossible
+    // rather than filtered later. The onActivityLogCreated function then
+    // checks what rules can't (the content exists, the numbers are
+    // plausible) and counts only events it accepts.
+
+    function isActivityText(value, maxSize) {
+      return value is string && value.size() > 0 && value.size() <= maxSize;
+    }
+
+    function isPercent(value) {
+      return value is number && value >= 0 && value <= 100;
+    }
+
+    // One EQ dimension: 8 questions answered 1-5.
+    function isEqDimension(value) {
+      return value is number && value >= 8 && value <= 40;
+    }
+
+    function activityBaseKeys() {
+      return ['userId', 'activityType', 'schemaVersion', 'timestamp', 'calendarDay'];
+    }
+
+    // The deterministic ID for an event that counts once per piece of content.
+    function contentEventId(data) {
+      return request.auth.uid + '_' + data.activityType + '_' + data.contentId;
+    }
+
+    function isValidActivityEvent(docId, data) {
+      let type = data.activityType;
+      let base = activityBaseKeys();
+      return data.userId == request.auth.uid
+        && data.timestamp == request.time
+        && data.schemaVersion == 1
+        && data.calendarDay is string
+        && data.calendarDay.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && (
+          (type == 'blog_read'
+            && data.keys().hasOnly(base.concat(['contentId']))
+            && isActivityText(data.contentId, 200)
+            && docId == contentEventId(data))
+          || (type == 'blog_read_complete'
+            && data.keys().hasOnly(base.concat(['contentId', 'contentTitle', 'scrollDepth', 'timeSpent']))
+            && isActivityText(data.contentId, 200)
+            && isActivityText(data.contentTitle, 500)
+            && isPercent(data.scrollDepth)
+            && data.timeSpent is number && data.timeSpent >= 0 && data.timeSpent <= 86400
+            && docId == contentEventId(data))
+          || (type == 'video_view'
+            && data.keys().hasOnly(base.concat(['contentId']))
+            && isActivityText(data.contentId, 200)
+            && docId == contentEventId(data))
+          || (type == 'video_watch_complete'
+            && data.keys().hasOnly(base.concat(['contentId', 'contentTitle', 'scrollDepth']))
+            && isActivityText(data.contentId, 200)
+            && isActivityText(data.contentTitle, 500)
+            && isPercent(data.scrollDepth)
+            && docId == contentEventId(data))
+          || (type == 'poll_vote'
+            && data.keys().hasOnly(base.concat(['contentId', 'contentTitle', 'selectedOption', 'userEmail']))
+            && isActivityText(data.contentId, 200)
+            && isActivityText(data.contentTitle, 500)
+            && data.selectedOption is string && data.selectedOption.size() <= 500
+            // The signed-in user's own email (or '' without one), never another address.
+            && data.userEmail == request.auth.token.get('email', '')
+            && docId == contentEventId(data))
+          || (type == 'eq_completion'
+            && data.keys().hasOnly(base.concat(['score', 'eqDimensions']))
+            && data.eqDimensions.keys().hasOnly(['attentionScore', 'clarityScore', 'reparationScore'])
+            && isEqDimension(data.eqDimensions.attentionScore)
+            && isEqDimension(data.eqDimensions.clarityScore)
+            && isEqDimension(data.eqDimensions.reparationScore)
+            && data.score == data.eqDimensions.attentionScore + data.eqDimensions.clarityScore + data.eqDimensions.reparationScore)
+          || (type == 'daily_visit'
+            && data.keys().hasOnly(base)
+            && docId == request.auth.uid + '_daily_visit_' + data.calendarDay)
+          || (type == 'widget_usage'
+            && data.keys().hasOnly(base.concat(['widgetName']))
+            && data.widgetName in ['AQI', 'Energy Calculator', 'Food pH', 'Water Rainfall'])
+          || (type == 'action_completed'
+            && data.keys().hasOnly(base.concat(['contentId']))
+            && isActivityText(data.contentId, 200))
+        );
+    }
+
     match /activity_log/{docId} {
       // Users can read their own history; admins can read aggregate analytics.
       allow read: if isAdmin()
         || (isAuthenticated() && resource.data.userId == request.auth.uid);
 
-      // Create only own documents with rate limiting (1 create/second)
-      // Rate limit enforced by requiring timestamp == request.time (prevents backdated writes)
+      // Own events only, with a server timestamp (no backdating), in the
+      // exact shape of their event type (see isValidActivityEvent above).
       allow create: if isAuthenticated()
-        && request.resource.data.userId == request.auth.uid
-        && request.resource.data.timestamp == request.time;
+        && isValidActivityEvent(docId, request.resource.data);
 
       // Fully immutable and append-only from the client: no update, no delete.
-      // "Clear My Engagement Data" deletes these via the resetEngagementData
-      // Cloud Function (Admin SDK, bypasses these rules) — the client never
-      // needs a delete path of its own, so none exists.
+      // onActivityLogCreated records its verdict on the event (Admin SDK) and
+      // "Clear My Engagement Data" deletes events via the resetEngagementData
+      // Cloud Function — both bypass these rules, so the client never needs
+      // an update or delete path of its own.
       allow update: if false;
       allow delete: if false;
     }

@@ -49,6 +49,23 @@ export interface ActivityLogEntry {
   };
   selectedOption?: string;    // voted option text for poll_vote
   userEmail?: string;         // user's email at vote time for poll_vote
+  /** Set by onActivityLogCreated (Cloud Function) after its server checks;
+   *  only accepted events count toward user_metrics. Absent on events from
+   *  before validation existed, and briefly on brand-new ones. */
+  validation?: {
+    status: 'accepted' | 'rejected';
+    reason: string | null;
+  };
+}
+
+/** Percentages go into rules-checked 0-100 fields; a player can report 100.4%. */
+function toPercent(value: number): number {
+  return Math.min(100, Math.max(0, Math.floor(value || 0)));
+}
+
+/** History lists leave out events the server rejected (they never counted). */
+function isNotRejected(data: ActivityLogEntry): boolean {
+  return data.validation?.status !== 'rejected';
 }
 
 export interface EngagementMetrics {
@@ -250,8 +267,8 @@ export class ActivityService {
       schemaVersion: ActivityService.SCHEMA_VERSION,
       contentId,
       contentTitle: blogTitle || contentId,
-      scrollDepth,
-      timeSpent,
+      scrollDepth: toPercent(scrollDepth),
+      timeSpent: Math.floor(timeSpent),
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       calendarDay
     };
@@ -287,7 +304,7 @@ export class ActivityService {
       schemaVersion: ActivityService.SCHEMA_VERSION,
       contentId,
       contentTitle: videoTitle || contentId,
-      scrollDepth: Math.floor(watchPercent), // reuse scrollDepth field for watch percentage
+      scrollDepth: toPercent(watchPercent), // reuse scrollDepth field for watch percentage
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       calendarDay
     };
@@ -472,18 +489,20 @@ export class ActivityService {
       .get()
       .pipe(
         map(snapshot => {
-          return snapshot.docs.map(doc => {
-            const data = doc.data() as ActivityLogEntry;
-            const timestamp = data.timestamp;
-            const completedDate = timestamp?.toDate ? timestamp.toDate() : (timestamp ? new Date(timestamp) : new Date());
-            return {
-              contentId: data.contentId || '',
-              blogTitle: data.contentTitle || data.contentId || 'Untitled Blog',
-              completedDate,
-              scrollDepth: data.scrollDepth || 0,
-              timeSpent: data.timeSpent || 0
-            } as QualityReadEntry;
-          });
+          return snapshot.docs
+            .map(doc => doc.data() as ActivityLogEntry)
+            .filter(isNotRejected)
+            .map(data => {
+              const timestamp = data.timestamp;
+              const completedDate = timestamp?.toDate ? timestamp.toDate() : (timestamp ? new Date(timestamp) : new Date());
+              return {
+                contentId: data.contentId || '',
+                blogTitle: data.contentTitle || data.contentId || 'Untitled Blog',
+                completedDate,
+                scrollDepth: data.scrollDepth || 0,
+                timeSpent: data.timeSpent || 0
+              } as QualityReadEntry;
+            });
         })
       );
   }
@@ -503,18 +522,20 @@ export class ActivityService {
       .get()
       .pipe(
         map(snapshot => {
-          return snapshot.docs.map(doc => {
-            const data = doc.data() as ActivityLogEntry;
-            const timestamp = data.timestamp;
-            const date = timestamp?.toDate ? timestamp.toDate() : (timestamp ? new Date(timestamp) : new Date());
-            return {
-              date,
-              overallScore: data.score || 0,
-              attentionScore: data.eqDimensions?.attentionScore || 0,
-              clarityScore: data.eqDimensions?.clarityScore || 0,
-              reparationScore: data.eqDimensions?.reparationScore || 0
-            } as EqHistoryEntry;
-          });
+          return snapshot.docs
+            .map(doc => doc.data() as ActivityLogEntry)
+            .filter(isNotRejected)
+            .map(data => {
+              const timestamp = data.timestamp;
+              const date = timestamp?.toDate ? timestamp.toDate() : (timestamp ? new Date(timestamp) : new Date());
+              return {
+                date,
+                overallScore: data.score || 0,
+                attentionScore: data.eqDimensions?.attentionScore || 0,
+                clarityScore: data.eqDimensions?.clarityScore || 0,
+                reparationScore: data.eqDimensions?.reparationScore || 0
+              } as EqHistoryEntry;
+            });
         })
       );
   }
@@ -534,17 +555,19 @@ export class ActivityService {
       .get()
       .pipe(
         map(snapshot => {
-          return snapshot.docs.map(doc => {
-            const data = doc.data() as ActivityLogEntry;
-            const timestamp = data.timestamp;
-            const voteDate = timestamp?.toDate ? timestamp.toDate() : (timestamp ? new Date(timestamp) : new Date());
-            return {
-              contentId: data.contentId || '',
-              pollTitle: data.contentTitle || data.contentId || 'Poll',
-              selectedOption: data.selectedOption || '',
-              voteDate
-            } as PollHistoryEntry;
-          });
+          return snapshot.docs
+            .map(doc => doc.data() as ActivityLogEntry)
+            .filter(isNotRejected)
+            .map(data => {
+              const timestamp = data.timestamp;
+              const voteDate = timestamp?.toDate ? timestamp.toDate() : (timestamp ? new Date(timestamp) : new Date());
+              return {
+                contentId: data.contentId || '',
+                pollTitle: data.contentTitle || data.contentId || 'Poll',
+                selectedOption: data.selectedOption || '',
+                voteDate
+              } as PollHistoryEntry;
+            });
         })
       );
   }
@@ -565,10 +588,12 @@ export class ActivityService {
       .get()
       .pipe(
         map(snapshot => {
-          return snapshot.docs.map(doc => {
-            const data = doc.data() as ActivityLogEntry;
-            return this.mapToVideoWatchEntry(data);
-          });
+          return snapshot.docs
+            .map(doc => doc.data() as ActivityLogEntry)
+            .filter(isNotRejected)
+            .map(data => {
+              return this.mapToVideoWatchEntry(data);
+            });
         })
       );
   }

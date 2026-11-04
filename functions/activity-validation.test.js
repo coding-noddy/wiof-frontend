@@ -1,0 +1,134 @@
+/**
+ * Unit tests for activity-validation.js. No emulator needed:
+ *   npm run test:functions
+ */
+const { describe, it } = require('node:test');
+const assert = require('node:assert/strict');
+const {
+  blogWordCount,
+  expectedDocId,
+  isPlausibleCalendarDay,
+  requiredReadSeconds,
+  validateActivityEvent
+} = require('./activity-validation');
+
+const NOON_UTC = { toMillis: () => Date.parse('2026-11-04T12:00:00Z') };
+// 400 words: a quality read needs 400 / 200 * 60 * 0.6 = 72 seconds.
+const BLOG = { content: '<p>' + 'word '.repeat(400) + '</p>' };
+
+const lookups = {
+  getBlog: async (id) => (id === 'kalpasar' ? BLOG : null),
+  pollExists: async (id) => id === 'poll-1',
+  actionExists: async (id) => id === 'reuse-container'
+};
+
+function event(activityType, fields = {}) {
+  return { userId: 'alice', activityType, schemaVersion: 1, timestamp: NOON_UTC, calendarDay: '2026-11-04', ...fields };
+}
+
+async function verdict(entry, docId = expectedDocId(entry) || 'auto-id') {
+  return validateActivityEvent(docId, entry, lookups);
+}
+
+describe('validateActivityEvent', () => {
+  it('accepts a read of a blog that exists', async () => {
+    assert.deepEqual(await verdict(event('blog_read', { contentId: 'kalpasar' })), { status: 'accepted', reason: null });
+  });
+
+  it('rejects a read of a blog that does not exist', async () => {
+    assert.equal((await verdict(event('blog_read', { contentId: 'no-such-blog' }))).reason, 'content_not_found');
+  });
+
+  it('rejects a count-once event at a random doc ID', async () => {
+    assert.equal((await verdict(event('blog_read', { contentId: 'kalpasar' }), 'random')).reason, 'wrong_doc_id');
+  });
+
+  it('rejects an unknown event type', async () => {
+    assert.equal((await verdict(event('blog_shared'))).reason, 'unknown_type');
+  });
+
+  it('rejects an event without a user', async () => {
+    assert.equal((await verdict(event('daily_visit', { userId: '' }), 'x')).reason, 'missing_user');
+  });
+
+  it('accepts a quality read that meets the scroll and time thresholds', async () => {
+    const entry = event('blog_read_complete', { contentId: 'kalpasar', contentTitle: 'K', scrollDepth: 80, timeSpent: 72 });
+    assert.equal((await verdict(entry)).status, 'accepted');
+  });
+
+  it('allows a quality read slightly under the time (browser word count may differ)', async () => {
+    const entry = event('blog_read_complete', { contentId: 'kalpasar', contentTitle: 'K', scrollDepth: 80, timeSpent: 66 });
+    assert.equal((await verdict(entry)).status, 'accepted');
+  });
+
+  it('rejects a quality read that was clearly too fast', async () => {
+    const entry = event('blog_read_complete', { contentId: 'kalpasar', contentTitle: 'K', scrollDepth: 80, timeSpent: 10 });
+    assert.equal((await verdict(entry)).reason, 'below_time_threshold');
+  });
+
+  it('rejects a quality read without enough scrolling', async () => {
+    const entry = event('blog_read_complete', { contentId: 'kalpasar', contentTitle: 'K', scrollDepth: 50, timeSpent: 500 });
+    assert.equal((await verdict(entry)).reason, 'below_scroll_threshold');
+  });
+
+  it('accepts video events only for a YouTube video ID', async () => {
+    assert.equal((await verdict(event('video_view', { contentId: 'GfO-3Oir-qM' }))).status, 'accepted');
+    assert.equal((await verdict(event('video_view', { contentId: 'not a video' }))).reason, 'content_not_found');
+  });
+
+  it('requires a completed video to be watched to 75%', async () => {
+    const done = event('video_watch_complete', { contentId: 'GfO-3Oir-qM', contentTitle: 'V', scrollDepth: 75 });
+    const short = event('video_watch_complete', { contentId: 'GfO-3Oir-qM', contentTitle: 'V', scrollDepth: 40 });
+    assert.equal((await verdict(done)).status, 'accepted');
+    assert.equal((await verdict(short)).reason, 'below_watch_threshold');
+  });
+
+  it('checks the poll and the action exist', async () => {
+    assert.equal((await verdict(event('poll_vote', { contentId: 'poll-1' }))).status, 'accepted');
+    assert.equal((await verdict(event('poll_vote', { contentId: 'poll-x' }))).reason, 'content_not_found');
+    assert.equal((await verdict(event('action_completed', { contentId: 'reuse-container' }))).status, 'accepted');
+    assert.equal((await verdict(event('action_completed', { contentId: 'made-up' }))).reason, 'content_not_found');
+  });
+
+  it('accepts only the known widgets', async () => {
+    assert.equal((await verdict(event('widget_usage', { widgetName: 'AQI' }))).status, 'accepted');
+    assert.equal((await verdict(event('widget_usage', { widgetName: 'Fake' }))).reason, 'unknown_widget');
+  });
+
+  it('accepts an EQ score only when it is the sum of valid dimensions', async () => {
+    const dims = { attentionScore: 20, clarityScore: 30, reparationScore: 25 };
+    assert.equal((await verdict(event('eq_completion', { score: 75, eqDimensions: dims }))).status, 'accepted');
+    assert.equal((await verdict(event('eq_completion', { score: 120, eqDimensions: dims }))).reason, 'invalid_score');
+    assert.equal((await verdict(event('eq_completion', { score: 50, eqDimensions: { ...dims, attentionScore: -5 } }))).reason, 'invalid_score');
+  });
+
+  it('accepts a daily visit at its per-day ID', async () => {
+    assert.equal((await verdict(event('daily_visit'), 'alice_daily_visit_2026-11-04')).status, 'accepted');
+    assert.equal((await verdict(event('daily_visit'), 'alice_daily_visit_2026-11-05')).reason, 'wrong_doc_id');
+  });
+
+  it('rejects a calendar day more than a day away from the server time', async () => {
+    assert.equal((await verdict(event('daily_visit', { calendarDay: '2026-11-07' }))).reason, 'implausible_calendar_day');
+  });
+});
+
+describe('isPlausibleCalendarDay', () => {
+  it('allows the day either side of the UTC date (browser time zones)', () => {
+    assert.ok(isPlausibleCalendarDay('2026-11-03', NOON_UTC));
+    assert.ok(isPlausibleCalendarDay('2026-11-04', NOON_UTC));
+    assert.ok(isPlausibleCalendarDay('2026-11-05', NOON_UTC));
+    assert.ok(!isPlausibleCalendarDay('2026-11-02', NOON_UTC));
+    assert.ok(!isPlausibleCalendarDay('04-11-2026', NOON_UTC));
+  });
+});
+
+describe('blog reading time', () => {
+  it('mirrors the browser word count, tags as word boundaries', () => {
+    assert.equal(blogWordCount('<p>one</p><p>two</p>'), 2);
+    assert.equal(blogWordCount(''), 1000);
+  });
+
+  it('needs 60% of the time at 200 words a minute', () => {
+    assert.equal(requiredReadSeconds(BLOG), 72);
+  });
+});
