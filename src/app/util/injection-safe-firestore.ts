@@ -1,55 +1,40 @@
-import { EnvironmentInjector, Injectable, inject, runInInjectionContext } from '@angular/core';
+import { EnvironmentInjector, runInInjectionContext } from '@angular/core';
 import {
   AngularFirestore,
   AngularFirestoreCollection,
-  AngularFirestoreCollectionGroup,
-  AngularFirestoreDocument,
-  CollectionReference,
-  DocumentReference,
-  QueryFn,
-  QueryGroupFn
+  AngularFirestoreDocument
 } from '@angular/fire/compat/firestore';
 
 /**
- * AngularFirestore, provided in place of AngularFire's own (see AppModule).
- *
- * From AngularFire 19, the compat wrappers (AngularFirestoreCollection,
+ * From AngularFire 19, the compat Firestore wrappers (AngularFirestoreCollection,
  * AngularFirestoreDocument, AngularFirestoreCollectionGroup) call inject() in
- * their constructors. So `afs.collection()` / `afs.doc()`, and a wrapper's own
- * `.doc()` / `.collection()`, throw NG0203 unless called in an injection
- * context. This app calls them from ngOnInit, event handlers and service
- * methods, which aren't one. This subclass creates every wrapper inside its
- * injector's context, so call sites don't change.
+ * their constructors. So `afs.collection()` / `afs.doc()` / `afs.collectionGroup()`,
+ * and a wrapper's own `.doc()` / `.collection()`, throw NG0203 unless called in
+ * an injection context. This app calls them from ngOnInit, event handlers and
+ * service methods, which aren't one.
+ *
+ * This patches those five methods, once, to create the wrappers in the root
+ * injector's context (the wrappers only use it for PendingTasks). It patches
+ * the prototypes rather than providing a replacement AngularFirestore because
+ * AngularFirestore is `providedIn: 'any'`: every lazy-loaded module gets its
+ * own instance, which a root-level replacement doesn't reach. Called from an
+ * environment initializer in AppModule.
  */
-@Injectable()
-export class InjectionSafeAngularFirestore extends AngularFirestore {
-  private readonly environmentInjector = inject(EnvironmentInjector);
-
-  override collection<T>(pathOrRef: string | CollectionReference, queryFn?: QueryFn): AngularFirestoreCollection<T> {
-    return this.guard(this.inContext(() => super.collection<T>(pathOrRef as string, queryFn)));
-  }
-
-  override collectionGroup<T>(collectionId: string, queryGroupFn?: QueryGroupFn<T>): AngularFirestoreCollectionGroup<T> {
-    return this.inContext(() => super.collectionGroup<T>(collectionId, queryGroupFn));
-  }
-
-  override doc<T>(pathOrRef: string | DocumentReference): AngularFirestoreDocument<T> {
-    return this.guard(this.inContext(() => super.doc<T>(pathOrRef as string)));
-  }
-
-  private inContext<R>(create: () => R): R {
-    return runInInjectionContext(this.environmentInjector, create);
-  }
-
-  /** Makes a wrapper's own `.doc()` (collections) / `.collection()` (documents) safe too. */
-  private guard<W extends object>(wrapper: W): W {
-    for (const method of ['doc', 'collection']) {
-      const original = (wrapper as any)[method];
-      if (typeof original === 'function') {
-        (wrapper as any)[method] = (...args: unknown[]) =>
-          this.guard(this.inContext(() => original.apply(wrapper, args)));
-      }
-    }
-    return wrapper;
+export function makeAngularFirestoreInjectionSafe(injector: EnvironmentInjector): void {
+  const targets: Array<[object, string]> = [
+    [AngularFirestore.prototype, 'collection'],
+    [AngularFirestore.prototype, 'collectionGroup'],
+    [AngularFirestore.prototype, 'doc'],
+    [AngularFirestoreCollection.prototype, 'doc'],
+    [AngularFirestoreDocument.prototype, 'collection']
+  ];
+  for (const [prototype, method] of targets) {
+    const original = (prototype as any)[method];
+    if (original.injectionSafe) continue;
+    const safe = function (this: unknown, ...args: unknown[]) {
+      return runInInjectionContext(injector, () => original.apply(this, args));
+    };
+    safe.injectionSafe = true;
+    (prototype as any)[method] = safe;
   }
 }

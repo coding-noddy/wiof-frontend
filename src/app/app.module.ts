@@ -1,8 +1,15 @@
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule, inject, provideAppInitializer } from '@angular/core';
+import {
+  CUSTOM_ELEMENTS_SCHEMA,
+  EnvironmentInjector,
+  NgModule,
+  inject,
+  provideAppInitializer,
+  provideEnvironmentInitializer
+} from '@angular/core';
 //Firestore Integration Modules
 import { AngularFireModule, FirebaseApp } from '@angular/fire/compat';
-import { AngularFirestore, AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -11,7 +18,7 @@ import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { environment } from '../environments/environment';
 import { initWiofAppCheck } from './util/app-check';
-import { InjectionSafeAngularFirestore } from './util/injection-safe-firestore';
+import { makeAngularFirestoreInjectionSafe } from './util/injection-safe-firestore';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { OnboardingOverlayComponent } from './components/onboarding-overlay/onboarding-overlay.component';
@@ -50,8 +57,8 @@ import {
     ScreenTrackingService,
     UserTrackingService,
     // AngularFire 19+ compat Firestore needs an injection context for
-    // collection()/doc(); see InjectionSafeAngularFirestore.
-    { provide: AngularFirestore, useClass: InjectionSafeAngularFirestore },
+    // collection()/doc(); see makeAngularFirestoreInjectionSafe.
+    provideEnvironmentInitializer(() => makeAngularFirestoreInjectionSafe(inject(EnvironmentInjector))),
     // Replaces HttpClientModule (deprecated in Angular 18).
     provideHttpClient(withInterceptorsFromDi())
   ],

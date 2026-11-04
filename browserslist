@@ -1,9 +1,0 @@
-# Browsers the build targets. These are Ionic 8's supported minimums
-# (https://ionicframework.com/docs/reference/browser-support).
-# Check what this selects with: npx browserslist
-Chrome >=89
-ChromeAndroid >=89
-Firefox >=75
-Edge >=89
-Safari >=15
-iOS >=15
