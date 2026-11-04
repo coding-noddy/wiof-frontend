@@ -7,6 +7,11 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.0.3] - 2026-11-04
+
+### Changed
+- **Blog posts, videos and element take-action pages no longer load the slider library.** These pages (`/element/<element>/blog/…`, `/video/…`, `/take-action`) were routed as children of their element page, so opening one also loaded the element page's code, including Swiper since 8.0.2. They are now routed at the app level. The addresses are unchanged, old `/blogs/blog/…` links still redirect, and an unknown element still shows the not-found page. Blog posts are often a visitor's first page (shared links), so they now get the smaller initial download that 8.0.2 intended.
+
 ## [8.0.2] - 2026-11-04
 
 Post-migration clean-up.

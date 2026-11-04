@@ -1,8 +1,26 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes, UrlMatcher } from '@angular/router';
 
 import { AuthGuard } from './guards/auth.guard';
 import { PublicUserGuard } from './guards/public-user.guard';
+
+const ELEMENTS = ['earth', 'water', 'air', 'energy', 'spirit'];
+
+/**
+ * Matches /element/<one of the five elements>/<section>/..., consuming the
+ * first three segments (the rest goes to the lazy module) and exposing
+ * :element. Anything else, e.g. an unknown element, still falls through to
+ * the not-found page.
+ */
+function elementSection(section: string): UrlMatcher {
+  return (segments) =>
+    segments.length >= 3 &&
+    segments[0].path === 'element' &&
+    ELEMENTS.includes(segments[1].path) &&
+    segments[2].path === section
+      ? { consumed: segments.slice(0, 3), posParams: { element: segments[1] } }
+      : null;
+}
 
 const routes: Routes = [
   {
@@ -34,6 +52,25 @@ const routes: Routes = [
     path: 'element/:element/videos/take-action',
     redirectTo: 'element/:element/take-action',
     pathMatch: 'full'
+  },
+  // Element detail pages. Registered here, not as children of each element
+  // page's routes, so opening one (often a visitor's landing page from a
+  // shared link) doesn't load the element page's module and its sliders.
+  // The URLs are unchanged.
+  {
+    matcher: elementSection('blog'),
+    loadChildren: () =>
+      import('./pages/blog-post/blog-post.module').then((m) => m.BlogPostPageModule)
+  },
+  {
+    matcher: elementSection('video'),
+    loadChildren: () =>
+      import('./pages/video-post/video-post.module').then((m) => m.VideoPostPageModule)
+  },
+  {
+    matcher: elementSection('take-action'),
+    loadChildren: () =>
+      import('./pages/take-action/take-action.module').then((m) => m.TakeActionPageModule)
   },
   {
     path: 'element/earth',
