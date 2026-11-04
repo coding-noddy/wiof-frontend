@@ -96,7 +96,12 @@
             </div>
             <hr class="blog-divider">
             <p class="blog-description">{{ addBlogForm.get('shortDescription')?.value }}</p>
-            <div class="blog-content" [innerHTML]="addBlogForm.get('content')?.value"></div>
+            <!-- Rendered like the public blog page: quill-view with the editor's content. -->
+            @if (previewDelta) {
+              <quill-view [content]="previewDelta" format="object" theme="snow"></quill-view>
+            } @else {
+              <div class="blog-content" [innerHTML]="addBlogForm.get('content')?.value"></div>
+            }
             <hr class="blog-divider">
             @if (addBlogForm.get('aboutAuthor')?.value) {
               <div class="blog-about-author">
@@ -110,93 +115,93 @@
     }
 
     <!-- Edit Mode Form -->
-    @if (!showPreview) {
-      <form [formGroup]="addBlogForm">
-        <!-- Basic Info Card -->
-        <div class="form-card">
-          <div class="form-card-title"><ion-icon aria-hidden="true" name="document-text-outline"></ion-icon> Basic Information</div>
-          <div class="form-row">
-            <ion-item>
-              <ion-input label="Blog Title *" labelPlacement="floating" formControlName="title"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input label="Author Name *" labelPlacement="floating" formControlName="authorName"></ion-input>
-            </ion-item>
+    <!-- Hidden, not removed, while previewing: recreating the editor re-pasted the
+         saved content and lost unsaved edits. -->
+    <form [formGroup]="addBlogForm" [hidden]="showPreview">
+      <!-- Basic Info Card -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="document-text-outline"></ion-icon> Basic Information</div>
+        <div class="form-row">
+          <ion-item>
+            <ion-input label="Blog Title *" labelPlacement="floating" formControlName="title"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-input label="Author Name *" labelPlacement="floating" formControlName="authorName"></ion-input>
+          </ion-item>
+        </div>
+        <!-- Slug preview -->
+        @if (slugPreview) {
+          <div class="slug-preview">
+            <ion-icon aria-hidden="true" name="link-outline"></ion-icon>
+            <span>/element/{{ addBlogForm.get('category')?.value || '...' }}/blog/<strong>{{ slugPreview }}</strong></span>
           </div>
-          <!-- Slug preview -->
-          @if (slugPreview) {
-            <div class="slug-preview">
-              <ion-icon aria-hidden="true" name="link-outline"></ion-icon>
-              <span>/element/{{ addBlogForm.get('category')?.value || '...' }}/blog/<strong>{{ slugPreview }}</strong></span>
-            </div>
+        }
+        <div class="form-row">
+          <ion-item>
+            <ion-select label="Category *" labelPlacement="floating" formControlName="category">
+              @for (category of categories; track category) {
+                <ion-select-option [value]="category">{{ category }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-input label="Sub Category *" labelPlacement="floating" formControlName="subCategory"></ion-input>
+          </ion-item>
+        </div>
+        <div class="form-row">
+          <ion-item>
+            <ion-input type="date" label="Published date *" labelPlacement="stacked" formControlName="publishDate"
+            helperText="Blogs are listed newest first by this date"></ion-input>
+          </ion-item>
+        </div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-textarea label="Short Description *" labelPlacement="floating" formControlName="shortDescription" rows="2" auto-grow="true"></ion-textarea>
+          </ion-item>
+        </div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-textarea label="About Author *" labelPlacement="floating" formControlName="aboutAuthor" rows="2" auto-grow="true"></ion-textarea>
+          </ion-item>
+        </div>
+      </div>
+      <!-- Image Card -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="image-outline"></ion-icon> Blog Image</div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-label position="stacked">Upload Hero Image *</ion-label>
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="image" class="file-input" />
+          </ion-item>
+          <p class="field-help">Max file size {{ maxImageMB }} MB. Recommended JPG/PNG. This appears as the blog thumbnail and header.</p>
+        </div>
+        @if (imageToDisplay) {
+          <div class="form-image-preview">
+            <ion-img [src]="imageToDisplay"></ion-img>
+          </div>
+        }
+      </div>
+      <!-- Content Card -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="create-outline"></ion-icon> Blog Content</div>
+        <quill-editor
+          formControlName="content"
+          [valueGetter]="quillHtml"
+          [modules]="quillModules"
+          (onEditorCreated)="onEditorCreated($event)"
+          placeholder="Start writing your blog post... Use the toolbar above for formatting, or paste from Word/Google Docs."
+        ></quill-editor>
+        <div class="editor-stats">
+          <span><ion-icon aria-hidden="true" name="text-outline"></ion-icon> {{ wordCount }} words</span>
+          <span><ion-icon aria-hidden="true" name="code-outline"></ion-icon> {{ charCount }} chars</span>
+          <span><ion-icon aria-hidden="true" name="time-outline"></ion-icon> ~{{ readTime }} min read</span>
+          @if (isDirty) {
+            <span class="editor-stats-right">
+              <ion-icon aria-hidden="true" name="ellipse" color="warning"></ion-icon> Unsaved
+            </span>
           }
-          <div class="form-row">
-            <ion-item>
-              <ion-select label="Category *" labelPlacement="floating" formControlName="category">
-                @for (category of categories; track category) {
-                  <ion-select-option [value]="category">{{ category }}</ion-select-option>
-                }
-              </ion-select>
-            </ion-item>
-            <ion-item>
-              <ion-input label="Sub Category *" labelPlacement="floating" formControlName="subCategory"></ion-input>
-            </ion-item>
-          </div>
-          <div class="form-row">
-            <ion-item>
-              <ion-input type="date" label="Published date *" labelPlacement="stacked" formControlName="publishDate"
-              helperText="Blogs are listed newest first by this date"></ion-input>
-            </ion-item>
-          </div>
-          <div class="form-row full-width">
-            <ion-item>
-              <ion-textarea label="Short Description *" labelPlacement="floating" formControlName="shortDescription" rows="2" auto-grow="true"></ion-textarea>
-            </ion-item>
-          </div>
-          <div class="form-row full-width">
-            <ion-item>
-              <ion-textarea label="About Author *" labelPlacement="floating" formControlName="aboutAuthor" rows="2" auto-grow="true"></ion-textarea>
-            </ion-item>
-          </div>
         </div>
-        <!-- Image Card -->
-        <div class="form-card">
-          <div class="form-card-title"><ion-icon aria-hidden="true" name="image-outline"></ion-icon> Blog Image</div>
-          <div class="form-row full-width">
-            <ion-item>
-              <ion-label position="stacked">Upload Hero Image *</ion-label>
-              <input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="image" class="file-input" />
-            </ion-item>
-            <p class="field-help">Max file size {{ maxImageMB }} MB. Recommended JPG/PNG. This appears as the blog thumbnail and header.</p>
-          </div>
-          @if (imageToDisplay) {
-            <div class="form-image-preview">
-              <ion-img [src]="imageToDisplay"></ion-img>
-            </div>
-          }
-        </div>
-        <!-- Content Card -->
-        <div class="form-card">
-          <div class="form-card-title"><ion-icon aria-hidden="true" name="create-outline"></ion-icon> Blog Content</div>
-          <quill-editor
-            formControlName="content"
-            [valueGetter]="quillHtml"
-            [modules]="quillModules"
-            (onEditorCreated)="onEditorCreated($event)"
-            placeholder="Start writing your blog post... Use the toolbar above for formatting, or paste from Word/Google Docs."
-          ></quill-editor>
-          <div class="editor-stats">
-            <span><ion-icon aria-hidden="true" name="text-outline"></ion-icon> {{ wordCount }} words</span>
-            <span><ion-icon aria-hidden="true" name="code-outline"></ion-icon> {{ charCount }} chars</span>
-            <span><ion-icon aria-hidden="true" name="time-outline"></ion-icon> ~{{ readTime }} min read</span>
-            @if (isDirty) {
-              <span class="editor-stats-right">
-                <ion-icon aria-hidden="true" name="ellipse" color="warning"></ion-icon> Unsaved
-              </span>
-            }
-          </div>
-        </div>
-      </form>
-    }
+      </div>
+    </form>
   </div>
 </ion-content>
