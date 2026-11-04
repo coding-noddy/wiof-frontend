@@ -58,12 +58,21 @@ if (jdkHome) {
   );
 }
 
+// The test files are listed rather than passing the tests/rules folder: from
+// Node 22, `node --test` treats its arguments as file globs, so a folder runs
+// as a single (failing) "test file".
+const testFiles = fs
+  .readdirSync(path.join(__dirname, '..', 'tests', 'rules'))
+  .filter((name) => name.endsWith('.test.js'))
+  .map((name) => `tests/rules/${name}`)
+  .join(' ');
+
 // Built as a single command-line string (rather than an args array) because
 // `shell: true` does not add quoting around array elements — the quoted
 // inner command here must survive as one argument to `emulators:exec`.
 const command =
   'firebase emulators:exec --project demo-wiof-rules-test --only firestore,storage ' +
-  '"node --test --test-concurrency=1 tests/rules"';
+  `"node --test --test-concurrency=1 ${testFiles}"`;
 
 const result = spawnSync(command, { stdio: 'inherit', shell: true, env });
 
