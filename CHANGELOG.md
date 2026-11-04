@@ -7,6 +7,11 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.0.1] - 2026-11-04
+
+### Fixed
+- **The blog editor's list shortcuts didn't work.** Its Keyboard Shortcuts panel listed Ctrl + Shift + 7 (ordered list) and Ctrl + Shift + 8 (bullet list), the Google Docs/Word shortcuts, but the editor (Quill) has no such shortcuts, so they did nothing. They now work: pressing one again turns the list off, and they work on several selected lines. The panel also shows Quill's own way to start a list: type `1.` or `-` and a space at the start of a line. The other listed shortcuts (bold, italic, underline, undo, redo) already worked.
+
 ## [8.0.0] - 2026-11-04
 
 Angular upgrade, Release B: Angular 18 → 21, Firebase 10 → 12, the new build system, and the new template syntax. This completes the upgrade planned in `docs/ANGULAR_UPGRADE_PLAN.md` (its breaking-changes table records everything found on the way, items 13–20).

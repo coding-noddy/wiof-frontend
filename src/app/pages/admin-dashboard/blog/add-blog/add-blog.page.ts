@@ -23,6 +23,14 @@ import { quillSemanticHtml } from 'src/app/util/quill-html.util';
 // blog page shows them without loading this module.
 Quill.register('modules/resize', ResizeModule);
 
+/** Keyboard handler turning the current line(s) into a list of this type, or back. */
+function toggleList(type: 'ordered' | 'bullet') {
+  return function (this: { quill: Quill }, range: { index: number; length: number }, context: { format: Record<string, unknown> }) {
+    this.quill.formatLine(range.index, range.length, 'list', context.format['list'] === type ? false : type, 'user');
+    return false;
+  };
+}
+
 @Component({
     selector: 'app-add-blog',
     templateUrl: './add-blog.page.html',
@@ -66,6 +74,15 @@ export class AddBlogPage implements OnInit, OnDestroy {
       }
     },
     history: { delay: 1000, maxStack: 50, userOnly: true },
+    // The list shortcuts from Google Docs/Word; Quill has none of its own.
+    // Matched by key code (55 = 7, 56 = 8): with Shift held, the key name is
+    // '&' / '*' on a US layout.
+    keyboard: {
+      bindings: {
+        orderedList: { key: 55, shortKey: true, shiftKey: true, handler: toggleList('ordered') },
+        bulletList: { key: 56, shortKey: true, shiftKey: true, handler: toggleList('bullet') }
+      }
+    },
     resize: {
       showSize: true,
       // Always keep an image's proportions while resizing, so a drag can
@@ -106,6 +123,8 @@ export class AddBlogPage implements OnInit, OnDestroy {
     { keys: 'Ctrl + Y', action: 'Redo' },
     { keys: 'Ctrl + Shift + 7', action: 'Ordered list' },
     { keys: 'Ctrl + Shift + 8', action: 'Bullet list' },
+    { keys: '1. + space', action: 'Start an ordered list' },
+    { keys: '- + space', action: 'Start a bullet list' },
   ];
 
   constructor(
