@@ -7,6 +7,34 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.0.0] - 2026-11-04
+
+Angular upgrade, Release B: Angular 18 → 21, Firebase 10 → 12, the new build system, and the new template syntax. This completes the upgrade planned in `docs/ANGULAR_UPGRADE_PLAN.md` (its breaking-changes table records everything found on the way, items 13–20).
+
+### Changed
+- **Angular 18 → 21** (in three steps: 19, 20, 21), with Angular Material/CDK 21, **AngularFire 21 and Firebase 12.19** (via 11), TypeScript 5.9, ngx-quill 29, ng2-charts 10, `@ionic/angular-toolkit` 13. The app keeps zone.js change detection (`provideZoneChangeDetection()`), so behaviour is unchanged.
+- **New build system** (Angular's esbuild-based `application` builder): production builds take about 70 seconds instead of about 4 minutes. The output still goes to `dist/`, so hosting and the deploy scripts are unchanged.
+- **New template syntax:** the 618 `*ngIf` / `*ngFor` / `*ngSwitch` uses in 81 templates are now `@if` / `@for` / `@switch` blocks (Angular's own migration, reviewed). The old syntax is deprecated and goes away in Angular 22.
+- **App Check** starts from `provideAppInitializer` (`APP_INITIALIZER` is deprecated).
+- **Supported browsers** follow Angular 21's own list (browsers from about the last 2½ years). The old list held Ionic 8's minimums, which are older than Angular 21 supports.
+- **Development machine:** Node.js 22 is needed (Angular 20+). Cloud Functions already ran on Node 22.
+
+### Fixed
+- **Blog preview didn't match the published blog.** The preview inserted the HTML with its own paragraph spacing, so it showed much more space between paragraphs (and around blank lines) than the blog page. It now renders exactly like the blog page.
+- **Preview could lose unsaved edits.** When editing an existing blog, opening Preview and going back to Edit put the saved text back into the editor, discarding the changes; saving afterwards could store mismatched content for the blog page. The editor now stays in place while previewing.
+- **The admin Analytics chart showed no data:** its query failed under AngularFire 19+ (see below), so only empty axes were drawn.
+- **After a deploy, a page opened from an older tab could stay blank.** Each deploy replaces the code files with new names; a page whose code can't load now reloads once to pick up the current version.
+
+### Upgrade issues found and handled
+- **AngularFire 19+ needs an injection context** to create its compat Firestore collection/document objects, which this app does in 145 places (page start-up, handlers, services). Without a fix every page failed to load data. `makeAngularFirestoreInjectionSafe` (`src/app/util/injection-safe-firestore.ts`) covers all of them without changing the call sites.
+- **Hosting cache rule:** the one-year cache for hashed code files only matched the old builder's file names, so every visit would have re-downloaded all the code. `firebase.json` now matches both naming styles.
+- **Rules tests under Node 22:** `node --test <folder>` changed meaning, which blocked every deploy. The runner now lists the test files.
+- **Initial download** grows by about 50 KB (gzip) because Firebase 12's Firestore always includes a regular-expression engine for its new query pipelines. Not avoidable with AngularFire 21; the build's warning budget is 2.5 MB. Loading the slider library only where sliders are used would save more than this.
+
+### Tests
+- Unit tests: 143, all passing (they run with the same change detection as the app; new tests for the deploy-reload check).
+- Checked on staging after every step: the blog editor end to end, publish from preview, Workshops, admin forms and the Excel export, the Analytics chart, the public pages on phone and desktop, signed-in pages (My Journey, My Library, Settings, My Feedback), cache headers and CSP (0 violations), plus a manual admin check.
+
 ## [7.0.0] - 2026-11-03
 
 Angular upgrade, Release A: Angular 16 → 18, Ionic 7 → 8, and the Quill 2 blog editor. The plan, compatibility research and remaining steps (Angular 19 → 21, Release B) are in `docs/ANGULAR_UPGRADE_PLAN.md`.
