@@ -61,39 +61,49 @@
         <button class="filter-dropdown-btn" [class.has-selection]="filterCategory" (click)="toggleDropdown('category')">
           <ion-icon aria-hidden="true" name="funnel-outline"></ion-icon> Category <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
         </button>
-        <div class="filter-dropdown-menu" *ngIf="openDropdown === 'category'">
-          <div class="menu-item" [class.selected]="filterCategory === 'earth'" (click)="filterCategory = 'earth'; onFilterChange()">🌍 Earth</div>
-          <div class="menu-item" [class.selected]="filterCategory === 'water'" (click)="filterCategory = 'water'; onFilterChange()">💧 Water</div>
-          <div class="menu-item" [class.selected]="filterCategory === 'air'" (click)="filterCategory = 'air'; onFilterChange()">🌬️ Air</div>
-          <div class="menu-item" [class.selected]="filterCategory === 'energy'" (click)="filterCategory = 'energy'; onFilterChange()">⚡ Energy</div>
-          <div class="menu-item" [class.selected]="filterCategory === 'spirit'" (click)="filterCategory = 'spirit'; onFilterChange()">✨ Spirit</div>
-        </div>
+        @if (openDropdown === 'category') {
+          <div class="filter-dropdown-menu">
+            <div class="menu-item" [class.selected]="filterCategory === 'earth'" (click)="filterCategory = 'earth'; onFilterChange()">🌍 Earth</div>
+            <div class="menu-item" [class.selected]="filterCategory === 'water'" (click)="filterCategory = 'water'; onFilterChange()">💧 Water</div>
+            <div class="menu-item" [class.selected]="filterCategory === 'air'" (click)="filterCategory = 'air'; onFilterChange()">🌬️ Air</div>
+            <div class="menu-item" [class.selected]="filterCategory === 'energy'" (click)="filterCategory = 'energy'; onFilterChange()">⚡ Energy</div>
+            <div class="menu-item" [class.selected]="filterCategory === 'spirit'" (click)="filterCategory = 'spirit'; onFilterChange()">✨ Spirit</div>
+          </div>
+        }
       </div>
       <div class="filter-dropdown">
         <button class="filter-dropdown-btn" [class.has-selection]="filterMediaType" (click)="toggleDropdown('media')">
           <ion-icon aria-hidden="true" name="image-outline"></ion-icon> Media <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
         </button>
-        <div class="filter-dropdown-menu" *ngIf="openDropdown === 'media'">
-          <div class="menu-item" [class.selected]="filterMediaType === 'image'" (click)="filterMediaType = 'image'; onFilterChange()">📷 Image</div>
-          <div class="menu-item" [class.selected]="filterMediaType === 'video'" (click)="filterMediaType = 'video'; onFilterChange()">🎬 Video</div>
-        </div>
+        @if (openDropdown === 'media') {
+          <div class="filter-dropdown-menu">
+            <div class="menu-item" [class.selected]="filterMediaType === 'image'" (click)="filterMediaType = 'image'; onFilterChange()">📷 Image</div>
+            <div class="menu-item" [class.selected]="filterMediaType === 'video'" (click)="filterMediaType = 'video'; onFilterChange()">🎬 Video</div>
+          </div>
+        }
       </div>
     </div>
 
     <!-- Active Filter Chips -->
-    <div class="active-filters" *ngIf="hasActiveFilters">
-      <div class="active-chip" *ngIf="filterCategory">
-        <span class="chip-label">Category:</span>
-        <span class="chip-value">{{ filterCategory }}</span>
-        <button class="chip-remove" (click)="removeFilter('filterCategory')">×</button>
+    @if (hasActiveFilters) {
+      <div class="active-filters">
+        @if (filterCategory) {
+          <div class="active-chip">
+            <span class="chip-label">Category:</span>
+            <span class="chip-value">{{ filterCategory }}</span>
+            <button class="chip-remove" (click)="removeFilter('filterCategory')">×</button>
+          </div>
+        }
+        @if (filterMediaType) {
+          <div class="active-chip">
+            <span class="chip-label">Media:</span>
+            <span class="chip-value">{{ filterMediaType }}</span>
+            <button class="chip-remove" (click)="removeFilter('filterMediaType')">×</button>
+          </div>
+        }
+        <button class="clear-all-btn" (click)="clearAllFilters()">Clear all</button>
       </div>
-      <div class="active-chip" *ngIf="filterMediaType">
-        <span class="chip-label">Media:</span>
-        <span class="chip-value">{{ filterMediaType }}</span>
-        <button class="chip-remove" (click)="removeFilter('filterMediaType')">×</button>
-      </div>
-      <button class="clear-all-btn" (click)="clearAllFilters()">Clear all</button>
-    </div>
+    }
 
     <!-- Table -->
     <div class="admin-table-card">
@@ -116,45 +126,51 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let news of displayedNews; let i = index">
-            <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
-            <td>
-              <span class="cell-title">{{ news.headline }}</span>
-              <div class="cell-subtitle">{{ news.content | slice:0:70 }}{{ news.content?.length > 70 ? '...' : '' }}</div>
-            </td>
-            <td><span class="cell-category" [ngClass]="news.category?.toLowerCase()">{{ news.category || '—' }}</span></td>
-            <td>{{ news.newsSource || '—' }}</td>
-            <td><span class="cell-category media-type">{{ news.mediaType || '—' }}</span></td>
-            <td><span class="cell-date">{{ news.date | date:'dd MMM yyyy' }}</span></td>
-            <td>
-              <div class="action-buttons">
-                <button class="action-btn view" title="Edit news" (click)="viewNewsDetails(news)">
-                  <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
-                </button>
-                <button class="action-btn delete" title="Delete news" (click)="deleteNews(i, news)">
-                  <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
-                </button>
-              </div>
-            </td>
-          </tr>
+          @for (news of displayedNews; track news; let i = $index) {
+            <tr>
+              <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+              <td>
+                <span class="cell-title">{{ news.headline }}</span>
+                <div class="cell-subtitle">{{ news.content | slice:0:70 }}{{ news.content?.length > 70 ? '...' : '' }}</div>
+              </td>
+              <td><span class="cell-category" [ngClass]="news.category?.toLowerCase()">{{ news.category || '—' }}</span></td>
+              <td>{{ news.newsSource || '—' }}</td>
+              <td><span class="cell-category media-type">{{ news.mediaType || '—' }}</span></td>
+              <td><span class="cell-date">{{ news.date | date:'dd MMM yyyy' }}</span></td>
+              <td>
+                <div class="action-buttons">
+                  <button class="action-btn view" title="Edit news" (click)="viewNewsDetails(news)">
+                    <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
+                  </button>
+                  <button class="action-btn delete" title="Delete news" (click)="deleteNews(i, news)">
+                    <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
         </tbody>
       </table>
 
       <!-- Pagination -->
-      <div class="pagination-bar" *ngIf="filteredCount > 0">
-        <span class="pagination-info">Page {{ currentPage }} of {{ totalPages }} · {{ filteredCount }} items</span>
-        <div class="pagination-controls">
-          <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"><ion-icon aria-hidden="true" name="chevron-back"></ion-icon></button>
-          <button class="page-btn" *ngFor="let p of pageNumbers" [class.active]="p === currentPage" (click)="goToPage(p)">{{ p }}</button>
-          <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"><ion-icon aria-hidden="true" name="chevron-forward"></ion-icon></button>
-          <select class="page-size-select" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
-            <option [ngValue]="5">5 / page</option>
-            <option [ngValue]="10">10 / page</option>
-            <option [ngValue]="25">25 / page</option>
-            <option [ngValue]="50">50 / page</option>
-          </select>
+      @if (filteredCount > 0) {
+        <div class="pagination-bar">
+          <span class="pagination-info">Page {{ currentPage }} of {{ totalPages }} · {{ filteredCount }} items</span>
+          <div class="pagination-controls">
+            <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"><ion-icon aria-hidden="true" name="chevron-back"></ion-icon></button>
+            @for (p of pageNumbers; track p) {
+              <button class="page-btn" [class.active]="p === currentPage" (click)="goToPage(p)">{{ p }}</button>
+            }
+            <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"><ion-icon aria-hidden="true" name="chevron-forward"></ion-icon></button>
+            <select class="page-size-select" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
+              <option [ngValue]="5">5 / page</option>
+              <option [ngValue]="10">10 / page</option>
+              <option [ngValue]="25">25 / page</option>
+              <option [ngValue]="50">50 / page</option>
+            </select>
+          </div>
         </div>
-      </div>
+      }
     </div>
   </div>
 </ion-content>

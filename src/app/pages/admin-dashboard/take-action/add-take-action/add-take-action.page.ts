@@ -18,9 +18,10 @@ import { ActionService } from 'src/app/services/action.service';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 
 @Component({
-  selector: 'app-add-take-action',
-  templateUrl: './add-take-action.page.html',
-  styleUrls: ['./add-take-action.page.scss']
+    selector: 'app-add-take-action',
+    templateUrl: './add-take-action.page.html',
+    styleUrls: ['./add-take-action.page.scss'],
+    standalone: false
 })
 export class AddTakeActionPage implements OnInit, OnDestroy {
   elementsList = Object.values(ELEMENTS);

@@ -14,22 +14,26 @@
       <a routerLink="/climatenlighten" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" class="nav-link">ClimatEnlighten</a>
 
       <!-- Auth-aware -->
-      <ng-container *ngIf="isAuthenticated$ | async; else guestSignIn">
-        <app-avatar-dropdown
-          *ngIf="currentUser$ | async as user"
-          [photoURL]="user.photoURL"
-          [displayName]="user.displayName || ''">
-        </app-avatar-dropdown>
-      </ng-container>
-      <ng-template #guestSignIn>
+      @if (isAuthenticated$ | async) {
+        @if (currentUser$ | async; as user) {
+          <app-avatar-dropdown
+            [photoURL]="user.photoURL"
+            [displayName]="user.displayName || ''">
+          </app-avatar-dropdown>
+        }
+      } @else {
         <button class="sign-in-btn" (click)="signIn()" [disabled]="signingIn">
-          <span *ngIf="!signingIn">Sign In</span>
-          <span *ngIf="signingIn" class="signing-in">
-            <span class="spinner"></span>
-            Signing in...
-          </span>
+          @if (!signingIn) {
+            <span>Sign In</span>
+          }
+          @if (signingIn) {
+            <span class="signing-in">
+              <span class="spinner"></span>
+              Signing in...
+            </span>
+          }
         </button>
-      </ng-template>
+      }
     </nav>
 
     <!-- Mobile hamburger -->
@@ -46,15 +50,15 @@
     <a routerLink="/take-action" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" class="mobile-link" (click)="closeMobileMenu()">Take Action</a>
     <a routerLink="/climatenlighten" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" class="mobile-link" (click)="closeMobileMenu()">ClimatEnlighten</a>
 
-    <ng-container *ngIf="!(isAuthenticated$ | async)">
+    @if (!(isAuthenticated$ | async)) {
       <button class="mobile-sign-in" (click)="signIn(); closeMobileMenu()">Sign In</button>
-    </ng-container>
-    <ng-container *ngIf="isAuthenticated$ | async">
+    }
+    @if (isAuthenticated$ | async) {
       <a routerLink="/my-journey" class="mobile-link" (click)="closeMobileMenu()">My Journey</a>
       <a routerLink="/my-library" class="mobile-link" (click)="closeMobileMenu()">My Library</a>
       <a routerLink="/my-feedback" class="mobile-link" (click)="closeMobileMenu()">My Feedback</a>
       <a routerLink="/settings" class="mobile-link" (click)="closeMobileMenu()">Settings</a>
       <button class="mobile-link mobile-logout" (click)="logout(); closeMobileMenu()">Logout</button>
-    </ng-container>
+    }
   </nav>
 </header>

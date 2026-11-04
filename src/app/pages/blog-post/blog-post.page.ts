@@ -9,9 +9,10 @@ import { AuthService } from 'src/app/services/auth.service';
 import { BlogReadCompleteEvent } from 'src/app/directives/blog-read-tracker.directive';
 
 @Component({
-  selector: 'app-blog-post',
-  templateUrl: './blog-post.page.html',
-  styleUrls: ['./blog-post.page.scss']
+    selector: 'app-blog-post',
+    templateUrl: './blog-post.page.html',
+    styleUrls: ['./blog-post.page.scss'],
+    standalone: false
 })
 export class BlogPostPage implements OnInit {
   public blogDetails: Observable<Blog>;

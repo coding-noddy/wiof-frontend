@@ -9,9 +9,10 @@ import packageJson from '../../../../package.json';
 
 
 @Component({
-  selector: 'app-wiof-footer',
-  templateUrl: './wiof-footer.component.html',
-  styleUrls: ['./wiof-footer.component.scss']
+    selector: 'app-wiof-footer',
+    templateUrl: './wiof-footer.component.html',
+    styleUrls: ['./wiof-footer.component.scss'],
+    standalone: false
 })
 export class WiofFooterComponent implements OnInit {
   currentYear = new Date().getFullYear();

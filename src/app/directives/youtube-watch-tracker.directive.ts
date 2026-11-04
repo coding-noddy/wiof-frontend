@@ -48,7 +48,10 @@ export interface VideoWatchCompleteEvent {
  *
  * Note: The iframe src MUST include `enablejsapi=1` for the API to work.
  */
-@Directive({ selector: '[appYoutubeWatchTracker]' })
+@Directive({
+    selector: '[appYoutubeWatchTracker]',
+    standalone: false
+})
 export class YoutubeWatchTrackerDirective implements OnInit, OnDestroy {
   @Input() contentId: string = '';
   @Input() videoTitle: string = '';

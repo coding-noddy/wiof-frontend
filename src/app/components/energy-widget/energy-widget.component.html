@@ -41,146 +41,143 @@
             [(ngModel)]="energyConsumption"
             (input)="consumptionError = false"
             aria-label="Monthly energy consumption in kWh"
-          />
-          <span class="unit-badge">kWh</span>
-          <!-- Calculate + reset sit inline with the input -->
-          <button class="wiof-primary-btn calc-btn" (click)="calculate()">
-            <ion-icon aria-hidden="true" name="calculator-outline"></ion-icon>
-            Calculate
-          </button>
-          <button class="reset-btn" *ngIf="result" (click)="reset()" aria-label="Reset">
-            <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon>
-          </button>
-        </div>
-        <span class="input-error" *ngIf="consumptionError">
-          Enter a positive number (e.g. 250)
-        </span>
-        <span class="input-hint">
-          Check your electricity bill for kWh · Avg. Indian household: ~90–120 kWh/month
-        </span>
-      </div>
-
-    </div>
-
-    <!-- ── Results ──────────────────────────────────────────── -->
-    <div class="results-section" *ngIf="result" aria-live="polite" role="status">
-
-      <!-- CO2 hero card -->
-      <div class="co2-card">
-        <div class="co2-header">
-          <div class="co2-icon-wrap">
-            <ion-icon aria-hidden="true" name="cloud-outline"></ion-icon>
+            />
+            <span class="unit-badge">kWh</span>
+            <!-- Calculate + reset sit inline with the input -->
+            <button class="wiof-primary-btn calc-btn" (click)="calculate()">
+              <ion-icon aria-hidden="true" name="calculator-outline"></ion-icon>
+              Calculate
+            </button>
+            @if (result) {
+              <button class="reset-btn" (click)="reset()" aria-label="Reset">
+                <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon>
+              </button>
+            }
           </div>
-          <div class="co2-info">
-            <span class="co2-label">CO₂ Equivalent</span>
-            <span class="co2-value">{{ result.kgsOfCO2 | number:'1.0-1' }}
-              <span class="co2-unit">kg</span>
+          @if (consumptionError) {
+            <span class="input-error">
+              Enter a positive number (e.g. 250)
             </span>
-          </div>
-          <span
-            class="co2-level-badge"
-            [style.background]="co2Level.color + '22'"
-            [style.color]="co2Level.color"
-          >{{ co2Level.label }}</span>
-        </div>
-        <div class="co2-bar-wrap">
-          <div class="co2-bar-fill" [style.width]="co2BarWidth"></div>
-        </div>
-        <p class="co2-hint">
-          Grid emission factor: 0.82 kg CO₂/kWh —
-          <a href="https://cea.nic.in/cdm-co2-baseline-database/" target="_blank" rel="noopener noreferrer">CEA CO₂ Baseline Database</a>
-        </p>
-      </div>
-
-      <!-- Equivalence cards -->
-      <p class="equivalence-label">That's equivalent to burning...</p>
-      <div class="equiv-grid">
-
-        <div class="equiv-card">
-          <div class="equiv-icon fuel-petrol">
-            <ion-icon aria-hidden="true" name="water-outline"></ion-icon>
-          </div>
-          <div class="equiv-info">
-            <span class="equiv-value">{{ result.litresPetrol | number:'1.0-1' }} L</span>
-            <span class="equiv-name">Petrol</span>
-          </div>
-        </div>
-
-        <div class="equiv-card">
-          <div class="equiv-icon fuel-diesel">
-            <ion-icon aria-hidden="true" name="water-outline"></ion-icon>
-          </div>
-          <div class="equiv-info">
-            <span class="equiv-value">{{ result.litresDiesel | number:'1.0-1' }} L</span>
-            <span class="equiv-name">Diesel</span>
-          </div>
-        </div>
-
-        <div class="equiv-card">
-          <div class="equiv-icon travel-car">
-            <ion-icon aria-hidden="true" name="car-outline"></ion-icon>
-          </div>
-          <div class="equiv-info">
-            <span class="equiv-value">{{ result.kmsByCar | number:'1.0-0' }} km</span>
-            <span class="equiv-name">Car (15 km/L)</span>
-          </div>
-        </div>
-
-        <div class="equiv-card">
-          <div class="equiv-icon travel-suv">
-            <ion-icon aria-hidden="true" name="car-sport-outline"></ion-icon>
-          </div>
-          <div class="equiv-info">
-            <span class="equiv-value">{{ result.kmsBySUV | number:'1.0-0' }} km</span>
-            <span class="equiv-name">SUV (12 km/L)</span>
-          </div>
+          }
+          <span class="input-hint">
+            Check your electricity bill for kWh · Avg. Indian household: ~90–120 kWh/month
+          </span>
         </div>
 
       </div>
 
-      <!-- Sources -->
-      <div class="calc-sources">
-        <ion-icon aria-hidden="true" name="information-circle-outline"></ion-icon>
-        <span>Sources: </span>
-        <a href="https://cea.nic.in/cdm-co2-baseline-database/" target="_blank" rel="noopener noreferrer">
-          CEA CO₂ Baseline Database — Grid factor (0.82 kg/kWh)
-        </a>
-        <span class="src-sep">·</span>
-        <a href="https://www.ipcc.ch/report/2019-refinement-to-the-2006-ipcc-guidelines/" target="_blank" rel="noopener noreferrer">
-          IPCC 2019 Guidelines — Petrol (2.31 kg/L) &amp; Diesel (2.68 kg/L)
-        </a>
-      </div>
+      <!-- ── Results ──────────────────────────────────────────── -->
+      @if (result) {
+        <div class="results-section" aria-live="polite" role="status">
+          <!-- CO2 hero card -->
+          <div class="co2-card">
+            <div class="co2-header">
+              <div class="co2-icon-wrap">
+                <ion-icon aria-hidden="true" name="cloud-outline"></ion-icon>
+              </div>
+              <div class="co2-info">
+                <span class="co2-label">CO₂ Equivalent</span>
+                <span class="co2-value">{{ result.kgsOfCO2 | number:'1.0-1' }}
+                  <span class="co2-unit">kg</span>
+                </span>
+              </div>
+              <span
+                class="co2-level-badge"
+                [style.background]="co2Level.color + '22'"
+                [style.color]="co2Level.color"
+              >{{ co2Level.label }}</span>
+            </div>
+            <div class="co2-bar-wrap">
+              <div class="co2-bar-fill" [style.width]="co2BarWidth"></div>
+            </div>
+            <p class="co2-hint">
+              Grid emission factor: 0.82 kg CO₂/kWh —
+              <a href="https://cea.nic.in/cdm-co2-baseline-database/" target="_blank" rel="noopener noreferrer">CEA CO₂ Baseline Database</a>
+            </p>
+          </div>
+          <!-- Equivalence cards -->
+          <p class="equivalence-label">That's equivalent to burning...</p>
+          <div class="equiv-grid">
+            <div class="equiv-card">
+              <div class="equiv-icon fuel-petrol">
+                <ion-icon aria-hidden="true" name="water-outline"></ion-icon>
+              </div>
+              <div class="equiv-info">
+                <span class="equiv-value">{{ result.litresPetrol | number:'1.0-1' }} L</span>
+                <span class="equiv-name">Petrol</span>
+              </div>
+            </div>
+            <div class="equiv-card">
+              <div class="equiv-icon fuel-diesel">
+                <ion-icon aria-hidden="true" name="water-outline"></ion-icon>
+              </div>
+              <div class="equiv-info">
+                <span class="equiv-value">{{ result.litresDiesel | number:'1.0-1' }} L</span>
+                <span class="equiv-name">Diesel</span>
+              </div>
+            </div>
+            <div class="equiv-card">
+              <div class="equiv-icon travel-car">
+                <ion-icon aria-hidden="true" name="car-outline"></ion-icon>
+              </div>
+              <div class="equiv-info">
+                <span class="equiv-value">{{ result.kmsByCar | number:'1.0-0' }} km</span>
+                <span class="equiv-name">Car (15 km/L)</span>
+              </div>
+            </div>
+            <div class="equiv-card">
+              <div class="equiv-icon travel-suv">
+                <ion-icon aria-hidden="true" name="car-sport-outline"></ion-icon>
+              </div>
+              <div class="equiv-info">
+                <span class="equiv-value">{{ result.kmsBySUV | number:'1.0-0' }} km</span>
+                <span class="equiv-name">SUV (12 km/L)</span>
+              </div>
+            </div>
+          </div>
+          <!-- Sources -->
+          <div class="calc-sources">
+            <ion-icon aria-hidden="true" name="information-circle-outline"></ion-icon>
+            <span>Sources: </span>
+            <a href="https://cea.nic.in/cdm-co2-baseline-database/" target="_blank" rel="noopener noreferrer">
+              CEA CO₂ Baseline Database — Grid factor (0.82 kg/kWh)
+            </a>
+            <span class="src-sep">·</span>
+            <a href="https://www.ipcc.ch/report/2019-refinement-to-the-2006-ipcc-guidelines/" target="_blank" rel="noopener noreferrer">
+              IPCC 2019 Guidelines — Petrol (2.31 kg/L) &amp; Diesel (2.68 kg/L)
+            </a>
+          </div>
+        </div>
+      }
 
+    </div><!-- /energy-widget-body -->
+
+    <!-- ── Did You Know strip ──────────────────────────────────── -->
+    <div class="fact-strip" [class.fact-strip--expanded]="factExpanded">
+      <div class="fact-content">
+        <ion-icon aria-hidden="true" name="bulb-outline" class="fact-icon"></ion-icon>
+        <div class="fact-body">
+          <p class="fact-text" [class.expanded]="factExpanded">{{ currentFact.text }}</p>
+          <div class="fact-meta-row">
+            <a class="fact-source" [href]="currentFact.url" target="_blank" rel="noopener noreferrer">
+              <ion-icon aria-hidden="true" name="link-outline"></ion-icon>{{ currentFact.source }}
+            </a>
+            <button class="fact-expand-btn" (click)="factExpanded = !factExpanded">
+              {{ factExpanded ? 'Show less' : 'Read more' }}
+              <ion-icon aria-hidden="true" [name]="factExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="fact-controls">
+        <button class="fact-btn" (click)="prevFact()" aria-label="Previous fact">
+          <ion-icon aria-hidden="true" name="chevron-back-outline"></ion-icon>
+        </button>
+        <span class="fact-counter">{{ currentFactIndex + 1 }} / {{ energyFacts.length }}</span>
+        <button class="fact-btn" (click)="nextFact()" aria-label="Next fact">
+          <ion-icon aria-hidden="true" name="chevron-forward-outline"></ion-icon>
+        </button>
+      </div>
     </div>
 
-  </div><!-- /energy-widget-body -->
-
-  <!-- ── Did You Know strip ──────────────────────────────────── -->
-  <div class="fact-strip" [class.fact-strip--expanded]="factExpanded">
-    <div class="fact-content">
-      <ion-icon aria-hidden="true" name="bulb-outline" class="fact-icon"></ion-icon>
-      <div class="fact-body">
-        <p class="fact-text" [class.expanded]="factExpanded">{{ currentFact.text }}</p>
-        <div class="fact-meta-row">
-          <a class="fact-source" [href]="currentFact.url" target="_blank" rel="noopener noreferrer">
-            <ion-icon aria-hidden="true" name="link-outline"></ion-icon>{{ currentFact.source }}
-          </a>
-          <button class="fact-expand-btn" (click)="factExpanded = !factExpanded">
-            {{ factExpanded ? 'Show less' : 'Read more' }}
-            <ion-icon aria-hidden="true" [name]="factExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div class="fact-controls">
-      <button class="fact-btn" (click)="prevFact()" aria-label="Previous fact">
-        <ion-icon aria-hidden="true" name="chevron-back-outline"></ion-icon>
-      </button>
-      <span class="fact-counter">{{ currentFactIndex + 1 }} / {{ energyFacts.length }}</span>
-      <button class="fact-btn" (click)="nextFact()" aria-label="Next fact">
-        <ion-icon aria-hidden="true" name="chevron-forward-outline"></ion-icon>
-      </button>
-    </div>
-  </div>
-
-</div><!-- /energy-widget-card -->
+  </div><!-- /energy-widget-card -->

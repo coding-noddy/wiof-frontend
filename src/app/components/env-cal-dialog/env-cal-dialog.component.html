@@ -1,87 +1,101 @@
 <div class="wiof-env-calendar-dialog">
-  <div *ngIf="occasionDetails; else loading">
-    <swiper-container
-      #swiperCal
-      [attr.slides-per-view]="1"
-      [attr.space-between]="10"
-      (slidechange)="activeIndex = swiperCal.swiper.activeIndex"
-    >
-      <swiper-slide *ngFor="let occasn of occasionDetails.occasion; let i = index">
-        <ion-card class="occasion-card">
-
-          <!-- ── Header ─────────────────────────────────────────────── -->
-          <ion-card-header class="occasion-card-header">
-            <div class="header-row">
-              <span class="occasion-date-badge">
-                {{ getMonth(occasn.month) }} {{ occasn.day }}
-              </span>
-              <p class="occasion-name">{{ occasn.name }}</p>
-              <button class="occasion-close-btn" (click)="closeDialog()" aria-label="Close">
-                <ion-icon aria-hidden="true" name="close"></ion-icon>
-              </button>
-            </div>
-          </ion-card-header>
-
-          <!-- ── Image — fixed height so modal doesn't jump ────────── -->
-          <div class="occasion-image-wrap">
-            <ng-container *ngIf="occasn.image | async as imageSrc">
-              <img
-                class="occasion-image occasion-image-blur"
-                *ngIf="!isImageError(i)"
-                [src]="imageSrc"
-                [alt]="occasn.name"
-                [class.image-hidden]="!isImageLoaded(i)"
-              />
-              <img
-                class="occasion-image occasion-image-main"
-                *ngIf="!isImageError(i)"
-                [src]="imageSrc"
-                [alt]="occasn.name"
-                loading="lazy"
-                [class.image-hidden]="!isImageLoaded(i)"
-                (load)="onImageLoad(i)"
-                (error)="onImageError(i)"
-              />
-            </ng-container>
-            <div class="occasion-image-placeholder" *ngIf="!isImageLoaded(i) && !isImageError(i)">
-              <div class="placeholder-pulse"></div>
-            </div>
-            <div class="occasion-image-fallback" *ngIf="isImageError(i)">
-              <span>Image unavailable</span>
-            </div>
-          </div>
-
-          <!-- ── Body ──────────────────────────────────────────────── -->
-          <ion-card-content class="occasion-body">
-            <p [innerHTML]="occasn.desc"></p>
-            <div class="occasion-cta" *ngIf="occasn.link">
-              <a class="wiof-primary-link" target="_blank" [href]="occasn.link">
-                Know More
-              </a>
-            </div>
-            <div class="occasion-dots" *ngIf="showNavigation">
-              <span
-                *ngFor="let o of occasionDetails.occasion; let dotIndex = index"
-                class="occasion-dot"
-                [class.active]="dotIndex === activeIndex"
-              ></span>
-            </div>
-          </ion-card-content>
-
-        </ion-card>
-      </swiper-slide>
-    </swiper-container>
-    <button aria-label="Previous slide" class="swiper-nav-btn prev" *ngIf="showNavigation" (click)="swiperCal.swiper.slidePrev()">
-      <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
-    </button>
-    <button aria-label="Next slide" class="swiper-nav-btn next" *ngIf="showNavigation" (click)="swiperCal.swiper.slideNext()">
-      <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
-    </button>
-  </div>
-
-  <ng-template #loading>
+  @if (occasionDetails) {
+    <div>
+      <swiper-container
+        #swiperCal
+        [attr.slides-per-view]="1"
+        [attr.space-between]="10"
+        (slidechange)="activeIndex = swiperCal.swiper.activeIndex"
+        >
+        @for (occasn of occasionDetails.occasion; track occasn; let i = $index) {
+          <swiper-slide>
+            <ion-card class="occasion-card">
+              <!-- ── Header ─────────────────────────────────────────────── -->
+              <ion-card-header class="occasion-card-header">
+                <div class="header-row">
+                  <span class="occasion-date-badge">
+                    {{ getMonth(occasn.month) }} {{ occasn.day }}
+                  </span>
+                  <p class="occasion-name">{{ occasn.name }}</p>
+                  <button class="occasion-close-btn" (click)="closeDialog()" aria-label="Close">
+                    <ion-icon aria-hidden="true" name="close"></ion-icon>
+                  </button>
+                </div>
+              </ion-card-header>
+              <!-- ── Image — fixed height so modal doesn't jump ────────── -->
+              <div class="occasion-image-wrap">
+                @if (occasn.image | async; as imageSrc) {
+                  @if (!isImageError(i)) {
+                    <img
+                      class="occasion-image occasion-image-blur"
+                      [src]="imageSrc"
+                      [alt]="occasn.name"
+                      [class.image-hidden]="!isImageLoaded(i)"
+                      />
+                  }
+                  @if (!isImageError(i)) {
+                    <img
+                      class="occasion-image occasion-image-main"
+                      [src]="imageSrc"
+                      [alt]="occasn.name"
+                      loading="lazy"
+                      [class.image-hidden]="!isImageLoaded(i)"
+                      (load)="onImageLoad(i)"
+                      (error)="onImageError(i)"
+                      />
+                  }
+                }
+                @if (!isImageLoaded(i) && !isImageError(i)) {
+                  <div class="occasion-image-placeholder">
+                    <div class="placeholder-pulse"></div>
+                  </div>
+                }
+                @if (isImageError(i)) {
+                  <div class="occasion-image-fallback">
+                    <span>Image unavailable</span>
+                  </div>
+                }
+              </div>
+              <!-- ── Body ──────────────────────────────────────────────── -->
+              <ion-card-content class="occasion-body">
+                <p [innerHTML]="occasn.desc"></p>
+                @if (occasn.link) {
+                  <div class="occasion-cta">
+                    <a class="wiof-primary-link" target="_blank" [href]="occasn.link">
+                      Know More
+                    </a>
+                  </div>
+                }
+                @if (showNavigation) {
+                  <div class="occasion-dots">
+                    @for (o of occasionDetails.occasion; track o; let dotIndex = $index) {
+                      <span
+                        class="occasion-dot"
+                        [class.active]="dotIndex === activeIndex"
+                      ></span>
+                    }
+                  </div>
+                }
+              </ion-card-content>
+            </ion-card>
+          </swiper-slide>
+        }
+      </swiper-container>
+      @if (showNavigation) {
+        <button aria-label="Previous slide" class="swiper-nav-btn prev" (click)="swiperCal.swiper.slidePrev()">
+          <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
+        </button>
+      }
+      @if (showNavigation) {
+        <button aria-label="Next slide" class="swiper-nav-btn next" (click)="swiperCal.swiper.slideNext()">
+          <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
+        </button>
+      }
+    </div>
+  } @else {
     <div class="dialog-loading">
       <ion-spinner name="crescent"></ion-spinner>
     </div>
-  </ng-template>
+  }
+
 </div>

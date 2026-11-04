@@ -43,12 +43,14 @@
         <div class="form-card-title"><ion-icon aria-hidden="true" name="list-outline"></ion-icon> Options</div>
         <div formArrayName="options">
           <div class="form-row">
-            <ion-item *ngFor="let option of getOptionControls().controls; let i = index">
-              <ion-input label="{{ pageContent.optionLabel }} {{ i + 1 }}" labelPlacement="floating" [formControlName]="i"></ion-input>
-              <span class="input-close-icon" title="Remove this option" (click)="removeOption(i)">
-                <ion-icon aria-hidden="true" name="close"></ion-icon>
-              </span>
-            </ion-item>
+            @for (option of getOptionControls().controls; track option; let i = $index) {
+              <ion-item>
+                <ion-input label="{{ pageContent.optionLabel }} {{ i + 1 }}" labelPlacement="floating" [formControlName]="i"></ion-input>
+                <span class="input-close-icon" title="Remove this option" (click)="removeOption(i)">
+                  <ion-icon aria-hidden="true" name="close"></ion-icon>
+                </span>
+              </ion-item>
+            }
           </div>
         </div>
         <button class="btn-secondary" style="margin-top: 12px;" (click)="addOption()">
@@ -62,9 +64,11 @@
         <div class="form-row">
           <ion-item>
             <ion-select label="Correct Answer (optional)" labelPlacement="floating" formControlName="correctAnswer" interface="popover" placeholder="Select correct option">
-              <ion-select-option *ngFor="let option of getOptionControls().controls; let i = index" [value]="'option' + (i + 1)">
-                Option {{ i + 1 }}
-              </ion-select-option>
+              @for (option of getOptionControls().controls; track option; let i = $index) {
+                <ion-select-option [value]="'option' + (i + 1)">
+                  Option {{ i + 1 }}
+                </ion-select-option>
+              }
             </ion-select>
           </ion-item>
         </div>
@@ -87,19 +91,23 @@
       </div>
 
       <!-- Poll Results (Edit mode only) -->
-      <div class="form-card" *ngIf="isEditMode">
-        <div class="form-card-title"><ion-icon aria-hidden="true" name="bar-chart-outline"></ion-icon> Poll Results</div>
-        <div class="form-row">
-          <div class="poll-options" *ngFor="let option of pollQuestion.options; let i = index">
-            <ion-label>{{ option | titlecase }}</ion-label>
-            <div class="poll-bar">
-              <div class="poll-bar-fill" [style.width]="optionData['option' + (i + 1)]?.percent + '%'">
-                <span class="poll-percent">{{ optionData["option" + (i + 1)]?.percent | number: "1.0-2" }}%</span>
+      @if (isEditMode) {
+        <div class="form-card">
+          <div class="form-card-title"><ion-icon aria-hidden="true" name="bar-chart-outline"></ion-icon> Poll Results</div>
+          <div class="form-row">
+            @for (option of pollQuestion.options; track option; let i = $index) {
+              <div class="poll-options">
+                <ion-label>{{ option | titlecase }}</ion-label>
+                <div class="poll-bar">
+                  <div class="poll-bar-fill" [style.width]="optionData['option' + (i + 1)]?.percent + '%'">
+                    <span class="poll-percent">{{ optionData["option" + (i + 1)]?.percent | number: "1.0-2" }}%</span>
+                  </div>
+                </div>
               </div>
-            </div>
+            }
           </div>
         </div>
-      </div>
+      }
     </form>
   </div>
 </ion-content>

@@ -39,35 +39,39 @@
     </div>
 
     <!-- Table -->
-    <div class="admin-table-card" *ngIf="subscribersJson?.length > 0">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th (click)="sortBy('firstName')" [class.sorted]="sortColumn === 'firstName'">
-              <span class="sort-header">First Name <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'firstName' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
-            </th>
-            <th (click)="sortBy('lastName')" [class.sorted]="sortColumn === 'lastName'">
-              <span class="sort-header">Last Name <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'lastName' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
-            </th>
-            <th (click)="sortBy('email')" [class.sorted]="sortColumn === 'email'">
-              <span class="sort-header">Email <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'email' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
-            </th>
-            <th (click)="sortBy('datetime')" [class.sorted]="sortColumn === 'datetime'">
-              <span class="sort-header">Subscribed <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'datetime' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let sub of subscribersJson; let i = index">
-            <td>{{ i + 1 }}</td>
-            <td><span class="cell-title">{{ sub.firstName | titlecase }}</span></td>
-            <td>{{ sub.lastName | titlecase }}</td>
-            <td>{{ sub.email }}</td>
-            <td><span class="cell-date">{{ sub.datetime || '—' }}</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    @if (subscribersJson?.length > 0) {
+      <div class="admin-table-card">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th (click)="sortBy('firstName')" [class.sorted]="sortColumn === 'firstName'">
+                <span class="sort-header">First Name <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'firstName' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              </th>
+              <th (click)="sortBy('lastName')" [class.sorted]="sortColumn === 'lastName'">
+                <span class="sort-header">Last Name <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'lastName' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              </th>
+              <th (click)="sortBy('email')" [class.sorted]="sortColumn === 'email'">
+                <span class="sort-header">Email <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'email' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              </th>
+              <th (click)="sortBy('datetime')" [class.sorted]="sortColumn === 'datetime'">
+                <span class="sort-header">Subscribed <ion-icon aria-hidden="true" class="sort-icon" [name]="sortColumn === 'datetime' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon></span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (sub of subscribersJson; track sub; let i = $index) {
+              <tr>
+                <td>{{ i + 1 }}</td>
+                <td><span class="cell-title">{{ sub.firstName | titlecase }}</span></td>
+                <td>{{ sub.lastName | titlecase }}</td>
+                <td>{{ sub.email }}</td>
+                <td><span class="cell-date">{{ sub.datetime || '—' }}</span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
   </div>
 </ion-content>

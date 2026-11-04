@@ -12,44 +12,74 @@
   </ion-card-header>
 
   <ion-card-content class="detail-body">
-    <div class="detail-chips" *ngIf="action.elementIds?.length">
-      <span class="chip" *ngFor="let element of action.elementIds" [ngClass]="element">{{ element }}</span>
-      <span class="chip meta-chip" *ngIf="action.estimatedDurationMinutes">
-        <ion-icon aria-hidden="true" name="time-outline"></ion-icon> {{ action.estimatedDurationMinutes }} min
-      </span>
-      <span class="chip meta-chip" *ngIf="action.difficulty">{{ action.difficulty | enumLabel }}</span>
-    </div>
+    @if (action.elementIds?.length) {
+      <div class="detail-chips">
+        @for (element of action.elementIds; track element) {
+          <span class="chip" [ngClass]="element">{{ element }}</span>
+        }
+        @if (action.estimatedDurationMinutes) {
+          <span class="chip meta-chip">
+            <ion-icon aria-hidden="true" name="time-outline"></ion-icon> {{ action.estimatedDurationMinutes }} min
+          </span>
+        }
+        @if (action.difficulty) {
+          <span class="chip meta-chip">{{ action.difficulty | enumLabel }}</span>
+        }
+      </div>
+    }
 
-    <p class="detail-description" *ngIf="action.description">{{ action.description }}</p>
+    @if (action.description) {
+      <p class="detail-description">{{ action.description }}</p>
+    }
 
-    <div class="detail-section" *ngIf="action.instructions?.length">
-      <h4>How to do this</h4>
-      <ol class="detail-instructions">
-        <li *ngFor="let step of action.instructions">{{ step }}</li>
-      </ol>
-    </div>
+    @if (action.instructions?.length) {
+      <div class="detail-section">
+        <h4>How to do this</h4>
+        <ol class="detail-instructions">
+          @for (step of action.instructions; track step) {
+            <li>{{ step }}</li>
+          }
+        </ol>
+      </div>
+    }
 
-    <div class="detail-notes safety" *ngIf="action.safetyNotes?.length">
-      <ion-icon aria-hidden="true" name="warning-outline"></ion-icon>
-      <ul>
-        <li *ngFor="let note of action.safetyNotes">{{ note }}</li>
-      </ul>
-    </div>
+    @if (action.safetyNotes?.length) {
+      <div class="detail-notes safety">
+        <ion-icon aria-hidden="true" name="warning-outline"></ion-icon>
+        <ul>
+          @for (note of action.safetyNotes; track note) {
+            <li>{{ note }}</li>
+          }
+        </ul>
+      </div>
+    }
 
-    <div class="detail-notes accessibility" *ngIf="action.accessibilityNotes?.length">
-      <ion-icon aria-hidden="true" name="accessibility-outline"></ion-icon>
-      <ul>
-        <li *ngFor="let note of action.accessibilityNotes">{{ note }}</li>
-      </ul>
-    </div>
+    @if (action.accessibilityNotes?.length) {
+      <div class="detail-notes accessibility">
+        <ion-icon aria-hidden="true" name="accessibility-outline"></ion-icon>
+        <ul>
+          @for (note of action.accessibilityNotes; track note) {
+            <li>{{ note }}</li>
+          }
+        </ul>
+      </div>
+    }
 
-    <div class="detail-evidence" *ngIf="action.evidence">
-      <span class="evidence-badge" [ngClass]="action.evidence.level | lowercase">{{ action.evidence.level | enumLabel }}</span>
-      <a [href]="action.evidence.sourceUrl" target="_blank" rel="noopener" *ngIf="action.evidence.sourceUrl">
-        {{ action.evidence.sourceOrganization }} — {{ action.evidence.sourceTitle }}
-      </a>
-      <span *ngIf="!action.evidence.sourceUrl">{{ action.evidence.sourceOrganization }}</span>
-      <p class="evidence-rationale" *ngIf="action.evidence.rationale">{{ action.evidence.rationale }}</p>
-    </div>
+    @if (action.evidence) {
+      <div class="detail-evidence">
+        <span class="evidence-badge" [ngClass]="action.evidence.level | lowercase">{{ action.evidence.level | enumLabel }}</span>
+        @if (action.evidence.sourceUrl) {
+          <a [href]="action.evidence.sourceUrl" target="_blank" rel="noopener">
+            {{ action.evidence.sourceOrganization }} — {{ action.evidence.sourceTitle }}
+          </a>
+        }
+        @if (!action.evidence.sourceUrl) {
+          <span>{{ action.evidence.sourceOrganization }}</span>
+        }
+        @if (action.evidence.rationale) {
+          <p class="evidence-rationale">{{ action.evidence.rationale }}</p>
+        }
+      </div>
+    }
   </ion-card-content>
 </ion-card>

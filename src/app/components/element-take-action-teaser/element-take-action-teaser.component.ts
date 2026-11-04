@@ -10,9 +10,10 @@ import { ActionService } from 'src/app/services/action.service';
  * full element Take Action page for more.
  */
 @Component({
-  selector: 'app-element-take-action-teaser',
-  templateUrl: './element-take-action-teaser.component.html',
-  styleUrls: ['./element-take-action-teaser.component.scss']
+    selector: 'app-element-take-action-teaser',
+    templateUrl: './element-take-action-teaser.component.html',
+    styleUrls: ['./element-take-action-teaser.component.scss'],
+    standalone: false
 })
 export class ElementTakeActionTeaserComponent implements OnChanges, OnDestroy {
   @Input() element: string;

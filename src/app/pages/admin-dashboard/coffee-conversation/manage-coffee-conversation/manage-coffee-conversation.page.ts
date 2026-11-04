@@ -8,9 +8,10 @@ import { UiUtilService } from 'src/app/util/UiUtilService';
 import { UI_MESSAGES, ITEMS, normalizeElementCategory } from 'src/app/app.constants';
 
 @Component({
-  selector: 'app-manage-coffee-conversation',
-  templateUrl: './manage-coffee-conversation.page.html',
-  styleUrls: ['./manage-coffee-conversation.page.scss']
+    selector: 'app-manage-coffee-conversation',
+    templateUrl: './manage-coffee-conversation.page.html',
+    styleUrls: ['./manage-coffee-conversation.page.scss'],
+    standalone: false
 })
 export class ManageCoffeeConversationPage implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject();

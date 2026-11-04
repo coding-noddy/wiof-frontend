@@ -7,18 +7,20 @@
     aria-haspopup="true"
     aria-label="User menu"
     type="button">
-    <img
-      *ngIf="photoURL && !showFallback"
-      class="avatar-image"
-      [src]="photoURL"
-      [alt]="displayName + ' avatar'"
-      (error)="onImageError()" />
-    <span
-      *ngIf="!photoURL || showFallback"
-      class="avatar-fallback"
-      [attr.aria-label]="displayName + ' avatar'">
-      {{ fallbackLetter }}
-    </span>
+    @if (photoURL && !showFallback) {
+      <img
+        class="avatar-image"
+        [src]="photoURL"
+        [alt]="displayName + ' avatar'"
+        (error)="onImageError()" />
+    }
+    @if (!photoURL || showFallback) {
+      <span
+        class="avatar-fallback"
+        [attr.aria-label]="displayName + ' avatar'">
+        {{ fallbackLetter }}
+      </span>
+    }
   </button>
 
   <!-- Dropdown Menu -->

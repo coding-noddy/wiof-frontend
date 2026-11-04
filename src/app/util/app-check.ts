@@ -13,7 +13,7 @@ const DEBUG_TOKEN_KEY = 'wiof_appcheck_debug_token';
  * Turns on Firebase App Check (reCAPTCHA Enterprise, invisible to visitors),
  * so Firestore, Storage and the callable functions can tell requests from
  * this site apart from scripts calling the APIs directly. Must run before the
- * first Firebase request (see the APP_INITIALIZER in AppModule).
+ * first Firebase request (see provideAppInitializer in AppModule).
  *
  * Does nothing until the environment has an appCheckSiteKey. Enforcement is
  * switched on separately: in the App Check console for Firestore/Storage and

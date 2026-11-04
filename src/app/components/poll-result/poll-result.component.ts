@@ -6,9 +6,10 @@ import { PollQuestion } from 'src/app/models/PollQuestion';
 import { AppUtilService } from 'src/app/util/AppUtilService';
 
 @Component({
-  selector: 'app-poll-result',
-  templateUrl: './poll-result.component.html',
-  styleUrls: ['./poll-result.component.scss']
+    selector: 'app-poll-result',
+    templateUrl: './poll-result.component.html',
+    styleUrls: ['./poll-result.component.scss'],
+    standalone: false
 })
 export class PollResultComponent implements OnInit, OnDestroy {
   @Input() pollQuestion: PollQuestion;

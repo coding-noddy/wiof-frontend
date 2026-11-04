@@ -1,49 +1,52 @@
-<div class="in-focus-section" *ngIf="inFocuses?.length > 0">
-  <div class="in-focus-strip" [ngClass]="inFocusClass">
-
-    <!-- Header bar -->
-    <div class="in-focus-header" [ngClass]="inFocusClass">
-      <span class="in-focus-header-title">{{ inFocusTitle }}</span>
+@if (inFocuses?.length > 0) {
+  <div class="in-focus-section">
+    <div class="in-focus-strip" [ngClass]="inFocusClass">
+      <!-- Header bar -->
+      <div class="in-focus-header" [ngClass]="inFocusClass">
+        <span class="in-focus-header-title">{{ inFocusTitle }}</span>
+      </div>
+      <!-- Slider -->
+      <div class="in-focus-slider-wrap">
+        <swiper-container #swiperInFocus [attr.slides-per-view]="1" [attr.space-between]="10">
+          @for (inFocus of inFocuses; track inFocus) {
+            <swiper-slide>
+              <div class="in-focus-slide">
+                <!-- Full-width video -->
+                <div class="in-focus-video">
+                  <iframe loading="lazy"
+                    [title]="inFocus.title"
+                    class="in-focus-player"
+                    [src]="inFocus.sanitizedLink"
+                    [appYoutubeLite]="inFocus.videoLink"
+                    allowfullscreen
+                    appYoutubeWatchTracker
+                    [contentId]="inFocus.title"
+                    [videoTitle]="inFocus.title"
+                    (watchComplete)="onVideoWatchComplete($event)"
+                  ></iframe>
+                </div>
+                <!-- Caption bar overlaid at the bottom -->
+                <div class="in-focus-caption">
+                  <h3 class="caption-title">{{ inFocus.subTitle }}</h3>
+                  @if (inFocus.description) {
+                    <p class="caption-desc">{{ inFocus.description }}</p>
+                  }
+                </div>
+              </div>
+            </swiper-slide>
+          }
+        </swiper-container>
+        @if (inFocuses.length > 1) {
+          <button aria-label="Previous slide" class="swiper-nav-btn prev" (click)="swiperInFocus.swiper.slidePrev()">
+            <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
+          </button>
+        }
+        @if (inFocuses.length > 1) {
+          <button aria-label="Next slide" class="swiper-nav-btn next" (click)="swiperInFocus.swiper.slideNext()">
+            <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
+          </button>
+        }
+      </div>
     </div>
-
-    <!-- Slider -->
-    <div class="in-focus-slider-wrap">
-      <swiper-container #swiperInFocus [attr.slides-per-view]="1" [attr.space-between]="10">
-        <swiper-slide *ngFor="let inFocus of inFocuses">
-          <div class="in-focus-slide">
-
-            <!-- Full-width video -->
-            <div class="in-focus-video">
-              <iframe loading="lazy"
-                [title]="inFocus.title"
-                class="in-focus-player"
-                [src]="inFocus.sanitizedLink"
-                [appYoutubeLite]="inFocus.videoLink"
-                allowfullscreen
-                appYoutubeWatchTracker
-                [contentId]="inFocus.id || inFocus.title"
-                [videoTitle]="inFocus.title"
-                (watchComplete)="onVideoWatchComplete($event)"
-              ></iframe>
-            </div>
-
-            <!-- Caption bar overlaid at the bottom -->
-            <div class="in-focus-caption">
-              <h3 class="caption-title">{{ inFocus.subTitle }}</h3>
-              <p class="caption-desc" *ngIf="inFocus.description">{{ inFocus.description }}</p>
-            </div>
-
-          </div>
-        </swiper-slide>
-      </swiper-container>
-
-      <button aria-label="Previous slide" class="swiper-nav-btn prev" *ngIf="inFocuses.length > 1" (click)="swiperInFocus.swiper.slidePrev()">
-        <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
-      </button>
-      <button aria-label="Next slide" class="swiper-nav-btn next" *ngIf="inFocuses.length > 1" (click)="swiperInFocus.swiper.slideNext()">
-        <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
-      </button>
-    </div>
-
   </div>
-</div>
+}

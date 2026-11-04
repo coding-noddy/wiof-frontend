@@ -37,7 +37,9 @@
           </ion-item>
           <ion-item>
             <ion-select label="{{ pageContent.categoryLabel }} *" labelPlacement="floating" formControlName="category">
-              <ion-select-option [value]="category" *ngFor="let category of categories">{{ category }}</ion-select-option>
+              @for (category of categories; track category) {
+                <ion-select-option [value]="category">{{ category }}</ion-select-option>
+              }
             </ion-select>
           </ion-item>
         </div>

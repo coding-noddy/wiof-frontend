@@ -12,9 +12,10 @@ import { FeedbackService } from '../../../services/feedback.service';
 import { UiUtilService } from '../../../util/UiUtilService';
 
 @Component({
-  selector: 'app-feedback',
-  templateUrl: './feedback.page.html',
-  styleUrls: ['./feedback.page.scss']
+    selector: 'app-feedback',
+    templateUrl: './feedback.page.html',
+    styleUrls: ['./feedback.page.scss'],
+    standalone: false
 })
 export class FeedbackPage implements OnInit {
   allFeedback: Feedback[] = [];

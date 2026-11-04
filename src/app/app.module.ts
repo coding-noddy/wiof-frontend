@@ -1,5 +1,12 @@
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import {
+  CUSTOM_ELEMENTS_SCHEMA,
+  EnvironmentInjector,
+  NgModule,
+  inject,
+  provideAppInitializer,
+  provideEnvironmentInitializer
+} from '@angular/core';
 //Firestore Integration Modules
 import { AngularFireModule, FirebaseApp } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
@@ -11,6 +18,7 @@ import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { environment } from '../environments/environment';
 import { initWiofAppCheck } from './util/app-check';
+import { makeAngularFirestoreInjectionSafe } from './util/injection-safe-firestore';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { OnboardingOverlayComponent } from './components/onboarding-overlay/onboarding-overlay.component';
@@ -42,14 +50,15 @@ import {
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     // App Check before any Firebase request; FirebaseApp makes sure the app
     // AngularFire creates exists first.
-    {
-      provide: APP_INITIALIZER,
-      multi: true,
-      deps: [FirebaseApp],
-      useFactory: () => () => initWiofAppCheck()
-    },
+    provideAppInitializer(() => {
+      inject(FirebaseApp);
+      return initWiofAppCheck();
+    }),
     ScreenTrackingService,
     UserTrackingService,
+    // AngularFire 19+ compat Firestore needs an injection context for
+    // collection()/doc(); see makeAngularFirestoreInjectionSafe.
+    provideEnvironmentInitializer(() => makeAngularFirestoreInjectionSafe(inject(EnvironmentInjector))),
     // Replaces HttpClientModule (deprecated in Angular 18).
     provideHttpClient(withInterceptorsFromDi())
   ],

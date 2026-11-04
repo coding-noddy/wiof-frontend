@@ -27,65 +27,84 @@
       </div>
     </div>
 
-    <div class="empty-state" *ngIf="loadError">
-      <ion-icon aria-hidden="true" name="alert-circle-outline"></ion-icon>
-      <p>Couldn't load hero videos. Check your connection and refresh.</p>
-    </div>
-
-    <div class="hero-grid" *ngIf="isLoading">
-      <div class="hero-card skeleton hero-card-skeleton" *ngFor="let i of [1,2,3,4,5,6]"></div>
-    </div>
-
-    <div class="hero-grid" *ngIf="!isLoading && !loadError">
-      <div class="hero-card" *ngFor="let form of forms">
-        <div class="hero-card-header">
-          <span class="cell-category" [ngClass]="form.slot.widgetKey">{{ form.slot.label }}</span>
-          <span class="hero-location">{{ form.slot.location }}</span>
-        </div>
-
-        <div class="hero-thumb">
-          <img *ngIf="parsedId(form) as id" [src]="thumbnailUrl(id)" [alt]="'Thumbnail for ' + form.title" />
-          <div class="hero-thumb-empty" *ngIf="!parsedId(form)">
-            <ion-icon aria-hidden="true" name="videocam-off-outline"></ion-icon>
-            <span>Enter a valid YouTube link to preview</span>
-          </div>
-        </div>
-
-        <label class="hero-field">
-          <span class="hero-label">Title</span>
-          <input type="text" class="hero-input" [(ngModel)]="form.title" maxlength="120" placeholder="Shown above the video" />
-        </label>
-
-        <label class="hero-field">
-          <span class="hero-label">YouTube link or video ID</span>
-          <input
-            type="text"
-            class="hero-input"
-            [class.invalid]="form.urlInput && !parsedId(form)"
-            [(ngModel)]="form.urlInput"
-            placeholder="https://www.youtube.com/watch?v=…"
-          />
-          <span class="hero-hint error" *ngIf="form.urlInput && !parsedId(form)">That doesn't look like a YouTube video link.</span>
-          <span class="hero-hint" *ngIf="parsedId(form) as id">
-            Video ID: <code>{{ id }}</code> ·
-            <a [href]="watchUrl(id)" target="_blank" rel="noopener">Open on YouTube</a>
-          </span>
-        </label>
-
-        <div class="hero-meta">
-          <span class="status-badge inactive" *ngIf="form.saved.isDefault">Built-in default, not saved yet</span>
-          <span *ngIf="!form.saved.isDefault && updatedAtDate(form.saved) as updated">
-            Updated {{ updated | date:'mediumDate' }}<ng-container *ngIf="form.saved.updatedBy"> by {{ form.saved.updatedBy }}</ng-container>
-          </span>
-        </div>
-
-        <div class="hero-actions">
-          <button class="btn-secondary" (click)="reset(form)" [disabled]="form.saving || !isDirty(form) || form.saved.isDefault">Reset</button>
-          <button class="btn-primary" (click)="save(form)" [disabled]="!canSave(form)">
-            <ion-icon aria-hidden="true" name="save-outline"></ion-icon> {{ form.saving ? 'Saving…' : 'Save' }}
-          </button>
-        </div>
+    @if (loadError) {
+      <div class="empty-state">
+        <ion-icon aria-hidden="true" name="alert-circle-outline"></ion-icon>
+        <p>Couldn't load hero videos. Check your connection and refresh.</p>
       </div>
-    </div>
+    }
+
+    @if (isLoading) {
+      <div class="hero-grid">
+        @for (i of [1,2,3,4,5,6]; track i) {
+          <div class="hero-card skeleton hero-card-skeleton"></div>
+        }
+      </div>
+    }
+
+    @if (!isLoading && !loadError) {
+      <div class="hero-grid">
+        @for (form of forms; track form) {
+          <div class="hero-card">
+            <div class="hero-card-header">
+              <span class="cell-category" [ngClass]="form.slot.widgetKey">{{ form.slot.label }}</span>
+              <span class="hero-location">{{ form.slot.location }}</span>
+            </div>
+            <div class="hero-thumb">
+              @if (parsedId(form); as id) {
+                <img [src]="thumbnailUrl(id)" [alt]="'Thumbnail for ' + form.title" />
+              }
+              @if (!parsedId(form)) {
+                <div class="hero-thumb-empty">
+                  <ion-icon aria-hidden="true" name="videocam-off-outline"></ion-icon>
+                  <span>Enter a valid YouTube link to preview</span>
+                </div>
+              }
+            </div>
+            <label class="hero-field">
+              <span class="hero-label">Title</span>
+              <input type="text" class="hero-input" [(ngModel)]="form.title" maxlength="120" placeholder="Shown above the video" />
+            </label>
+            <label class="hero-field">
+              <span class="hero-label">YouTube link or video ID</span>
+              <input
+                type="text"
+                class="hero-input"
+                [class.invalid]="form.urlInput && !parsedId(form)"
+                [(ngModel)]="form.urlInput"
+                placeholder="https://www.youtube.com/watch?v=…"
+                />
+                @if (form.urlInput && !parsedId(form)) {
+                  <span class="hero-hint error">That doesn't look like a YouTube video link.</span>
+                }
+                @if (parsedId(form); as id) {
+                  <span class="hero-hint">
+                    Video ID: <code>{{ id }}</code> ·
+                    <a [href]="watchUrl(id)" target="_blank" rel="noopener">Open on YouTube</a>
+                  </span>
+                }
+              </label>
+              <div class="hero-meta">
+                @if (form.saved.isDefault) {
+                  <span class="status-badge inactive">Built-in default, not saved yet</span>
+                }
+                @if (!form.saved.isDefault && updatedAtDate(form.saved); as updated) {
+                  <span>
+                    Updated {{ updated | date:'mediumDate' }}@if (form.saved.updatedBy) {
+                    by {{ form.saved.updatedBy }}
+                  }
+                </span>
+              }
+            </div>
+            <div class="hero-actions">
+              <button class="btn-secondary" (click)="reset(form)" [disabled]="form.saving || !isDirty(form) || form.saved.isDefault">Reset</button>
+              <button class="btn-primary" (click)="save(form)" [disabled]="!canSave(form)">
+                <ion-icon aria-hidden="true" name="save-outline"></ion-icon> {{ form.saving ? 'Saving…' : 'Save' }}
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
   </div>
 </ion-content>

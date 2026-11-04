@@ -18,9 +18,10 @@ import { InFocusService } from 'src/app/services/in-focus.service';
 import { SectionNavComponent, SectionNavItem } from 'src/app/components/section-nav/section-nav.component';
 
 @Component({
-  selector: 'app-water',
-  templateUrl: './water.page.html',
-  styleUrls: ['./water.page.scss']
+    selector: 'app-water',
+    templateUrl: './water.page.html',
+    styleUrls: ['./water.page.scss'],
+    standalone: false
 })
 export class WaterPage implements OnInit {
   @ViewChild(SectionNavComponent) sectionNav?: SectionNavComponent;

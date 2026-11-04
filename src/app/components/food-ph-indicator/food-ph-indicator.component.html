@@ -2,10 +2,10 @@
 
   <!-- ── Header ─────────────────────────────────────────────── -->
   <!-- Plain div, not ion-card-header: Ionic's ion-card-header ships its own
-       built-in Shadow DOM padding (16px) that competed with this header's
-       own padding below, making it taller than every sibling widget's
-       header (aqi/water/energy/eq/video/in-focus), which all use a plain
-       div for exactly this reason. -->
+  built-in Shadow DOM padding (16px) that competed with this header's
+  own padding below, making it taller than every sibling widget's
+  header (aqi/water/energy/eq/video/in-focus), which all use a plain
+  div for exactly this reason. -->
   <div class="wiof-food-ph-widget-card-header">
     <div class="food-ph-widget-header">
       <div class="header-left">
@@ -20,9 +20,9 @@
   </div>
 
   <!-- About panel — sits flush against the header, like every other widget's
-       (AQI/Water/Energy); was previously inside ion-card-content below,
-       whose own 1.25rem padding made it look inset with a gap around it
-       instead of sticking directly below the header. -->
+  (AQI/Water/Energy); was previously inside ion-card-content below,
+  whose own 1.25rem padding made it look inset with a gap around it
+  instead of sticking directly below the header. -->
   <section class="about-panel" [@expandCollapse]="about ? 'expanded' : 'collapsed'">
     <p class="about-text">
       Foods are classified as acidic (pH below 7), neutral (pH 7), or alkaline (pH above 7).
@@ -48,22 +48,25 @@
               type="button"
               (click)="showCategoryDropdown = !showCategoryDropdown"
               aria-label="Filter by category"
-            >
+              >
               <span class="cat-selected-emoji">{{ getActiveCategoryEmoji() }}</span>
               <span>{{ getActiveCategoryLabel() }}</span>
               <ion-icon aria-hidden="true" name="chevron-down-outline" class="cat-select-chevron"></ion-icon>
             </button>
-            <div class="category-dropdown-panel" *ngIf="showCategoryDropdown">
-              <button
-                *ngFor="let chip of categoryChips"
-                class="category-dropdown-item"
-                [class.active]="activeCategory === chip.key"
-                (click)="selectCategory(chip)"
-              >
-                <span class="cat-item-emoji">{{ chip.emoji }}</span>
-                <span class="cat-item-label">{{ chip.label }}</span>
-              </button>
-            </div>
+            @if (showCategoryDropdown) {
+              <div class="category-dropdown-panel">
+                @for (chip of categoryChips; track chip) {
+                  <button
+                    class="category-dropdown-item"
+                    [class.active]="activeCategory === chip.key"
+                    (click)="selectCategory(chip)"
+                    >
+                    <span class="cat-item-emoji">{{ chip.emoji }}</span>
+                    <span class="cat-item-label">{{ chip.label }}</span>
+                  </button>
+                }
+              </div>
+            }
           </div>
           <button class="random-btn" (click)="pickRandomFood()" aria-label="Pick random food" title="Surprise me!">
             <ion-icon aria-hidden="true" name="shuffle-outline"></ion-icon>
@@ -84,213 +87,251 @@
               spellcheck="false"
               [matAutocomplete]="auto"
               [formControl]="foodInputCtrl"
-            />
-            <button *ngIf="selectedFood" type="button" class="clear-btn" (click)="clearSelection()">
-              <ion-icon aria-hidden="true" name="close-circle"></ion-icon>
-            </button>
-          </div>
+              />
+              @if (selectedFood) {
+                <button type="button" class="clear-btn" (click)="clearSelection()">
+                  <ion-icon aria-hidden="true" name="close-circle"></ion-icon>
+                </button>
+              }
+            </div>
 
-          <mat-autocomplete
-            #auto="matAutocomplete"
-            [displayWith]="getSelectedFoodName"
-            (optionSelected)="setSelectedFoodName($event.option.value)"
-          >
-            <mat-option *ngFor="let food of filteredFoodOptions$ | async" [value]="food">
-              <div class="dropdown-option">
-                <span class="option-emoji">{{ getFoodEmoji(food) }}</span>
-                <div class="option-info">
-                  <span class="option-title">{{ food.name }}</span>
-                  <small>{{ food.category }} • pH {{ food.ph }}</small>
-                </div>
-              </div>
-            </mat-option>
-          </mat-autocomplete>
-        </form>
-
-        <!-- Health tip (shows when food selected) -->
-        <div class="health-tip" *ngIf="selectedFood">
-          <ion-icon aria-hidden="true" name="heart-outline" class="tip-icon"></ion-icon>
-          <p class="tip-text">{{ healthTip }}</p>
-        </div>
-
-        <p class="food-hint" *ngIf="!selectedFood">
-          543 foods from Clemson University &amp; USDA. Try the 🎲 Random button!
-        </p>
-      </section>
-
-      <!-- Meter (Flip Card) -->
-      <section class="food-ph-meter-panel" aria-labelledby="phMeterHeading">
-        <div class="flip-card" [class.flipped]="showDetails">
-          <!-- FRONT — pH Meter -->
-          <div class="flip-card-front">
-            <header class="meter-header">
-              <span id="phMeterHeading" class="ph-meter-text">pH Meter</span>
-              <button
-                class="flip-trigger"
-                *ngIf="selectedFood"
-                (click)="showDetails = true"
-                aria-label="Show food details"
+            <mat-autocomplete
+              #auto="matAutocomplete"
+              [displayWith]="getSelectedFoodName"
+              (optionSelected)="setSelectedFoodName($event.option.value)"
               >
-                <ion-icon aria-hidden="true" name="information-circle-outline"></ion-icon>
-                <span>Details</span>
-              </button>
-            </header>
+              @for (food of filteredFoodOptions$ | async; track food) {
+                <mat-option [value]="food">
+                  <div class="dropdown-option">
+                    <span class="option-emoji">{{ getFoodEmoji(food) }}</span>
+                    <div class="option-info">
+                      <span class="option-title">{{ food.name }}</span>
+                      <small>{{ food.category }} • pH {{ food.ph }}</small>
+                    </div>
+                  </div>
+                </mat-option>
+              }
+            </mat-autocomplete>
+          </form>
 
-            <div class="meter-wrapper" aria-live="polite">
-              <app-food-ph-indicator-meter [food]="selectedFood"></app-food-ph-indicator-meter>
+          <!-- Health tip (shows when food selected) -->
+          @if (selectedFood) {
+            <div class="health-tip">
+              <ion-icon aria-hidden="true" name="heart-outline" class="tip-icon"></ion-icon>
+              <p class="tip-text">{{ healthTip }}</p>
+            </div>
+          }
+
+          @if (!selectedFood) {
+            <p class="food-hint">
+              543 foods from Clemson University &amp; USDA. Try the 🎲 Random button!
+            </p>
+          }
+        </section>
+
+        <!-- Meter (Flip Card) -->
+        <section class="food-ph-meter-panel" aria-labelledby="phMeterHeading">
+          <div class="flip-card" [class.flipped]="showDetails">
+            <!-- FRONT — pH Meter -->
+            <div class="flip-card-front">
+              <header class="meter-header">
+                <span id="phMeterHeading" class="ph-meter-text">pH Meter</span>
+                @if (selectedFood) {
+                  <button
+                    class="flip-trigger"
+                    (click)="showDetails = true"
+                    aria-label="Show food details"
+                    >
+                    <ion-icon aria-hidden="true" name="information-circle-outline"></ion-icon>
+                    <span>Details</span>
+                  </button>
+                }
+              </header>
+
+              <div class="meter-wrapper" aria-live="polite">
+                <app-food-ph-indicator-meter [food]="selectedFood"></app-food-ph-indicator-meter>
+              </div>
+
+              @if (selectedFood) {
+                <div class="ph-summary">
+                  <div class="summary-item">
+                    <span>Current pH</span>
+                    <strong>{{ selectedFood.ph }}</strong>
+                  </div>
+                  <div class="summary-item">
+                    <span>pH Range</span>
+                    <strong>{{ selectedFood.min }} - {{ selectedFood.max }}</strong>
+                  </div>
+                  <div class="summary-item">
+                    <span>Classification</span>
+                    <strong>{{ selectedFood.ph < 7 ? 'Acidic' : selectedFood.ph > 7 ? 'Alkaline' : 'Neutral' }}</strong>
+                  </div>
+                </div>
+              }
             </div>
 
-            <div class="ph-summary" *ngIf="selectedFood">
-              <div class="summary-item">
-                <span>Current pH</span>
-                <strong>{{ selectedFood.ph }}</strong>
-              </div>
-              <div class="summary-item">
-                <span>pH Range</span>
-                <strong>{{ selectedFood.min }} - {{ selectedFood.max }}</strong>
-              </div>
-              <div class="summary-item">
-                <span>Classification</span>
-                <strong>{{ selectedFood.ph < 7 ? 'Acidic' : selectedFood.ph > 7 ? 'Alkaline' : 'Neutral' }}</strong>
-              </div>
-            </div>
-          </div>
+            <!-- BACK — Food Details -->
+            <div class="flip-card-back">
+              <header class="meter-header">
+                <span class="ph-meter-text">{{ selectedFood?.name || 'Food Details' }}</span>
+                <button class="flip-trigger" (click)="showDetails = false" aria-label="Back to pH meter">
+                  <ion-icon aria-hidden="true" name="arrow-back-outline"></ion-icon>
+                  <span>pH Meter</span>
+                </button>
+              </header>
 
-          <!-- BACK — Food Details -->
-          <div class="flip-card-back">
-            <header class="meter-header">
-              <span class="ph-meter-text">{{ selectedFood?.name || 'Food Details' }}</span>
-              <button class="flip-trigger" (click)="showDetails = false" aria-label="Back to pH meter">
-                <ion-icon aria-hidden="true" name="arrow-back-outline"></ion-icon>
-                <span>pH Meter</span>
-              </button>
-            </header>
-
-            <div class="details-scroll" *ngIf="selectedFood">
-              <p class="detail-scientific" *ngIf="selectedFood.scientificName">
-                <em>{{ selectedFood.scientificName }}</em>
-              </p>
-
-              <div class="details-grid">
-                <div class="detail-item">
-                  <label>Category</label>
-                  <span class="detail-badge">{{ getFoodEmoji(selectedFood) }} {{ selectedFood.category }}</span>
-                </div>
-                <div class="detail-item">
-                  <label>Food State</label>
-                  <span class="detail-badge">{{ selectedFood.foodState }}</span>
-                </div>
-                <div class="detail-item">
-                  <label>Confidence</label>
-                  <span class="confidence-stars">
-                    <ng-container [ngSwitch]="selectedFood.confidence">
-                      <span *ngSwitchCase="5">★★★★★</span>
-                      <span *ngSwitchCase="4">★★★★☆</span>
-                      <span *ngSwitchCase="3">★★★☆☆</span>
-                      <span *ngSwitchCase="2">★★☆☆☆</span>
-                      <span *ngSwitchDefault>★☆☆☆☆</span>
-                    </ng-container>
-                  </span>
-                </div>
-                <div class="detail-item">
-                  <label>Verification</label>
+              @if (selectedFood) {
+                <div class="details-scroll">
+                  @if (selectedFood.scientificName) {
+                    <p class="detail-scientific">
+                      <em>{{ selectedFood.scientificName }}</em>
+                    </p>
+                  }
+                  <div class="details-grid">
+                    <div class="detail-item">
+                      <label>Category</label>
+                      <span class="detail-badge">{{ getFoodEmoji(selectedFood) }} {{ selectedFood.category }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <label>Food State</label>
+                      <span class="detail-badge">{{ selectedFood.foodState }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <label>Confidence</label>
+                      <span class="confidence-stars">
+                        @switch (selectedFood.confidence) {
+                          @case (5) {
+                            <span>★★★★★</span>
+                          }
+                          @case (4) {
+                            <span>★★★★☆</span>
+                          }
+                          @case (3) {
+                            <span>★★★☆☆</span>
+                          }
+                          @case (2) {
+                            <span>★★☆☆☆</span>
+                          }
+                          @default {
+                            <span>★☆☆☆☆</span>
+                          }
+                        }
+                      </span>
+                    </div>
+                    <div class="detail-item">
+                      <label>Verification</label>
                   <span class="status-chip" [ngClass]="{
                     verified: selectedFood.verificationStatus === 'Verified',
                     approximate: selectedFood.verificationStatus === 'Approximate',
                     estimated: selectedFood.verificationStatus === 'Estimated'
                   }">{{ selectedFood.verificationStatus }}</span>
+                    </div>
+                    @if (selectedFood.organization) {
+                      <div class="detail-item">
+                        <label>Organization</label>
+                        <span>{{ selectedFood.organization }}</span>
+                      </div>
+                    }
+                  </div>
+                  <!-- Nutrition info -->
+                  @if (nutritionData || nutritionLoading) {
+                    <div class="nutrition-card">
+                      <div class="nutrition-header">
+                        <span class="nutrition-title">Nutrition (per 100g)</span>
+                        @if (nutritionData) {
+                          <a
+                            class="nutrition-source"
+                            [href]="nutritionData.usdaUrl"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="View full nutrition details on USDA"
+                          >USDA ↗</a>
+                        }
+                      </div>
+                      @if (nutritionLoading) {
+                        <div class="nutrition-loading">
+                          <div style="display: flex; gap: .5rem;">
+                            @for (i of [1,2,3,4,5]; track i) {
+                              <div class="skeleton" style="height: 32px; width: 40px; border-radius: 6px;"></div>
+                            }
+                          </div>
+                        </div>
+                      }
+                      @if (nutritionData) {
+                        <div class="nutrition-grid">
+                          <div class="nutrient-item">
+                            <span class="nutrient-value">{{ nutritionData.calories || '—' }}</span>
+                            <span class="nutrient-label">kcal</span>
+                          </div>
+                          <div class="nutrient-item">
+                            <span class="nutrient-value">{{ nutritionData.protein || '—' }}g</span>
+                            <span class="nutrient-label">Protein</span>
+                          </div>
+                          <div class="nutrient-item">
+                            <span class="nutrient-value">{{ nutritionData.fat || '—' }}g</span>
+                            <span class="nutrient-label">Fat</span>
+                          </div>
+                          <div class="nutrient-item">
+                            <span class="nutrient-value">{{ nutritionData.carbs || '—' }}g</span>
+                            <span class="nutrient-label">Carbs</span>
+                          </div>
+                          @if (nutritionData.fiber !== null) {
+                            <div class="nutrient-item">
+                              <span class="nutrient-value">{{ nutritionData.fiber }}g</span>
+                              <span class="nutrient-label">Fiber</span>
+                            </div>
+                          }
+                        </div>
+                      }
+                    </div>
+                  }
+                  @if (selectedFood.sourceUrl) {
+                    <a class="source-link" [href]="selectedFood.sourceUrl" target="_blank" rel="noopener noreferrer">
+                      <ion-icon aria-hidden="true" name="link-outline"></ion-icon>
+                      View Official Source
+                    </a>
+                  }
+                  @if (selectedFood.notes) {
+                    <p class="detail-notes">
+                      <ion-icon aria-hidden="true" name="document-text-outline"></ion-icon>
+                      {{ selectedFood.notes }}
+                    </p>
+                  }
                 </div>
-                <div class="detail-item" *ngIf="selectedFood.organization">
-                  <label>Organization</label>
-                  <span>{{ selectedFood.organization }}</span>
-                </div>
-              </div>
-
-              <!-- Nutrition info -->
-              <div class="nutrition-card" *ngIf="nutritionData || nutritionLoading">
-                <div class="nutrition-header">
-                  <span class="nutrition-title">Nutrition (per 100g)</span>
-                  <a
-                  class="nutrition-source"
-                  *ngIf="nutritionData"
-                  [href]="nutritionData.usdaUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="View full nutrition details on USDA"
-                >USDA ↗</a>
-                </div>
-                <div class="nutrition-loading" *ngIf="nutritionLoading">
-                  <div style="display: flex; gap: .5rem;">
-                    <div class="skeleton" style="height: 32px; width: 40px; border-radius: 6px;" *ngFor="let i of [1,2,3,4,5]"></div>
-                  </div>
-                </div>
-                <div class="nutrition-grid" *ngIf="nutritionData">
-                  <div class="nutrient-item">
-                    <span class="nutrient-value">{{ nutritionData.calories || '—' }}</span>
-                    <span class="nutrient-label">kcal</span>
-                  </div>
-                  <div class="nutrient-item">
-                    <span class="nutrient-value">{{ nutritionData.protein || '—' }}g</span>
-                    <span class="nutrient-label">Protein</span>
-                  </div>
-                  <div class="nutrient-item">
-                    <span class="nutrient-value">{{ nutritionData.fat || '—' }}g</span>
-                    <span class="nutrient-label">Fat</span>
-                  </div>
-                  <div class="nutrient-item">
-                    <span class="nutrient-value">{{ nutritionData.carbs || '—' }}g</span>
-                    <span class="nutrient-label">Carbs</span>
-                  </div>
-                  <div class="nutrient-item" *ngIf="nutritionData.fiber !== null">
-                    <span class="nutrient-value">{{ nutritionData.fiber }}g</span>
-                    <span class="nutrient-label">Fiber</span>
-                  </div>
-                </div>
-              </div>
-
-              <a class="source-link" *ngIf="selectedFood.sourceUrl" [href]="selectedFood.sourceUrl" target="_blank" rel="noopener noreferrer">
-                <ion-icon aria-hidden="true" name="link-outline"></ion-icon>
-                View Official Source
-              </a>
-
-              <p class="detail-notes" *ngIf="selectedFood.notes">
-                <ion-icon aria-hidden="true" name="document-text-outline"></ion-icon>
-                {{ selectedFood.notes }}
-              </p>
+              }
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-    </div>
-  </ion-card-content>
+      </div>
+    </ion-card-content>
 
-  <!-- ── Fact strip ──────────────────────────────────────────── -->
-  <div class="fact-strip" [class.fact-strip--expanded]="factExpanded">
-    <div class="fact-content">
-      <ion-icon aria-hidden="true" name="bulb-outline" class="fact-icon"></ion-icon>
-      <div class="fact-body">
-        <p class="fact-text" [class.expanded]="factExpanded">{{ currentFact.text }}</p>
-        <div class="fact-meta-row">
-          <a class="fact-source" [href]="currentFact.url" target="_blank" rel="noopener noreferrer">
-            <ion-icon aria-hidden="true" name="link-outline"></ion-icon>{{ currentFact.source }}
-          </a>
-          <button class="fact-expand-btn" (click)="factExpanded = !factExpanded">
-            {{ factExpanded ? 'Show less' : 'Read more' }}
-            <ion-icon aria-hidden="true" [name]="factExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
-          </button>
+    <!-- ── Fact strip ──────────────────────────────────────────── -->
+    <div class="fact-strip" [class.fact-strip--expanded]="factExpanded">
+      <div class="fact-content">
+        <ion-icon aria-hidden="true" name="bulb-outline" class="fact-icon"></ion-icon>
+        <div class="fact-body">
+          <p class="fact-text" [class.expanded]="factExpanded">{{ currentFact.text }}</p>
+          <div class="fact-meta-row">
+            <a class="fact-source" [href]="currentFact.url" target="_blank" rel="noopener noreferrer">
+              <ion-icon aria-hidden="true" name="link-outline"></ion-icon>{{ currentFact.source }}
+            </a>
+            <button class="fact-expand-btn" (click)="factExpanded = !factExpanded">
+              {{ factExpanded ? 'Show less' : 'Read more' }}
+              <ion-icon aria-hidden="true" [name]="factExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+            </button>
+          </div>
         </div>
       </div>
+      <div class="fact-controls">
+        <button class="fact-btn" (click)="prevFact()" aria-label="Previous fact">
+          <ion-icon aria-hidden="true" name="chevron-back-outline"></ion-icon>
+        </button>
+        <span class="fact-counter">{{ currentFactIndex + 1 }} / {{ phFacts.length }}</span>
+        <button class="fact-btn" (click)="nextFact()" aria-label="Next fact">
+          <ion-icon aria-hidden="true" name="chevron-forward-outline"></ion-icon>
+        </button>
+      </div>
     </div>
-    <div class="fact-controls">
-      <button class="fact-btn" (click)="prevFact()" aria-label="Previous fact">
-        <ion-icon aria-hidden="true" name="chevron-back-outline"></ion-icon>
-      </button>
-      <span class="fact-counter">{{ currentFactIndex + 1 }} / {{ phFacts.length }}</span>
-      <button class="fact-btn" (click)="nextFact()" aria-label="Next fact">
-        <ion-icon aria-hidden="true" name="chevron-forward-outline"></ion-icon>
-      </button>
-    </div>
-  </div>
 
-</ion-card>
+  </ion-card>

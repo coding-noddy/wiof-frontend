@@ -13,10 +13,11 @@ interface AQIFact {
 }
 
 @Component({
-  selector: 'app-aqi-widget',
-  templateUrl: './aqi-widget.component.html',
-  styleUrls: ['./aqi-widget.component.scss'],
-  animations: [expandCollapseAnimation]
+    selector: 'app-aqi-widget',
+    templateUrl: './aqi-widget.component.html',
+    styleUrls: ['./aqi-widget.component.scss'],
+    animations: [expandCollapseAnimation],
+    standalone: false
 })
 export class AqiWidgetComponent implements OnInit, OnDestroy {
 

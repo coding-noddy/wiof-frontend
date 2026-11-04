@@ -14,9 +14,10 @@ import { InFocus } from 'src/app/models/InFocus';
 import { InFocusService } from 'src/app/services/in-focus.service';
 
 @Component({
-  selector: 'app-add-in-focus',
-  templateUrl: './add-in-focus.page.html',
-  styleUrls: ['./add-in-focus.page.scss']
+    selector: 'app-add-in-focus',
+    templateUrl: './add-in-focus.page.html',
+    styleUrls: ['./add-in-focus.page.scss'],
+    standalone: false
 })
 export class AddInFocusPage implements OnInit, OnDestroy {
   isEditMode = false;

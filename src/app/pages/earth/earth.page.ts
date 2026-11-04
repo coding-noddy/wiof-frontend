@@ -18,9 +18,10 @@ import { InFocusService } from 'src/app/services/in-focus.service';
 import { SectionNavComponent, SectionNavItem } from 'src/app/components/section-nav/section-nav.component';
 
 @Component({
-  selector: 'app-earth',
-  templateUrl: './earth.page.html',
-  styleUrls: ['./earth.page.scss']
+    selector: 'app-earth',
+    templateUrl: './earth.page.html',
+    styleUrls: ['./earth.page.scss'],
+    standalone: false
 })
 export class EarthPage implements OnInit {
   @ViewChild(SectionNavComponent) sectionNav?: SectionNavComponent;

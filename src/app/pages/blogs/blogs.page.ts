@@ -14,9 +14,10 @@ interface OtherElementMatch {
 }
 
 @Component({
-  selector: 'app-blogs',
-  templateUrl: './blogs.page.html',
-  styleUrls: ['./blogs.page.scss']
+    selector: 'app-blogs',
+    templateUrl: './blogs.page.html',
+    styleUrls: ['./blogs.page.scss'],
+    standalone: false
 })
 export class BlogsPage implements OnInit, OnDestroy {
   @ViewChild('searchBox') searchBox: SearchBoxComponent;

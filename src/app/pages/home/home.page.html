@@ -1,6 +1,8 @@
 <!-- home.page.html -->
 <app-header></app-header>
-<app-subscribe [page]="'home'"></app-subscribe><app-concent-popup *ngIf="viewConsentPopup" (accepted)="onAccept()"></app-concent-popup>
+<app-subscribe [page]="'home'"></app-subscribe>@if (viewConsentPopup) {
+<app-concent-popup (accepted)="onAccept()"></app-concent-popup>
+}
 
 <ion-content>
   <!-- Banner / Hero Section — intentionally full-bleed, outside .page-container -->

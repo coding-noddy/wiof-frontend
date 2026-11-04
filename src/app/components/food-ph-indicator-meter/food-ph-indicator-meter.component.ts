@@ -8,9 +8,10 @@ import {
 import { Food } from "../../services/food-data.service";
 
 @Component({
-  selector: "app-food-ph-indicator-meter",
-  templateUrl: "./food-ph-indicator-meter.component.html",
-  styleUrls: ["./food-ph-indicator-meter.component.scss"]
+    selector: "app-food-ph-indicator-meter",
+    templateUrl: "./food-ph-indicator-meter.component.html",
+    styleUrls: ["./food-ph-indicator-meter.component.scss"],
+    standalone: false
 })
 export class FoodPhIndicatorMeterComponent implements OnInit, OnChanges {
   @Input()

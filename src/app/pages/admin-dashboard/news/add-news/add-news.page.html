@@ -39,7 +39,9 @@
         <div class="form-row">
           <ion-item>
             <ion-select label="{{ pageContent.categoryLabel }} *" labelPlacement="floating" formControlName="category">
-              <ion-select-option [value]="category" *ngFor="let category of categories">{{ category }}</ion-select-option>
+              @for (category of categories; track category) {
+                <ion-select-option [value]="category">{{ category }}</ion-select-option>
+              }
             </ion-select>
           </ion-item>
           <mat-form-field appearance="standard" class="date-picker-field">
@@ -67,20 +69,26 @@
             </ion-select>
           </ion-item>
         </div>
-        <div class="form-row full-width" *ngIf="mediaType.value === 'image'">
-          <ion-item>
-            <ion-label position="stacked">{{ pageContent.selectImageLabel }}</ion-label>
-            <input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="image" class="file-input" />
-          </ion-item>
-          <div class="form-image-preview" *ngIf="imageToDisplay">
-            <ion-img [src]="imageToDisplay"></ion-img>
+        @if (mediaType.value === 'image') {
+          <div class="form-row full-width">
+            <ion-item>
+              <ion-label position="stacked">{{ pageContent.selectImageLabel }}</ion-label>
+              <input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="image" class="file-input" />
+            </ion-item>
+            @if (imageToDisplay) {
+              <div class="form-image-preview">
+                <ion-img [src]="imageToDisplay"></ion-img>
+              </div>
+            }
           </div>
-        </div>
-        <div class="form-row full-width" *ngIf="mediaType.value === 'video'">
-          <ion-item>
-            <ion-input label="{{ pageContent.mediaLinkLabel }}" labelPlacement="floating" formControlName="mediaLink"></ion-input>
-          </ion-item>
-        </div>
+        }
+        @if (mediaType.value === 'video') {
+          <div class="form-row full-width">
+            <ion-item>
+              <ion-input label="{{ pageContent.mediaLinkLabel }}" labelPlacement="floating" formControlName="mediaLink"></ion-input>
+            </ion-item>
+          </div>
+        }
       </div>
 
       <!-- Content Card -->

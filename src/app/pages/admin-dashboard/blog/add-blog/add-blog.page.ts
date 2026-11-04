@@ -24,9 +24,10 @@ import { quillSemanticHtml } from 'src/app/util/quill-html.util';
 Quill.register('modules/resize', ResizeModule);
 
 @Component({
-  selector: 'app-add-blog',
-  templateUrl: './add-blog.page.html',
-  styleUrls: ['./add-blog.page.scss']
+    selector: 'app-add-blog',
+    templateUrl: './add-blog.page.html',
+    styleUrls: ['./add-blog.page.scss'],
+    standalone: false
 })
 export class AddBlogPage implements OnInit, OnDestroy {
   /** Saved HTML with normal spaces (see quillSemanticHtml). */
@@ -90,6 +91,8 @@ export class AddBlogPage implements OnInit, OnDestroy {
   lastSavedAt: Date = null;
   autoSaveEnabled = true;
   showPreview = false;
+  /** The editor's content when the preview was opened (rendered like the public page). */
+  previewDelta: any = null;
   slugPreview = '';
   isSaving = false;
 
@@ -258,6 +261,9 @@ export class AddBlogPage implements OnInit, OnDestroy {
   }
 
   togglePreview() {
+    if (!this.showPreview) {
+      this.previewDelta = this.editor ? this.editor.getContents() : null;
+    }
     this.showPreview = !this.showPreview;
   }
 

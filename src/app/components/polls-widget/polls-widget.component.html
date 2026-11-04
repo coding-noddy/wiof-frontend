@@ -1,90 +1,98 @@
-<ion-card class="wiof-poll-card" *ngIf="pollQuestion">
-  <ion-card-header class="poll-header">
-    <span class="poll-badge">
-      <ion-icon aria-hidden="true" name="bar-chart-outline"></ion-icon>
-      Weekly Poll
-    </span>
-  </ion-card-header>
-
-  <ion-card-content class="wiof-polls-widget-card-background">
-    <!-- Already voted indicator for authenticated users -->
-    <div *ngIf="hasVoted" class="poll-voted-indicator">
-      <div class="voted-icon">
-        <ion-icon aria-hidden="true" name="checkmark"></ion-icon>
-      </div>
-      <div class="voted-message">You voted for: <strong>{{ votedOption }}</strong></div>
-    </div>
-
-    <div *ngIf="showForm && !hasVoted" class="polls-container">
-      <form [formGroup]="wiofPollsForm" (submit)="submit()" class="poll-form">
-        <div class="poll-question-wrap">
-          <p class="question-text" [class.expanded]="questionExpanded">{{ pollQuestion.question }}</p>
-          <button
-            *ngIf="isQuestionLong"
-            type="button"
-            class="question-toggle"
-            (click)="questionExpanded = !questionExpanded"
-          >
-            {{ questionExpanded ? 'Show less' : 'Read full question' }}
-            <ion-icon aria-hidden="true" [name]="questionExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
-          </button>
-        </div>
-
-        <div class="poll-options-list">
-          <label
-            class="poll-option"
-            *ngFor="let option of pollQuestion.options; let i = index"
-            [attr.for]="'option' + i"
-            >
-            <input
-              type="radio"
-              id="option{{i}}"
-              name="option"
-              value="option{{ i + 1 }}"
-              formControlName="option"
-            />
-            <span class="option-radio"></span>
-            <span class="option-body">
-              <span class="option-text">{{ option }}</span>
-              <span class="option-meta" *ngIf="showPollResult">
-                <span class="option-percent">
-                  {{ optionData['option' + (i + 1)]?.percent | number: '1.0-0' }}%
-                </span>
-                <span class="option-progress">
-                  <span
-                    class="option-progress-fill"
-                    [style.width]="optionData['option' + (i + 1)]?.percent + '%'"
-                  ></span>
-                </span>
-              </span>
-            </span>
-          </label>
-        </div>
-
-        <div class="poll-footer">
-          <!-- Guest users: show optional email field -->
-          <input
-            *ngIf="!isAuthenticated"
-            formControlName="email"
-            id="email"
-            name="email"
-            placeholder="Email (optional)"
-            class="poll-widget-name-input"
-          />
-
-          <div class="cta-and-error">
-            <p *ngIf="errorShow" class="error">Please select an option</p>
-            <button class="poll-submit-btn" type="submit">
-              Submit Vote
-            </button>
+@if (pollQuestion) {
+  <ion-card class="wiof-poll-card">
+    <ion-card-header class="poll-header">
+      <span class="poll-badge">
+        <ion-icon aria-hidden="true" name="bar-chart-outline"></ion-icon>
+        Weekly Poll
+      </span>
+    </ion-card-header>
+    <ion-card-content class="wiof-polls-widget-card-background">
+      <!-- Already voted indicator for authenticated users -->
+      @if (hasVoted) {
+        <div class="poll-voted-indicator">
+          <div class="voted-icon">
+            <ion-icon aria-hidden="true" name="checkmark"></ion-icon>
           </div>
+          <div class="voted-message">You voted for: <strong>{{ votedOption }}</strong></div>
         </div>
-      </form>
-    </div>
-
-    <app-poll-result
-      *ngIf="showPollResult"
-      [pollQuestion]="pollQuestion"
-    ></app-poll-result>
-  </ion-card-content>
-</ion-card>
+      }
+      @if (showForm && !hasVoted) {
+        <div class="polls-container">
+          <form [formGroup]="wiofPollsForm" (submit)="submit()" class="poll-form">
+            <div class="poll-question-wrap">
+              <p class="question-text" [class.expanded]="questionExpanded">{{ pollQuestion.question }}</p>
+              @if (isQuestionLong) {
+                <button
+                  type="button"
+                  class="question-toggle"
+                  (click)="questionExpanded = !questionExpanded"
+                  >
+                  {{ questionExpanded ? 'Show less' : 'Read full question' }}
+                  <ion-icon aria-hidden="true" [name]="questionExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+                </button>
+              }
+            </div>
+            <div class="poll-options-list">
+              @for (option of pollQuestion.options; track option; let i = $index) {
+                <label
+                  class="poll-option"
+                  [attr.for]="'option' + i"
+                  >
+                  <input
+                    type="radio"
+                    id="option{{i}}"
+                    name="option"
+                    value="option{{ i + 1 }}"
+                    formControlName="option"
+                    />
+                    <span class="option-radio"></span>
+                    <span class="option-body">
+                      <span class="option-text">{{ option }}</span>
+                      @if (showPollResult) {
+                        <span class="option-meta">
+                          <span class="option-percent">
+                            {{ optionData['option' + (i + 1)]?.percent | number: '1.0-0' }}%
+                          </span>
+                          <span class="option-progress">
+                            <span
+                              class="option-progress-fill"
+                              [style.width]="optionData['option' + (i + 1)]?.percent + '%'"
+                            ></span>
+                          </span>
+                        </span>
+                      }
+                    </span>
+                  </label>
+                }
+              </div>
+              <div class="poll-footer">
+                <!-- Guest users: show optional email field -->
+                @if (!isAuthenticated) {
+                  <input
+                    formControlName="email"
+                    id="email"
+                    name="email"
+                    placeholder="Email (optional)"
+                    class="poll-widget-name-input"
+                    />
+                }
+                <div class="cta-and-error">
+                  @if (errorShow) {
+                    <p class="error">Please select an option</p>
+                  }
+                  <button class="poll-submit-btn" type="submit">
+                    Submit Vote
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        }
+        @if (showPollResult) {
+          <app-poll-result
+            [pollQuestion]="pollQuestion"
+          ></app-poll-result>
+        }
+      </ion-card-content>
+    </ion-card>
+  }

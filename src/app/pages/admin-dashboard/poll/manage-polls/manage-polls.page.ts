@@ -9,9 +9,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { UI_MESSAGES, ITEMS } from 'src/app/app.constants';
 
 @Component({
-  selector: 'app-manage-polls',
-  templateUrl: './manage-polls.page.html',
-  styleUrls: ['./manage-polls.page.scss']
+    selector: 'app-manage-polls',
+    templateUrl: './manage-polls.page.html',
+    styleUrls: ['./manage-polls.page.scss'],
+    standalone: false
 })
 export class ManagePollsPage implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject();

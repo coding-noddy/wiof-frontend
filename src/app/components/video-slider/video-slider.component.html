@@ -1,42 +1,47 @@
-<div class="video-slider-section" *ngIf="videoList && videoList.length > 0">
-
-  <!-- Slider -->
-  <div *ngIf="videoList; else loading" class="slider-wrap">
-    <swiper-container
-      #swiperRef
-      [attr.space-between]="10"
-      [attr.free-mode]="true"
-      breakpoints='{"0":{"slidesPerView":1},"480":{"slidesPerView":2},"767":{"slidesPerView":3},"1024":{"slidesPerView":4}}'
-    >
-      <swiper-slide *ngFor="let video of displayList">
-        <app-video-card [video]="video" [element]="element"></app-video-card>
-      </swiper-slide>
-    </swiper-container>
-
-    <button aria-label="Previous slide" class="swiper-nav-btn prev" (click)="swiperRef.swiper.slidePrev()" *ngIf="showNavigator()">
-      <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
-    </button>
-    <button aria-label="Next slide" class="swiper-nav-btn next" (click)="swiperRef.swiper.slideNext()" *ngIf="showNavigator()">
-      <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
-    </button>
-  </div>
-
-  <!-- Trailing action, below the cards -->
-  <div class="video-slider-actions">
-    <a
-      [routerLink]="['videos']"
-      class="view-more-link"
-      title="Explore more {{ element }} videos"
-      attr.aria-label="Explore more {{ element }} videos"
-    >
-      Explore More {{ element | titlecase }} Videos
-      <ion-icon aria-hidden="true" name="arrow-forward-outline"></ion-icon>
-    </a>
-  </div>
-
-  <ng-template #loading>
-    <div class="loading-wrap">
-      <ion-spinner name="crescent"></ion-spinner>
+@if (videoList && videoList.length > 0) {
+  <div class="video-slider-section">
+    <!-- Slider -->
+    @if (videoList) {
+      <div class="slider-wrap">
+        <swiper-container
+          #swiperRef
+          [attr.space-between]="10"
+          [attr.free-mode]="true"
+          breakpoints='{"0":{"slidesPerView":1},"480":{"slidesPerView":2},"767":{"slidesPerView":3},"1024":{"slidesPerView":4}}'
+          >
+          @for (video of displayList; track video) {
+            <swiper-slide>
+              <app-video-card [video]="video" [element]="element"></app-video-card>
+            </swiper-slide>
+          }
+        </swiper-container>
+        @if (showNavigator()) {
+          <button aria-label="Previous slide" class="swiper-nav-btn prev" (click)="swiperRef.swiper.slidePrev()">
+            <ion-icon aria-hidden="true" name="chevron-back"></ion-icon>
+          </button>
+        }
+        @if (showNavigator()) {
+          <button aria-label="Next slide" class="swiper-nav-btn next" (click)="swiperRef.swiper.slideNext()">
+            <ion-icon aria-hidden="true" name="chevron-forward"></ion-icon>
+          </button>
+        }
+      </div>
+    } @else {
+      <div class="loading-wrap">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+    }
+    <!-- Trailing action, below the cards -->
+    <div class="video-slider-actions">
+      <a
+        [routerLink]="['videos']"
+        class="view-more-link"
+        title="Explore more {{ element }} videos"
+        attr.aria-label="Explore more {{ element }} videos"
+        >
+        Explore More {{ element | titlecase }} Videos
+        <ion-icon aria-hidden="true" name="arrow-forward-outline"></ion-icon>
+      </a>
     </div>
-  </ng-template>
-</div>
+  </div>
+}

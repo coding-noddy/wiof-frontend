@@ -41,9 +41,11 @@
             <button class="btn-secondary" (click)="fileInput.click()">
               <ion-icon aria-hidden="true" name="cloud-upload-outline"></ion-icon> {{ isImageSelected ? 'Change Photo' : 'Upload Photo' }}
             </button>
-            <button class="btn-secondary" *ngIf="isImageSelected" (click)="removeImage()" style="color: #ef4444; border-color: #fca5a5;">
-              <ion-icon aria-hidden="true" name="trash-outline"></ion-icon> Remove
-            </button>
+            @if (isImageSelected) {
+              <button class="btn-secondary" (click)="removeImage()" style="color: #ef4444; border-color: #fca5a5;">
+                <ion-icon aria-hidden="true" name="trash-outline"></ion-icon> Remove
+              </button>
+            }
           </div>
         </div>
       </div>

@@ -4,9 +4,10 @@ import { Observable, of } from 'rxjs';
 import { aboutUsData } from './our-team-mock';
 
 @Component({
-  selector: 'app-our-team',
-  templateUrl: './our-team.page.html',
-  styleUrls: ['./our-team.page.scss'],
+    selector: 'app-our-team',
+    templateUrl: './our-team.page.html',
+    styleUrls: ['./our-team.page.scss'],
+    standalone: false
 })
 export class OurTeamPage implements OnInit {
   aboutUsProfiles$: Observable<AboutUsProfile[]>;

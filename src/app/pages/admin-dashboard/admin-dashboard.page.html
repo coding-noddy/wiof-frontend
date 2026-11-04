@@ -2,8 +2,12 @@
   <!-- Sidebar -->
   <aside class="sidebar" [class.collapsed]="sidebarCollapsed">
     <div class="sidebar-header">
-      <img src="assets/brand/logos/WIOF-full-logo-white.png" alt="World Is One Family" class="sidebar-logo" *ngIf="!sidebarCollapsed">
-      <span class="sidebar-title" *ngIf="!sidebarCollapsed">Admin</span>
+      @if (!sidebarCollapsed) {
+        <img src="assets/brand/logos/WIOF-full-logo-white.png" alt="World Is One Family" class="sidebar-logo">
+      }
+      @if (!sidebarCollapsed) {
+        <span class="sidebar-title">Admin</span>
+      }
       <button class="sidebar-toggle" (click)="toggleSidebar()">
         <ion-icon aria-hidden="true" [name]="sidebarCollapsed ? 'menu-outline' : 'close-outline'"></ion-icon>
       </button>
@@ -12,24 +16,32 @@
     <nav class="sidebar-nav">
       <a class="nav-item" routerLink="/admin-dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
         <ion-icon aria-hidden="true" name="grid-outline"></ion-icon>
-        <span *ngIf="!sidebarCollapsed">Dashboard</span>
+        @if (!sidebarCollapsed) {
+          <span>Dashboard</span>
+        }
       </a>
-      <a class="nav-item" *ngFor="let item of navItems" [routerLink]="item.route" routerLinkActive="active">
-        <ion-icon aria-hidden="true" [name]="item.icon"></ion-icon>
-        <span *ngIf="!sidebarCollapsed">{{ item.name }}</span>
-      </a>
+      @for (item of navItems; track item) {
+        <a class="nav-item" [routerLink]="item.route" routerLinkActive="active">
+          <ion-icon aria-hidden="true" [name]="item.icon"></ion-icon>
+          @if (!sidebarCollapsed) {
+            <span>{{ item.name }}</span>
+          }
+        </a>
+      }
     </nav>
 
-    <div class="sidebar-footer" *ngIf="!sidebarCollapsed">
-      <button class="theme-btn" (click)="toggleTheme()">
-        <ion-icon aria-hidden="true" [name]="isDarkTheme ? 'sunny-outline' : 'moon-outline'"></ion-icon>
-        <span>{{ isDarkTheme ? 'Light Mode' : 'Dark Mode' }}</span>
-      </button>
-      <button class="logout-btn" (click)="onLogout()">
-        <ion-icon aria-hidden="true" name="log-out-outline"></ion-icon>
-        <span>Logout</span>
-      </button>
-    </div>
+    @if (!sidebarCollapsed) {
+      <div class="sidebar-footer">
+        <button class="theme-btn" (click)="toggleTheme()">
+          <ion-icon aria-hidden="true" [name]="isDarkTheme ? 'sunny-outline' : 'moon-outline'"></ion-icon>
+          <span>{{ isDarkTheme ? 'Light Mode' : 'Dark Mode' }}</span>
+        </button>
+        <button class="logout-btn" (click)="onLogout()">
+          <ion-icon aria-hidden="true" name="log-out-outline"></ion-icon>
+          <span>Logout</span>
+        </button>
+      </div>
+    }
   </aside>
 
   <!-- Main Content -->
@@ -53,34 +65,40 @@
     <div class="dashboard-content">
       <!-- Stats Row with animation -->
       <div class="stats-row">
-        <div class="stat-card" *ngFor="let stat of stats; let i = index" [style.animation-delay]="(i * 0.1) + 's'">
-          <div class="stat-icon" [style.background]="stat.bgColor">
-            <ion-icon aria-hidden="true" [name]="stat.icon"></ion-icon>
+        @for (stat of stats; track stat; let i = $index) {
+          <div class="stat-card" [style.animation-delay]="(i * 0.1) + 's'">
+            <div class="stat-icon" [style.background]="stat.bgColor">
+              <ion-icon aria-hidden="true" [name]="stat.icon"></ion-icon>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value">{{ stat.value }}</span>
+              <span class="stat-label">{{ stat.label }}</span>
+            </div>
           </div>
-          <div class="stat-info">
-            <span class="stat-value">{{ stat.value }}</span>
-            <span class="stat-label">{{ stat.label }}</span>
-          </div>
-        </div>
+        }
       </div>
 
       <!-- Quick Actions Grid -->
       <h2 class="section-title">Content Management</h2>
       <div class="admin-grid">
-        <a class="admin-card" *ngFor="let item of navItems; let i = index" [routerLink]="item.route" [style.animation-delay]="(i * 0.05) + 's'">
-          <div class="card-icon" [style.background]="item.color">
-            <ion-icon aria-hidden="true" [name]="item.icon"></ion-icon>
-          </div>
-          <div class="card-body">
-            <h3>{{ item.name }}</h3>
-            <p>{{ item.description }}</p>
-          </div>
-          <ion-icon aria-hidden="true" name="chevron-forward-outline" class="card-arrow"></ion-icon>
-        </a>
+        @for (item of navItems; track item; let i = $index) {
+          <a class="admin-card" [routerLink]="item.route" [style.animation-delay]="(i * 0.05) + 's'">
+            <div class="card-icon" [style.background]="item.color">
+              <ion-icon aria-hidden="true" [name]="item.icon"></ion-icon>
+            </div>
+            <div class="card-body">
+              <h3>{{ item.name }}</h3>
+              <p>{{ item.description }}</p>
+            </div>
+            <ion-icon aria-hidden="true" name="chevron-forward-outline" class="card-arrow"></ion-icon>
+          </a>
+        }
       </div>
     </div>
   </main>
 </div>
 
 <!-- Mobile overlay -->
-<div class="sidebar-overlay" *ngIf="!sidebarCollapsed && isMobile" (click)="toggleSidebar()"></div>
+@if (!sidebarCollapsed && isMobile) {
+  <div class="sidebar-overlay" (click)="toggleSidebar()"></div>
+}

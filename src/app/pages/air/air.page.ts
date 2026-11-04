@@ -19,9 +19,10 @@ import { InFocusService } from 'src/app/services/in-focus.service';
 import { SectionNavComponent, SectionNavItem } from 'src/app/components/section-nav/section-nav.component';
 
 @Component({
-  selector: 'app-air',
-  templateUrl: './air.page.html',
-  styleUrls: ['./air.page.scss']
+    selector: 'app-air',
+    templateUrl: './air.page.html',
+    styleUrls: ['./air.page.scss'],
+    standalone: false
 })
 export class AirPage implements OnInit {
   @ViewChild(VideoWidgetComponent) videoWidgetRef: VideoWidgetComponent;

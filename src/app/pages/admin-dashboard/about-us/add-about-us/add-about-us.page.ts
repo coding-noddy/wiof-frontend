@@ -8,9 +8,10 @@ import { UiUtilService } from 'src/app/util/UiUtilService';
 import { UI_MESSAGES } from 'src/app/app.constants';
 
 @Component({
-  selector: 'app-add-about-us',
-  templateUrl: './add-about-us.page.html',
-  styleUrls: ['./add-about-us.page.scss']
+    selector: 'app-add-about-us',
+    templateUrl: './add-about-us.page.html',
+    styleUrls: ['./add-about-us.page.scss'],
+    standalone: false
 })
 export class AddAboutUsPage implements OnInit, OnDestroy {
   addProfileForm: FormGroup;

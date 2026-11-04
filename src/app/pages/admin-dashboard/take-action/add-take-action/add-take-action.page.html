@@ -62,13 +62,14 @@
             Elements *
           </label>
           <div class="element-pill-row">
-            <button
-              type="button"
-              *ngFor="let element of elementsList"
-              class="element-toggle-pill"
-              [class.active]="isElementSelected(element)"
-              (click)="toggleElement(element)"
-            >{{ element | titlecase }}</button>
+            @for (element of elementsList; track element) {
+              <button
+                type="button"
+                class="element-toggle-pill"
+                [class.active]="isElementSelected(element)"
+                (click)="toggleElement(element)"
+              >{{ element | titlecase }}</button>
+            }
           </div>
         </div>
         <div class="form-row">
@@ -87,24 +88,32 @@
         <div class="form-row">
           <ion-item>
             <ion-select label="Action Type *" labelPlacement="floating" formControlName="actionType">
-              <ion-select-option [value]="type" *ngFor="let type of actionTypes">{{ type }}</ion-select-option>
+              @for (type of actionTypes; track type) {
+                <ion-select-option [value]="type">{{ type }}</ion-select-option>
+              }
             </ion-select>
           </ion-item>
           <ion-item>
             <ion-select label="Repeat Type *" labelPlacement="floating" formControlName="repeatType">
-              <ion-select-option [value]="type" *ngFor="let type of repeatTypes">{{ type }}</ion-select-option>
+              @for (type of repeatTypes; track type) {
+                <ion-select-option [value]="type">{{ type }}</ion-select-option>
+              }
             </ion-select>
           </ion-item>
         </div>
         <div class="form-row">
           <ion-item>
             <ion-select label="Completion Type *" labelPlacement="floating" formControlName="completionType">
-              <ion-select-option [value]="type" *ngFor="let type of completionTypes">{{ type }}</ion-select-option>
+              @for (type of completionTypes; track type) {
+                <ion-select-option [value]="type">{{ type }}</ion-select-option>
+              }
             </ion-select>
           </ion-item>
           <ion-item>
             <ion-select label="Difficulty *" labelPlacement="floating" formControlName="difficulty">
-              <ion-select-option [value]="d" *ngFor="let d of difficulties">{{ d | enumLabel }}</ion-select-option>
+              @for (d of difficulties; track d) {
+                <ion-select-option [value]="d">{{ d | enumLabel }}</ion-select-option>
+              }
             </ion-select>
           </ion-item>
         </div>
@@ -124,7 +133,7 @@
         <div class="form-row">
           <ion-item>
             <ion-input label="Icon Name" labelPlacement="floating" formControlName="iconName" placeholder="leaf-outline"
-              helperText="Any Ionicons name, e.g. leaf-outline, water-outline."></ion-input>
+            helperText="Any Ionicons name, e.g. leaf-outline, water-outline."></ion-input>
           </ion-item>
           <ion-item>
             <ion-input label="YouTube URL" labelPlacement="floating" formControlName="mediaUrl" placeholder="https://www.youtube.com/embed/..."></ion-input>
@@ -168,7 +177,9 @@
           <ion-item>
             <ion-select label="Evidence Level" labelPlacement="floating" formControlName="evidenceLevel">
               <ion-select-option value="">None</ion-select-option>
-              <ion-select-option [value]="level" *ngFor="let level of evidenceLevels">{{ level | enumLabel }}</ion-select-option>
+              @for (level of evidenceLevels; track level) {
+                <ion-select-option [value]="level">{{ level | enumLabel }}</ion-select-option>
+              }
             </ion-select>
           </ion-item>
           <ion-item>

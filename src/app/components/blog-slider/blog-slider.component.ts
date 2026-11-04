@@ -9,9 +9,10 @@ import { Blog } from 'src/app/models/Blog';
 const SLIDER_ITEM_LIMIT = 10;
 
 @Component({
-  selector: 'app-blog-slider',
-  templateUrl: './blog-slider.component.html',
-  styleUrls: ['./blog-slider.component.scss']
+    selector: 'app-blog-slider',
+    templateUrl: './blog-slider.component.html',
+    styleUrls: ['./blog-slider.component.scss'],
+    standalone: false
 })
 export class BlogSliderComponent implements OnInit {
   @Input() blogList: Array<Blog>;

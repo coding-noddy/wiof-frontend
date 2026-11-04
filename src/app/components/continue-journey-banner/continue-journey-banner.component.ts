@@ -25,9 +25,10 @@ const ELEMENT_TAGLINES: { [key: string]: string } = {
  * page, cycling Air -> Energy -> Water -> Earth -> Spirit -> Air.
  */
 @Component({
-  selector: 'app-continue-journey-banner',
-  templateUrl: './continue-journey-banner.component.html',
-  styleUrls: ['./continue-journey-banner.component.scss']
+    selector: 'app-continue-journey-banner',
+    templateUrl: './continue-journey-banner.component.html',
+    styleUrls: ['./continue-journey-banner.component.scss'],
+    standalone: false
 })
 export class ContinueJourneyBannerComponent implements OnChanges {
   @Input() element: string;

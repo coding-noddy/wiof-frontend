@@ -10,9 +10,10 @@ import { NgoInFocus } from 'src/app/models/NgoInFocus';
  * EnvCalDialogComponent / TakeActionDetailComponent).
  */
 @Component({
-  selector: 'app-ngo-detail-dialog',
-  templateUrl: './ngo-detail-dialog.component.html',
-  styleUrls: ['./ngo-detail-dialog.component.scss']
+    selector: 'app-ngo-detail-dialog',
+    templateUrl: './ngo-detail-dialog.component.html',
+    styleUrls: ['./ngo-detail-dialog.component.scss'],
+    standalone: false
 })
 export class NgoDetailDialogComponent {
   @Input() ngo: NgoInFocus;

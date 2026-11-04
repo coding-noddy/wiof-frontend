@@ -28,10 +28,11 @@ interface City {
 }
 
 @Component({
-  selector: 'app-water-widget',
-  templateUrl: './water-widget.component.html',
-  styleUrls: ['./water-widget.component.scss'],
-  animations: [expandCollapseAnimation]
+    selector: 'app-water-widget',
+    templateUrl: './water-widget.component.html',
+    styleUrls: ['./water-widget.component.scss'],
+    animations: [expandCollapseAnimation],
+    standalone: false
 })
 export class WaterWidgetComponent implements OnInit, OnDestroy {
 

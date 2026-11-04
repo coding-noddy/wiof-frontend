@@ -14,9 +14,10 @@ import { UserAction } from 'src/app/models/UserAction';
 import { ActionItem } from 'src/app/models/ActionItem';
 
 @Component({
-  selector: 'app-my-journey',
-  templateUrl: './my-journey.page.html',
-  styleUrls: ['./my-journey.page.scss']
+    selector: 'app-my-journey',
+    templateUrl: './my-journey.page.html',
+    styleUrls: ['./my-journey.page.scss'],
+    standalone: false
 })
 export class MyJourneyPage implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();

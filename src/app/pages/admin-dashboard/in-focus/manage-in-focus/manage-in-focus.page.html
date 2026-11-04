@@ -36,38 +36,48 @@
         <button class="filter-dropdown-btn" [class.has-selection]="filterCategory" (click)="toggleDropdown('category')">
           <ion-icon aria-hidden="true" name="funnel-outline"></ion-icon> Category <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
         </button>
-        <div class="filter-dropdown-menu" *ngIf="openDropdown === 'category'">
-          <div class="menu-item" [class.selected]="filterCategory === 'earth'" (click)="filterCategory = 'earth'; onFilterChange()">🌍 Earth</div>
-          <div class="menu-item" [class.selected]="filterCategory === 'water'" (click)="filterCategory = 'water'; onFilterChange()">💧 Water</div>
-          <div class="menu-item" [class.selected]="filterCategory === 'air'" (click)="filterCategory = 'air'; onFilterChange()">🌬️ Air</div>
-          <div class="menu-item" [class.selected]="filterCategory === 'energy'" (click)="filterCategory = 'energy'; onFilterChange()">⚡ Energy</div>
-          <div class="menu-item" [class.selected]="filterCategory === 'spirit'" (click)="filterCategory = 'spirit'; onFilterChange()">✨ Spirit</div>
-        </div>
+        @if (openDropdown === 'category') {
+          <div class="filter-dropdown-menu">
+            <div class="menu-item" [class.selected]="filterCategory === 'earth'" (click)="filterCategory = 'earth'; onFilterChange()">🌍 Earth</div>
+            <div class="menu-item" [class.selected]="filterCategory === 'water'" (click)="filterCategory = 'water'; onFilterChange()">💧 Water</div>
+            <div class="menu-item" [class.selected]="filterCategory === 'air'" (click)="filterCategory = 'air'; onFilterChange()">🌬️ Air</div>
+            <div class="menu-item" [class.selected]="filterCategory === 'energy'" (click)="filterCategory = 'energy'; onFilterChange()">⚡ Energy</div>
+            <div class="menu-item" [class.selected]="filterCategory === 'spirit'" (click)="filterCategory = 'spirit'; onFilterChange()">✨ Spirit</div>
+          </div>
+        }
       </div>
       <div class="filter-dropdown">
         <button class="filter-dropdown-btn" [class.has-selection]="filterStatus" (click)="toggleDropdown('status')">
           <ion-icon aria-hidden="true" name="radio-button-on-outline"></ion-icon> Status <ion-icon aria-hidden="true" name="chevron-down-outline"></ion-icon>
         </button>
-        <div class="filter-dropdown-menu" *ngIf="openDropdown === 'status'">
-          <div class="menu-item" [class.selected]="filterStatus === 'published'" (click)="filterStatus = 'published'; onFilterChange()">🟢 Published</div>
-          <div class="menu-item" [class.selected]="filterStatus === 'submitted'" (click)="filterStatus = 'submitted'; onFilterChange()">🟡 Submitted</div>
-          <div class="menu-item" [class.selected]="filterStatus === 'inactive'" (click)="filterStatus = 'inactive'; onFilterChange()">⚪ Inactive</div>
-        </div>
+        @if (openDropdown === 'status') {
+          <div class="filter-dropdown-menu">
+            <div class="menu-item" [class.selected]="filterStatus === 'published'" (click)="filterStatus = 'published'; onFilterChange()">🟢 Published</div>
+            <div class="menu-item" [class.selected]="filterStatus === 'submitted'" (click)="filterStatus = 'submitted'; onFilterChange()">🟡 Submitted</div>
+            <div class="menu-item" [class.selected]="filterStatus === 'inactive'" (click)="filterStatus = 'inactive'; onFilterChange()">⚪ Inactive</div>
+          </div>
+        }
       </div>
     </div>
-    <div class="active-filters" *ngIf="hasActiveFilters">
-      <div class="active-chip" *ngIf="filterCategory">
-        <span class="chip-label">Category:</span>
-        <span class="chip-value">{{ filterCategory }}</span>
-        <button class="chip-remove" (click)="removeFilter('filterCategory')">×</button>
+    @if (hasActiveFilters) {
+      <div class="active-filters">
+        @if (filterCategory) {
+          <div class="active-chip">
+            <span class="chip-label">Category:</span>
+            <span class="chip-value">{{ filterCategory }}</span>
+            <button class="chip-remove" (click)="removeFilter('filterCategory')">×</button>
+          </div>
+        }
+        @if (filterStatus) {
+          <div class="active-chip">
+            <span class="chip-label">Status:</span>
+            <span class="chip-value">{{ filterStatus }}</span>
+            <button class="chip-remove" (click)="removeFilter('filterStatus')">×</button>
+          </div>
+        }
+        <button class="clear-all-btn" (click)="clearAllFilters()">Clear all</button>
       </div>
-      <div class="active-chip" *ngIf="filterStatus">
-        <span class="chip-label">Status:</span>
-        <span class="chip-value">{{ filterStatus }}</span>
-        <button class="chip-remove" (click)="removeFilter('filterStatus')">×</button>
-      </div>
-      <button class="clear-all-btn" (click)="clearAllFilters()">Clear all</button>
-    </div>
+    }
 
     <div class="admin-table-card">
       <table class="admin-table">
@@ -91,53 +101,61 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let inFocus of displayedItems; let i = index">
-            <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
-            <td>
-              <span class="cell-title">{{ inFocus.title }}</span>
-              <div class="cell-subtitle">{{ inFocus.subTitle }}</div>
-            </td>
-            <td><span class="cell-category" [ngClass]="inFocus.category?.toLowerCase()">{{ inFocus.category }}</span></td>
-            <td><span class="status-badge" [ngClass]="inFocus.status">{{ inFocus.status }}</span></td>
-            <td><span class="cell-date">{{ inFocus.submitDate | date:'dd MMM yyyy' }}</span></td>
-            <td><span class="cell-date">{{ inFocus.publishDate ? (inFocus.publishDate | date:'dd MMM yyyy') : '—' }}</span></td>
-            <td>
-              <div class="action-buttons">
-                <button class="action-btn publish" title="Publish spotlight"
-                  *ngIf="inFocus.status === 'submitted' || inFocus.status === 'inactive'"
-                  (click)="publishInFocus(inFocus.inFocusId)">
-                  <ion-icon aria-hidden="true" name="rocket-outline"></ion-icon>
-                </button>
-                <button class="action-btn unpublish" title="Unpublish spotlight"
-                  *ngIf="inFocus.status === 'published'"
-                  (click)="unpublishInFocus(inFocus.inFocusId)">
-                  <ion-icon aria-hidden="true" name="pause-circle-outline"></ion-icon>
-                </button>
-                <button class="action-btn view" title="Edit spotlight" (click)="viewInFocusDetails(inFocus)">
-                  <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
-                </button>
-                <button class="action-btn delete" title="Delete spotlight" (click)="deleteInFocus(i, inFocus.inFocusId)">
-                  <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
-                </button>
-              </div>
-            </td>
-          </tr>
+          @for (inFocus of displayedItems; track inFocus; let i = $index) {
+            <tr>
+              <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+              <td>
+                <span class="cell-title">{{ inFocus.title }}</span>
+                <div class="cell-subtitle">{{ inFocus.subTitle }}</div>
+              </td>
+              <td><span class="cell-category" [ngClass]="inFocus.category?.toLowerCase()">{{ inFocus.category }}</span></td>
+              <td><span class="status-badge" [ngClass]="inFocus.status">{{ inFocus.status }}</span></td>
+              <td><span class="cell-date">{{ inFocus.submitDate | date:'dd MMM yyyy' }}</span></td>
+              <td><span class="cell-date">{{ inFocus.publishDate ? (inFocus.publishDate | date:'dd MMM yyyy') : '—' }}</span></td>
+              <td>
+                <div class="action-buttons">
+                  @if (inFocus.status === 'submitted' || inFocus.status === 'inactive') {
+                    <button class="action-btn publish" title="Publish spotlight"
+                      (click)="publishInFocus(inFocus.inFocusId)">
+                      <ion-icon aria-hidden="true" name="rocket-outline"></ion-icon>
+                    </button>
+                  }
+                  @if (inFocus.status === 'published') {
+                    <button class="action-btn unpublish" title="Unpublish spotlight"
+                      (click)="unpublishInFocus(inFocus.inFocusId)">
+                      <ion-icon aria-hidden="true" name="pause-circle-outline"></ion-icon>
+                    </button>
+                  }
+                  <button class="action-btn view" title="Edit spotlight" (click)="viewInFocusDetails(inFocus)">
+                    <ion-icon aria-hidden="true" name="create-outline"></ion-icon>
+                  </button>
+                  <button class="action-btn delete" title="Delete spotlight" (click)="deleteInFocus(i, inFocus.inFocusId)">
+                    <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
         </tbody>
       </table>
 
-      <div class="pagination-bar" *ngIf="allItems.length > 0">
-        <span class="pagination-info">Page {{ currentPage }} of {{ totalPages }} · {{ allItems.length }} items</span>
-        <div class="pagination-controls">
-          <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"><ion-icon aria-hidden="true" name="chevron-back"></ion-icon></button>
-          <button class="page-btn" *ngFor="let p of pageNumbers" [class.active]="p === currentPage" (click)="goToPage(p)">{{ p }}</button>
-          <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"><ion-icon aria-hidden="true" name="chevron-forward"></ion-icon></button>
-          <select class="page-size-select" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
-            <option [ngValue]="5">5 / page</option>
-            <option [ngValue]="10">10 / page</option>
-            <option [ngValue]="25">25 / page</option>
-          </select>
+      @if (allItems.length > 0) {
+        <div class="pagination-bar">
+          <span class="pagination-info">Page {{ currentPage }} of {{ totalPages }} · {{ allItems.length }} items</span>
+          <div class="pagination-controls">
+            <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"><ion-icon aria-hidden="true" name="chevron-back"></ion-icon></button>
+            @for (p of pageNumbers; track p) {
+              <button class="page-btn" [class.active]="p === currentPage" (click)="goToPage(p)">{{ p }}</button>
+            }
+            <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"><ion-icon aria-hidden="true" name="chevron-forward"></ion-icon></button>
+            <select class="page-size-select" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
+              <option [ngValue]="5">5 / page</option>
+              <option [ngValue]="10">10 / page</option>
+              <option [ngValue]="25">25 / page</option>
+            </select>
+          </div>
         </div>
-      </div>
+      }
     </div>
   </div>
 </ion-content>

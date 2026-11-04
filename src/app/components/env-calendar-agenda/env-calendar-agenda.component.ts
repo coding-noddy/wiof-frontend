@@ -12,9 +12,10 @@ interface AgendaDay {
 }
 
 @Component({
-  selector: 'app-env-calendar-agenda',
-  templateUrl: './env-calendar-agenda.component.html',
-  styleUrls: ['./env-calendar-agenda.component.scss']
+    selector: 'app-env-calendar-agenda',
+    templateUrl: './env-calendar-agenda.component.html',
+    styleUrls: ['./env-calendar-agenda.component.scss'],
+    standalone: false
 })
 export class EnvCalendarAgendaComponent implements OnInit {
   today: EnvDay[] = [];

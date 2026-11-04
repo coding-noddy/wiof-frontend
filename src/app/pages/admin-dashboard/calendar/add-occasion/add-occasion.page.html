@@ -42,7 +42,9 @@
           </ion-item>
           <ion-item>
             <ion-select label="Month *" labelPlacement="floating" formControlName="month">
-              <ion-select-option [value]="i" *ngFor="let month of months; let i = index;">{{ month }}</ion-select-option>
+              @for (month of months; track month; let i = $index) {
+                <ion-select-option [value]="i">{{ month }}</ion-select-option>
+              }
             </ion-select>
           </ion-item>
         </div>
@@ -67,9 +69,11 @@
             <input type="file" accept="image/*" (change)="onFileSelected($event)" formControlName="imageName" class="file-input" />
           </ion-item>
         </div>
-        <div class="form-image-preview" *ngIf="imageToDisplay">
-          <ion-img [src]="imageToDisplay"></ion-img>
-        </div>
+        @if (imageToDisplay) {
+          <div class="form-image-preview">
+            <ion-img [src]="imageToDisplay"></ion-img>
+          </div>
+        }
       </div>
     </form>
   </div>

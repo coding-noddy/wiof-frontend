@@ -1,22 +1,26 @@
 <div class="video-widget-section">
   <div class="video-widget-card">
     <div class="video-widget-header" [ngClass]="videoPlayerClass">
-      <span class="video-widget-title" *ngIf="urlSafe; else titleSkeleton">{{ videoPlayerTitle }}</span>
-      <ng-template #titleSkeleton><span class="skeleton title-skeleton"></span></ng-template>
+      @if (urlSafe) {
+        <span class="video-widget-title">{{ videoPlayerTitle }}</span>
+      } @else {
+        <span class="skeleton title-skeleton"></span>
+      }
     </div>
     <div class="video-widget-player">
-      <iframe loading="lazy"
-        *ngIf="urlSafe"
-        [title]="videoPlayerTitle"
-        class="video-player"
-        [src]="urlSafe"
-        [appYoutubeLite]="videoLink"
-        allowfullscreen
-        appYoutubeWatchTracker
-        [contentId]="videoLink"
-        [videoTitle]="videoPlayerTitle"
-        (watchComplete)="onVideoWatchComplete($event)"
-      ></iframe>
+      @if (urlSafe) {
+        <iframe loading="lazy"
+          [title]="videoPlayerTitle"
+          class="video-player"
+          [src]="urlSafe"
+          [appYoutubeLite]="videoLink"
+          allowfullscreen
+          appYoutubeWatchTracker
+          [contentId]="videoLink"
+          [videoTitle]="videoPlayerTitle"
+          (watchComplete)="onVideoWatchComplete($event)"
+        ></iframe>
+      }
     </div>
   </div>
 </div>

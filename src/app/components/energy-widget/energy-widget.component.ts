@@ -33,10 +33,11 @@ const KM_PER_L_CAR   = 15;
 const KM_PER_L_SUV   = 12;
 
 @Component({
-  selector: 'app-energy-widget',
-  templateUrl: './energy-widget.component.html',
-  styleUrls: ['./energy-widget.component.scss'],
-  animations: [expandCollapseAnimation]
+    selector: 'app-energy-widget',
+    templateUrl: './energy-widget.component.html',
+    styleUrls: ['./energy-widget.component.scss'],
+    animations: [expandCollapseAnimation],
+    standalone: false
 })
 export class EnergyWidgetComponent implements OnInit, OnDestroy {
 

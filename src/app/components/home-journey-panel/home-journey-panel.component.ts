@@ -23,9 +23,10 @@ interface LastActivity {
  * resume position.
  */
 @Component({
-  selector: 'app-home-journey-panel',
-  templateUrl: './home-journey-panel.component.html',
-  styleUrls: ['./home-journey-panel.component.scss']
+    selector: 'app-home-journey-panel',
+    templateUrl: './home-journey-panel.component.html',
+    styleUrls: ['./home-journey-panel.component.scss'],
+    standalone: false
 })
 export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
   isAuthenticated = false;

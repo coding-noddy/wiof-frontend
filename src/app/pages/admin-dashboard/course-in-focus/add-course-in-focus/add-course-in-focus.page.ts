@@ -15,9 +15,10 @@ import { CourseInFocusService } from 'src/app/services/course-in-focus.service';
 import { AppUtilService } from 'src/app/util/AppUtilService';
 
 @Component({
-  selector: 'app-add-course-in-focus',
-  templateUrl: './add-course-in-focus.page.html',
-  styleUrls: ['./add-course-in-focus.page.scss']
+    selector: 'app-add-course-in-focus',
+    templateUrl: './add-course-in-focus.page.html',
+    styleUrls: ['./add-course-in-focus.page.scss'],
+    standalone: false
 })
 export class AddCourseInFocusPage implements OnInit, OnDestroy {
   isEditMode = false;

@@ -4,9 +4,10 @@ import { takeUntil } from 'rxjs/operators';
 import { UserProfile, UserProfileService } from '../../../services/user-profile.service';
 
 @Component({
-  selector: 'app-users',
-  templateUrl: './users.page.html',
-  styleUrls: ['./users.page.scss']
+    selector: 'app-users',
+    templateUrl: './users.page.html',
+    styleUrls: ['./users.page.scss'],
+    standalone: false
 })
 export class UsersPage implements OnInit, OnDestroy {
   users: UserProfile[] = [];

@@ -8,9 +8,10 @@ import { UiUtilService } from 'src/app/util/UiUtilService';
 import { UI_MESSAGES, ITEMS, ELEMENTS, ACTION_TYPE } from 'src/app/app.constants';
 
 @Component({
-  selector: 'app-manage-take-action',
-  templateUrl: './manage-take-action.page.html',
-  styleUrls: ['./manage-take-action.page.scss']
+    selector: 'app-manage-take-action',
+    templateUrl: './manage-take-action.page.html',
+    styleUrls: ['./manage-take-action.page.scss'],
+    standalone: false
 })
 export class ManageTakeActionPage implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject();

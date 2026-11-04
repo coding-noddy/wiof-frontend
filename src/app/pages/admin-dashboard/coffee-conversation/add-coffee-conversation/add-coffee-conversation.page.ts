@@ -11,9 +11,10 @@ import { UiUtilService } from 'src/app/util/UiUtilService';
 
 import { quillSemanticHtml } from 'src/app/util/quill-html.util';
 @Component({
-  selector: 'app-add-coffee-conversation',
-  templateUrl: './add-coffee-conversation.page.html',
-  styleUrls: ['./add-coffee-conversation.page.scss']
+    selector: 'app-add-coffee-conversation',
+    templateUrl: './add-coffee-conversation.page.html',
+    styleUrls: ['./add-coffee-conversation.page.scss'],
+    standalone: false
 })
 export class AddCoffeeConversationPage implements OnInit {
   /** Saved HTML with normal spaces (see quillSemanticHtml). */

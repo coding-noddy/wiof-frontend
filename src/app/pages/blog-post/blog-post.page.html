@@ -1,107 +1,106 @@
 <app-header></app-header>
 <ion-content>
-  <div class="blog-post-wrapper" *ngIf="(blogDetails | async) as blog; else loading">
-
-    <!-- Breadcrumb -->
-    <div class="page-breadcrumb-bar" *ngIf="element">
-      <div class="breadcrumb">
-        <a routerLink="/home">Home</a>
-        <span class="sep">/</span>
-        <a [routerLink]="['/element', element]">{{ element | titlecase }}</a>
-        <span class="sep">/</span>
-        <a [routerLink]="['/element', element, 'blogs']">Blogs</a>
-        <span class="sep">/</span>
-        <span class="current">{{ blog.title }}</span>
-      </div>
-    </div>
-
-    <!-- Hero image with blurred background -->
-    <div class="blog-hero" *ngIf="(blog.image$ | async) as blogImage">
-      <div class="blog-hero-blur" [style.backgroundImage]="'url(' + blogImage + ')'"></div>
-      <button class="blog-hero-trigger" type="button" (click)="openImage(blogImage, blog.title)" [attr.aria-label]="'Expand image: ' + blog.title">
-        <img [src]="blogImage" [alt]="blog.title" class="blog-hero-img" />
-        <span class="zoom-badge"><ion-icon aria-hidden="true" name="expand-outline"></ion-icon></span>
-      </button>
-    </div>
-
-    <ion-modal [isOpen]="!!expandedImageSrc" (didDismiss)="closeImage()" aria-label="Expanded blog image">
-      <ng-template>
-        <ion-header>
-          <ion-toolbar>
-            <ion-title>{{ blog.title }}</ion-title>
-            <ion-buttons slot="end">
-              <ion-button (click)="closeImage()" aria-label="Close expanded image">
-                <ion-icon aria-hidden="true" name="close-outline"></ion-icon>
-              </ion-button>
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-header>
-        <ion-content class="expanded-image-content">
-          <img [src]="expandedImageSrc" [alt]="expandedImageAlt" class="expanded-blog-image" />
-        </ion-content>
-      </ng-template>
-    </ion-modal>
-
-    <!-- Article -->
-    <article class="blog-article"
-      appBlogReadTracker
-      [contentId]="blog.slug || blog.id"
-      [wordCount]="getWordCount(blog)"
-      (qualityReadComplete)="onReadComplete($event, blog.title)">
-
-      <!-- Meta -->
-      <div class="blog-meta-top">
-        <span class="blog-read-time">
-          <ion-icon aria-hidden="true" name="time-outline"></ion-icon>
-          {{ blog.timeToRead }} min read
-        </span>
-      </div>
-
-      <!-- Title -->
-      <h1 class="blog-title">{{ blog.title }}</h1>
-
-      <!-- Author + date -->
-      <div class="blog-author-row">
-        <div class="author-info">
-          <span class="author-name" *ngIf="blog.author">By {{ blog.author }}</span>
-          <span class="blog-date" *ngIf="blog.publishDate">{{ blog.publishDate | date: 'MMM dd, yyyy' }}</span>
+  @if ((blogDetails | async); as blog) {
+    <div class="blog-post-wrapper">
+      <!-- Breadcrumb -->
+      @if (element) {
+        <div class="page-breadcrumb-bar">
+          <div class="breadcrumb">
+            <a routerLink="/home">Home</a>
+            <span class="sep">/</span>
+            <a [routerLink]="['/element', element]">{{ element | titlecase }}</a>
+            <span class="sep">/</span>
+            <a [routerLink]="['/element', element, 'blogs']">Blogs</a>
+            <span class="sep">/</span>
+            <span class="current">{{ blog.title }}</span>
+          </div>
         </div>
-        <div class="author-actions">
-          <button class="share-btn" (click)="shareBlog(blog)">
-            <ion-icon aria-hidden="true" name="share-social-outline"></ion-icon>
-            Share
+      }
+      <!-- Hero image with blurred background -->
+      @if ((blog.image$ | async); as blogImage) {
+        <div class="blog-hero">
+          <div class="blog-hero-blur" [style.backgroundImage]="'url(' + blogImage + ')'"></div>
+          <button class="blog-hero-trigger" type="button" (click)="openImage(blogImage, blog.title)" [attr.aria-label]="'Expand image: ' + blog.title">
+            <img [src]="blogImage" [alt]="blog.title" class="blog-hero-img" />
+            <span class="zoom-badge"><ion-icon aria-hidden="true" name="expand-outline"></ion-icon></span>
           </button>
-          <app-bookmark-icon
-            [contentId]="blog.slug || blog.id"
-            contentType="blog"
-            [contentTitle]="blog.title"
-            [contentThumbnail]="blog.imageName">
-          </app-bookmark-icon>
         </div>
-      </div>
-
-      <hr class="blog-divider" />
-
-      <!-- Content -->
-      <div *ngIf="blog.contentDelta; else htmlContent" class="blog-content-zoomable" (click)="onContentClick($event, blog.title)">
-        <quill-view [content]="blog.contentDelta" format="object" theme="snow"></quill-view>
-      </div>
-      <ng-template #htmlContent>
-        <div class="blog-content blog-content-zoomable" (click)="onContentClick($event, blog.title)" [innerHTML]="blog.content"></div>
-      </ng-template>
-
-      <hr class="blog-divider" />
-
-      <!-- About author -->
-      <div class="blog-about-author" *ngIf="blog.aboutAuthor">
-        <h4>About {{ blog.author }}</h4>
-        <p>{{ blog.aboutAuthor }}</p>
-      </div>
-
-    </article>
-  </div>
-
-  <ng-template #loading>
+      }
+      <ion-modal [isOpen]="!!expandedImageSrc" (didDismiss)="closeImage()" aria-label="Expanded blog image">
+        <ng-template>
+          <ion-header>
+            <ion-toolbar>
+              <ion-title>{{ blog.title }}</ion-title>
+              <ion-buttons slot="end">
+                <ion-button (click)="closeImage()" aria-label="Close expanded image">
+                  <ion-icon aria-hidden="true" name="close-outline"></ion-icon>
+                </ion-button>
+              </ion-buttons>
+            </ion-toolbar>
+          </ion-header>
+          <ion-content class="expanded-image-content">
+            <img [src]="expandedImageSrc" [alt]="expandedImageAlt" class="expanded-blog-image" />
+          </ion-content>
+        </ng-template>
+      </ion-modal>
+      <!-- Article -->
+      <article class="blog-article"
+        appBlogReadTracker
+        [contentId]="blog.slug || blog.id"
+        [wordCount]="getWordCount(blog)"
+        (qualityReadComplete)="onReadComplete($event, blog.title)">
+        <!-- Meta -->
+        <div class="blog-meta-top">
+          <span class="blog-read-time">
+            <ion-icon aria-hidden="true" name="time-outline"></ion-icon>
+            {{ blog.timeToRead }} min read
+          </span>
+        </div>
+        <!-- Title -->
+        <h1 class="blog-title">{{ blog.title }}</h1>
+        <!-- Author + date -->
+        <div class="blog-author-row">
+          <div class="author-info">
+            @if (blog.author) {
+              <span class="author-name">By {{ blog.author }}</span>
+            }
+            @if (blog.publishDate) {
+              <span class="blog-date">{{ blog.publishDate | date: 'MMM dd, yyyy' }}</span>
+            }
+          </div>
+          <div class="author-actions">
+            <button class="share-btn" (click)="shareBlog(blog)">
+              <ion-icon aria-hidden="true" name="share-social-outline"></ion-icon>
+              Share
+            </button>
+            <app-bookmark-icon
+              [contentId]="blog.slug || blog.id"
+              contentType="blog"
+              [contentTitle]="blog.title"
+              [contentThumbnail]="blog.imageName">
+            </app-bookmark-icon>
+          </div>
+        </div>
+        <hr class="blog-divider" />
+        <!-- Content -->
+        @if (blog.contentDelta) {
+          <div class="blog-content-zoomable" (click)="onContentClick($event, blog.title)">
+            <quill-view [content]="blog.contentDelta" format="object" theme="snow"></quill-view>
+          </div>
+        } @else {
+          <div class="blog-content blog-content-zoomable" (click)="onContentClick($event, blog.title)" [innerHTML]="blog.content"></div>
+        }
+        <hr class="blog-divider" />
+        <!-- About author -->
+        @if (blog.aboutAuthor) {
+          <div class="blog-about-author">
+            <h4>About {{ blog.author }}</h4>
+            <p>{{ blog.aboutAuthor }}</p>
+          </div>
+        }
+      </article>
+    </div>
+  } @else {
     <div class="blog-loading">
       <div class="skeleton" style="height: 300px; border-radius: 0;"></div>
       <div style="max-width: 780px; margin: 2rem auto; padding: 0 1rem;">
@@ -112,7 +111,8 @@
         <div class="skeleton" style="height: 14px; width: 90%; margin-bottom: 0.6rem;"></div>
       </div>
     </div>
-  </ng-template>
+  }
+
 
   <app-wiof-footer></app-wiof-footer>
 </ion-content>

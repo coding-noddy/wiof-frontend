@@ -9,14 +9,14 @@
 
       <p class="meter-food-copy">
         {{
-          !food
-            ? "Search and select a food to see where it falls on the pH scale."
-            : food.name +
-              " is classified as " +
-              foodStatus.toLowerCase() +
-              " with a pH value of " +
-              food.ph +
-              "."
+        !food
+        ? "Search and select a food to see where it falls on the pH scale."
+        : food.name +
+        " is classified as " +
+        foodStatus.toLowerCase() +
+        " with a pH value of " +
+        food.ph +
+        "."
         }}
       </p>
     </div>
@@ -62,7 +62,9 @@
     <div class="bracket" [ngClass]="updatePhPointer()"></div>
   </div>
 
-  <div class="ph-meter-message" role="status" aria-live="polite" *ngIf="!food">
-    {{ message }}
-  </div>
+  @if (!food) {
+    <div class="ph-meter-message" role="status" aria-live="polite">
+      {{ message }}
+    </div>
+  }
 </div>

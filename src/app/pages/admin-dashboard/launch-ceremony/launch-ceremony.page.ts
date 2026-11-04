@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { LaunchCeremonyService, LaunchCeremonySetting } from '../../../services/launch-ceremony.service';
 
 @Component({
-  selector: 'app-launch-ceremony',
-  templateUrl: './launch-ceremony.page.html',
-  styleUrls: ['./launch-ceremony.page.scss']
+    selector: 'app-launch-ceremony',
+    templateUrl: './launch-ceremony.page.html',
+    styleUrls: ['./launch-ceremony.page.scss'],
+    standalone: false
 })
 export class LaunchCeremonyPage implements OnInit {
   setting: LaunchCeremonySetting | null = null;

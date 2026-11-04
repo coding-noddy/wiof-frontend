@@ -37,7 +37,7 @@
         ]
       },
       {
-        "regex": "^/.+\\.[0-9a-f]{16}\\.(js|css)$",
+        "regex": "^/.+(\\.[0-9a-f]{16}|-[A-Z0-9]{8})\\.(js|css)$",
         "headers": [
           {
             "key": "Cache-Control",

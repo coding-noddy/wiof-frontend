@@ -10,9 +10,10 @@ import { AuthService } from 'src/app/services/auth.service';
 import { VideoWatchCompleteEvent } from 'src/app/directives/youtube-watch-tracker.directive';
 
 @Component({
-  selector: 'app-video-post',
-  templateUrl: './video-post.page.html',
-  styleUrls: ['./video-post.page.scss']
+    selector: 'app-video-post',
+    templateUrl: './video-post.page.html',
+    styleUrls: ['./video-post.page.scss'],
+    standalone: false
 })
 export class VideoPostPage implements OnInit, OnDestroy {
   videoUrl: string = '';

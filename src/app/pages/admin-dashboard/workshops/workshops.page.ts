@@ -27,9 +27,10 @@ const emptyWorkshop = (): Workshop => ({
  * Published workshops show on /climatenlighten until their date has passed.
  */
 @Component({
-  selector: 'app-workshops',
-  templateUrl: './workshops.page.html',
-  styleUrls: ['./workshops.page.scss']
+    selector: 'app-workshops',
+    templateUrl: './workshops.page.html',
+    styleUrls: ['./workshops.page.scss'],
+    standalone: false
 })
 export class WorkshopsPage implements OnInit, OnDestroy {
   destroy$ = new Subject<void>();
