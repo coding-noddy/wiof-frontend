@@ -7,6 +7,18 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.1.0] - 2026-11-04
+
+Phase 2 step 1: trusted activity events, the foundation for Planet Passport (see `docs/PHASE2_PLAN.md`).
+
+### Security
+- Activity events (`activity_log`) now have an exact schema in the Firestore rules: nine known event types, each with only its own fields, types and ranges. Events that count once (reads, views, completions, poll votes, the daily visit) must use their deterministic document ID, so they can't be repeated with random IDs to inflate counters. A poll vote's email must be the signed-in user's own.
+- The `onActivityLogCreated` function checks every event on the server (`functions/activity-validation.js`): the blog, poll or action exists; video IDs are real YouTube IDs; quality reads and watched videos meet their thresholds; EQ totals add up; the date is plausible. It records a verdict on the event and counts only accepted events in `user_metrics`, in one transaction, so a redelivered trigger can't count an event twice.
+
+### Changed
+- My Journey history lists leave out events the server rejected; `backfillUserMetrics` skips them.
+- `npm run test:functions` (unit tests for the server checks) now runs before every deploy, along with the rules tests.
+
 ## [8.0.4] - 2026-11-04
 
 ### Fixed

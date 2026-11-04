@@ -281,123 +281,142 @@ describe('user_saved_content/{docId}', () => {
   });
 });
 
+/** An activity_log event in the exact shape ActivityService writes. */
+function activityEvent(activityType, fields = {}, uid = 'alice') {
+  return { userId: uid, activityType, schemaVersion: 1, timestamp: serverTimestamp(), calendarDay: '2026-11-04', ...fields };
+}
+
+/** Seeds an existing event (rules off) and returns its doc ID. */
+async function seedActivity(docId = 'alice_blog_read_blog-1') {
+  await seed((db) => db.collection('activity_log').doc(docId).set({
+    userId: 'alice', activityType: 'blog_read', schemaVersion: 1, contentId: 'blog-1', timestamp: new Date(), calendarDay: '2026-11-04'
+  }));
+  return docId;
+}
+
 describe('activity_log/{docId}', () => {
-  it('lets a user create their own activity event with a server timestamp', async () => {
-    const db = testEnv.authenticatedContext('alice').firestore();
-    await assertSucceeds(
-      db.collection('activity_log').add({
-        userId: 'alice',
-        activityType: 'blog_read',
-        contentId: 'blog-1',
-        timestamp: serverTimestamp()
-      })
-    );
+  const alice = () => testEnv.authenticatedContext('alice', { email: 'alice@test.com' }).firestore();
+  const log = (db) => db.collection('activity_log');
+
+  // One valid event per type, at the doc ID its type requires (null = any ID).
+  const VALID = {
+    blog_read: ['alice_blog_read_blog-1', { contentId: 'blog-1' }],
+    blog_read_complete: ['alice_blog_read_complete_blog-1', { contentId: 'blog-1', contentTitle: 'Blog', scrollDepth: 80, timeSpent: 90 }],
+    video_view: ['alice_video_view_GfO-3Oir-qM', { contentId: 'GfO-3Oir-qM' }],
+    video_watch_complete: ['alice_video_watch_complete_GfO-3Oir-qM', { contentId: 'GfO-3Oir-qM', contentTitle: 'Video', scrollDepth: 80 }],
+    poll_vote: ['alice_poll_vote_poll-1', { contentId: 'poll-1', contentTitle: 'Poll?', selectedOption: 'Yes', userEmail: 'alice@test.com' }],
+    eq_completion: [null, { score: 75, eqDimensions: { attentionScore: 20, clarityScore: 30, reparationScore: 25 } }],
+    daily_visit: ['alice_daily_visit_2026-11-04', {}],
+    widget_usage: [null, { widgetName: 'AQI' }],
+    action_completed: [null, { contentId: 'reuse-container' }]
+  };
+
+  for (const [type, [docId, fields]] of Object.entries(VALID)) {
+    it(`lets a user create a valid ${type} event`, async () => {
+      const ref = docId ? log(alice()).doc(docId) : log(alice()).doc();
+      await assertSucceeds(ref.set(activityEvent(type, fields)));
+    });
+
+    it(`denies a ${type} event with an extra field`, async () => {
+      const ref = docId ? log(alice()).doc(docId) : log(alice()).doc();
+      await assertFails(ref.set(activityEvent(type, { ...fields, bonusPoints: 1000 })));
+    });
+  }
+
+  it('denies an unknown event type', async () => {
+    await assertFails(log(alice()).add(activityEvent('blog_shared', { contentId: 'blog-1' })));
+  });
+
+  it('denies a count-once event at a random ID (the old way to repeat it)', async () => {
+    await assertFails(log(alice()).add(activityEvent('blog_read', { contentId: 'blog-1' })));
+  });
+
+  it('denies a count-once event at the ID of different content', async () => {
+    await assertFails(log(alice()).doc('alice_blog_read_blog-2').set(activityEvent('blog_read', { contentId: 'blog-1' })));
+  });
+
+  it('denies a daily visit at the ID of a different day', async () => {
+    await assertFails(log(alice()).doc('alice_daily_visit_2026-11-05').set(activityEvent('daily_visit')));
   });
 
   it('denies a spoofed userId on create', async () => {
     const db = testEnv.authenticatedContext('mallory').firestore();
-    await assertFails(
-      db.collection('activity_log').add({
-        userId: 'alice',
-        activityType: 'blog_read',
-        contentId: 'blog-1',
-        timestamp: serverTimestamp()
-      })
-    );
+    await assertFails(log(db).doc('alice_blog_read_blog-1').set(activityEvent('blog_read', { contentId: 'blog-1' })));
+    await assertFails(log(db).doc('mallory_blog_read_blog-1').set(activityEvent('blog_read', { contentId: 'blog-1' })));
   });
 
-  it('denies a create with a non-server timestamp (rate-limit bypass attempt)', async () => {
+  it('denies a create with a non-server timestamp (backdating)', async () => {
+    await assertFails(log(alice()).doc('alice_blog_read_blog-1').set(activityEvent('blog_read', { contentId: 'blog-1', timestamp: new Date() })));
+  });
+
+  it('denies a malformed calendarDay or an unknown schemaVersion', async () => {
+    await assertFails(log(alice()).doc('alice_blog_read_blog-1').set(activityEvent('blog_read', { contentId: 'blog-1', calendarDay: '4 Nov' })));
+    await assertFails(log(alice()).doc('alice_blog_read_blog-1').set(activityEvent('blog_read', { contentId: 'blog-1', schemaVersion: 2 })));
+  });
+
+  it('denies an EQ score that is not the sum of valid dimensions', async () => {
+    const dims = { attentionScore: 20, clarityScore: 30, reparationScore: 25 };
+    await assertFails(log(alice()).add(activityEvent('eq_completion', { score: 120, eqDimensions: dims })));
+    await assertFails(log(alice()).add(activityEvent('eq_completion', { score: 95, eqDimensions: { ...dims, attentionScore: 40, clarityScore: 50 } })));
+  });
+
+  it('denies out-of-range read and watch percentages', async () => {
+    await assertFails(log(alice()).doc('alice_blog_read_complete_blog-1').set(
+      activityEvent('blog_read_complete', { contentId: 'blog-1', contentTitle: 'Blog', scrollDepth: 180, timeSpent: 90 })));
+    await assertFails(log(alice()).doc('alice_video_watch_complete_GfO-3Oir-qM').set(
+      activityEvent('video_watch_complete', { contentId: 'GfO-3Oir-qM', contentTitle: 'Video', scrollDepth: -1 })));
+  });
+
+  it('denies a poll vote carrying a different email', async () => {
+    await assertFails(log(alice()).doc('alice_poll_vote_poll-1').set(
+      activityEvent('poll_vote', { contentId: 'poll-1', contentTitle: 'Poll?', selectedOption: 'Yes', userEmail: 'bob@test.com' })));
+  });
+
+  it('accepts an empty poll email for a user without one', async () => {
     const db = testEnv.authenticatedContext('alice').firestore();
-    await assertFails(
-      db.collection('activity_log').add({
-        userId: 'alice',
-        activityType: 'blog_read',
-        contentId: 'blog-1',
-        timestamp: new Date()
-      })
-    );
+    await assertSucceeds(log(db).doc('alice_poll_vote_poll-1').set(
+      activityEvent('poll_vote', { contentId: 'poll-1', contentTitle: 'Poll?', selectedOption: 'Yes', userEmail: '' })));
   });
 
-  it("denies reading another user's activity history", async () => {
-    let docId;
-    await seed(async (db) => {
-      const ref = await db.collection('activity_log').add({
-        userId: 'alice', activityType: 'blog_read', contentId: 'blog-1', timestamp: serverTimestamp()
-      });
-      docId = ref.id;
-    });
-    const db = testEnv.authenticatedContext('mallory').firestore();
-    await assertFails(db.collection('activity_log').doc(docId).get());
+  it('denies an unknown widget name', async () => {
+    await assertFails(log(alice()).add(activityEvent('widget_usage', { widgetName: 'Free Points' })));
+  });
+
+  it('denies a second create at the same deterministic ID (the atomic dedup guarantee)', async () => {
+    await seedActivity();
+    await assertFails(log(alice()).doc('alice_blog_read_blog-1').set(activityEvent('blog_read', { contentId: 'blog-1' })));
+  });
+
+  it('denies reading the activity history of another user', async () => {
+    const docId = await seedActivity();
+    await assertFails(log(testEnv.authenticatedContext('mallory').firestore()).doc(docId).get());
   });
 
   it('lets an admin read activity history for analytics', async () => {
-    let docId;
-    await seed(async (db) => {
-      const ref = await db.collection('activity_log').add({
-        userId: 'alice', activityType: 'blog_read', contentId: 'blog-1', timestamp: serverTimestamp()
-      });
-      docId = ref.id;
-      await db.collection('admins').doc('root').set({ role: 'admin' });
-    });
-    const db = testEnv.authenticatedContext('root').firestore();
-    await assertSucceeds(db.collection('activity_log').doc(docId).get());
+    const docId = await seedActivity();
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    await assertSucceeds(log(testEnv.authenticatedContext('root').firestore()).doc(docId).get());
   });
 
-  it('denies mutating an event after creation — activity logs are immutable', async () => {
-    let docId;
-    await seed(async (db) => {
-      const ref = await db.collection('activity_log').add({
-        userId: 'alice', activityType: 'blog_read', contentId: 'blog-1', timestamp: serverTimestamp()
-      });
-      docId = ref.id;
-    });
-    const db = testEnv.authenticatedContext('alice').firestore();
-    await assertFails(db.collection('activity_log').doc(docId).update({ activityType: 'blog_read_complete' }));
+  it('denies mutating an event after creation, including forging a validation verdict', async () => {
+    const docId = await seedActivity();
+    await assertFails(log(alice()).doc(docId).update({ activityType: 'blog_read_complete' }));
+    await assertFails(log(alice()).doc(docId).update({ validation: { status: 'accepted' } }));
   });
 
-  it('lets a client create at a deterministic ID (the dedup mechanism ActivityService relies on)', async () => {
-    const db = testEnv.authenticatedContext('alice').firestore();
-    await assertSucceeds(
-      db.collection('activity_log').doc('alice_blog_read_blog-1').set({
-        userId: 'alice', activityType: 'blog_read', contentId: 'blog-1', timestamp: serverTimestamp()
-      })
-    );
+  it('denies a client-written validation verdict on create', async () => {
+    await assertFails(log(alice()).doc('alice_blog_read_blog-1').set(
+      activityEvent('blog_read', { contentId: 'blog-1', validation: { status: 'accepted' } })));
   });
 
-  it('denies a second set() at the same deterministic ID — this is the atomic dedup guarantee, not a client-side race', async () => {
-    await seed((db) => db.collection('activity_log').doc('alice_blog_read_blog-1').set({
-      userId: 'alice', activityType: 'blog_read', contentId: 'blog-1', timestamp: serverTimestamp()
-    }));
-    const db = testEnv.authenticatedContext('alice').firestore();
-    await assertFails(
-      db.collection('activity_log').doc('alice_blog_read_blog-1').set({
-        userId: 'alice', activityType: 'blog_read', contentId: 'blog-1', timestamp: serverTimestamp()
-      })
-    );
+  it('denies deleting the activity record of another user', async () => {
+    const docId = await seedActivity();
+    await assertFails(log(testEnv.authenticatedContext('mallory').firestore()).doc(docId).delete());
   });
 
-  it("denies deleting another user's activity record", async () => {
-    let docId;
-    await seed(async (db) => {
-      const ref = await db.collection('activity_log').add({
-        userId: 'alice', activityType: 'blog_read', contentId: 'blog-1', timestamp: serverTimestamp()
-      });
-      docId = ref.id;
-    });
-    const db = testEnv.authenticatedContext('mallory').firestore();
-    await assertFails(db.collection('activity_log').doc(docId).delete());
-  });
-
-  it('denies a user deleting their own activity record — resetEngagementData (Cloud Function) is the only deletion path', async () => {
-    let docId;
-    await seed(async (db) => {
-      const ref = await db.collection('activity_log').add({
-        userId: 'alice', activityType: 'blog_read', contentId: 'blog-1', timestamp: serverTimestamp()
-      });
-      docId = ref.id;
-    });
-    const db = testEnv.authenticatedContext('alice').firestore();
-    await assertFails(db.collection('activity_log').doc(docId).delete());
+  it('denies a user deleting their own activity record (resetEngagementData is the only deletion path)', async () => {
+    const docId = await seedActivity();
+    await assertFails(log(alice()).doc(docId).delete());
   });
 });
 
