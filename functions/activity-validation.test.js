@@ -9,6 +9,7 @@ const {
   expectedDocId,
   isPlausibleCalendarDay,
   requiredReadSeconds,
+  scoreEqResponses,
   validateActivityEvent
 } = require('./activity-validation');
 
@@ -109,6 +110,36 @@ describe('validateActivityEvent', () => {
 
   it('rejects a calendar day more than a day away from the server time', async () => {
     assert.equal((await verdict(event('daily_visit', { calendarDay: '2026-11-07' }))).reason, 'implausible_calendar_day');
+  });
+});
+
+describe('legacy mode (events from before step 1)', () => {
+  it('skips the doc ID and calendar-day checks those events predate', async () => {
+    const old = { userId: 'alice', activityType: 'blog_read', contentId: 'kalpasar', timestamp: NOON_UTC };
+    assert.equal((await validateActivityEvent('random-old-id', old, lookups, { legacy: true })).status, 'accepted');
+    assert.equal((await validateActivityEvent('random-old-id', old, lookups)).reason, 'wrong_doc_id');
+  });
+
+  it('still checks the content exists', async () => {
+    const old = { userId: 'alice', activityType: 'blog_read', contentId: 'deleted-blog', timestamp: NOON_UTC };
+    assert.equal((await validateActivityEvent('x', old, lookups, { legacy: true })).reason, 'content_not_found');
+  });
+});
+
+describe('scoreEqResponses', () => {
+  it('sums each block of 8 answers into a dimension, and the three into the score', () => {
+    const answers = [...Array(8).fill(1), ...Array(8).fill(3), ...Array(8).fill(5)];
+    assert.deepEqual(scoreEqResponses(answers), {
+      score: 72, eqDimensions: { attentionScore: 8, clarityScore: 24, reparationScore: 40 }
+    });
+  });
+
+  it('refuses anything but 24 whole answers from 1 to 5', () => {
+    assert.equal(scoreEqResponses(Array(23).fill(3)), null);
+    assert.equal(scoreEqResponses([...Array(23).fill(3), 6]), null);
+    assert.equal(scoreEqResponses([...Array(23).fill(3), 2.5]), null);
+    assert.equal(scoreEqResponses([...Array(23).fill(3), '3']), null);
+    assert.equal(scoreEqResponses(undefined), null);
   });
 });
 

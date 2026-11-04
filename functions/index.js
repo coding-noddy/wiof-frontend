@@ -14,7 +14,8 @@
 const functions = require('firebase-functions/v1');
 const admin = require('firebase-admin');
 const { BLOG_SUMMARIES, buildBlogSummary } = require('./blog-summary');
-const { VALIDATOR_VERSION, validateActivityEvent } = require('./activity-validation');
+const { VALIDATOR_VERSION, scoreEqResponses, validateActivityEvent } = require('./activity-validation');
+const { makeContentLookups, recomputeUserMetrics } = require('./user-metrics');
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -445,6 +446,7 @@ exports.resetEngagementData = functions
 
     await db.collection('user_metrics').doc(uid).set({
       blogsRead: 0,
+      qualityReads: 0,
       videosWatched: 0,
       videosCompleted: 0,
       pollsVoted: 0,
@@ -519,6 +521,9 @@ function metricsUpdateFor(entry) {
       update.blogsRead = admin.firestore.FieldValue.increment(1);
       update.lastBlogReadDate = entry.timestamp;
       break;
+    case 'blog_read_complete':
+      update.qualityReads = admin.firestore.FieldValue.increment(1);
+      break;
     case 'video_view':
       update.videosWatched = admin.firestore.FieldValue.increment(1);
       break;
@@ -533,17 +538,13 @@ function metricsUpdateFor(entry) {
       update.lastEqDate = entry.timestamp;
       break;
     default:
-      return null; // blog_read_complete, daily_visit, widget_usage, action_completed don't feed a dashboard tally
+      return null; // daily_visit, widget_usage, action_completed don't feed a dashboard tally
   }
   return update;
 }
 
 /** Content lookups for validateActivityEvent (activity-validation.js). */
-const activityLookups = {
-  getBlog,
-  pollExists: async (id) => (await db.collection('Poll').doc(String(id)).get()).exists,
-  actionExists: async (id) => (await db.collection('actions').doc(String(id)).get()).exists
-};
+const activityLookups = makeContentLookups(db);
 
 /**
  * Validates each new activity_log event and maintains `user_metrics/{uid}`,
@@ -689,22 +690,22 @@ exports.onBlogWritten = functions
   }));
 
 /**
- * One-time admin-triggered backfill: recomputes user_metrics for every user
- * from the full activity_log + user_actions history. Needed because
- * onActivityLogCreated/onUserActionWritten only aggregate events from the
- * point they were deployed onward — this catches anything that happened
- * before that (including onUserActionWritten's own late deployment, which
- * left every pre-existing Take Action completion uncounted). Unlike the
- * triggers, this dedupes blog_read/video_view by contentId explicitly (via
- * a Set) rather than relying on one-create-per-key, since historical data
- * predates today's deterministic-ID dedup fix and could in rare cases
- * already contain a race-condition duplicate from the old
- * query-before-write pattern.
+ * Recomputes user_metrics for every user from the full activity_log +
+ * user_actions history (Phase 2 step 2; definitions in docs/METRICS.md),
+ * via user-metrics.js — the same code scripts/recompute-user-metrics.js
+ * runs. Only accepted events count; events from before step 1 have no
+ * verdict yet and are judged with the same server checks.
+ *
+ * **Dry run by default**: returns what would change (per-user before/after,
+ * rejected events by reason) and writes nothing. Pass `{ apply: true }` to
+ * write the recomputed metrics and the legacy events' verdicts
+ * (`validation.retroactive: true`). Safe to re-run: applying twice
+ * converges to the same result.
  * Admin-gated via the `admins` collection, checked with the Admin SDK.
  */
 exports.backfillUserMetrics = functions
   .region(REGION)
-  .runWith({ timeoutSeconds: 300, ...APP_CHECK })
+  .runWith({ timeoutSeconds: 300, memory: '512MB', ...APP_CHECK })
   .https.onCall(withErrorLogging('backfillUserMetrics', async (data, context) => {
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
@@ -713,137 +714,44 @@ exports.backfillUserMetrics = functions
     if (!adminDoc.exists) {
       throw new functions.https.HttpsError('permission-denied', 'Admin privileges required.');
     }
+    return recomputeUserMetrics(db, { apply: !!(data && data.apply === true), FieldValue: admin.firestore.FieldValue });
+  }));
 
-    const [activitySnapshot, actionsSnapshot] = await Promise.all([
-      db.collection('activity_log').get(),
-      db.collection('user_actions').get()
-    ]);
-    const perUser = new Map();
-
-    const isNewer = (a, b) => {
-      if (!a) return false;
-      if (!b) return true;
-      return a.toMillis() > b.toMillis();
-    };
-
-    const getUser = (uid) => {
-      if (!perUser.has(uid)) {
-        perUser.set(uid, {
-          blogsRead: new Set(),
-          videosWatched: new Set(),
-          videosCompleted: 0,
-          pollsVoted: 0,
-          lastEqScore: null,
-          lastEqDate: null,
-          lastBlogReadDate: null,
-          totalActionsCompleted: 0,
-          uniqueActionsCompleted: 0,
-          actionsByElement: {},
-          lastActionAt: null
-        });
-      }
-      return perUser.get(uid);
-    };
-
-    activitySnapshot.forEach((doc) => {
-      const entry = doc.data();
-      const uid = entry.userId;
-      if (!uid) {
-        return;
-      }
-      // Events onActivityLogCreated rejected never count. Events from before
-      // validation existed have no verdict and still count, as before.
-      if (entry.validation && entry.validation.status === 'rejected') {
-        return;
-      }
-      const u = getUser(uid);
-
-      switch (entry.activityType) {
-        case 'blog_read':
-          if (entry.contentId) u.blogsRead.add(entry.contentId);
-          if (isNewer(entry.timestamp, u.lastBlogReadDate)) u.lastBlogReadDate = entry.timestamp;
-          break;
-        case 'video_view':
-          if (entry.contentId) u.videosWatched.add(entry.contentId);
-          break;
-        case 'video_watch_complete':
-          u.videosCompleted += 1;
-          break;
-        case 'poll_vote':
-          u.pollsVoted += 1;
-          break;
-        case 'eq_completion':
-          if (isNewer(entry.timestamp, u.lastEqDate)) {
-            u.lastEqScore = entry.score !== undefined ? entry.score : null;
-            u.lastEqDate = entry.timestamp;
-          }
-          break;
-      }
-    });
-
-    // Mirrors onUserActionWritten's own counting rules: totalActionsCompleted
-    // sums every completion (DAILY repeats included), uniqueActionsCompleted
-    // only counts an action once regardless of repeat completions.
-    actionsSnapshot.forEach((doc) => {
-      const entry = doc.data();
-      const uid = entry.userId;
-      const completionCount = entry.completionCount || 0;
-      if (!uid || completionCount <= 0) {
-        return;
-      }
-      const u = getUser(uid);
-      u.totalActionsCompleted += completionCount;
-      u.uniqueActionsCompleted += 1;
-      if (isNewer(entry.lastCompletedAt, u.lastActionAt)) {
-        u.lastActionAt = entry.lastCompletedAt;
-      }
-      const elements = Array.isArray(entry.elementIdsSnapshot) ? entry.elementIdsSnapshot : [];
-      elements.forEach((element) => {
-        if (typeof element === 'string' && element) {
-          u.actionsByElement[element] = (u.actionsByElement[element] || 0) + completionCount;
-        }
-      });
-    });
-
-    const uids = Array.from(perUser.keys());
-    let batch = db.batch();
-    let opCount = 0;
-
-    for (const uid of uids) {
-      const u = perUser.get(uid);
-      // merge:true — this doc is also written incrementally by
-      // onActivityLogCreated/onUserActionWritten; a plain set() here would
-      // wipe out any field this backfill doesn't itself compute.
-      batch.set(
-        db.collection('user_metrics').doc(uid),
-        {
-          blogsRead: u.blogsRead.size,
-          videosWatched: u.videosWatched.size,
-          videosCompleted: u.videosCompleted,
-          pollsVoted: u.pollsVoted,
-          lastEqScore: u.lastEqScore,
-          lastEqDate: u.lastEqDate,
-          lastBlogReadDate: u.lastBlogReadDate,
-          totalActionsCompleted: u.totalActionsCompleted,
-          uniqueActionsCompleted: u.uniqueActionsCompleted,
-          actionsByElement: u.actionsByElement,
-          lastActionAt: u.lastActionAt,
-          updatedAt: admin.firestore.FieldValue.serverTimestamp()
-        },
-        { merge: true }
-      );
-      opCount++;
-      if (opCount === 450) {
-        await batch.commit();
-        batch = db.batch();
-        opCount = 0;
-      }
+/**
+ * Scores an EQ assessment on the server (Phase 2 step 2, docs/PHASE2_PLAN.md
+ * G3): the browser sends the 24 answers, never a score, and this writes the
+ * eq_completion event itself (firestore.rules no longer let a client create
+ * one). onActivityLogCreated then validates and counts it like any other
+ * event, so EQ shares the one event pipeline.
+ * Returns the score so the result screen can show what was recorded.
+ */
+exports.submitEqAssessment = functions
+  .region(REGION)
+  .runWith(APP_CHECK)
+  .https.onCall(withErrorLogging('submitEqAssessment', async (data, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
     }
-    if (opCount > 0) {
-      await batch.commit();
+    const result = scoreEqResponses(data && data.responses);
+    if (!result) {
+      throw new functions.https.HttpsError('invalid-argument', 'Expected 24 answers from 1 to 5.');
     }
+    // The browser's local day (as for every other event); the trigger
+    // rejects one more than a day away from the server time.
+    const calendarDay = data && typeof data.calendarDay === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(data.calendarDay)
+      ? data.calendarDay
+      : new Date().toISOString().slice(0, 10);
 
-    return { usersProcessed: uids.length };
+    await db.collection('activity_log').add({
+      userId: context.auth.uid,
+      activityType: 'eq_completion',
+      schemaVersion: 1,
+      score: result.score,
+      eqDimensions: result.eqDimensions,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      calendarDay
+    });
+    return result;
   }));
 
 /**

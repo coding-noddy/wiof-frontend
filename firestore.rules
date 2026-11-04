@@ -114,6 +114,9 @@ service cloud.firestore {
     // rather than filtered later. The onActivityLogCreated function then
     // checks what rules can't (the content exists, the numbers are
     // plausible) and counts only events it accepts.
+    // eq_completion is not on the list: the submitEqAssessment function
+    // scores the answers and writes that event itself, so a browser can
+    // never choose its own EQ score (Phase 2 step 2).
 
     function isActivityText(value, maxSize) {
       return value is string && value.size() > 0 && value.size() <= maxSize;
@@ -121,11 +124,6 @@ service cloud.firestore {
 
     function isPercent(value) {
       return value is number && value >= 0 && value <= 100;
-    }
-
-    // One EQ dimension: 8 questions answered 1-5.
-    function isEqDimension(value) {
-      return value is number && value >= 8 && value <= 40;
     }
 
     function activityBaseKeys() {
@@ -175,13 +173,6 @@ service cloud.firestore {
             // The signed-in user's own email (or '' without one), never another address.
             && data.userEmail == request.auth.token.get('email', '')
             && docId == contentEventId(data))
-          || (type == 'eq_completion'
-            && data.keys().hasOnly(base.concat(['score', 'eqDimensions']))
-            && data.eqDimensions.keys().hasOnly(['attentionScore', 'clarityScore', 'reparationScore'])
-            && isEqDimension(data.eqDimensions.attentionScore)
-            && isEqDimension(data.eqDimensions.clarityScore)
-            && isEqDimension(data.eqDimensions.reparationScore)
-            && data.score == data.eqDimensions.attentionScore + data.eqDimensions.clarityScore + data.eqDimensions.reparationScore)
           || (type == 'daily_visit'
             && data.keys().hasOnly(base)
             && docId == request.auth.uid + '_daily_visit_' + data.calendarDay)

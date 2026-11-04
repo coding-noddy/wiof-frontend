@@ -7,6 +7,21 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.2.0] - 2026-11-04
+
+Phase 2 step 2: trusted EQ score, metric definitions, recompute (see `docs/PHASE2_PLAN.md`, `docs/METRICS.md`).
+
+### Security
+- EQ scores are computed on the server. The EQ card sends its 24 answers to the new `submitEqAssessment` function, which scores them and records the result. The rules no longer let a browser write an EQ result at all.
+
+### Added
+- `docs/METRICS.md`: written definitions of every metric (source, formula, unit, time basis, reset, trust level), for the Planet Passport rules to build on.
+- `user_metrics.qualityReads`: a server counter for quality reads (distinct blogs). The My Journey tile used to count a history list capped at 50.
+- `scripts/recompute-user-metrics.js --project staging|prod [--apply]`: rebuilds `user_metrics` from accepted events only. It judges events from before 8.1.0 with the same checks and counts each blog, video and poll once. Dry run by default, with a per-user before/after report. The `backfillUserMetrics` callable uses the same code (`functions/user-metrics.js`) and is now dry-run unless called with `{ apply: true }`.
+
+### Removed
+- `scripts/backfill-user-metrics.js` and `scripts/backfill-user-metrics-admin.js`, replaced by the recompute script. The admin one still counted every event, including duplicates and unchecked ones.
+
 ## [8.1.0] - 2026-11-04
 
 Phase 2 step 1: trusted activity events, the foundation for Planet Passport (see `docs/PHASE2_PLAN.md`).

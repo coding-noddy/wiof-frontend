@@ -127,22 +127,22 @@ export class EqWidgetQuestionCardComponent implements OnInit {
 
     this.showResult = true;
 
-    // Log EQ completion activity for authenticated users (fire-and-forget)
+    // Record EQ completion for authenticated users (fire-and-forget). The
+    // server scores the answers itself; totalScore is only for analytics.
     const totalScore = attentionRaw + clarityRaw + repairRaw;
-    this.logEqCompletion(totalScore, attentionRaw, clarityRaw, repairRaw);
+    this.submitEqAssessment(totalScore);
   }
 
-  private logEqCompletion(score: number, attentionScore: number, clarityScore: number, reparationScore: number): void {
+  /** The 24 answers as getRawScore() reads them (an untouched answer counts as 1). */
+  private get responses(): number[] {
+    return Array.from({ length: 24 }, (_, i) => Number(this.userResponse.get(`response${i}`)?.value || 1));
+  }
+
+  private submitEqAssessment(score: number): void {
     this.authService.isAuthenticated$.pipe(first()).subscribe(isAuth => {
       if (!isAuth) return;
-      this.authService.currentUser$.pipe(first()).subscribe(user => {
-        if (!user) return;
-        this.activityService.logEqCompletion(
-          user.uid,
-          score,
-          { attentionScore, clarityScore, reparationScore }
-        ).catch(err => console.warn('EQ completion activity logging failed:', err));
-      });
+      this.activityService.submitEqAssessment(this.responses, score)
+        .catch(err => console.warn('EQ completion activity logging failed:', err));
     });
   }
 

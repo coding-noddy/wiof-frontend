@@ -305,7 +305,6 @@ describe('activity_log/{docId}', () => {
     video_view: ['alice_video_view_GfO-3Oir-qM', { contentId: 'GfO-3Oir-qM' }],
     video_watch_complete: ['alice_video_watch_complete_GfO-3Oir-qM', { contentId: 'GfO-3Oir-qM', contentTitle: 'Video', scrollDepth: 80 }],
     poll_vote: ['alice_poll_vote_poll-1', { contentId: 'poll-1', contentTitle: 'Poll?', selectedOption: 'Yes', userEmail: 'alice@test.com' }],
-    eq_completion: [null, { score: 75, eqDimensions: { attentionScore: 20, clarityScore: 30, reparationScore: 25 } }],
     daily_visit: ['alice_daily_visit_2026-11-04', {}],
     widget_usage: [null, { widgetName: 'AQI' }],
     action_completed: [null, { contentId: 'reuse-container' }]
@@ -354,10 +353,10 @@ describe('activity_log/{docId}', () => {
     await assertFails(log(alice()).doc('alice_blog_read_blog-1').set(activityEvent('blog_read', { contentId: 'blog-1', schemaVersion: 2 })));
   });
 
-  it('denies an EQ score that is not the sum of valid dimensions', async () => {
+  it('denies any client-written EQ result, even a valid one (submitEqAssessment scores it on the server)', async () => {
     const dims = { attentionScore: 20, clarityScore: 30, reparationScore: 25 };
+    await assertFails(log(alice()).add(activityEvent('eq_completion', { score: 75, eqDimensions: dims })));
     await assertFails(log(alice()).add(activityEvent('eq_completion', { score: 120, eqDimensions: dims })));
-    await assertFails(log(alice()).add(activityEvent('eq_completion', { score: 95, eqDimensions: { ...dims, attentionScore: 40, clarityScore: 50 } })));
   });
 
   it('denies out-of-range read and watch percentages', async () => {

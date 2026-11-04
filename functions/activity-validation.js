@@ -82,6 +82,30 @@ function isPlausibleCalendarDay(calendarDay, timestamp) {
   return Math.abs(day - utcDay) <= 24 * 60 * 60 * 1000;
 }
 
+/** The EQ assessment: 24 questions answered 1-5, three dimensions of 8 in order. */
+const EQ_QUESTION_COUNT = 24;
+const EQ_DIMENSION_SIZE = 8;
+
+/**
+ * Scores an EQ assessment on the server (submitEqAssessment), the same sum
+ * EqWidgetQuestionCardComponent shows: each dimension is the sum of its 8
+ * answers (8-40), the score is the sum of the three (24-120).
+ * Returns null for anything but 24 whole-number answers from 1 to 5.
+ */
+function scoreEqResponses(responses) {
+  if (!Array.isArray(responses) || responses.length !== EQ_QUESTION_COUNT
+    || !responses.every((r) => Number.isInteger(r) && r >= 1 && r <= 5)) {
+    return null;
+  }
+  const sum = (start) => responses.slice(start, start + EQ_DIMENSION_SIZE).reduce((a, b) => a + b, 0);
+  const eqDimensions = {
+    attentionScore: sum(0),
+    clarityScore: sum(EQ_DIMENSION_SIZE),
+    reparationScore: sum(EQ_DIMENSION_SIZE * 2)
+  };
+  return { score: eqDimensions.attentionScore + eqDimensions.clarityScore + eqDimensions.reparationScore, eqDimensions };
+}
+
 const accept = () => ({ status: 'accepted', reason: null });
 const reject = (reason) => ({ status: 'rejected', reason });
 
@@ -91,21 +115,27 @@ const reject = (reason) => ({ status: 'rejected', reason });
  * @param {object} entry the event's data
  * @param {{ getBlog(id): Promise<object|null>, pollExists(id): Promise<boolean>,
  *           actionExists(id): Promise<boolean> }} lookups
+ * @param {{ legacy?: boolean }} [options] legacy: judging an event written
+ *   before these rules existed (user-metrics.js recompute). Skips the doc ID
+ *   and calendar-day checks, which those events predate (random IDs, no
+ *   calendarDay); repeats are instead collapsed by the recompute itself.
  * @returns {Promise<{status: 'accepted'|'rejected', reason: string|null}>}
  */
-async function validateActivityEvent(docId, entry, lookups) {
+async function validateActivityEvent(docId, entry, lookups, options = {}) {
   if (!entry || typeof entry.userId !== 'string' || !entry.userId) {
     return reject('missing_user');
   }
   if (!KNOWN_TYPES.has(entry.activityType)) {
     return reject('unknown_type');
   }
-  const expectedId = expectedDocId(entry);
-  if (expectedId !== null && docId !== expectedId) {
-    return reject('wrong_doc_id');
-  }
-  if (!isPlausibleCalendarDay(entry.calendarDay, entry.timestamp)) {
-    return reject('implausible_calendar_day');
+  if (!options.legacy) {
+    const expectedId = expectedDocId(entry);
+    if (expectedId !== null && docId !== expectedId) {
+      return reject('wrong_doc_id');
+    }
+    if (!isPlausibleCalendarDay(entry.calendarDay, entry.timestamp)) {
+      return reject('implausible_calendar_day');
+    }
   }
 
   switch (entry.activityType) {
@@ -158,5 +188,6 @@ module.exports = {
   expectedDocId,
   isPlausibleCalendarDay,
   requiredReadSeconds,
+  scoreEqResponses,
   validateActivityEvent
 };
