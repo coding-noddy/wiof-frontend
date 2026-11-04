@@ -33,8 +33,12 @@ export interface ExploreItem {
   /** Router link and query params. */
   link: string[];
   queryParams?: Record<string, string>;
-  /** Linked by an admin (either direction), or the "more from this element" fallback. */
-  reason: 'linked' | 'element';
+  /**
+   * Why it's shown: linked by an admin (either direction), similar content
+   * (the server's keyword matching, functions/related-content.js), or the
+   * "more from this element" fallback.
+   */
+  reason: 'linked' | 'similar' | 'element';
 }
 
 export const YOUTUBE_ID = /^[A-Za-z0-9_-]{11}$/;
@@ -95,6 +99,32 @@ export function mergeExploreItems(
     if (result.length === max) break;
   }
   return result;
+}
+
+/** The two Explore next groups: things to read or watch, and things to do. */
+export interface ExploreGroups {
+  read: ExploreItem[];
+  act: ExploreItem[];
+}
+
+export const EXPLORE_LIMITS = { read: 3, act: 2 };
+
+/**
+ * Splits candidates (best first) into the read and act groups, each with
+ * duplicates and the current item removed and capped: `primary` (links and
+ * similar items) before `fallback`.
+ */
+export function groupExploreItems(
+  selfKey: string | null,
+  primary: ExploreItem[],
+  fallback: ExploreItem[],
+  limits = EXPLORE_LIMITS
+): ExploreGroups {
+  const isAct = (i: ExploreItem) => i.type === 'action';
+  return {
+    read: mergeExploreItems(selfKey, primary.filter((i) => !isAct(i)), fallback.filter((i) => !isAct(i)), limits.read),
+    act: mergeExploreItems(selfKey, primary.filter(isAct), fallback.filter(isAct), limits.act)
+  };
 }
 
 /** Alternates two lists (a, b, a, b, ...) so a fallback mixes stories and actions. */

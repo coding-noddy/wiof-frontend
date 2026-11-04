@@ -583,6 +583,19 @@ describe('blog_summaries/{blogId} (card-sized blog copy for the lists)', () => {
   });
 });
 
+describe('related_auto/{id} (Explore next automatic matches)', () => {
+  it('lets anyone read the matches', async () => {
+    await seed((db) => db.collection('related_auto').doc('blog_b1').set({ blogs: [], actions: [{ id: 'a1', score: 0.2 }] }));
+    await assertSucceeds(testEnv.unauthenticatedContext().firestore().collection('related_auto').doc('blog_b1').get());
+  });
+
+  it('denies a client write, even from an admin account (functions only)', async () => {
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    const db = testEnv.authenticatedContext('root').firestore();
+    await assertFails(db.collection('related_auto').doc('blog_b1').set({ blogs: [], actions: [] }));
+  });
+});
+
 describe('workshops/{workshopId} (ClimatEnlighten workshops)', () => {
   const workshop = (overrides = {}) => ({
     title: 'Carbon Accounting Basics',

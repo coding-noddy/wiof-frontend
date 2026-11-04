@@ -465,6 +465,14 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /related_auto/{id} {
+      // Explore next's automatic matches per blog/action (functions/
+      // related-content.js). Public content only; written by the
+      // onBlogWritten/onActionWritten functions (Admin SDK) alone.
+      allow read: if true;
+      allow write: if false;
+    }
+
     match /Envcal/{id} {
       allow read: if true;
       allow write: if isAdmin();

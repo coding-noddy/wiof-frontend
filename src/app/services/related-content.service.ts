@@ -6,9 +6,11 @@ import { FIREBASE_COLLECTION } from '../app.constants';
 import { ActionItem } from '../models/ActionItem';
 import { Blog } from '../models/Blog';
 import {
+  EXPLORE_LIMITS,
+  ExploreGroups,
   ExploreItem,
+  groupExploreItems,
   interleave,
-  mergeExploreItems,
   RelatedRef,
   relatedKey,
   RelatedType,
@@ -34,10 +36,11 @@ const REVERSE_LIMIT = 6;
 const FALLBACK_POOL = 12;
 
 /**
- * Builds the "Explore next" cards for a blog, video, action or calendar
- * occasion (see models/RelatedContent.ts): the item's own links, then items
- * that link to it, then more from its element. Reads only small docs
- * (blog_summaries, actions); videos need no read at all.
+ * Builds the "Explore next" groups for a blog, video, action or calendar
+ * occasion (see models/RelatedContent.ts): stories/videos to read and
+ * actions to take. Each group: the item's own links, then items that link
+ * to it, then the server's similar-content matches, then more from its
+ * element. Reads only small docs (related_auto, blog_summaries, actions).
  */
 @Injectable({
   providedIn: 'root'
@@ -45,26 +48,55 @@ const FALLBACK_POOL = 12;
 export class RelatedContentService {
   constructor(private database: AngularFirestore, private actionService: ActionService) {}
 
-  exploreNext(source: ExploreSource, max = 4): Observable<ExploreItem[]> {
+  exploreNext(source: ExploreSource, limits = EXPLORE_LIMITS): Observable<ExploreGroups> {
     const selfKey = source.type && source.id ? relatedKey({ type: source.type, id: source.id }) : null;
-    const linked$ = combineLatest([
+    const primary$ = combineLatest([
       this.resolveLinks(source.links || [], source.element),
-      selfKey ? this.linkingTo(selfKey, source.element) : of([])
-    ]).pipe(map(([forward, reverse]) => [...forward, ...reverse]));
+      selfKey ? this.linkingTo(selfKey, source.element) : of([]),
+      this.similarTo(source)
+    ]).pipe(map(([forward, reverse, similar]) => [...forward, ...reverse, ...similar]));
 
-    return linked$.pipe(
-      switchMap((linked) => {
-        const enough = mergeExploreItems(selfKey, linked, [], max).length === max;
-        if (enough || !source.element) {
-          return of(mergeExploreItems(selfKey, linked, [], max));
+    return primary$.pipe(
+      switchMap((primary) => {
+        const groups = groupExploreItems(selfKey, primary, [], limits);
+        const full = groups.read.length === limits.read && groups.act.length === limits.act;
+        if (full || !source.element) {
+          return of(groups);
         }
         return this.moreFromElement(source.element, selfKey || source.element, source.subCategory).pipe(
-          map((fallback) => mergeExploreItems(selfKey, linked, fallback, max))
+          map((fallback) => groupExploreItems(selfKey, primary, fallback, limits))
         );
       }),
       catchError((err) => {
         console.warn('Explore next failed to load:', err);
-        return of([]);
+        return of({ read: [], act: [] });
+      })
+    );
+  }
+
+  /**
+   * The server's best keyword matches for a blog or action
+   * (related_auto/{type}_{id}, functions/related-content.js), best first.
+   * Videos have no doc of their own, so they get none.
+   */
+  private similarTo(source: ExploreSource): Observable<ExploreItem[]> {
+    if (!source.id || (source.type !== 'blog' && source.type !== 'action')) return of([]);
+    return this.docOrNull(`${FIREBASE_COLLECTION.RELATED_AUTO}/${source.type}_${source.id}`).pipe(
+      switchMap((auto) => {
+        // One spare of each, in case a match is also linked or inactive.
+        const blogIds: string[] = (auto?.blogs || []).slice(0, EXPLORE_LIMITS.read + 1).map((b: any) => b.id);
+        const actionIds: string[] = (auto?.actions || []).slice(0, EXPLORE_LIMITS.act + 1).map((a: any) => a.id);
+        if (!blogIds.length && !actionIds.length) return of([]);
+        return combineLatest([
+          ...blogIds.map((id) =>
+            this.docOrNull(`${FIREBASE_COLLECTION.BLOG_SUMMARIES}/${id}`).pipe(map((b) => (b ? this.blogItem(b, 'similar') : null)))
+          ),
+          ...actionIds.map((id) =>
+            this.docOrNull(`${FIREBASE_COLLECTION.ACTIONS}/${id}`).pipe(
+              map((a) => (a && a.isActive ? this.actionItem(a, 'similar', source.element) : null))
+            )
+          )
+        ]).pipe(map((items) => items.filter((i): i is ExploreItem => !!i)));
       })
     );
   }

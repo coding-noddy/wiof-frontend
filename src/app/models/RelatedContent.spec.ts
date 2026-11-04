@@ -1,4 +1,4 @@
-import { ExploreItem, interleave, MAX_RELATED, mergeExploreItems, relatedFields, seededOrder, youtubeIdFrom } from './RelatedContent';
+import { ExploreItem, groupExploreItems, interleave, MAX_RELATED, mergeExploreItems, relatedFields, seededOrder, youtubeIdFrom } from './RelatedContent';
 
 const item = (type: ExploreItem['type'], id: string, reason: ExploreItem['reason'] = 'linked'): ExploreItem =>
   ({ type, id, title: id, image: null, link: [], reason });
@@ -50,6 +50,17 @@ describe('Related content', () => {
     expect(result.map((i) => `${i.type}:${i.id}:${i.reason}`)).toEqual([
       'action:a1:linked', 'video:v1:linked', 'blog:b2:element', 'blog:b3:element'
     ]);
+  });
+
+  it('groupExploreItems splits reading from actions, primary items first, each capped', () => {
+    const groups = groupExploreItems(
+      'blog:self',
+      [item('action', 'a1'), item('blog', 'b1', 'similar'), item('blog', 'self'), item('video', 'v1')],
+      [item('blog', 'b1', 'element'), item('blog', 'b2', 'element'), item('blog', 'b3', 'element'), item('action', 'a2', 'element'), item('action', 'a3', 'element')],
+      { read: 3, act: 2 }
+    );
+    expect(groups.read.map((i) => `${i.type}:${i.id}:${i.reason}`)).toEqual(['blog:b1:similar', 'video:v1:linked', 'blog:b2:element']);
+    expect(groups.act.map((i) => `${i.type}:${i.id}`)).toEqual(['action:a1', 'action:a2']);
   });
 
   it('interleave alternates two lists of any length', () => {

@@ -16,6 +16,7 @@ const admin = require('firebase-admin');
 const { BLOG_SUMMARIES, buildBlogSummary } = require('./blog-summary');
 const { VALIDATOR_VERSION, scoreEqResponses, validateActivityEvent } = require('./activity-validation');
 const { makeContentLookups, recomputeUserMetrics } = require('./user-metrics');
+const { rebuildRelatedContent } = require('./related-content');
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -748,11 +749,26 @@ exports.onBlogWritten = functions
   .firestore.document('Blogs/{blogId}')
   .onWrite(withTriggerErrorLogging('onBlogWritten', async (change, context) => {
     const summaryRef = db.collection(BLOG_SUMMARIES).doc(context.params.blogId);
-    if (!change.after.exists) {
+    if (change.after.exists) {
+      await summaryRef.set(await buildBlogSummary(change.after.data() || {}, storage.bucket()));
+    } else {
       await summaryRef.delete();
-      return null;
     }
-    await summaryRef.set(await buildBlogSummary(change.after.data() || {}, storage.bucket()));
+    await rebuildRelatedContent(db, { FieldValue: admin.firestore.FieldValue });
+    return null;
+  }));
+
+/**
+ * Rebuilds the automatic related content (related_auto, see
+ * related-content.js) when an admin adds, edits or deactivates an action, so
+ * Explore next keeps matching stories to the current catalogue. Blog edits do
+ * the same from onBlogWritten.
+ */
+exports.onActionWritten = functions
+  .region(REGION)
+  .firestore.document('actions/{actionId}')
+  .onWrite(withTriggerErrorLogging('onActionWritten', async () => {
+    await rebuildRelatedContent(db, { FieldValue: admin.firestore.FieldValue });
     return null;
   }));
 

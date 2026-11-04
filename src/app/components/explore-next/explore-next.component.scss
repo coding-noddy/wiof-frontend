@@ -21,6 +21,29 @@
   }
 }
 
+.explore-group + .explore-group {
+  margin-top: 1.25rem;
+}
+
+.explore-group-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--wiof-ink);
+
+  ion-icon {
+    font-size: 1.05rem;
+    color: var(--wiof-teal);
+  }
+}
+
+.explore-group[data-group='act'] .explore-group-title ion-icon {
+  color: var(--wiof-marigold-text);
+}
+
 .explore-next-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
@@ -112,12 +135,41 @@
   overflow: hidden;
 }
 
+// Stories and videos: three picture-first cards in a row on wider screens.
+@media (min-width: 601px) {
+  .explore-next:not(.compact) .explore-group[data-group='read'] {
+    .explore-next-list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .explore-card {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .explore-media {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+    }
+  }
+}
+
 .compact {
   margin-top: 1.25rem;
 
   .explore-next-heading {
     font-size: 1rem;
     margin-bottom: 0.6rem;
+  }
+
+  .explore-group-title {
+    font-size: 0.88rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .explore-group + .explore-group {
+    margin-top: 0.9rem;
   }
 
   .explore-next-list {
