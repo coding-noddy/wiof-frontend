@@ -40,7 +40,7 @@ A Passport milestone must state the trust level of the metric it uses. Self-repo
 | `qualityReads` (new) | My Journey "Quality Reads" | Distinct blogs with an accepted `blog_read_complete`. **Quality read:** scrolled past 75% of the article **and** stayed at least 60% of its estimated reading time (word count ÷ 200 words a minute). The server recomputes the reading time from the stored blog and allows 10% slack for word-count differences. | blogs · lifetime | Checked |
 | `lastBlogReadDate` | "Last read" date | Latest accepted `blog_read` timestamp. | timestamp | Checked |
 | `videosWatched` | not shown | Distinct videos with an accepted `video_view` (video page opened). The video ID must be a valid YouTube ID; WIOF has no video catalogue to check it against. | videos · lifetime | Checked (format only) |
-| `videosCompleted` | My Journey "**Videos Watched**" | Distinct videos with an accepted `video_watch_complete`: the player reported at least 75% of the video's length reached. | videos · lifetime | Checked (format only) |
+| `videosCompleted` | My Journey "**Videos Watched**" | Distinct videos with an accepted `video_watch_complete`: the player reported at least 75% of the video's length reached. Recorded against the YouTube video ID wherever the video was watched (video page, In Focus, coffee conversation, NGO, hero video), so the same video in two places counts once. Watches recorded before 8.2.0 used a title or topic as the ID and still count, once each. | videos · lifetime | Checked (format only) |
 | `pollsVoted` | "Polls Voted" | Distinct polls with an accepted `poll_vote`. The poll must exist. | polls · lifetime | Checked |
 
 ### Reflection

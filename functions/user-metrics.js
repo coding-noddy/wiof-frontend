@@ -4,9 +4,9 @@
  * counts once (a blog read, a video, a poll vote) counts once per piece of
  * content however many copies of it exist.
  *
- * Events written since step 1 carry the verdict onActivityLogCreated gave
- * them. Older events have none, so they are judged here with the same
- * checks (in legacy mode: see validateActivityEvent).
+ * Events carry the verdict onActivityLogCreated gave them. Events with no
+ * verdict (from before Phase 2 step 1) or one from an older version of the
+ * checks are judged again here, in legacy mode (see validateActivityEvent).
  *
  * Shared by the backfillUserMetrics callable and
  * scripts/recompute-user-metrics.js, so both count exactly the same way.
@@ -23,7 +23,8 @@ const METRIC_FIELDS = [
 /**
  * Content lookups for validateActivityEvent, backed by Firestore.
  * getBlog accepts a slug or a doc ID (blog URLs use either) and returns the
- * blog with its doc `id`, so two URLs for one blog count as one read.
+ * blog with its doc `id` (set last: some blog docs store an `id: null` field),
+ * so two URLs for one blog count as one read.
  * cache: memoise per run (recompute); off for the trigger, so a blog
  * published a moment ago is never missed.
  */
@@ -38,10 +39,10 @@ function makeContentLookups(db, { cache = false } = {}) {
     getBlog: (idOrSlug) => remember(`blog:${idOrSlug}`, async () => {
       const bySlug = await db.collection('Blogs').where('slug', '==', String(idOrSlug)).limit(1).get();
       if (!bySlug.empty) {
-        return { id: bySlug.docs[0].id, ...bySlug.docs[0].data() };
+        return { ...bySlug.docs[0].data(), id: bySlug.docs[0].id };
       }
       const byId = await db.collection('Blogs').doc(String(idOrSlug)).get();
-      return byId.exists ? { id: byId.id, ...byId.data() } : null;
+      return byId.exists ? { ...byId.data(), id: byId.id } : null;
     }),
     pollExists: (id) => remember(`poll:${id}`, async () => (await db.collection('Poll').doc(String(id)).get()).exists),
     actionExists: (id) => remember(`action:${id}`, async () => (await db.collection('actions').doc(String(id)).get()).exists)
@@ -74,7 +75,7 @@ function emptyUser() {
  * @param {object} lookups see makeContentLookups
  * @returns {Promise<{ metrics: Map<string, object>, newVerdicts: {id: string, status: string, reason: string|null}[],
  *   rejectedByReason: object }>} metrics: uid -> user_metrics fields;
- *   newVerdicts: verdicts for legacy events, to be written back when applying.
+ *   newVerdicts: new verdicts for unjudged or stale events, written back when applying.
  */
 async function computeUserMetrics(activityDocs, actionDocs, lookups) {
   const perUser = new Map();
@@ -90,7 +91,7 @@ async function computeUserMetrics(activityDocs, actionDocs, lookups) {
       continue;
     }
     let verdict = data.validation;
-    if (!verdict) {
+    if (!verdict || (verdict.validatorVersion || 0) < VALIDATOR_VERSION) {
       verdict = await validateActivityEvent(id, data, lookups, { legacy: true });
       newVerdicts.push({ id, status: verdict.status, reason: verdict.reason });
     }

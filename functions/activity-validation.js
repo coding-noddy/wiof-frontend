@@ -10,8 +10,12 @@
  * Firestore (activity-validation.test.js).
  */
 
-/** Bump when a check changes, so a verdict says which rules produced it. */
-const VALIDATOR_VERSION = 1;
+/**
+ * Bump when a check changes, so a verdict says which rules produced it. The
+ * recompute (user-metrics.js) re-judges events judged by an older version.
+ * 2: video watches from embedded widgets carry the YouTube ID (8.2.0).
+ */
+const VALIDATOR_VERSION = 2;
 
 /** Events that count once per user per piece of content: ID {uid}_{type}_{contentId}. */
 const CONTENT_DEDUPED_TYPES = new Set([
@@ -115,10 +119,12 @@ const reject = (reason) => ({ status: 'rejected', reason });
  * @param {object} entry the event's data
  * @param {{ getBlog(id): Promise<object|null>, pollExists(id): Promise<boolean>,
  *           actionExists(id): Promise<boolean> }} lookups
- * @param {{ legacy?: boolean }} [options] legacy: judging an event written
- *   before these rules existed (user-metrics.js recompute). Skips the doc ID
- *   and calendar-day checks, which those events predate (random IDs, no
+ * @param {{ legacy?: boolean }} [options] legacy: re-judging an event written
+ *   before the current checks (user-metrics.js recompute). Skips the doc ID
+ *   and calendar-day checks, which old events predate (random IDs, no
  *   calendarDay); repeats are instead collapsed by the recompute itself.
+ *   Also skips the YouTube ID format check: before 8.2.0 embedded widgets
+ *   recorded a video's title or topic as its ID. Thresholds still apply.
  * @returns {Promise<{status: 'accepted'|'rejected', reason: string|null}>}
  */
 async function validateActivityEvent(docId, entry, lookups, options = {}) {
@@ -157,9 +163,9 @@ async function validateActivityEvent(docId, entry, lookups, options = {}) {
       return accept();
     }
     case 'video_view':
-      return YOUTUBE_VIDEO_ID.test(entry.contentId) ? accept() : reject('content_not_found');
+      return options.legacy || YOUTUBE_VIDEO_ID.test(entry.contentId) ? accept() : reject('content_not_found');
     case 'video_watch_complete':
-      if (!YOUTUBE_VIDEO_ID.test(entry.contentId)) {
+      if (!options.legacy && !YOUTUBE_VIDEO_ID.test(entry.contentId)) {
         return reject('content_not_found');
       }
       return entry.scrollDepth >= VIDEO_COMPLETE_MIN_PERCENT ? accept() : reject('below_watch_threshold');

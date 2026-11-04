@@ -120,6 +120,14 @@ describe('legacy mode (events from before step 1)', () => {
     assert.equal((await validateActivityEvent('random-old-id', old, lookups)).reason, 'wrong_doc_id');
   });
 
+  it('accepts an old video watch recorded under a title, if it met the threshold', async () => {
+    const watched = { userId: 'alice', activityType: 'video_watch_complete', contentId: 'City in Focus', scrollDepth: 93, timestamp: NOON_UTC };
+    assert.equal((await validateActivityEvent('x', watched, lookups, { legacy: true })).status, 'accepted');
+    assert.equal((await validateActivityEvent('x', { ...watched, scrollDepth: 30 }, lookups, { legacy: true })).reason, 'below_watch_threshold');
+    const current = { ...watched, calendarDay: '2026-11-04' };
+    assert.equal((await validateActivityEvent(expectedDocId(current), current, lookups)).reason, 'content_not_found');
+  });
+
   it('still checks the content exists', async () => {
     const old = { userId: 'alice', activityType: 'blog_read', contentId: 'deleted-blog', timestamp: NOON_UTC };
     assert.equal((await validateActivityEvent('x', old, lookups, { legacy: true })).reason, 'content_not_found');

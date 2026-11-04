@@ -4,7 +4,8 @@
  */
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
-const { computeUserMetrics, diffMetrics } = require('./user-metrics');
+const { computeUserMetrics, diffMetrics, makeContentLookups } = require('./user-metrics');
+const { VALIDATOR_VERSION } = require('./activity-validation');
 
 const at = (iso) => ({ toMillis: () => Date.parse(iso) });
 const BLOG = { id: 'blogDocId', slug: 'kalpasar', content: '<p>' + 'word '.repeat(400) + '</p>' };
@@ -51,7 +52,7 @@ describe('computeUserMetrics', () => {
   it('leaves out rejected events, old and new, and reports why', async () => {
     const { metrics, newVerdicts, rejectedByReason } = await computeUserMetrics([
       ev('a', 'blog_read', { contentId: 'no-such-blog' }),
-      ev('b', 'blog_read', { contentId: 'kalpasar', validation: { status: 'rejected', reason: 'wrong_doc_id' } }),
+      ev('b', 'blog_read', { contentId: 'kalpasar', validation: { status: 'rejected', reason: 'wrong_doc_id', validatorVersion: VALIDATOR_VERSION } }),
       ev('c', 'poll_vote', { contentId: 'poll-1' })
     ], [], lookups);
     assert.equal(metrics.get('alice').blogsRead, 0);
@@ -59,6 +60,14 @@ describe('computeUserMetrics', () => {
     assert.deepEqual(rejectedByReason, { content_not_found: 1, wrong_doc_id: 1 });
     // Only the events without a verdict get a new one.
     assert.deepEqual(newVerdicts.map((v) => [v.id, v.status]), [['a', 'rejected'], ['c', 'accepted']]);
+  });
+
+  it('re-judges an event rejected by an older version of the checks', async () => {
+    const stale = ev('a', 'video_watch_complete', { contentId: 'City in Focus', scrollDepth: 93,
+      validation: { status: 'rejected', reason: 'content_not_found', validatorVersion: 1 } });
+    const { metrics, newVerdicts } = await computeUserMetrics([stale], [], lookups);
+    assert.equal(metrics.get('alice').videosCompleted, 1);
+    assert.deepEqual(newVerdicts.map((v) => v.status), ['accepted']);
   });
 
   it('keeps the latest accepted EQ score', async () => {
@@ -97,5 +106,23 @@ describe('diffMetrics', () => {
   it('reports nothing for an unchanged user', () => {
     const fields = { blogsRead: 1, qualityReads: 0, videosWatched: 0, videosCompleted: 0, pollsVoted: 0, lastEqScore: null, totalActionsCompleted: 0, uniqueActionsCompleted: 0 };
     assert.deepEqual(diffMetrics(new Map([['alice', fields]]), new Map([['alice', fields]])), []);
+  });
+});
+
+describe('makeContentLookups', () => {
+  // A Blogs collection whose doc stores its own id field as null, as some real ones do.
+  const blogDoc = { id: 'realDocId', data: () => ({ id: null, slug: 'kalpasar', content: '' }) };
+  const fakeDb = {
+    collection: () => ({
+      where: (field, op, value) => ({ limit: () => ({ get: async () => (value === 'kalpasar' ? { empty: false, docs: [blogDoc] } : { empty: true, docs: [] }) }) }),
+      doc: (id) => ({ get: async () => (id === 'realDocId' ? { exists: true, ...blogDoc } : { exists: false }) })
+    })
+  };
+
+  it('returns the document ID, never a stored id field, by slug and by ID', async () => {
+    const lookups = makeContentLookups(fakeDb);
+    assert.equal((await lookups.getBlog('kalpasar')).id, 'realDocId');
+    assert.equal((await lookups.getBlog('realDocId')).id, 'realDocId');
+    assert.equal(await lookups.getBlog('missing'), null);
   });
 });

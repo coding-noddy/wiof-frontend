@@ -19,6 +19,9 @@ Phase 2 step 2: trusted EQ score, metric definitions, recompute (see `docs/PHASE
 - `user_metrics.qualityReads`: a server counter for quality reads (distinct blogs). The My Journey tile used to count a history list capped at 50.
 - `scripts/recompute-user-metrics.js --project staging|prod [--apply]`: rebuilds `user_metrics` from accepted events only. It judges events from before 8.1.0 with the same checks and counts each blog, video and poll once. Dry run by default, with a per-user before/after report. The `backfillUserMetrics` callable uses the same code (`functions/user-metrics.js`) and is now dry-run unless called with `{ apply: true }`.
 
+### Fixed
+- Videos watched in embedded widgets (In Focus, coffee conversation, NGO, hero video) are recorded against their YouTube video ID. Before, they used the title or topic, which 8.1.0's server check rejected, so those watches stopped counting. The recompute re-checks those events, so they count again.
+
 ### Removed
 - `scripts/backfill-user-metrics.js` and `scripts/backfill-user-metrics-admin.js`, replaced by the recompute script. The admin one still counted every event, including duplicates and unchecked ones.
 

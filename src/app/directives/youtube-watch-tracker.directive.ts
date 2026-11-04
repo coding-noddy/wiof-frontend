@@ -20,6 +20,8 @@ declare global {
   }
 }
 
+const YOUTUBE_VIDEO_ID = /^[A-Za-z0-9_-]{11}$/;
+
 export interface VideoWatchCompleteEvent {
   contentId: string;
   watchPercent: number;
@@ -209,10 +211,25 @@ export class YoutubeWatchTrackerDirective implements OnInit, OnDestroy {
     this.stopWatchCheck();
 
     this.watchComplete.emit({
-      contentId: this.contentId,
+      contentId: this.youtubeVideoId() || this.contentId,
       watchPercent,
       videoTitle: this.videoTitle
     });
+  }
+
+  /**
+   * The YouTube video ID being played, so a watch is recorded against the
+   * video itself whichever widget shows it (widgets pass titles or topics as
+   * contentId; the server only accepts a YouTube ID, see docs/METRICS.md).
+   * From the player when it knows, else from the embed URL.
+   */
+  private youtubeVideoId(): string | null {
+    const fromPlayer = this.player?.getVideoData?.()?.video_id;
+    if (typeof fromPlayer === 'string' && YOUTUBE_VIDEO_ID.test(fromPlayer)) {
+      return fromPlayer;
+    }
+    const match = (this.elementRef.nativeElement?.getAttribute('src') || '').match(/\/embed\/([A-Za-z0-9_-]{11})/);
+    return match ? match[1] : null;
   }
 
   private stopWatchCheck(): void {
