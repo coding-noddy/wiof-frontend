@@ -7,6 +7,17 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.3.0] - 2026-11-04
+
+Phase 2 step 3: the action model, ready for Planet Passport (see `docs/PHASE2_PLAN.md`, `docs/METRICS.md`).
+
+### Changed
+- Every Take Action completion now gets one immutable, server-written `action_completed` event, with a fixed ID per completion. It carries the action's elements and version, `completionMethod` and `verificationStatus` (`SELF_REPORTED`), and, for DAILY actions, the local day. `onUserActionWritten` writes the event and updates the counters in one transaction, so a redelivered trigger can't count a completion twice (before, it could). Browsers no longer write `action_completed` events, and the rules refuse them.
+- "Clear My Engagement Data" keeps Take Action progress: completed actions, their events and the action counters. Before, it zeroed "Actions Taken" while the action cards still showed completions. The Settings page now says so.
+
+### Removed
+- The old static Take Action component (`take-action-content`), unused since Take Action V1.
+
 ## [8.2.0] - 2026-11-04
 
 Phase 2 step 2: trusted EQ score, metric definitions, recompute (see `docs/PHASE2_PLAN.md`, `docs/METRICS.md`).

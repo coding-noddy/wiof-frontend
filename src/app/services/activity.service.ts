@@ -228,34 +228,6 @@ export class ActivityService {
   }
 
   /**
-   * Logs an action_completed analytics event. Deliberately NOT deduped,
-   * unlike blog_read/video_view/daily_visit: a DAILY repeat action completed
-   * 30 times should show 30 analytics events even though user_actions
-   * itself only ever holds one evolving doc per user+action. This is purely
-   * an analytics signal — user_actions (via UserActionService) remains the
-   * product source of truth for completion (Section 17 of the architecture
-   * doc); this event firing or failing never affects it.
-   * Failures are silently swallowed — they never disrupt the user experience.
-   */
-  async logActionCompleted(userId: string, actionId: string): Promise<void> {
-    try {
-      const calendarDay = toCalendarDay(new Date());
-      const logEntry: Omit<ActivityLogEntry, 'id'> = {
-        userId,
-        activityType: 'action_completed',
-        schemaVersion: ActivityService.SCHEMA_VERSION,
-        contentId: actionId,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        calendarDay
-      };
-
-      await this.firestore.firestore.collection(FIREBASE_COLLECTION.ACTIVITY_LOG).add(logEntry);
-    } catch (error) {
-      console.warn('Action completed logging failed:', error);
-    }
-  }
-
-  /**
    * Logs a blog_read_complete activity with deduplication.
    * Only one entry per userId+contentId is ever written (lifetime dedup,
    * enforced atomically at the deterministic doc ID — see writeDedupedEntry).

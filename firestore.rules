@@ -116,7 +116,9 @@ service cloud.firestore {
     // plausible) and counts only events it accepts.
     // eq_completion is not on the list: the submitEqAssessment function
     // scores the answers and writes that event itself, so a browser can
-    // never choose its own EQ score (Phase 2 step 2).
+    // never choose its own EQ score (Phase 2 step 2). Nor is
+    // action_completed: onUserActionWritten writes one per completion from
+    // user_actions, the checked source of truth (Phase 2 step 3).
 
     function isActivityText(value, maxSize) {
       return value is string && value.size() > 0 && value.size() <= maxSize;
@@ -179,9 +181,6 @@ service cloud.firestore {
           || (type == 'widget_usage'
             && data.keys().hasOnly(base.concat(['widgetName']))
             && data.widgetName in ['AQI', 'Energy Calculator', 'Food pH', 'Water Rainfall'])
-          || (type == 'action_completed'
-            && data.keys().hasOnly(base.concat(['contentId']))
-            && isActivityText(data.contentId, 200))
         );
     }
 

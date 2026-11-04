@@ -306,8 +306,7 @@ describe('activity_log/{docId}', () => {
     video_watch_complete: ['alice_video_watch_complete_GfO-3Oir-qM', { contentId: 'GfO-3Oir-qM', contentTitle: 'Video', scrollDepth: 80 }],
     poll_vote: ['alice_poll_vote_poll-1', { contentId: 'poll-1', contentTitle: 'Poll?', selectedOption: 'Yes', userEmail: 'alice@test.com' }],
     daily_visit: ['alice_daily_visit_2026-11-04', {}],
-    widget_usage: [null, { widgetName: 'AQI' }],
-    action_completed: [null, { contentId: 'reuse-container' }]
+    widget_usage: [null, { widgetName: 'AQI' }]
   };
 
   for (const [type, [docId, fields]] of Object.entries(VALID)) {
@@ -375,6 +374,11 @@ describe('activity_log/{docId}', () => {
     const db = testEnv.authenticatedContext('alice').firestore();
     await assertSucceeds(log(db).doc('alice_poll_vote_poll-1').set(
       activityEvent('poll_vote', { contentId: 'poll-1', contentTitle: 'Poll?', selectedOption: 'Yes', userEmail: '' })));
+  });
+
+  it('denies a client-written action completion (onUserActionWritten records them)', async () => {
+    await assertFails(log(alice()).add(activityEvent('action_completed', { contentId: 'reuse-container' })));
+    await assertFails(log(alice()).doc('alice_action_completed_reuse-container_1').set(activityEvent('action_completed', { contentId: 'reuse-container' })));
   });
 
   it('denies an unknown widget name', async () => {

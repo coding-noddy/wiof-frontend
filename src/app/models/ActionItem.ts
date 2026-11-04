@@ -1,8 +1,6 @@
 /**
  * Firestore-backed Take Action catalogue entry (`actions/{actionId}`).
- * Named `ActionItem` rather than `TakeAction` to avoid colliding with the
- * existing static-data model in `take-action-content/take-action.ts`, which
- * stays in place until the static implementation is retired.
+ * Named `ActionItem` (not `TakeAction`, the retired static-data model).
  */
 export interface ActionItem {
   id: string;

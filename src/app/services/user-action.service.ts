@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
 import { UserAction } from '../models/UserAction';
 import { ActionItem } from '../models/ActionItem';
 import { FIREBASE_COLLECTION, USER_ACTION_STATUS, REPEAT_TYPE } from '../app.constants';
-import { ActivityService, toCalendarDay } from './activity.service';
+import { toCalendarDay } from './activity.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,10 +17,7 @@ export class UserActionService {
    *  ActivityService.MAX_HISTORY_ITEMS. */
   private static readonly MAX_HISTORY_ITEMS = 50;
 
-  constructor(
-    private firestore: AngularFirestore,
-    private activityService: ActivityService
-  ) {}
+  constructor(private firestore: AngularFirestore) {}
 
   private docId(userId: string, actionId: string): string {
     return `${userId}_${actionId}`;
@@ -162,9 +159,9 @@ export class UserActionService {
    * already-started action, and for DAILY actions, dedupes repeat
    * completions to at most once per calendar day.
    *
-   * Never the only record of completion for analytics purposes — fires an
-   * activity_log event afterward, but user_actions here is the product
-   * source of truth (Section 17).
+   * user_actions is the source of truth (Section 17). The per-completion
+   * activity_log event is written by the onUserActionWritten Cloud Function
+   * from this write, not by the browser (Phase 2 step 3).
    */
   async completeAction(userId: string, action: ActionItem): Promise<void> {
     let calendarDay: string | null = null;
@@ -177,7 +174,6 @@ export class UserActionService {
     }
 
     await this.writeCompletion(userId, action, calendarDay);
-    void this.activityService.logActionCompleted(userId, action.id);
   }
 
   /**

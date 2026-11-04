@@ -30,7 +30,6 @@ import { SearchBoxComponent } from './components/search-box/search-box.component
 import { WiofSpinnerComponent } from './components/wiof-spinner/wiof-spinner.component';
 import { VideoCardComponent } from './components/video-card/video-card.component';
 import { EnvCalDialogComponent } from './components/env-cal-dialog/env-cal-dialog.component';
-import { TakeActionContentComponent } from './components/take-action-content/take-action-content.component';
 import { SectionNavComponent } from './components/section-nav/section-nav.component';
 import { AvatarDropdownComponent } from './components/avatar-dropdown/avatar-dropdown.component';
 import { BookmarkIconComponent } from './components/bookmark-icon/bookmark-icon.component';
@@ -73,7 +72,6 @@ const COMPONENTS = [
   VideoCardComponent,
   EqWidgetTestComponent,
   EnvCalDialogComponent,
-  TakeActionContentComponent,
   SectionNavComponent,
   AvatarDropdownComponent,
   BookmarkIconComponent,
