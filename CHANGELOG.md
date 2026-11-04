@@ -7,6 +7,11 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.0.4] - 2026-11-04
+
+### Fixed
+- Take Action: repeatable and occasional actions now show that a completion was recorded. A "Marked as done" message appears, the card shows "Completed 1x" from the first completion (with "· last today"), and the button reads "Do it again". Before, nothing changed until the second completion.
+
 ## [8.0.3] - 2026-11-04
 
 ### Changed
