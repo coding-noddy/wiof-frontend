@@ -29,7 +29,7 @@
               </span>
             </span>
           } @else {
-            <a class="step-row" [routerLink]="step.link">
+            <a class="step-row" [routerLink]="step.link" [fragment]="step.fragment">
               <ion-icon class="step-icon" aria-hidden="true" name="ellipse-outline"></ion-icon>
               <span class="step-text">
                 <span class="step-title">{{ step.title }}</span>

@@ -12,6 +12,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Security updates and better-fitting action suggestions. **Deploy with `-Backend`** (the matcher changed), then run `node scripts/rebuild-related-content.js --project prod` (dry run, then `--apply`): every list is rewritten once, because the matcher version changed.
 
 ### Fixed
+- **EQ links opened a "page not found".** The welcome's "Check your EQ", the first-steps checklist, the home journey tile and My Journey all pointed to `/element/water/eq-assessment`, which never existed. They now open the EQ check on the Spirit page (`/element/spirit#eq-assessment`, scrolled into view), and the old address redirects there.
 - **Suggested actions fit the element.** An action's first element is its main one ("Sort Your Household Waste" is earth+water: an earth action that also helps water). Explore next's element fallback (all video pages) and Next for you's "Try in …" now show the element's own actions first, so a river video suggests "Fix a Water Leak" before "Sort Your Household Waste". The keyword matcher (`functions/related-content.js`, version 2) leaves out actions from another element unless the match is strong (score 0.2), holds actions that have the element only as an extra to 0.10, and gives a small bonus when the main element matches. On staging this removed all 4 off-element story→action matches (e.g. a Covid story → "Wash Clothes With Cold Water") and the weak secondary ones (e.g. Kalpasar Project → "Sort Your Household Waste").
 
 ### Security

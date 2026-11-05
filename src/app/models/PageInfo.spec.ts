@@ -16,7 +16,7 @@ describe('Page info (titles and GA page groups)', () => {
       ['/element/air/videos', 'videos', 'air', 'Air videos'],
       ['/element/air/video/abc', 'video', 'air', 'Video · Air'],
       ['/element/earth/take-action?action=leak', 'take_action', 'earth', 'Earth · Take Action'],
-      ['/element/water/eq-assessment', 'element', 'water', 'Water'],
+      ['/element/spirit', 'element', 'spirit', 'Spirit'],
       ['/take-action', 'take_action', null, 'Take Action'],
       ['/my-journey', 'my_journey', null, 'My Journey'],
       ['/my-feedback/123', 'my_feedback', null, 'My Feedback'],

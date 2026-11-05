@@ -27,6 +27,11 @@ describe('Journey', () => {
     expect(firstSteps(profile(), metrics()).find((s) => s.key === 'read').link).toBe('/element/earth/blogs');
   });
 
+  it('the EQ step opens the EQ check on the Spirit page', () => {
+    const eq = firstSteps(profile(), metrics()).find((s) => s.key === 'eq');
+    expect([eq.link, eq.fragment]).toEqual(['/element/spirit', 'eq-assessment']);
+  });
+
   it('showFirstSteps: hidden once dismissed or when everything is done', () => {
     const all = metrics({ qualityReads: 1, videosCompleted: 1, lastEqScore: 70, totalActionsCompleted: 1 });
     const chosen = profile({ preferredElements: ['air'] });

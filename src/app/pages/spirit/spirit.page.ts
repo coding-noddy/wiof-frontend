@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 import {
@@ -45,7 +46,8 @@ export class SpiritPage implements OnInit {
     private blogService: BlogService,
     private videoService: YoutubeVideoService,
     private coffeeConvService: CoffeeConversationService,
-    private inFocusService: InFocusService
+    private inFocusService: InFocusService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
@@ -68,6 +70,15 @@ export class SpiritPage implements OnInit {
       const item = this.pageSections.find(s => s.sectionId === 'spirit-videos');
       if (item) item.disabled = !videos || videos.length === 0;
     });
+  }
+
+  /**
+   * Links to the EQ check (#eq-assessment) scroll to it. The page scrolls
+   * inside ion-content, so the router's anchor scrolling (window) can't.
+   */
+  ionViewDidEnter() {
+    const fragment = this.route.snapshot.fragment;
+    if (fragment) setTimeout(() => document.getElementById(fragment)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
   }
 
   onContentScroll() {
