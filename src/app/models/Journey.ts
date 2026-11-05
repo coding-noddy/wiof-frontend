@@ -19,8 +19,9 @@ export type ElementSlug = (typeof JOURNEY_ELEMENTS)[number]['slug'];
 
 const SLUGS = new Set<string>(JOURNEY_ELEMENTS.map((e) => e.slug));
 
-/** The EQ check lives under Water. */
-export const EQ_ASSESSMENT_LINK = '/element/water/eq-assessment';
+/** The EQ check is on the Spirit page, in the section with this id (8.9.1: the old /element/water/eq-assessment never existed). */
+export const EQ_ASSESSMENT_LINK = '/element/spirit';
+export const EQ_ASSESSMENT_FRAGMENT = 'eq-assessment';
 
 /** The user's chosen elements, cleaned up (known ones, in the site's order). */
 export function preferredElements(profile: Pick<UserProfile, 'preferredElements'> | null | undefined): ElementSlug[] {
@@ -42,6 +43,7 @@ export interface FirstStep {
   hint: string;
   done: boolean;
   link: string;
+  fragment?: string;
 }
 
 /**
@@ -54,7 +56,7 @@ export function firstSteps(profile: UserProfile | null | undefined, metrics: Eng
     { key: 'elements', title: 'Choose your elements', hint: 'So WIOF can suggest what matters to you', done: preferredElements(profile).length > 0, link: '/settings' },
     { key: 'read', title: 'Read a story to the end', hint: 'Scroll through and take your time', done: (metrics?.qualityReads || 0) > 0, link: `/element/${element}/blogs` },
     { key: 'watch', title: 'Watch a video', hint: 'Most of the way through counts', done: (metrics?.videosCompleted || 0) > 0, link: `/element/${element}/videos` },
-    { key: 'eq', title: 'Check your EQ', hint: 'About 5 minutes, 24 questions', done: metrics?.lastEqScore != null, link: EQ_ASSESSMENT_LINK },
+    { key: 'eq', title: 'Check your EQ', hint: 'About 5 minutes, 24 questions', done: metrics?.lastEqScore != null, link: EQ_ASSESSMENT_LINK, fragment: EQ_ASSESSMENT_FRAGMENT },
     { key: 'act', title: 'Do your first action', hint: 'Something small you can do today', done: (metrics?.totalActionsCompleted || 0) > 0, link: `/element/${element}/take-action` }
   ];
 }

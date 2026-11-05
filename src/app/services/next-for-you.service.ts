@@ -65,7 +65,14 @@ export class NextForYouService {
       recentReads: [],
       newestByElement: {},
       actionsByElement: Object.fromEntries(
-        source.elements.map((slug) => [slug, source.activeActions.filter((a) => (a.elementIds || []).includes(slug)).map(action)])
+        // The element's own actions (first element = main one) before those that have it only as an extra.
+        source.elements.map((slug) => [
+          slug,
+          [
+            ...source.activeActions.filter((a) => a.elementIds?.[0] === slug),
+            ...source.activeActions.filter((a) => a.elementIds?.[0] !== slug && (a.elementIds || []).includes(slug))
+          ].map(action)
+        ])
       )
     };
 

@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes, UrlMatcher } from '@angular/router';
+import { NgModule, inject } from '@angular/core';
+import { Router, RouterModule, Routes, UrlMatcher } from '@angular/router';
 
 import { AuthGuard } from './guards/auth.guard';
 import { PublicUserGuard } from './guards/public-user.guard';
@@ -71,6 +71,12 @@ const routes: Routes = [
     matcher: elementSection('take-action'),
     loadChildren: () =>
       import('./pages/take-action/take-action.module').then((m) => m.TakeActionPageModule)
+  },
+  {
+    // Old EQ links (before 8.9.1) pointed here; the EQ check is on the Spirit page.
+    path: 'element/water/eq-assessment',
+    redirectTo: () => inject(Router).parseUrl('/element/spirit#eq-assessment'),
+    pathMatch: 'full'
   },
   {
     path: 'element/earth',

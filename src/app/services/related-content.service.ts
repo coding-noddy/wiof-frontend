@@ -210,8 +210,14 @@ export class RelatedContentService {
     const actions$ = this.actionService
       .getActionsForElement(element, FALLBACK_POOL)
       .pipe(
+        // The element's own actions first (an action's first element is its
+        // main one), then those that have it only as an extra: a river video
+        // gets "Fix a Water Leak" before "Sort Your Household Waste" (earth+water).
         map((actions) =>
-          seededOrder(actions, seed, (a) => `action:${a.id}`)
+          [
+            ...seededOrder(actions.filter((a) => a.elementIds?.[0] === element), seed, (a) => `action:${a.id}`),
+            ...seededOrder(actions.filter((a) => a.elementIds?.[0] !== element), seed, (a) => `action:${a.id}`)
+          ]
             .slice(0, 5)
             .map((a) => this.actionItem(a, 'element', element))
         )

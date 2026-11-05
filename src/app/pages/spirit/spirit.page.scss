@@ -1,1 +1,6 @@
 @use '../_element-page-shared' as *;
+
+// Links to the EQ check land here (#eq-assessment); leave room for the sticky section nav.
+#eq-assessment {
+  scroll-margin-top: 72px;
+}

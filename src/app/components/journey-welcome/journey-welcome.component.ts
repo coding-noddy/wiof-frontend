@@ -2,7 +2,7 @@ import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } fro
 import { NavigationEnd, Router } from '@angular/router';
 import { combineLatest, of, Subject } from 'rxjs';
 import { filter, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
-import { EQ_ASSESSMENT_LINK, ElementSlug, JOURNEY_ELEMENTS, needsWelcome } from 'src/app/models/Journey';
+import { EQ_ASSESSMENT_FRAGMENT, EQ_ASSESSMENT_LINK, ElementSlug, JOURNEY_ELEMENTS, needsWelcome } from 'src/app/models/Journey';
 import { AuthService } from 'src/app/services/auth.service';
 import { UserProfileService } from 'src/app/services/user-profile.service';
 import { WELCOME_PATHS } from '../onboarding-overlay/onboarding-overlay.component';
@@ -94,7 +94,7 @@ export class JourneyWelcomeComponent implements OnInit, OnDestroy {
     return [
       { verb: 'Read', title: `A story about ${name}`, desc: 'Start with something to read', icon: 'book-outline', link: `/element/${slug}/blogs` },
       { verb: 'Act', title: 'One small action', desc: 'Something you can do today', icon: 'leaf-outline', link: `/element/${slug}/take-action` },
-      { verb: 'Reflect', title: 'Check your EQ', desc: 'About 5 minutes, 24 questions', icon: 'heart-outline', link: EQ_ASSESSMENT_LINK }
+      { verb: 'Reflect', title: 'Check your EQ', desc: 'About 5 minutes, 24 questions', icon: 'heart-outline', link: `${EQ_ASSESSMENT_LINK}#${EQ_ASSESSMENT_FRAGMENT}` }
     ];
   }
 

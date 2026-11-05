@@ -54,6 +54,33 @@ describe('computeRelated', () => {
     assert.ok(!related.get('blog_vegan').actions.some((a) => a.id === 'lights'));
   });
 
+  describe('suggested actions fit the element (8.9.1)', () => {
+    const river = blog('river', 'Our rivers need us', 'River water pollution: rivers carry plastic waste and sewage.', { elements: ['water'] });
+    const scoreOf = (related, key, id) => (related.get(key).actions.find((a) => a.id === id) || {}).score;
+
+    it('leaves out an action from another element unless the match is strong', () => {
+      const cold = action('cold', 'Wash clothes with cold water', 'Cold water washing.', { elements: ['energy'] });
+      const covid = blog('covid', 'Covid and water', 'Water shortages during Covid.', { elements: ['air'] });
+      assert.ok(!computeRelated([covid, cold, ...CORPUS]).get('blog_covid').actions.some((a) => a.id === 'cold'));
+      const twin = blog('cold-story', 'Wash clothes with cold water', 'Cold water washing.', { elements: ['air'] });
+      assert.ok(computeRelated([twin, cold, ...CORPUS]).get('blog_cold-story').actions.some((a) => a.id === 'cold'));
+    });
+
+    it("ranks an action whose main element matches above one that has it only as an extra", () => {
+      const sortWaste = action('sort', 'Clean up plastic waste', 'River plastic waste.', { elements: ['earth', 'water'] });
+      const cleanup = action('clean', 'Clean up plastic waste', 'River plastic waste.', { elements: ['water', 'earth'] });
+      const related = computeRelated([river, sortWaste, cleanup, ...CORPUS]);
+      assert.ok(scoreOf(related, 'blog_river', 'clean') > scoreOf(related, 'blog_river', 'sort'));
+    });
+
+    it('holds an action with the element only as an extra to a higher bar', () => {
+      const weak = action('weak', 'Sort your household waste', 'Separate dry and wet waste at home, recycle plastic.', { elements: ['earth', 'water'] });
+      for (const x of computeRelated([river, weak, ...CORPUS]).get('blog_river').actions) {
+        if (x.id === 'weak') assert.ok(x.score >= 0.1, `secondary match kept at ${x.score}`);
+      }
+    });
+  });
+
   it('gives every item a list, even with nothing similar', () => {
     const lonely = computeRelated([blog('a', 'Quantum chromodynamics', 'gluons'), action('b', 'Water the garden', 'hose')]);
     assert.deepEqual(lonely.get('blog_a'), { blogs: [], actions: [] });

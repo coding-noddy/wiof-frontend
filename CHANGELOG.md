@@ -7,6 +7,24 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.9.1] - 2026-11-05
+
+Security updates and better-fitting action suggestions. **Deploy with `-Backend`** (the matcher changed), then run `node scripts/rebuild-related-content.js --project prod` (dry run, then `--apply`): every list is rewritten once, because the matcher version changed.
+
+### Fixed
+- **EQ links opened a "page not found".** The welcome's "Check your EQ", the first-steps checklist, the home journey tile and My Journey all pointed to `/element/water/eq-assessment`, which never existed. They now open the EQ check on the Spirit page (`/element/spirit#eq-assessment`, scrolled into view), and the old address redirects there.
+- **Suggested actions fit the element.** An action's first element is its main one ("Sort Your Household Waste" is earth+water: an earth action that also helps water). Explore next's element fallback (all video pages) and Next for you's "Try in …" now show the element's own actions first, so a river video suggests "Fix a Water Leak" before "Sort Your Household Waste". The keyword matcher (`functions/related-content.js`, version 2) leaves out actions from another element unless the match is strong (score 0.2), holds actions that have the element only as an extra to 0.10, and gives a small bonus when the main element matches. On staging this removed all 4 off-element story→action matches (e.g. a Covid story → "Wash Clothes With Cold Water") and the weak secondary ones (e.g. Kalpasar Project → "Sort Your Household Waste").
+
+### Security
+- Swiper 10.3.1 → 12.2.0 (critical prototype-pollution advisory GHSA-hmx5-qpq5-p643). Swiper 11+ prefixes its element events, so the breaking-news counter and the calendar popup now listen for `swiperslidechange`.
+- `@grpc/grpc-js` forced to 1.14.7 with an npm override (two high advisories; server-side only, in Firestore's Node build, not the browser bundle).
+- Functions: `body-parser` 2.4.0 and `qs` 6.17.1 (high and moderate denial-of-service advisories).
+- Accepted, documented: Quill 2.0.3 (low; XSS in HTML export, no fixed version; only admins write content and Angular sanitises every `[innerHTML]`) and `uuid` 9 inside firebase-admin 13 (moderate; affects only v3/v5/v6 IDs written into a caller's buffer, which those libraries don't do; fixed by firebase-admin 14, a major upgrade for later).
+
+### Changed
+- Privacy policy: the engagement records we keep include the suggestions you open (first-party, since 8.9.0). The sign-in prompt and the welcome's sign-in note link to the Privacy Policy.
+- Occasion facts: two more for prod's calendar (World Numbat Day on 7 November, International Mens Day on 19 November). Runbook corrected for the 8.9.0 release (branch, tag `v8.9.0-prod`, the four new functions, a consent-banner check).
+
 ## [8.9.0] - 2026-11-05
 
 Measurement (see `docs/ANALYTICS.md`). **Deploy with `-Backend`** (new functions `buildDailyStats`, a schedule, and `refreshDailyStats`; rules for `suggestion_click` and `analytics_daily`). The first scheduled function turns on Cloud Scheduler for the project. Then fill past days with `node scripts/daily-stats.js --project prod --days 90` (dry run, then `--apply`), and do the one-time Google Analytics setup in `docs/ANALYTICS.md`.

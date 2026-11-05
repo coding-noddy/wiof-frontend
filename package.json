@@ -1,6 +1,6 @@
 {
   "name": "wiof_frontend",
-  "version": "8.9.0",
+  "version": "8.9.1",
   "author": "Ionic Framework",
   "homepage": "https://ionicframework.com/",
   "scripts": {
@@ -61,7 +61,7 @@
     "quill": "^2.0.3",
     "rxfire": "^6.0.0",
     "rxjs": "~7.8.0",
-    "swiper": "^10.3.1",
+    "swiper": "^12.2.0",
     "tslib": "^2.6.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
     "zone.js": "~0.15.1"
@@ -88,5 +88,8 @@
     "papaparse": "^5.5.4",
     "ts-node": "~10.9.0",
     "typescript": "~5.9.3"
+  },
+  "overrides": {
+    "@grpc/grpc-js": "^1.14.7"
   }
 }

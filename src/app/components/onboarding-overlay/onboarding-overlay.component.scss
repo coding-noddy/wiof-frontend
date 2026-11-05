@@ -328,6 +328,11 @@
   color: var(--wiof-ink-muted);
 }
 
+.sign-in-note a {
+  color: inherit;
+  text-decoration: underline;
+}
+
 .sign-in-link {
   padding: 0;
   font-weight: 700;

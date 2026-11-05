@@ -24,7 +24,7 @@
  */
 
 const RELATED_AUTO = 'related_auto';
-const RELATED_VERSION = 1;
+const RELATED_VERSION = 2; // 2: suggested actions must fit the element (8.9.1)
 const MIN_SCORE = 0.08;
 // Occasions have a sentence or two of text, so chance overlaps score higher:
 // a stricter bar (on staging, 0.08–0.09 matches were things like World Sparrow
@@ -38,6 +38,18 @@ const OCCASION_MIN_SHARED = 2;
 // Calendar boilerplate that says nothing about an occasion's topic.
 const OCCASION_BOILERPLATE = /\b(world|worldwide|international|national|global|day|days|week|month|year|years|yearly|annual|annually|celebrat\w*|observ\w*|commemorat\w*|awareness|dedicated|held|marks?|aims?|raise|raising|spread|recogni[sz]\w*|honou?r\w*|occasion|event|people|across|around|together|whole|highlight\w*|importance|issues?)\b/gi;
 const ELEMENT_BONUS = 0.04;
+// Suggested actions must fit the element (8.9.1). An action's first element
+// is its main one: "Sort Your Household Waste" is earth+water, so it is an
+// earth action that also helps water. For a story or action with an element:
+// - an action whose main element matches gets a further small bonus;
+// - one that has the element only as an extra needs a higher score (on
+//   staging, Kalpasar Project -> Sort Your Household Waste scored 0.087);
+// - one that doesn't share the element at all needs a strong match (every
+//   such match on staging was wrong, e.g. a Covid story -> Wash Clothes With
+//   Cold Water at 0.127).
+const PRIMARY_ELEMENT_BONUS = 0.02;
+const SECONDARY_ELEMENT_MIN_SCORE = 0.1;
+const OFF_ELEMENT_MIN_SCORE = 0.2;
 const PER_TYPE = 4;
 const BODY_WORDS = 600;
 
@@ -201,7 +213,14 @@ function computeRelated(items) {
       let score = cosine(vectors[i], vectors[j]);
       if (score <= 0) return;
       if (item.type === 'occasion' && sharedTerms(vectors[i], vectors[j]) < OCCASION_MIN_SHARED) return;
-      if ((item.elements || []).some((e) => (other.elements || []).includes(e))) score += ELEMENT_BONUS;
+      const own = item.elements || [];
+      const shared = own.some((e) => (other.elements || []).includes(e));
+      if (shared) score += ELEMENT_BONUS;
+      if (other.type === 'action' && own.length) {
+        if (!shared && score < OFF_ELEMENT_MIN_SCORE) return;
+        if (own.includes((other.elements || [])[0])) score += PRIMARY_ELEMENT_BONUS;
+        else if (shared && score < SECONDARY_ELEMENT_MIN_SCORE) return;
+      }
       if (score >= (item.type === 'occasion' ? OCCASION_MIN_SCORE : MIN_SCORE)) scored.push({ type: other.type, id: other.id, score: Math.round(score * 1000) / 1000 });
     });
     scored.sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
