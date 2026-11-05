@@ -8,6 +8,8 @@ import { ExploreSource } from 'src/app/services/related-content.service';
 import { ActivityService } from 'src/app/services/activity.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { BlogReadCompleteEvent } from 'src/app/directives/blog-read-tracker.directive';
+import { UiUtilService } from 'src/app/util/UiUtilService';
+import { shareLink } from 'src/app/util/share-link';
 
 @Component({
     selector: 'app-blog-post',
@@ -31,7 +33,8 @@ export class BlogPostPage implements OnInit {
     private route: ActivatedRoute,
     private blogService: BlogService,
     private activityService: ActivityService,
-    private authService: AuthService
+    private authService: AuthService,
+    private uiUtil: UiUtilService
   ) {}
 
   ngOnInit() {
@@ -106,19 +109,7 @@ export class BlogPostPage implements OnInit {
       text: `${blog.title} — by ${blog.author || 'WIOF'} | World is One Family`,
       url: window.location.href
     };
-
-    if (navigator.share) {
-      // Native share (mobile)
-      try {
-        await navigator.share(shareData);
-      } catch (e) {
-        // User cancelled or share failed — fallback to copy
-        this.copyLink();
-      }
-    } else {
-      // Desktop fallback — copy link
-      this.copyLink();
-    }
+    await shareLink(shareData, this.uiUtil);
   }
 
   /**
@@ -156,12 +147,6 @@ export class BlogPostPage implements OnInit {
         event.timeSpent,
         blogTitle
       ).catch(err => console.warn('Blog read complete logging failed:', err));
-    });
-  }
-
-  private copyLink() {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-      alert('Link copied to clipboard!');
     });
   }
 }

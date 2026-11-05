@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Blog } from 'src/app/models/Blog';
+import { UiUtilService } from 'src/app/util/UiUtilService';
+import { shareLink } from 'src/app/util/share-link';
 
 @Component({
     selector: 'app-blog-card',
@@ -10,8 +12,13 @@ import { Blog } from 'src/app/models/Blog';
 export class BlogCardComponent implements OnInit {
   @Input() blog: Blog;
   @Input() element: string;
+  /**
+   * Heading level of the title for screen readers, when the card sits under
+   * a heading deeper than the page's own (e.g. 4 inside Explore next's groups).
+   */
+  @Input() headingLevel: number | null = null;
 
-  constructor() {}
+  constructor(private uiUtil: UiUtilService) {}
 
   ngOnInit() {}
 
@@ -36,20 +43,6 @@ export class BlogCardComponent implements OnInit {
       url
     };
 
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch (e) {
-        this.copyToClipboard(url);
-      }
-    } else {
-      this.copyToClipboard(url);
-    }
-  }
-
-  private copyToClipboard(text: string) {
-    navigator.clipboard.writeText(text).then(() => {
-      alert('Link copied to clipboard!');
-    });
+    await shareLink(shareData, this.uiUtil);
   }
 }

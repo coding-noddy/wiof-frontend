@@ -19,7 +19,7 @@
   </div>
 
   <div class="blog-body">
-    <h3 class="blog-title">
+    <h3 class="blog-title" [attr.aria-level]="headingLevel">
       <a class="link-title">{{ blog.title }}</a>
     </h3>
     <p class="blog-excerpt">{{ blog.shortDescription }}</p>

@@ -146,3 +146,6 @@ scripts/.env
 *.local.ps1
 scripts/backups/
 functions/node_modules/
+
+# Browser E2E screenshots
+tests/e2e/output/

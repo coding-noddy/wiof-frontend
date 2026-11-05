@@ -4,7 +4,6 @@ import { combineLatest, Observable, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { FIREBASE_COLLECTION } from '../app.constants';
 import { ActionItem } from '../models/ActionItem';
-import { Blog } from '../models/Blog';
 import {
   EXPLORE_LIMITS,
   ExploreGroups,
@@ -171,24 +170,36 @@ export class RelatedContentService {
    */
   private moreFromElement(element: string, seed: string, subCategory?: string): Observable<ExploreItem[]> {
     const category = element.charAt(0).toUpperCase() + element.slice(1).toLowerCase();
-    const topic = (subCategory || '').trim().toLowerCase();
-    const blogs$ = this.database
-      .collection(FIREBASE_COLLECTION.BLOG_SUMMARIES, (ref) => ref.where('category', '==', category))
-      .get()
-      .pipe(
-        map((snap) => {
-          const all = snap.docs.map((doc) => ({ ...(doc.data() as any), id: doc.id }));
-          const sameTopic = topic ? all.filter((b) => String(b.subCategory || '').trim().toLowerCase() === topic) : [];
-          const newest = all
-            .filter((b) => !sameTopic.includes(b))
-            .sort((a, b) => Blog.sortDate(b) - Blog.sortDate(a))
-            .slice(0, FALLBACK_POOL);
-          const byKey = (b: any) => `blog:${b.id}`;
-          return [...seededOrder(sameTopic, seed, byKey), ...seededOrder(newest, seed, byKey)]
-            .slice(0, 5)
-            .map((blog) => this.blogItem(blog, 'element'));
-        })
-      );
+    const topic = (subCategory || '').trim();
+    // Two bounded queries rather than the whole element, so the reads don't
+    // grow with the catalogue: stories on the same topic (equality filters
+    // only, no composite index), and the newest (index: category +
+    // publishDate desc, firestore.indexes.json).
+    const summaries = (query: (ref: any) => any) =>
+      this.database
+        .collection(FIREBASE_COLLECTION.BLOG_SUMMARIES, query)
+        .get()
+        .pipe(map((snap) => snap.docs.map((doc) => ({ ...(doc.data() as any), id: doc.id }))));
+    const sameTopic$ = topic
+      ? summaries((ref) => ref.where('category', '==', category).where('subCategory', '==', topic).limit(FALLBACK_POOL))
+      : of([]);
+    // If the index is missing (still building, or a hosting-only deploy), lose
+    // just these fallback stories rather than the whole block.
+    const newest$ = summaries((ref) => ref.where('category', '==', category).orderBy('publishDate', 'desc').limit(FALLBACK_POOL)).pipe(
+      catchError((err) => {
+        console.warn('Explore next: newest stories unavailable:', err?.code || err);
+        return of([]);
+      })
+    );
+    const blogs$ = combineLatest([sameTopic$, newest$]).pipe(
+      map(([sameTopic, newest]) => {
+        const byKey = (b: any) => `blog:${b.id}`;
+        const topicIds = new Set(sameTopic.map((b) => b.id));
+        return [...seededOrder(sameTopic, seed, byKey), ...seededOrder(newest.filter((b) => !topicIds.has(b.id)), seed, byKey)]
+          .slice(0, 5)
+          .map((blog) => this.blogItem(blog, 'element'));
+      })
+    );
     const actions$ = this.actionService
       .getActionsForElement(element, FALLBACK_POOL)
       .pipe(

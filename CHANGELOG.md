@@ -9,7 +9,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [8.4.1] - 2026-11-05
 
-Explore next, redesigned so it reads as a "what now?" moment instead of a plain list.
+Explore next, redesigned so it reads as a "what now?" moment instead of a plain list. **Deploy with `-Backend`**: one new Firestore index.
 
 ### Changed
 - **Actions you can do right there:** on blog and video pages the **Your next step** group (was "Take action on this") shows full Take Action cards, with time, difficulty, "Learn more" and **Mark as Done**. Guests get the same sign-in prompt as on the Take Action page.
@@ -20,6 +20,16 @@ Explore next, redesigned so it reads as a "what now?" moment instead of a plain 
 - **The action details no longer carry an Explore next block.** The modal is for deciding to do the action, so it now ends with one line, **The story behind this**, to the action's linked story or video (or one that links to it, or its best similar story), shown only when there's a real match.
 - The calendar popup keeps its small linked-items list; compact action cards there use the element's colour for their icon tile, as on Take Action.
 - Blog cards link to the full post path, so they also work outside the element's own pages, and a long author name ends in "…" instead of a clipped letter.
+- The heading's topic is shown capitalised ("Khalsa Aid"), and only when it's short enough to be a topic; otherwise it reads "Because you read this story".
+- The "more from this element" fallback reads at most 12 newest and 12 same-topic stories instead of every story in the element (new index: `blog_summaries` category + publishDate). If the index isn't there yet, only the fallback is lost, not the block.
+
+### Fixed
+- Share on a blog card or post: "Link copied" is now a toast instead of a browser pop-up, and closing the phone's share sheet no longer copies the link and says it did.
+- Screen readers: card titles inside Explore next are a level below their group heading, instead of the same level.
+
+### Tests
+- Unit tests for Explore next (heading, topics, card choice, loading), "The story behind this", the blog card link and sharing.
+- The browser end-to-end tests are now in the repo (`tests/e2e`, staging only): `npm run e2e:smoke` and `npm run e2e:explore`. Test account details come from environment variables, never the repo.
 - Take Action cards everywhere now show the action's time and difficulty, as the details already did.
 
 ## [8.4.0] - 2026-11-05

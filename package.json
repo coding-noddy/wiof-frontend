@@ -11,6 +11,8 @@
     "test": "ng test",
     "test:rules": "node scripts/run-rules-tests.js",
     "test:functions": "node --test functions/activity-validation.test.js functions/user-metrics.test.js functions/blog-summary.test.js functions/related-content.test.js",
+    "e2e:smoke": "node tests/e2e/public-smoke.e2e.js",
+    "e2e:explore": "node tests/e2e/explore-next.e2e.js",
     "predeploy:staging": "npm run test:functions && npm run test:rules",
     "deploy:staging": "powershell -ExecutionPolicy Bypass -File ./deploy.ps1 -Target staging",
     "predeploy:prod": "npm run test:functions && npm run test:rules",
