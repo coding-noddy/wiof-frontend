@@ -3,7 +3,7 @@
  * the home card for today's real calendar occasion — its fact and source,
  * an admin-linked story and action (and that editing the occasion re-runs
  * the matcher, onEnvcalWritten), the action link opening its details,
- * "Not today", and the phone layout. Links it adds to the occasion are
+ * "Hide for today", and the phone layout. Links it adds to the occasion are
  * removed at the end. Skips (exit 0) on a day with no occasion.
  * See tests/e2e/README.md.
  *
@@ -159,7 +159,7 @@ const readCard = (page) => page.evaluate(() => {
     const cal = await toCalendar(page);
     check('"See the full calendar" scrolls to the calendar, focuses its heading and highlights today', cal.inView && cal.focused && cal.flash, JSON.stringify(cal));
 
-    // 4. Not today.
+    // 4. Hide for today.
     await page.goto(`${BASE}/home`, { waitUntil: 'networkidle2', timeout: 90000 });
     await page.waitForSelector('app-today-on-wiof .today-hide', { timeout: 30000 });
     await page.click('app-today-on-wiof .today-hide');
@@ -167,7 +167,7 @@ const readCard = (page) => page.evaluate(() => {
     const gone = !(await page.$('app-today-on-wiof .today'));
     await page.reload({ waitUntil: 'networkidle2' });
     await sleep(2500);
-    check('"Not today" hides the card, and it stays hidden after a reload', gone && !(await page.$('app-today-on-wiof .today')));
+    check('"Hide for today" hides the card, and it stays hidden after a reload', gone && !(await page.$('app-today-on-wiof .today')));
 
     // 5. Phone.
     const phone = await newPage(browser, { width: 390, height: 844, isMobile: true }, errors);

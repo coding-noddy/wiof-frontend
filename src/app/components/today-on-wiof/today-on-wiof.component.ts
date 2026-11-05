@@ -23,7 +23,7 @@ interface TodayView {
  * fact and source, and one story and one action to go with it — the
  * admin's own links first, then the server's keyword matches
  * (related_auto/occasion_{id}). Nothing is padded in: with no match it
- * shows just the fact. "Not today" hides it until tomorrow on this device;
+ * shows just the fact. "Hide for today" hides it until tomorrow on this device;
  * a day with no occasion shows nothing. "See the full calendar" takes the
  * reader down to the Environment Calendar on the same page.
  */
@@ -82,7 +82,7 @@ export class TodayOnWiofComponent implements OnInit {
     }
   }
 
-  notToday(): void {
+  hideForToday(): void {
     this.hidden = true;
     try {
       localStorage.setItem(TODAY_HIDDEN_KEY, this.today);

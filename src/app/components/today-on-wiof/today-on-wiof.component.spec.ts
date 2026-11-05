@@ -87,10 +87,10 @@ describe('Today on WIOF', () => {
       expect(event.defaultPrevented).toBeFalse();
     });
 
-    it('"Not today" hides it until tomorrow', () => {
+    it('"Hide for today" hides it until tomorrow', () => {
       const c = new TodayOnWiofComponent(envcal, related);
       c.ngOnInit();
-      c.notToday();
+      c.hideForToday();
       expect(c.hidden).toBeTrue();
       expect(localStorage.getItem(TODAY_HIDDEN_KEY)).toBe(toCalendarDay(new Date()));
       const again = new TodayOnWiofComponent(envcal, related);

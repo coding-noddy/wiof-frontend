@@ -7,7 +7,7 @@
  */
 import type { EnvDay } from './env-cal-data';
 
-/** localStorage key: the calendar day the card was hidden on ("Not today"). */
+/** localStorage key: the calendar day the card was hidden on ("Hide for today"). */
 export const TODAY_HIDDEN_KEY = 'wiof_today_hidden';
 
 /** The occasion to feature today: the first with a fact to show. */
