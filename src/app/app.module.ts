@@ -25,11 +25,8 @@ import { OnboardingOverlayComponent } from './components/onboarding-overlay/onbo
 import { JourneyWelcomeComponent } from './components/journey-welcome/journey-welcome.component';
 import { LaunchCurtainComponent } from './components/launch-curtain/launch-curtain.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {
-  AngularFireAnalyticsModule,
-  ScreenTrackingService,
-  UserTrackingService
-} from '@angular/fire/compat/analytics';
+import { AngularFireAnalyticsModule, UserTrackingService } from '@angular/fire/compat/analytics';
+import { initWiofAnalytics } from './util/analytics-init';
 
 @NgModule({
   declarations: [AppComponent, OnboardingOverlayComponent, JourneyWelcomeComponent, LaunchCurtainComponent],
@@ -53,9 +50,12 @@ import {
     // AngularFire creates exists first.
     provideAppInitializer(() => {
       inject(FirebaseApp);
-      return initWiofAppCheck();
+      initWiofAppCheck();
+      // Before AngularFire's analytics: no automatic page_view (PageTrackingService sends them).
+      initWiofAnalytics();
     }),
-    ScreenTrackingService,
+    // Page views come from PageTrackingService (started in AppComponent), not
+    // AngularFire's ScreenTrackingService.
     UserTrackingService,
     // AngularFire 19+ compat Firestore needs an injection context for
     // collection()/doc(); see makeAngularFirestoreInjectionSafe.

@@ -342,7 +342,8 @@ describe('activity_log/{docId}', () => {
     video_watch_complete: ['alice_video_watch_complete_GfO-3Oir-qM', { contentId: 'GfO-3Oir-qM', contentTitle: 'Video', scrollDepth: 80 }],
     poll_vote: ['alice_poll_vote_poll-1', { contentId: 'poll-1', contentTitle: 'Poll?', selectedOption: 'Yes', userEmail: 'alice@test.com' }],
     daily_visit: ['alice_daily_visit_2026-11-04', {}],
-    widget_usage: [null, { widgetName: 'AQI' }]
+    widget_usage: [null, { widgetName: 'AQI' }],
+    suggestion_click: ['alice_suggestion_click_explore_next_blog_blog-1_2026-11-04', { via: 'explore_next', contentType: 'blog', contentId: 'blog-1', position: 2 }]
   };
 
   for (const [type, [docId, fields]] of Object.entries(VALID)) {
@@ -415,6 +416,18 @@ describe('activity_log/{docId}', () => {
   it('denies a client-written action completion (onUserActionWritten records them)', async () => {
     await assertFails(log(alice()).add(activityEvent('action_completed', { contentId: 'reuse-container' })));
     await assertFails(log(alice()).doc('alice_action_completed_reuse-container_1').set(activityEvent('action_completed', { contentId: 'reuse-container' })));
+  });
+
+  it('denies a suggestion click from an unknown place, of an unknown type, at the wrong ID or out of range', async () => {
+    const click = (fields) => activityEvent('suggestion_click', { via: 'today', contentType: 'action', contentId: 'leak', position: 1, ...fields });
+    const id = (via, type, contentId) => `alice_suggestion_click_${via}_${type}_${contentId}_2026-11-04`;
+    await assertSucceeds(log(alice()).doc(id('today', 'action', 'leak')).set(click({})));
+    await assertFails(log(alice()).doc(id('popup', 'action', 'leak')).set(click({ via: 'popup' })));
+    await assertFails(log(alice()).doc(id('today', 'course', 'leak')).set(click({ contentType: 'course' })));
+    await assertFails(log(alice()).doc('random-id').set(click({ contentId: 'plant' })));
+    await assertFails(log(alice()).doc(id('today', 'action', 'tree')).set(click({ contentId: 'tree', position: 99 })));
+    // Once a day per suggestion and place: a repeat is an update, which is denied.
+    await assertFails(log(alice()).doc(id('today', 'action', 'leak')).set(click({})));
   });
 
   it('denies an unknown widget name', async () => {
@@ -629,6 +642,23 @@ describe('related_auto/{id} (Explore next automatic matches)', () => {
     await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
     const db = testEnv.authenticatedContext('root').firestore();
     await assertFails(db.collection('related_auto').doc('blog_b1').set({ blogs: [], actions: [] }));
+  });
+});
+
+describe('analytics_daily/{day} (daily summaries for Admin → Analytics)', () => {
+  it('lets an admin read a day, not a member or a guest', async () => {
+    await seed(async (db) => {
+      await db.collection('admins').doc('root').set({ role: 'admin' });
+      await db.collection('analytics_daily').doc('2026-11-05').set({ users: { active: 3 } });
+    });
+    await assertSucceeds(testEnv.authenticatedContext('root').firestore().collection('analytics_daily').doc('2026-11-05').get());
+    await assertFails(testEnv.authenticatedContext('alice').firestore().collection('analytics_daily').doc('2026-11-05').get());
+    await assertFails(testEnv.unauthenticatedContext().firestore().collection('analytics_daily').doc('2026-11-05').get());
+  });
+
+  it('denies a client write, even from an admin account (functions only)', async () => {
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    await assertFails(testEnv.authenticatedContext('root').firestore().collection('analytics_daily').doc('2026-11-05').set({ users: { active: 1 } }));
   });
 });
 

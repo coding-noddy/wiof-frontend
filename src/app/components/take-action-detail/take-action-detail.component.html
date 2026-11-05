@@ -82,7 +82,7 @@
       </div>
     }
     @if (storyBehind$ | async; as story) {
-      <a class="story-behind" [routerLink]="story.link" (click)="close()">
+      <a class="story-behind" [routerLink]="story.link" (click)="storyPicked(story); close()">
         <ion-icon aria-hidden="true" [name]="story.type === 'video' ? 'play-circle-outline' : 'book-outline'"></ion-icon>
         <span class="story-behind-text">
           <span class="story-behind-label">{{ story.type === 'video' ? 'Watch the story behind this' : 'The story behind this' }}</span>

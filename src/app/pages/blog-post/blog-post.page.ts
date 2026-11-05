@@ -10,6 +10,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { BlogReadCompleteEvent } from 'src/app/directives/blog-read-tracker.directive';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 import { shareLink } from 'src/app/util/share-link';
+import { PageTrackingService } from 'src/app/services/page-tracking.service';
 
 @Component({
     selector: 'app-blog-post',
@@ -34,7 +35,8 @@ export class BlogPostPage implements OnInit {
     private blogService: BlogService,
     private activityService: ActivityService,
     private authService: AuthService,
-    private uiUtil: UiUtilService
+    private uiUtil: UiUtilService,
+    private pageTracking: PageTrackingService
   ) {}
 
   ngOnInit() {
@@ -52,6 +54,7 @@ export class BlogPostPage implements OnInit {
           this.blogDetails = this.blogService.getBlogBySlug(blogParam);
         }
         this.blogDetails = this.blogDetails.pipe(shareReplay(1));
+        this.blogDetails.pipe(first()).subscribe({ next: (blog) => this.pageTracking.setContentTitle(blog?.title), error: () => {} });
         this.exploreSource$ = this.blogDetails.pipe(
           map((blog) => blog && {
             type: 'blog' as const,

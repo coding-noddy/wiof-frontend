@@ -47,6 +47,18 @@ describe('validateActivityEvent', () => {
     assert.equal((await verdict(event('blog_read', { contentId: 'kalpasar' }), 'random')).reason, 'wrong_doc_id');
   });
 
+  it('accepts a suggestion click on content that exists, once a day per suggestion and place', async () => {
+    const click = (fields) => event('suggestion_click', { via: 'explore_next', contentType: 'blog', contentId: 'kalpasar', position: 1, ...fields });
+    assert.equal(expectedDocId(click({})), 'alice_suggestion_click_explore_next_blog_kalpasar_2026-11-04');
+    assert.equal((await verdict(click({}))).status, 'accepted');
+    assert.equal((await verdict(click({ contentType: 'action', contentId: 'reuse-container' }))).status, 'accepted');
+    assert.equal((await verdict(click({ contentType: 'video', contentId: 'dQw4w9WgXcQ' }))).status, 'accepted');
+    assert.equal((await verdict(click({ contentId: 'no-such-blog' }))).reason, 'content_not_found');
+    assert.equal((await verdict(click({ contentType: 'video', contentId: 'not a video' }))).reason, 'invalid_video_id');
+    assert.equal((await verdict(click({ via: 'popup' }))).reason, 'unknown_via');
+    assert.equal((await verdict(click({}), 'random')).reason, 'wrong_doc_id');
+  });
+
   it('rejects an unknown event type', async () => {
     assert.equal((await verdict(event('blog_shared'))).reason, 'unknown_type');
   });

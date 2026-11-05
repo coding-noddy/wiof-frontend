@@ -9,6 +9,7 @@ import { ActivityService } from 'src/app/services/activity.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { VideoWatchCompleteEvent } from 'src/app/directives/youtube-watch-tracker.directive';
 import { ExploreSource } from 'src/app/services/related-content.service';
+import { PageTrackingService } from 'src/app/services/page-tracking.service';
 
 @Component({
     selector: 'app-video-post',
@@ -41,7 +42,8 @@ export class VideoPostPage implements OnInit, OnDestroy {
     private sanitizer: DomSanitizer,
     private videoService: YoutubeVideoService,
     private activityService: ActivityService,
-    private authService: AuthService
+    private authService: AuthService,
+    private pageTracking: PageTrackingService
   ) {}
 
   ngOnInit() {
@@ -68,6 +70,7 @@ export class VideoPostPage implements OnInit, OnDestroy {
               this.vid = itemData;
               let { snippet } = this.vid;
               this.videoTitle = snippet.title;
+              this.pageTracking.setContentTitle(snippet.title);
               this.videoDescription = snippet.description;
               this.videoChannelName = snippet.title;
             });

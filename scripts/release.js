@@ -261,7 +261,7 @@ Order and when to stop:
    or Console > Hosting > Release history > that version > Rollback.
 2. **Rules**, only if the new rules are the problem: deploys rollback/firestore.rules and storage.rules exactly as they were live.
 3. **Functions**, only if a function is the problem: deletes the functions this release added
-   (${'`'}onActionWritten${'`'}, ${'`'}onEnvcalWritten${'`'} for Phase 2) and redeploys ${tag || 'the last tag'}'s functions from a temporary git worktree.
+   (for Phase 2: onActionWritten, onEnvcalWritten, buildDailyStats, refreshDailyStats) and redeploys ${tag || 'the last tag'}'s functions from a temporary git worktree.
 
 Data: Phase 2 only ADDS data (related_auto, user_metrics.qualityReadsByElement, users.onboarding,
 Envcal facts, EQ slots in activity_log); the old app ignores it and the old rules allow it

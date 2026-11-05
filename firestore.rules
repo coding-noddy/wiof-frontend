@@ -209,6 +209,14 @@ service cloud.firestore {
           || (type == 'widget_usage'
             && data.keys().hasOnly(base.concat(['widgetName']))
             && data.widgetName in ['AQI', 'Energy Calculator', 'Food pH', 'Water Rainfall'])
+          // A click on a suggestion (8.9.0): at most one per suggestion, place and day.
+          || (type == 'suggestion_click'
+            && data.keys().hasOnly(base.concat(['via', 'contentType', 'contentId', 'position']))
+            && data.via in ['explore_next', 'story_behind', 'today', 'next_for_you']
+            && data.contentType in ['blog', 'video', 'action']
+            && isActivityText(data.contentId, 200)
+            && data.position is int && data.position >= 1 && data.position <= 20
+            && docId == request.auth.uid + '_suggestion_click_' + data.via + '_' + data.contentType + '_' + data.contentId + '_' + data.calendarDay)
         );
     }
 
@@ -498,6 +506,14 @@ service cloud.firestore {
       // related-content.js). Public content only; written by the
       // onBlogWritten/onActionWritten functions (Admin SDK) alone.
       allow read: if true;
+      allow write: if false;
+    }
+
+    match /analytics_daily/{day} {
+      // Daily summaries for Admin → Analytics (functions/daily-stats.js):
+      // counts across all users, so admins only. Written by the
+      // buildDailyStats / refreshDailyStats functions (Admin SDK) alone.
+      allow read: if isAdmin();
       allow write: if false;
     }
 

@@ -1122,3 +1122,59 @@ exports.socialMetaTags = functions
     res.redirect(originalUrl);
   }
 });
+
+// ─── Daily analytics (8.9.0) ─────────────────────────────────────────────
+// One analytics_daily/{YYYY-MM-DD} summary per India-time day for Admin →
+// Analytics (functions/daily-stats.js), plus the day's Google Analytics
+// traffic when GA4_PROPERTY_ID is set (functions/ga-traffic.js).
+
+const { buildDailyStatsDoc, addDays, istDay } = require('./daily-stats');
+const { fetchTraffic } = require('./ga-traffic');
+
+const buildDay = (day) => buildDailyStatsDoc(db, day, {
+  fetchTraffic,
+  Timestamp: admin.firestore.Timestamp,
+  FieldValue: admin.firestore.FieldValue
+});
+
+/**
+ * Every 3 hours: today so far, and yesterday (late events and GA's own
+ * processing delay settle within a day). Two small summaries per run.
+ */
+exports.buildDailyStats = functions
+  .region(REGION)
+  .runWith({ timeoutSeconds: 300, memory: '512MB' })
+  .pubsub.schedule('every 3 hours')
+  .timeZone('Asia/Kolkata')
+  .onRun(withTriggerErrorLogging('buildDailyStats', async () => {
+    const today = istDay();
+    await buildDay(addDays(today, -1));
+    await buildDay(today);
+    return null;
+  }));
+
+/**
+ * Admin → Analytics "Refresh": rebuilds today (or `day`), and with `days`
+ * (up to 31) that many days back. Admins only.
+ */
+exports.refreshDailyStats = functions
+  .region(REGION)
+  .runWith({ timeoutSeconds: 300, memory: '512MB', ...APP_CHECK })
+  .https.onCall(withErrorLogging('refreshDailyStats', async (data, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
+    }
+    const adminDoc = await db.collection('admins').doc(context.auth.uid).get();
+    if (!adminDoc.exists) {
+      throw new functions.https.HttpsError('permission-denied', 'Admin privileges required.');
+    }
+    const last = data && /^\d{4}-\d{2}-\d{2}$/.test(String(data.day || '')) ? data.day : istDay();
+    const days = Math.min(Math.max(Number(data && data.days) || 1, 1), 31);
+    const built = [];
+    for (let i = 0; i < days; i++) {
+      const day = addDays(last, -i);
+      await buildDay(day);
+      built.push(day);
+    }
+    return { built };
+  }));

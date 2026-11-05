@@ -66,6 +66,21 @@ describe('ExploreNextComponent', () => {
     expect(component.asSiteCards(views[views.length - 1].groups[0])).toBeFalse();
   });
 
+  it('counts a click that opens a suggestion, not one that shares or bookmarks it', () => {
+    const clicked = jasmine.createSpy('clicked');
+    const c = new ExploreNextComponent({} as any, { clicked } as any);
+    const card = document.createElement('ion-card');
+    card.setAttribute('href', '/element/water/blog/rainwater');
+    card.innerHTML = '<img><button class="blog-share-icon"></button><app-bookmark-icon><span></span></app-bookmark-icon>';
+    const item: any = { type: 'blog', id: 's1', link: ['/element', 'water', 'blog', 'rainwater'] };
+    const at = (el: Element) => ({ target: el } as any);
+    c.picked(at(card.querySelector('img')!), item, 0);
+    c.picked(at(card.querySelector('.blog-share-icon')!), item, 0);
+    c.picked(at(card.querySelector('app-bookmark-icon span')!), item, 0);
+    c.picked(at(document.createElement('div')), item, 0);
+    expect(clicked).toHaveBeenCalledOnceWith('explore_next', item, 1);
+  });
+
   it('tints the section by element', () => {
     expect(render({ type: 'blog', id: 'x', element: 'Earth' }, { read: [], act: [] }).component.accent).toBe('earth');
     expect(render({ type: 'blog', id: 'x', element: 'energy' }, { read: [], act: [] }).component.accent).toBe('energy');

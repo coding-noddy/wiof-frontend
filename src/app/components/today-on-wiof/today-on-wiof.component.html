@@ -30,7 +30,7 @@
         <ul class="today-picks">
           @if (today.story; as story) {
             <li>
-              <a class="today-pick" [routerLink]="story.link">
+              <a class="today-pick" [routerLink]="story.link" (click)="picked(story, 1)">
                 <ion-icon aria-hidden="true" [name]="story.type === 'video' ? 'play-circle-outline' : 'book-outline'"></ion-icon>
                 <span class="pick-text">
                   <span class="pick-label">{{ story.type === 'video' ? 'Watch' : 'Read' }}</span>
@@ -42,7 +42,7 @@
           }
           @if (today.action; as action) {
             <li>
-              <a class="today-pick" data-kind="action" [routerLink]="action.link" [queryParams]="action.queryParams">
+              <a class="today-pick" data-kind="action" [routerLink]="action.link" [queryParams]="action.queryParams" (click)="picked(action, today.story ? 2 : 1)">
                 <ion-icon aria-hidden="true" [name]="action.icon || 'leaf-outline'"></ion-icon>
                 <span class="pick-text">
                   <span class="pick-label">Try today</span>

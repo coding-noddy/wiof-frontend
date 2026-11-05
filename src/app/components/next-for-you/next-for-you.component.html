@@ -8,9 +8,9 @@
       </p>
     </div>
     <ul class="next-list">
-      @for (pick of items; track trackPick($index, pick)) {
+      @for (pick of items; track trackPick($index, pick); let i = $index) {
         <li>
-          <a class="next-card" [attr.data-kind]="pick.item.type" [routerLink]="pick.item.link" [queryParams]="pick.item.queryParams">
+          <a class="next-card" [attr.data-kind]="pick.item.type" [routerLink]="pick.item.link" [queryParams]="pick.item.queryParams" (click)="picked(pick, i)">
             <span class="next-why">
               <ion-icon aria-hidden="true" [name]="pick.item.type === 'action' ? (pick.item.icon || 'leaf-outline') : pick.item.type === 'video' ? 'play-circle-outline' : 'book-outline'"></ion-icon>
               {{ pick.why }}

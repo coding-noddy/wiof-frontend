@@ -82,6 +82,21 @@ A Passport milestone must state the trust level of the metric it uses. Self-repo
 
 ## Resets
 
+## Daily analytics (Admin → Analytics, 8.9.0)
+
+One `analytics_daily/{YYYY-MM-DD}` summary per India-time day, by each event's server timestamp, built by `functions/daily-stats.js` (every 3 hours for today and yesterday; Refresh; `scripts/daily-stats.js` for past days). Admin accounts and rejected events never count.
+
+| Number | Definition |
+|---|---|
+| Active members | distinct members with any event that day (a visit counts) |
+| Engaged members | distinct members with a read, quality read, video view or completion, poll vote, EQ check, widget use, suggestion click or completed action |
+| New members | `users.joinedDate` that day |
+| Totals | that day's accepted events by type (quality reads, videos completed, actions completed, EQ checks…) |
+| By element | quality reads by the story's element; completed actions by the completion's (or action's) elements |
+| Suggestions | `suggestion_click` events per place shown; *converted* when the same member's matching completion (quality read, video completion, action completion) of the same item is the same day |
+| First steps | a snapshot of all members: chose elements, read a story, watched a video, checked EQ, did an action, all five |
+| Traffic | Google Analytics for the property's day: active users, new users, sessions, page views, top pages, views by page group (everyone, not just members) |
+
 "Clear My Engagement Data" (`resetEngagementData`) deletes the user's reading, watching, poll, EQ, visit and widget events and their saved content. It also zeroes the visit counters and those fields of `user_metrics` (and removes `qualityReadsByElement`).
 
 **Take Action progress is kept** (decided 2026-11-04, 8.3.0): `user_actions`, the `action_completed` events and the action counters stay. A reset therefore never makes "Actions Taken" disagree with the action cards, and a recompute can't undo a reset. The Settings page says so before the user confirms.

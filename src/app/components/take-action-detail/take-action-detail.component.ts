@@ -1,4 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Optional } from '@angular/core';
+import { SuggestionTrackingService } from 'src/app/services/suggestion-tracking.service';
 import { ModalController } from '@ionic/angular';
 import { Observable, of } from 'rxjs';
 import { ActionItem } from 'src/app/models/ActionItem';
@@ -29,7 +30,15 @@ export class TakeActionDetailComponent implements OnInit {
   @Input() element?: string;
   storyBehind$: Observable<ExploreItem | null> = of(null);
 
-  constructor(private modalCtrl: ModalController, private relatedContent: RelatedContentService) {}
+  constructor(
+    private modalCtrl: ModalController,
+    private relatedContent: RelatedContentService,
+    @Optional() private suggestions?: SuggestionTrackingService
+  ) {}
+
+  storyPicked(story: ExploreItem): void {
+    this.suggestions?.clicked('story_behind', story, 1);
+  }
 
   ngOnInit(): void {
     const elements = this.action.elementIds || [];

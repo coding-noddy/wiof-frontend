@@ -8,12 +8,12 @@ import { httpsCallable } from 'firebase/functions';
 import { FIREBASE_COLLECTION } from '../app.constants';
 import { getWiofFunctions } from '../util/cloud-functions.util';
 import { RateLimiterService } from './rate-limiter.service';
-import { AnalyticsService } from './analytics.service';
+import { AnalyticsService, SuggestionClick } from './analytics.service';
 import { QualityReadEntry, EqHistoryEntry, PollHistoryEntry, VideoWatchHistoryEntry } from '../models/engagement-history';
 
 export interface ActivityLogInput {
   userId: string;
-  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage' | 'daily_visit' | 'action_completed';
+  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage' | 'daily_visit' | 'action_completed' | 'suggestion_click';
   contentId?: string;
   widgetName?: string;
   score?: number;
@@ -31,7 +31,7 @@ export interface ActivityLogInput {
 export interface ActivityLogEntry {
   id?: string;
   userId: string;
-  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage' | 'daily_visit' | 'action_completed';
+  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage' | 'daily_visit' | 'action_completed' | 'suggestion_click';
   /** Schema version of this entry's shape — see ActivityService.SCHEMA_VERSION.
    *  Lets a future change to the event shape tell old and new entries apart
    *  instead of guessing from which optional fields happen to be present. */
@@ -51,6 +51,10 @@ export interface ActivityLogEntry {
   };
   selectedOption?: string;    // voted option text for poll_vote
   userEmail?: string;         // user's email at vote time for poll_vote
+  // suggestion_click (8.9.0): where the suggestion was shown, what it was, its place in the list.
+  via?: string;
+  contentType?: 'blog' | 'video' | 'action';
+  position?: number;
   /** Set by onActivityLogCreated (Cloud Function) after its server checks;
    *  only accepted events count toward user_metrics. Absent on events from
    *  before validation existed, and briefly on brand-new ones. */
@@ -331,6 +335,33 @@ export class ActivityService {
     } catch (error) {
       console.warn('EQ assessment submission failed:', error);
       return null;
+    }
+  }
+
+  /**
+   * Records a signed-in user's click on a suggestion (8.9.0), at most once a
+   * day per suggestion and place it was shown
+   * ({uid}_suggestion_click_{via}_{type}_{contentId}_{day}), so the nightly
+   * stats can count clicks and whether they led to a read, watch or action.
+   * Fire-and-forget: failures never disrupt the user.
+   */
+  async logSuggestionClick(userId: string, click: SuggestionClick): Promise<void> {
+    const calendarDay = toCalendarDay(new Date());
+    const entry: Omit<ActivityLogEntry, 'id'> = {
+      userId,
+      activityType: 'suggestion_click',
+      schemaVersion: ActivityService.SCHEMA_VERSION,
+      via: click.via,
+      contentType: click.contentType,
+      contentId: click.contentId,
+      position: click.position,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      calendarDay
+    };
+    try {
+      await this.writeDedupedEntry(`${userId}_suggestion_click_${click.via}_${click.contentType}_${click.contentId}_${calendarDay}`, entry);
+    } catch (error) {
+      console.warn('Suggestion click logging failed:', error);
     }
   }
 

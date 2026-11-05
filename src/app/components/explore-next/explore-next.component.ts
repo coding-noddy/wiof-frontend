@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Optional, Output } from '@angular/core';
+import { SuggestionTrackingService } from 'src/app/services/suggestion-tracking.service';
 import { Observable, of } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { ExploreItem } from 'src/app/models/RelatedContent';
@@ -69,7 +70,23 @@ export class ExploreNextComponent implements OnChanges {
   private static count = 0;
   readonly headingId = `explore-next-${++ExploreNextComponent.count}`;
 
-  constructor(private relatedContent: RelatedContentService) {}
+  constructor(
+    private relatedContent: RelatedContentService,
+    @Optional() private suggestions?: SuggestionTrackingService
+  ) {}
+
+  /**
+   * A click that opens or acts on a suggestion: a link, a card that links
+   * itself (the story and video cards are ion-cards with an href), or an
+   * action card's buttons. Sharing or bookmarking it isn't following it.
+   */
+  picked(event: Event, item: ExploreItem, index: number): void {
+    const target = event.target as HTMLElement | null;
+    if (!target?.closest || target.closest('app-bookmark-icon, .blog-share-icon, [aria-label^="Share"]')) return;
+    if (target.closest('a[href], ion-card[href], button')) {
+      this.suggestions?.clicked('explore_next', item, index + 1);
+    }
+  }
 
   ngOnChanges(): void {
     this.heading = this.headingFor(this.source);

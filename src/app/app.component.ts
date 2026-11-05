@@ -7,6 +7,8 @@ import { UserProfileService } from './services/user-profile.service';
 import { IdleTimeoutService } from './services/idle-timeout.service';
 import { SingleVideoPlaybackService } from './services/single-video-playback.service';
 import { ChunkLoadRecoveryService } from './services/chunk-load-recovery.service';
+import { PageTrackingService } from './services/page-tracking.service';
+import { AnalyticsService } from './services/analytics.service';
 
 @Component({
     selector: 'app-root',
@@ -22,7 +24,9 @@ export class AppComponent implements OnInit {
     private activityService: ActivityService,
     private idleTimeoutService: IdleTimeoutService,
     private singleVideoPlayback: SingleVideoPlaybackService,
-    private chunkLoadRecovery: ChunkLoadRecoveryService
+    private chunkLoadRecovery: ChunkLoadRecoveryService,
+    private pageTracking: PageTrackingService,
+    private analyticsService: AnalyticsService
   ) {
     // this.addMetaTags();
   }
@@ -36,6 +40,22 @@ export class AppComponent implements OnInit {
 
     // A page whose code can't load (old file names after a deploy) reloads once.
     this.chunkLoadRecovery.start();
+
+    // Page titles and one GA page_view per navigation.
+    this.pageTracking.start();
+
+    // GA user type, so reports can leave out the team's own visits.
+    this.authService.currentUser$.pipe(
+      distinctUntilChanged((previous, current) => previous?.uid === current?.uid)
+    ).subscribe(user => {
+      if (!user) {
+        this.analyticsService.setUserType('guest');
+        return;
+      }
+      this.userProfileService.getRole(user.uid)
+        .then(role => this.analyticsService.setUserType(role === 'admin' ? 'admin' : 'member'))
+        .catch(() => this.analyticsService.setUserType('member'));
+    });
 
     // Record a visit whenever the authenticated account changes.
     this.authService.currentUser$.pipe(

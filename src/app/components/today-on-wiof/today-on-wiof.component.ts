@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Optional } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { EnvDay } from 'src/app/models/env-cal-data';
@@ -7,6 +7,7 @@ import { hiddenToday, occasionSource, TODAY_HIDDEN_KEY, TodaySource, todaysOccas
 import { toCalendarDay } from 'src/app/services/activity.service';
 import { EnvcalService } from 'src/app/services/envcal-service';
 import { RelatedContentService } from 'src/app/services/related-content.service';
+import { SuggestionTrackingService } from 'src/app/services/suggestion-tracking.service';
 
 /** The Environment Calendar heading on the home page. */
 export const CALENDAR_HEADING_ID = 'environment-calendar';
@@ -39,7 +40,15 @@ export class TodayOnWiofComponent implements OnInit {
   readonly todayLabel = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
   private readonly today = toCalendarDay(new Date());
 
-  constructor(private envcal: EnvcalService, private relatedContent: RelatedContentService) {}
+  constructor(
+    private envcal: EnvcalService,
+    private relatedContent: RelatedContentService,
+    @Optional() private suggestions?: SuggestionTrackingService
+  ) {}
+
+  picked(item: ExploreItem, position: number): void {
+    this.suggestions?.clicked('today', item, position);
+  }
 
   ngOnInit(): void {
     this.hidden = hiddenToday(this.read(), this.today);

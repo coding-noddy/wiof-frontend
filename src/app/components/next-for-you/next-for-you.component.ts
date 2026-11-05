@@ -1,4 +1,5 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Optional } from '@angular/core';
+import { SuggestionTrackingService } from 'src/app/services/suggestion-tracking.service';
 import { elementName, NextForYou, NextPick } from 'src/app/models/NextForYou';
 
 /**
@@ -15,6 +16,12 @@ import { elementName, NextForYou, NextPick } from 'src/app/models/NextForYou';
 })
 export class NextForYouComponent {
   @Input() picks: NextForYou | null = null;
+
+  constructor(@Optional() private suggestions?: SuggestionTrackingService) {}
+
+  picked(pick: NextPick, index: number): void {
+    this.suggestions?.clicked('next_for_you', pick.item, index + 1, pick.why);
+  }
 
   get items(): NextPick[] {
     return this.picks ? [...this.picks.read, ...this.picks.act] : [];

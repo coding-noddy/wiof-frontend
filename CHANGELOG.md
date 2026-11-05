@@ -7,6 +7,20 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.9.0] - 2026-11-05
+
+Measurement (see `docs/ANALYTICS.md`). **Deploy with `-Backend`** (new functions `buildDailyStats`, a schedule, and `refreshDailyStats`; rules for `suggestion_click` and `analytics_daily`). The first scheduled function turns on Cloud Scheduler for the project. Then fill past days with `node scripts/daily-stats.js --project prod --days 90` (dry run, then `--apply`), and do the one-time Google Analytics setup in `docs/ANALYTICS.md`.
+
+### Added
+- **Google Analytics gets real page data.** Every page has its own browser title (e.g. "Rainwater Harvesting & it's Benefits · Water · World Is One Family"; story and video pages wait for their content's title). The site sends one `page_view` per navigation with the path, that title, a page group (GA4's `content_group`: home, element, story, video, take_action, my_journey, admin…) and the element. Before, every page was titled "World Is One Family", so GA showed one row. The user property `user_type` (guest, member, admin) lets reports leave out the team.
+- **Suggestion clicks** from Explore next, "The story behind this", Today on WIOF and Next for you go to GA as `select_content` (where it was shown, what, position, reason). For signed-in members they're also saved as a checked `suggestion_click` event, once a day per suggestion and place (rules + server checks).
+- **Admin → Analytics, rebuilt**: 7/30/90-day ranges over one small summary per day (`analytics_daily/{day}`, `functions/daily-stats.js`, India-time days, team accounts left out). It shows members active and engaged per day, new members, stories read, videos watched, actions done and EQ checks. It also shows suggestions (clicks and how many led to a read, watch or action the same day), activity by element, the first-steps funnel, and the most-read stories and most-done actions. Once Google Analytics is connected, it adds visitors, page views, top pages and views by kind of page (GA4 Data API, `functions/ga-traffic.js`, `GA4_PROPERTY_ID`). Summaries are rebuilt every 3 hours and by a Refresh button. Before, the page loaded every activity event of the last 30 days live.
+- `scripts/daily-stats.js` (past days, dry run unless `--apply`); browser test `npm run e2e:analytics` (captures the site's real GA requests).
+
+### Changed
+- Firebase's automatic `page_view` on load and AngularFire's `screen_view` tracking are off: both reported the wrong title or a component name.
+- Privacy policy: Google Analytics receives the pages visited and suggestions clicked.
+
 ## [8.8.0] - 2026-11-05
 
 Release hardening for the Phase 2 prod launch (8.4.0–8.8.0 ship in one deploy; follow `docs/PHASE2_RELEASE_RUNBOOK.md`). **Deploy with `-Backend`** (submitEqAssessment, the occasion matcher), then run `scripts/apply-occasion-facts.js`, `scripts/rebuild-related-content.js` and `scripts/recompute-user-metrics.js` (dry run, then `--apply`).

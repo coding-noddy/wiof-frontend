@@ -1,6 +1,6 @@
-# Phase 2 release runbook (8.4.0 → 8.8.0, one deploy)
+# Phase 2 release runbook (8.4.0 → 8.9.0, one deploy)
 
-Production runs **v8.3.0-prod**. This release ships Phase 2 steps 4–7 and the 8.8.0 hardening together:
+Production runs **v8.3.0-prod**. This release ships Phase 2 steps 4–7 and the 8.8.0 hardening and 8.9.0 measurement together:
 - connected content;
 - the journey experience;
 - Today on WIOF;
@@ -74,6 +74,15 @@ node scripts/recompute-user-metrics.js --project prod --apply
 - **Related content:** builds the story, action and occasion matches. Run it after the facts, because the facts feed the occasion matching.
 - **Metrics:** adds the per-element read counts. A second dry run should show 0 changes.
 
+Then fill Admin → Analytics for past days (8.9.0):
+
+```powershell
+node scripts/daily-stats.js --project prod --days 90
+node scripts/daily-stats.js --project prod --days 90 --apply
+```
+
+The deploy's first scheduled function (`buildDailyStats`) turns on the Cloud Scheduler API. If the CLI asks, answer yes. Then do the one-time Google Analytics setup in `docs/ANALYTICS.md`: turn off history page views, add the custom dimensions, connect the Data API.
+
 ## 6. Verify (read-only, about 1 minute)
 
 ```powershell
@@ -106,6 +115,7 @@ It also reports how many facts are still drafts.
 7. **My Journey:** shows the story sentence and the element chips.
 8. Take EQ three times. The second result says that was the last save for today, and the third says it wasn't saved.
 9. **Admin → Calendar:** occasions show "Fact: needs review". Opening one shows the fact card.
+10. **Admin → Analytics:** press Refresh. Today's numbers appear. Google Analytics → Realtime shows page views with real page titles (e.g. "Take Action · World Is One Family").
 
 ## Rollback
 
@@ -122,7 +132,7 @@ node scripts/release.js rollback --project prod --snapshot scripts/backups/prod-
 |---|---|---|---|
 | Hosting | ~1 min | anything users see | serves the snapshot's Hosting version again (`firebase hosting:clone`) |
 | Rules | ~1 min | only if the new rules are the problem | deploys the rules exactly as they were live |
-| Functions | ~10 min | only if a function is the problem | deletes `onActionWritten` and `onEnvcalWritten`, then redeploys `v8.3.0-prod`'s functions from a temporary git worktree |
+| Functions | ~10 min | only if a function is the problem | deletes `onActionWritten`, `onEnvcalWritten`, `buildDailyStats` and `refreshDailyStats`, then redeploys `v8.3.0-prod`'s functions from a temporary git worktree |
 
 **Data needs no rollback.** Phase 2 only adds data:
 - `related_auto`;

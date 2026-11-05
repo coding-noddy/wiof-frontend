@@ -34,16 +34,16 @@
           </h3>
           @if (asActionCards(group)) {
             <ul class="explore-next-list explore-action-cards">
-              @for (item of group.items; track item.id) {
-                <li>
+              @for (item of group.items; track item.id; let i = $index) {
+                <li (click)="picked($event, item, i)">
                   <app-take-action-card [action]="item.action" [headingLevel]="4"></app-take-action-card>
                 </li>
               }
             </ul>
           } @else if (asSiteCards(group)) {
             <ul class="explore-next-list explore-site-cards">
-              @for (item of group.items; track item.type + item.id) {
-                <li>
+              @for (item of group.items; track item.type + item.id; let i = $index) {
+                <li (click)="picked($event, item, i)">
                   @if (item.blog) {
                     <app-blog-card [blog]="item.blog" [element]="item.element" [headingLevel]="4"></app-blog-card>
                   } @else {
@@ -54,8 +54,8 @@
             </ul>
           } @else {
             <ul class="explore-next-list">
-              @for (item of group.items; track item.type + item.id) {
-                <li>
+              @for (item of group.items; track item.type + item.id; let i = $index) {
+                <li (click)="picked($event, item, i)">
                   <a class="explore-card" [routerLink]="item.link" [queryParams]="item.queryParams" (click)="navigate.emit()">
                     <span class="explore-media" [class.is-icon]="!item.image" [attr.data-element]="item.action?.elementIds?.[0]">
                       @if (item.image) {
