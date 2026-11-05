@@ -1,7 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ModalController } from '@ionic/angular';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, switchMap, takeUntil } from 'rxjs/operators';
+import { TakeActionDetailComponent } from 'src/app/components/take-action-detail/take-action-detail.component';
 import { ActionItem } from 'src/app/models/ActionItem';
 import { UserAction } from 'src/app/models/UserAction';
 import { ActionService } from 'src/app/services/action.service';
@@ -56,7 +58,9 @@ export class TakeActionPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private actionService: ActionService,
     private userActionService: UserActionService,
-    private authService: AuthService
+    private authService: AuthService,
+    private modalCtrl: ModalController,
+    private router: Router
   ) {
     const urlArray = this.route.snapshot['_routerState'].url.split('/');
     this.selectedElement = urlArray[2] || ELEMENT_TAB_ORDER[0];
@@ -77,6 +81,44 @@ export class TakeActionPage implements OnInit, OnDestroy {
       this.userId = user?.uid || null;
       this.loadMyActions();
     });
+
+    // ?action={id} (Explore next links) opens that action's details.
+    this.route.queryParamMap.pipe(
+      map((params) => params.get('action')),
+      distinctUntilChanged(),
+      filter((id): id is string => !!id),
+      switchMap((id) => this.actionService.getAction(id)),
+      takeUntil(this.destroy$)
+    ).subscribe((action) => {
+      if (action?.isActive) {
+        this.openActionDetails(action);
+      } else {
+        this.clearActionParam();
+      }
+    });
+  }
+
+  private async openActionDetails(action: ActionItem): Promise<void> {
+    const modal = await this.modalCtrl.create({
+      component: TakeActionDetailComponent,
+      componentProps: { action, element: this.selectedElement },
+      cssClass: 'take-action-detail-modal',
+      backdropDismiss: true
+    });
+    modal.onDidDismiss().then(() => {
+      // Only while the URL still shows this action: a link inside the modal
+      // may already have moved on (another action, or another page, where
+      // this page's route snapshot still holds the old param).
+      if (this.router.parseUrl(this.router.url).queryParams['action'] === action.id) {
+        this.clearActionParam();
+      }
+    });
+    await modal.present();
+  }
+
+  /** Drops ?action= once its details close, so the same link opens them again. */
+  private clearActionParam(): void {
+    this.router.navigate([], { relativeTo: this.route, queryParams: { action: null }, queryParamsHandling: 'merge', replaceUrl: true });
   }
 
   private buildElementTabs(actions: ActionItem[]): void {

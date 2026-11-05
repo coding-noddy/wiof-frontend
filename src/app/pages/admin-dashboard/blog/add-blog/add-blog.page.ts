@@ -9,6 +9,7 @@ import {
   ITEMS
 } from 'src/app/app.constants';
 import { Blog } from 'src/app/models/Blog';
+import { relatedFields } from 'src/app/models/RelatedContent';
 import { BlogService } from 'src/app/services/blog.service';
 import { AppUtilService } from 'src/app/util/AppUtilService';
 import { UiUtilService } from 'src/app/util/UiUtilService';
@@ -243,7 +244,8 @@ export class AddBlogPage implements OnInit, OnDestroy {
       publishDate: new FormControl(this.toDayString(Date.now()), [Validators.required]),
       image: new FormControl('', [Validators.required]),
       shortDescription: new FormControl('', [Validators.required]),
-      content: new FormControl('', [Validators.required])
+      content: new FormControl('', [Validators.required]),
+      relatedContent: new FormControl([])
     });
   }
 
@@ -258,7 +260,8 @@ export class AddBlogPage implements OnInit, OnDestroy {
       publishDate: new FormControl(this.toDayString(Blog.sortDate(blog) || null), [Validators.required]),
       image: new FormControl(blog.imageName, [Validators.required]),
       shortDescription: new FormControl(blog.shortDescription, [Validators.required]),
-      content: new FormControl(blog.content, [Validators.required])
+      content: new FormControl(blog.content, [Validators.required]),
+      relatedContent: new FormControl(blog.relatedContent || [])
     });
   }
 
@@ -363,6 +366,7 @@ export class AddBlogPage implements OnInit, OnDestroy {
       addBlogForm.value.content
     );
     result.contentDelta = safeContentDelta;
+    Object.assign(result, relatedFields(addBlogForm.value.relatedContent, { type: 'blog', id: result.id }));
     // submitDate: when the blog was first saved, never changed by an edit.
     const submitDate = isEditMode ? Blog.toMillis(blog.submitDate) : Date.now();
     if (submitDate !== null) {

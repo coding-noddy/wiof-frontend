@@ -36,12 +36,40 @@ service cloud.firestore {
     // profile documents may not have every field (e.g. 'role'), and reading a
     // missing map key directly throws and denies the whole request.
     function isValidOwnProfileUpdate() {
-      let allowedKeys = ['displayName', 'firstName', 'lastName', 'photoURL', 'preferredElements'];
-      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(allowedKeys)
+      let allowedKeys = ['displayName', 'firstName', 'lastName', 'photoURL', 'preferredElements', 'onboarding'];
+      let changed = request.resource.data.diff(resource.data).affectedKeys();
+      return changed.hasOnly(allowedKeys)
+        && (!changed.hasAny(['preferredElements']) || isValidPreferredElements(request.resource.data.preferredElements))
+        && (!changed.hasAny(['onboarding']) || isValidOnboarding())
         && request.resource.data.get('role', null) == resource.data.get('role', null)
         && request.resource.data.get('uid', null) == resource.data.get('uid', null)
         && request.resource.data.get('email', null) == resource.data.get('email', null)
         && request.resource.data.get('joinedDate', null) == resource.data.get('joinedDate', null);
+    }
+
+    // Up to five of the five elements, no repeats beyond that (checked only
+    // when changed, so a legacy value never blocks an unrelated edit).
+    function isValidPreferredElements(elements) {
+      return elements is list && elements.size() <= 5
+        && elements.hasOnly(['air', 'water', 'earth', 'energy', 'spirit']);
+    }
+
+    // The welcome-after-sign-in and first-steps state (Phase 2 step 5):
+    // two optional timestamps, each set to the server's clock when first
+    // written and never changed or removed after that.
+    function isValidOnboarding() {
+      let before = resource.data.get('onboarding', {});
+      let after = request.resource.data.onboarding;
+      return after is map
+        && after.keys().hasOnly(['welcomeDoneAt', 'checklistDismissedAt'])
+        && onboardingStamp(before, after, 'welcomeDoneAt')
+        && onboardingStamp(before, after, 'checklistDismissedAt');
+    }
+
+    function onboardingStamp(before, after, key) {
+      return before.get(key, null) == null
+        ? (after.get(key, null) == null || after.get(key, null) == request.time)
+        : after.get(key, null) == before.get(key, null);
     }
 
     // ─── User Profiles ──────────────────────────────────────────────────────
@@ -181,6 +209,14 @@ service cloud.firestore {
           || (type == 'widget_usage'
             && data.keys().hasOnly(base.concat(['widgetName']))
             && data.widgetName in ['AQI', 'Energy Calculator', 'Food pH', 'Water Rainfall'])
+          // A click on a suggestion (8.9.0): at most one per suggestion, place and day.
+          || (type == 'suggestion_click'
+            && data.keys().hasOnly(base.concat(['via', 'contentType', 'contentId', 'position']))
+            && data.via in ['explore_next', 'story_behind', 'today', 'next_for_you']
+            && data.contentType in ['blog', 'video', 'action']
+            && isActivityText(data.contentId, 200)
+            && data.position is int && data.position >= 1 && data.position <= 20
+            && docId == request.auth.uid + '_suggestion_click_' + data.via + '_' + data.contentType + '_' + data.contentId + '_' + data.calendarDay)
         );
     }
 
@@ -463,6 +499,22 @@ service cloud.firestore {
     match /CourseInFocus/{id} {
       allow read: if true;
       allow write: if isAdmin();
+    }
+
+    match /related_auto/{id} {
+      // Explore next's automatic matches per blog/action (functions/
+      // related-content.js). Public content only; written by the
+      // onBlogWritten/onActionWritten functions (Admin SDK) alone.
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /analytics_daily/{day} {
+      // Daily summaries for Admin → Analytics (functions/daily-stats.js):
+      // counts across all users, so admins only. Written by the
+      // buildDailyStats / refreshDailyStats functions (Admin SDK) alone.
+      allow read: if isAdmin();
+      allow write: if false;
     }
 
     match /Envcal/{id} {

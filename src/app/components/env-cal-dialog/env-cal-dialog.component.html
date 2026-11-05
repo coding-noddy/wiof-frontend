@@ -66,6 +66,9 @@
                     </a>
                   </div>
                 }
+                @if (occasn.explore?.links?.length) {
+                  <app-explore-next [source]="occasn.explore" [compact]="true" (navigate)="closeDialog()"></app-explore-next>
+                }
                 @if (showNavigation) {
                   <div class="occasion-dots">
                     @for (o of occasionDetails.occasion; track o; let dotIndex = $index) {

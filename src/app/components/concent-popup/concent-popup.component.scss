@@ -60,11 +60,21 @@
   }
 }
 
-// Same teal pill used by .wiof-primary-btn elsewhere for repeated per-card
-// CTAs — Marigold stays reserved for the page's own single primary CTA
-// (e.g. the home hero button), which this overlay sits on top of on every
-// page, so it can't also claim Marigold without competing with it.
-.consent-accept-btn {
+.consent-current {
+  margin-left: 0.25rem;
+  font-weight: 600;
+}
+
+.consent-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+// Accept and Decline are the same size, shape and weight, so declining is as
+// easy as accepting (GDPR consent). Accept is the teal pill used elsewhere;
+// Decline the same pill, outlined.
+.consent-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -85,6 +95,21 @@
   }
 
   &:active { transform: translateY(0); }
+
+  &:focus-visible {
+    outline: 2px solid var(--wiof-marigold);
+    outline-offset: 2px;
+  }
+
+  &.decline {
+    background: transparent;
+    border: 2px solid var(--wiof-warm-white);
+    padding: calc(0.5rem - 2px) calc(1.25rem - 2px);
+
+    &:hover { background: rgba(255, 255, 255, 0.1); }
+  }
+
+  &.accept { border: 2px solid var(--wiof-teal-fill); padding: calc(0.5rem - 2px) calc(1.25rem - 2px); }
 }
 
 @media (max-width: 600px) {
@@ -95,7 +120,11 @@
     padding: 0.75rem 1rem;
   }
 
-  .consent-accept-btn {
+  .consent-actions {
     width: 100%;
+  }
+
+  .consent-btn {
+    flex: 1;
   }
 }

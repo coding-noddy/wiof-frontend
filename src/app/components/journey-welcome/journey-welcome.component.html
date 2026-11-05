@@ -1,0 +1,71 @@
+@if (visible) {
+  <div class="welcome-backdrop" (click)="finish()"></div>
+  <div
+    #dialog
+    class="welcome-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="journey-welcome-title"
+    aria-describedby="journey-welcome-desc"
+    tabindex="-1"
+    >
+    <button class="close-btn" type="button" (click)="finish()" aria-label="Close welcome" [disabled]="saving">
+      <ion-icon aria-hidden="true" name="close-outline"></ion-icon>
+    </button>
+
+    <div class="welcome-header">
+      <p class="welcome-step">Step {{ step }} of 2</p>
+      @if (step === 1) {
+        <h2 class="welcome-title" id="journey-welcome-title">Welcome{{ firstName ? ', ' + firstName : '' }}!</h2>
+        <p class="welcome-desc" id="journey-welcome-desc">Which elements matter most to you? Pick any. You can change this in Settings.</p>
+      } @else {
+        <h2 class="welcome-title" id="journey-welcome-title">Where would you like to start?</h2>
+        <p class="welcome-desc" id="journey-welcome-desc">Pick one. Everything else stays open to explore.</p>
+      }
+    </div>
+
+    @if (step === 1) {
+      <div class="element-choices" role="group" aria-label="Elements">
+        @for (element of elements; track element.slug) {
+          <button
+            type="button"
+            class="element-choice"
+            [attr.data-element]="element.slug"
+            [class.selected]="chosen.has(element.slug)"
+            [attr.aria-pressed]="chosen.has(element.slug)"
+            (click)="toggle(element.slug)"
+            >
+            <ion-icon aria-hidden="true" [name]="chosen.has(element.slug) ? 'checkmark-circle' : element.icon"></ion-icon>
+            {{ element.name }}
+          </button>
+        }
+      </div>
+      <div class="welcome-footer">
+        <button type="button" class="primary-cta" (click)="next()">
+          {{ chosen.size ? 'Continue' : 'Continue without choosing' }}
+          <ion-icon aria-hidden="true" name="arrow-forward"></ion-icon>
+        </button>
+        <button type="button" class="secondary-link" (click)="finish()" [disabled]="saving">Skip for now</button>
+      </div>
+    } @else {
+      <ul class="start-choices">
+        @for (start of starts; track start.verb) {
+          <li>
+            <button type="button" class="start-choice" [attr.data-verb]="start.verb" (click)="finish(start.link)" [disabled]="saving">
+              <ion-icon class="start-icon" aria-hidden="true" [name]="start.icon"></ion-icon>
+              <span class="start-text">
+                <span class="start-verb">{{ start.verb }}</span>
+                <span class="start-title">{{ start.title }}</span>
+                <span class="start-desc">{{ start.desc }}</span>
+              </span>
+              <ion-icon class="start-arrow" aria-hidden="true" name="arrow-forward"></ion-icon>
+            </button>
+          </li>
+        }
+      </ul>
+      <div class="welcome-footer">
+        <button type="button" class="secondary-link" (click)="finish()" [disabled]="saving">Maybe later</button>
+      </div>
+    }
+  </div>
+}

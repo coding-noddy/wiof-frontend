@@ -1,7 +1,21 @@
 import { Component, OnInit, Output, Input, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
-import { ActivityService } from 'src/app/services/activity.service';
+import { ActivityService, EqSaveResult } from 'src/app/services/activity.service';
+
+/**
+ * The line under a signed-in user's EQ result about saving it (two a day
+ * are saved). Null when there's nothing worth saying (saved, more left
+ * today; or a guest, or the call failed).
+ */
+export function eqSaveNote(result: EqSaveResult | null): string | null {
+  if (!result) return null;
+  const limit = result.dailyLimit || 2;
+  if (!result.saved) {
+    return `You've already saved ${limit} EQ checks today, so this one isn't saved to your history. Your result above is still yours. Come back tomorrow to save another.`;
+  }
+  return result.remainingToday === 0 ? `Saved to your EQ history. That's ${limit} for today; you can save another tomorrow.` : null;
+}
 import { AuthService } from 'src/app/services/auth.service';
 
 /**
@@ -37,6 +51,8 @@ export class EqWidgetQuestionCardComponent implements OnInit {
 
   userResponse!: FormGroup;
   showResult = false;
+  /** About saving this result (signed-in users; two a day are saved). */
+  saveNote: string | null = null;
   results: EQResult[] = [];
 
   questions: string[] = [
@@ -139,9 +155,11 @@ export class EqWidgetQuestionCardComponent implements OnInit {
   }
 
   private submitEqAssessment(score: number): void {
+    this.saveNote = null;
     this.authService.isAuthenticated$.pipe(first()).subscribe(isAuth => {
       if (!isAuth) return;
       this.activityService.submitEqAssessment(this.responses, score)
+        .then(result => (this.saveNote = eqSaveNote(result)))
         .catch(err => console.warn('EQ completion activity logging failed:', err));
     });
   }
@@ -152,6 +170,7 @@ export class EqWidgetQuestionCardComponent implements OnInit {
 
   retakeTest() {
     this.showResult = false;
+    this.saveNote = null;
     this.touchedQuestions.clear();
     // Reset all to default 3
     for (let i = 0; i < 24; i++) {

@@ -5,6 +5,9 @@
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
 const {
+  EQ_DAILY_LIMIT,
+  eqCalendarDay,
+  eqSlotIds,
   blogWordCount,
   expectedDocId,
   isPlausibleCalendarDay,
@@ -42,6 +45,18 @@ describe('validateActivityEvent', () => {
 
   it('rejects a count-once event at a random doc ID', async () => {
     assert.equal((await verdict(event('blog_read', { contentId: 'kalpasar' }), 'random')).reason, 'wrong_doc_id');
+  });
+
+  it('accepts a suggestion click on content that exists, once a day per suggestion and place', async () => {
+    const click = (fields) => event('suggestion_click', { via: 'explore_next', contentType: 'blog', contentId: 'kalpasar', position: 1, ...fields });
+    assert.equal(expectedDocId(click({})), 'alice_suggestion_click_explore_next_blog_kalpasar_2026-11-04');
+    assert.equal((await verdict(click({}))).status, 'accepted');
+    assert.equal((await verdict(click({ contentType: 'action', contentId: 'reuse-container' }))).status, 'accepted');
+    assert.equal((await verdict(click({ contentType: 'video', contentId: 'dQw4w9WgXcQ' }))).status, 'accepted');
+    assert.equal((await verdict(click({ contentId: 'no-such-blog' }))).reason, 'content_not_found');
+    assert.equal((await verdict(click({ contentType: 'video', contentId: 'not a video' }))).reason, 'invalid_video_id');
+    assert.equal((await verdict(click({ via: 'popup' }))).reason, 'unknown_via');
+    assert.equal((await verdict(click({}), 'random')).reason, 'wrong_doc_id');
   });
 
   it('rejects an unknown event type', async () => {
@@ -94,6 +109,20 @@ describe('validateActivityEvent', () => {
   it('accepts only the known widgets', async () => {
     assert.equal((await verdict(event('widget_usage', { widgetName: 'AQI' }))).status, 'accepted');
     assert.equal((await verdict(event('widget_usage', { widgetName: 'Fake' }))).reason, 'unknown_widget');
+  });
+
+  it('saves at most two EQ checks a day, in fixed slots', () => {
+    assert.equal(EQ_DAILY_LIMIT, 2);
+    assert.deepEqual(eqSlotIds('u1', '2026-11-05'), ['u1_eq_completion_2026-11-05_1', 'u1_eq_completion_2026-11-05_2']);
+  });
+
+  it('saves an EQ check under the browser day only if it is plausible', () => {
+    const now = new Date('2026-11-05T12:00:00Z');
+    assert.equal(eqCalendarDay('2026-11-06', now), '2026-11-06');
+    assert.equal(eqCalendarDay('2026-11-04', now), '2026-11-04');
+    assert.equal(eqCalendarDay('2026-11-09', now), '2026-11-05');
+    assert.equal(eqCalendarDay('nonsense', now), '2026-11-05');
+    assert.equal(eqCalendarDay(undefined, now), '2026-11-05');
   });
 
   it('accepts an EQ score only when it is the sum of valid dimensions', async () => {

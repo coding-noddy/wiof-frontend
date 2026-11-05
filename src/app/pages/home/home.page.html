@@ -1,8 +1,6 @@
 <!-- home.page.html -->
 <app-header></app-header>
-<app-subscribe [page]="'home'"></app-subscribe>@if (viewConsentPopup) {
-<app-concent-popup (accepted)="onAccept()"></app-concent-popup>
-}
+<app-subscribe [page]="'home'"></app-subscribe>
 
 <ion-content>
   <!-- Banner / Hero Section — intentionally full-bleed, outside .page-container -->
@@ -47,6 +45,11 @@
       <app-home-journey-panel></app-home-journey-panel>
     </section>
 
+    <!-- Today on WIOF: today's occasion, its fact and source, a story and an action -->
+    <section class="section-block today-section">
+      <app-today-on-wiof></app-today-on-wiof>
+    </section>
+
     <!-- This Week: Breaking News (2/3) + Poll (1/3) -->
     <section class="section-block this-week-row">
       <div class="section-header">
@@ -87,7 +90,7 @@
     <section class="section-block bottom-row">
       <div class="section-header">
         <p class="eyebrow">Get involved</p>
-        <h2>Environment Calendar</h2>
+        <h2 id="environment-calendar" tabindex="-1">Environment Calendar</h2>
       </div>
       <ion-grid>
         <ion-row>

@@ -565,3 +565,8 @@ ion-row + ion-row {
   }
 }
 
+
+// Today on WIOF: no gap when there is no occasion today or the reader hid it.
+.today-section:not(:has(.today)) {
+  display: none;
+}

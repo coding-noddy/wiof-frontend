@@ -7,6 +7,7 @@
       </div>
       <a routerLink="/my-journey" class="journey-link">View My Journey →</a>
     </div>
+    <app-first-steps class="journey-first-steps" [profile]="profile$ | async" [metrics]="metrics$ | async" [compact]="true"></app-first-steps>
     @if (!isLoading) {
       <div class="journey-cards">
         @if (lastActivity; as activity) {
@@ -46,14 +47,10 @@
         <a routerLink="/take-action" class="journey-card">
           <span class="eyebrow">Protect through action</span>
           <span class="card-title">{{ actionsCompletedCount }} action{{ actionsCompletedCount === 1 ? '' : 's' }} completed</span>
-          @if (nextActionTitle) {
-            <span class="card-meta">Next: {{ nextActionTitle }}</span>
-          }
-          @if (!nextActionTitle) {
-            <span class="card-meta">Explore what you can do today</span>
-          }
+          <span class="card-meta">Explore what you can do today</span>
         </a>
       </div>
+      <app-next-for-you [picks]="nextForYou"></app-next-for-you>
     } @else {
       <div class="journey-cards">
         <div class="journey-card skeleton skeleton-card"></div>

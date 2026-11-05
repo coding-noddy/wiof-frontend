@@ -89,6 +89,12 @@
         </div>
       }
     </div>
+    @if (saveNote) {
+      <p class="eq-save-note" role="status">
+        <ion-icon aria-hidden="true" name="information-circle-outline"></ion-icon>
+        {{ saveNote }}
+      </p>
+    }
     <!-- Citation -->
     <div class="eq-citation">
       <ion-icon aria-hidden="true" name="information-circle-outline"></ion-icon>

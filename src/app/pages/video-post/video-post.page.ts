@@ -8,6 +8,8 @@ import { YOUTUBE_EMBED_VIDEO_LINK } from 'src/app/app.constants';
 import { ActivityService } from 'src/app/services/activity.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { VideoWatchCompleteEvent } from 'src/app/directives/youtube-watch-tracker.directive';
+import { ExploreSource } from 'src/app/services/related-content.service';
+import { PageTrackingService } from 'src/app/services/page-tracking.service';
 
 @Component({
     selector: 'app-video-post',
@@ -33,13 +35,15 @@ export class VideoPostPage implements OnInit, OnDestroy {
   // URL instead, the same approach take-action.page.ts already uses for
   // this exact situation.
   element = '';
+  exploreSource: ExploreSource | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
     private videoService: YoutubeVideoService,
     private activityService: ActivityService,
-    private authService: AuthService
+    private authService: AuthService,
+    private pageTracking: PageTrackingService
   ) {}
 
   ngOnInit() {
@@ -49,6 +53,7 @@ export class VideoPostPage implements OnInit, OnDestroy {
     this.route.paramMap.subscribe((params) => {
       if (params.has('videoId')) {
         this.id = params.get('videoId');
+        this.exploreSource = { type: 'video', id: this.id, element: this.element };
         this.videoUrl = YOUTUBE_EMBED_VIDEO_LINK.replace('VIDEO_ID', this.id);
         this.videoThumbnail = `https://img.youtube.com/vi/${this.id}/hqdefault.jpg`;
         this.urlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(
@@ -65,6 +70,7 @@ export class VideoPostPage implements OnInit, OnDestroy {
               this.vid = itemData;
               let { snippet } = this.vid;
               this.videoTitle = snippet.title;
+              this.pageTracking.setContentTitle(snippet.title);
               this.videoDescription = snippet.description;
               this.videoChannelName = snippet.title;
             });

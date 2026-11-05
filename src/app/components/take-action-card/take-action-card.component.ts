@@ -27,6 +27,11 @@ import { buildModalZoomAnimation } from 'src/app/util/modal-zoom-animation';
 })
 export class TakeActionCardComponent implements OnInit, OnChanges, OnDestroy {
   @Input() action: ActionItem;
+  /**
+   * Heading level of the title for screen readers, when the card sits under
+   * a heading deeper than the page's own (e.g. 4 inside Explore next's groups).
+   */
+  @Input() headingLevel: number | null = null;
 
   isAuthenticated = false;
   private userId: string | null = null;

@@ -72,7 +72,8 @@ export class EnvCalenderComponent implements OnInit {
           name: x.occasion,
           image: x.image,
           desc: x.description,
-          link: x.showMoreLink
+          link: x.showMoreLink,
+          explore: { links: x.relatedContent }
         });
       }
     });

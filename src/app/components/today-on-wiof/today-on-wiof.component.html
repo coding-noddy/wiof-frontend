@@ -1,0 +1,64 @@
+@if (!hidden) {
+  @if (view$ | async; as today) {
+    <section class="today" aria-labelledby="today-on-wiof-title">
+      <div class="today-main">
+        @if (today.occasion.image | async; as image) {
+          <img class="today-image" [src]="image" alt="" loading="lazy" />
+        }
+        <div class="today-text">
+          <p class="today-eyebrow">
+            <ion-icon aria-hidden="true" name="calendar-outline"></ion-icon>
+            Today on WIOF · {{ todayLabel }}
+          </p>
+          <h2 class="today-title" id="today-on-wiof-title">{{ today.occasion.occasion }}</h2>
+          <p class="today-fact">{{ today.occasion.description }}</p>
+          @if (today.occasion.fact) {
+            <p class="today-didyouknow"><strong>Did you know?</strong> {{ today.occasion.fact }}</p>
+          }
+          @if (today.source; as source) {
+            <a class="today-source" [href]="source.url" target="_blank" rel="noopener noreferrer">
+              {{ source.label }}: {{ source.site }}
+              <ion-icon aria-hidden="true" name="open-outline"></ion-icon>
+              <span class="visually-hidden">(opens in a new tab)</span>
+            </a>
+          }
+        </div>
+        <button type="button" class="today-hide" (click)="hideForToday()">Hide for today</button>
+      </div>
+
+      @if (today.story || today.action) {
+        <ul class="today-picks">
+          @if (today.story; as story) {
+            <li>
+              <a class="today-pick" [routerLink]="story.link" (click)="picked(story, 1)">
+                <ion-icon aria-hidden="true" [name]="story.type === 'video' ? 'play-circle-outline' : 'book-outline'"></ion-icon>
+                <span class="pick-text">
+                  <span class="pick-label">{{ story.type === 'video' ? 'Watch' : 'Read' }}</span>
+                  <span class="pick-title">{{ story.title }}</span>
+                </span>
+                <ion-icon class="pick-arrow" aria-hidden="true" name="arrow-forward"></ion-icon>
+              </a>
+            </li>
+          }
+          @if (today.action; as action) {
+            <li>
+              <a class="today-pick" data-kind="action" [routerLink]="action.link" [queryParams]="action.queryParams" (click)="picked(action, today.story ? 2 : 1)">
+                <ion-icon aria-hidden="true" [name]="action.icon || 'leaf-outline'"></ion-icon>
+                <span class="pick-text">
+                  <span class="pick-label">Try today</span>
+                  <span class="pick-title">{{ action.title }}</span>
+                </span>
+                <ion-icon class="pick-arrow" aria-hidden="true" name="arrow-forward"></ion-icon>
+              </a>
+            </li>
+          }
+        </ul>
+      }
+
+      <a class="today-calendar" href="#environment-calendar" (click)="seeCalendar($event)">
+        See the full calendar
+        <ion-icon aria-hidden="true" name="arrow-down"></ion-icon>
+      </a>
+    </section>
+  }
+}

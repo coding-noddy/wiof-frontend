@@ -1,0 +1,406 @@
+@use '../../wiof-custom-theming' as *;
+
+:host {
+  display: block;
+}
+
+// On a page: its own section, tinted with the element's colour, so it reads
+// as "what now?" rather than more of the article.
+.explore-next {
+  --explore-accent: var(--wiof-teal);
+  --explore-accent-text: var(--wiof-teal-text);
+  margin: 2rem 0 0;
+  padding: 1.5rem;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--explore-accent) 14%, var(--wiof-warm-white));
+  border: 1.5px solid color-mix(in srgb, var(--explore-accent) 38%, var(--wiof-warm-white));
+  animation: explore-in 0.35s ease-out both;
+
+  &[data-accent='earth'] {
+    --explore-accent: var(--wiof-brown);
+    --explore-accent-text: var(--wiof-brown-text);
+  }
+
+  &[data-accent='energy'] {
+    --explore-accent: var(--wiof-marigold);
+    --explore-accent-text: var(--wiof-marigold-text);
+  }
+}
+
+@keyframes explore-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .explore-next {
+    animation: none;
+  }
+}
+
+.explore-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0 0 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--explore-accent-text);
+
+  ion-icon {
+    font-size: 0.95rem;
+  }
+}
+
+.explore-next-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1.1rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--wiof-ink);
+
+  ion-icon {
+    color: var(--wiof-teal);
+    font-size: 1.3rem;
+  }
+}
+
+.explore-group + .explore-group {
+  margin-top: 1.5rem;
+}
+
+.explore-group-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.4rem;
+  margin: 0 0 0.7rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--wiof-ink);
+
+  ion-icon {
+    align-self: center;
+    font-size: 1.05rem;
+    color: var(--wiof-teal);
+  }
+}
+
+.explore-group-subtitle {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--wiof-ink-muted);
+}
+
+.explore-group[data-group='act'] .explore-group-title ion-icon {
+  color: var(--wiof-marigold-text);
+}
+
+.explore-next-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 0.85rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.explore-action-cards {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+}
+
+.explore-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  height: 100%;
+  padding: 0.65rem;
+  background: var(--wiof-warm-white);
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  border-radius: 14px;
+  color: var(--wiof-ink);
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--wiof-teal);
+    transform: translateY(-2px);
+
+    img {
+      transform: scale(1.04);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--wiof-teal);
+    outline-offset: 2px;
+  }
+}
+
+.explore-media {
+  position: relative;
+  flex: 0 0 auto;
+  width: 88px;
+  height: 60px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--wiof-ivory);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.25s ease;
+  }
+
+  &.is-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-icon {
+      font-size: 1.8rem;
+      color: var(--wiof-teal);
+    }
+  }
+
+  // Actions: the element's colour behind a warm-white icon, as on Take Action cards.
+  &.is-icon[data-element] {
+    background: var(--wiof-teal);
+
+    ion-icon {
+      color: var(--wiof-warm-white);
+    }
+  }
+
+  &.is-icon[data-element='earth'] {
+    background: var(--wiof-brown);
+  }
+
+  &.is-icon[data-element='energy'] {
+    background: var(--wiof-marigold);
+
+    ion-icon {
+      color: var(--wiof-ink);
+    }
+  }
+}
+
+.explore-play {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  font-size: 2rem;
+  color: var(--wiof-warm-white);
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45));
+}
+
+.explore-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.explore-type {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--wiof-teal-text);
+
+  &[data-type='action'] {
+    color: var(--wiof-marigold-text);
+  }
+}
+
+.explore-meta {
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--wiof-ink-muted);
+}
+
+.explore-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.explore-description {
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--wiof-ink-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// Stories and videos: picture-first cards. Three in a row on wider screens;
+// on phones a row that swipes sideways (plain CSS scroll-snap, not Swiper),
+// so five cards don't stack into one long column.
+.explore-next:not(.compact) .explore-group[data-group='read'] {
+  .explore-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .explore-media {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .explore-text {
+    padding: 0 0.15rem 0.2rem;
+  }
+}
+
+@media (min-width: 601px) {
+  .explore-next:not(.compact) .explore-group[data-group='read'] .explore-next-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+// The element pages' blog and video cards, sized for a three-up row.
+.explore-site-cards {
+  > li {
+    display: flex;
+    min-width: 0;
+  }
+
+  app-blog-card,
+  app-video-card {
+    display: block;
+    width: 100%;
+  }
+
+  ::ng-deep .blog-card {
+    margin: 0;
+  }
+
+  ::ng-deep .blog-image-wrap {
+    height: 150px;
+  }
+}
+
+@media (max-width: 600px) {
+  .explore-next:not(.compact) {
+    padding: 1.15rem 1rem;
+  }
+
+  .explore-next-heading {
+    font-size: 1.15rem;
+  }
+
+  .explore-next:not(.compact) .explore-group[data-group='read'] .explore-next-list {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    // Room for the focus outline and the hover lift inside the scroller.
+    padding: 4px 2px 6px;
+    margin: -4px -2px -6px;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    > li {
+      flex: 0 0 78%;
+      scroll-snap-align: start;
+    }
+  }
+}
+
+// Loading placeholder.
+.is-loading {
+  .explore-skeleton-heading {
+    width: 55%;
+    height: 22px;
+    margin-bottom: 1.1rem;
+  }
+
+  .explore-next-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .explore-skeleton-card {
+    height: 170px;
+    border-radius: 14px;
+  }
+
+  &.compact .explore-next-list {
+    grid-template-columns: 1fr;
+  }
+
+  &.compact .explore-skeleton-card {
+    height: 56px;
+  }
+}
+
+@media (max-width: 600px) {
+  .is-loading:not(.compact) .explore-next-list {
+    grid-template-columns: 1fr;
+
+    .explore-skeleton-card:nth-child(n + 2) {
+      display: none;
+    }
+  }
+}
+
+// In a modal: no band, smaller cards in one column.
+.compact {
+  margin-top: 1.25rem;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  animation: none;
+
+  .explore-next-heading {
+    font-size: 1rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .explore-group-title {
+    font-size: 0.88rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .explore-group + .explore-group {
+    margin-top: 0.9rem;
+  }
+
+  .explore-next-list {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .explore-media {
+    width: 64px;
+    height: 44px;
+  }
+}

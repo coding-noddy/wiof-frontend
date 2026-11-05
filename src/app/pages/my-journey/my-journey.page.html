@@ -80,6 +80,23 @@
         12; adding the 7th (Actions Taken) broke that and left it
         wrapping alone onto its own row. auto-fit adapts to any tile
         count at any width without ever needing to be re-tuned again. -->
+        <!-- Your journey so far: a sentence, and which elements you've explored. -->
+        <section class="journey-story" aria-labelledby="journey-story-title">
+          <h2 class="visually-hidden" id="journey-story-title">Your journey so far</h2>
+          <p class="journey-story-text">{{ story || "Your journey starts here. Read a story to the end, watch a video or try a small action, and it'll show up here." }}</p>
+          <ul class="journey-elements" aria-label="Elements explored: {{ exploredCount }} of 5">
+            @for (element of journeyElements; track element.slug) {
+              <li class="journey-element" [attr.data-element]="element.slug" [class.explored]="isExplored(element.slug)">
+                <ion-icon aria-hidden="true" [name]="isExplored(element.slug) ? 'checkmark-circle' : element.icon"></ion-icon>
+                {{ element.name }}
+                <span class="visually-hidden">{{ isExplored(element.slug) ? '(explored)' : '(not yet)' }}</span>
+              </li>
+            }
+          </ul>
+        </section>
+
+        <app-first-steps class="journey-first-steps" [profile]="profile" [metrics]="metrics"></app-first-steps>
+
         <div class="metrics-section">
           <div class="metrics-grid">
             <div class="metric-card blogs-card" (click)="scrollToSection('blogs-read')">

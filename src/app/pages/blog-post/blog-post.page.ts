@@ -1,12 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { first, map, shareReplay } from 'rxjs/operators';
 import { Blog } from 'src/app/models/Blog';
 import { BlogService } from 'src/app/services/blog.service';
+import { ExploreSource } from 'src/app/services/related-content.service';
 import { ActivityService } from 'src/app/services/activity.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { BlogReadCompleteEvent } from 'src/app/directives/blog-read-tracker.directive';
+import { UiUtilService } from 'src/app/util/UiUtilService';
+import { shareLink } from 'src/app/util/share-link';
+import { PageTrackingService } from 'src/app/services/page-tracking.service';
 
 @Component({
     selector: 'app-blog-post',
@@ -16,6 +20,7 @@ import { BlogReadCompleteEvent } from 'src/app/directives/blog-read-tracker.dire
 })
 export class BlogPostPage implements OnInit {
   public blogDetails: Observable<Blog>;
+  public exploreSource$: Observable<ExploreSource | null>;
   expandedImageSrc: string | null = null;
   expandedImageAlt = '';
   // Each element ('air', 'earth', ...) is its own literal top-level route
@@ -29,7 +34,9 @@ export class BlogPostPage implements OnInit {
     private route: ActivatedRoute,
     private blogService: BlogService,
     private activityService: ActivityService,
-    private authService: AuthService
+    private authService: AuthService,
+    private uiUtil: UiUtilService,
+    private pageTracking: PageTrackingService
   ) {}
 
   ngOnInit() {
@@ -46,6 +53,17 @@ export class BlogPostPage implements OnInit {
         } else {
           this.blogDetails = this.blogService.getBlogBySlug(blogParam);
         }
+        this.blogDetails = this.blogDetails.pipe(shareReplay(1));
+        this.blogDetails.pipe(first()).subscribe({ next: (blog) => this.pageTracking.setContentTitle(blog?.title), error: () => {} });
+        this.exploreSource$ = this.blogDetails.pipe(
+          map((blog) => blog && {
+            type: 'blog' as const,
+            id: blog.id,
+            links: blog.relatedContent,
+            element: String(blog.category || this.element).toLowerCase(),
+            subCategory: blog.subCategory
+          })
+        );
 
         // Log activity for authenticated users (fire-and-forget)
         this.logBlogRead(blogParam);
@@ -94,19 +112,7 @@ export class BlogPostPage implements OnInit {
       text: `${blog.title} — by ${blog.author || 'WIOF'} | World is One Family`,
       url: window.location.href
     };
-
-    if (navigator.share) {
-      // Native share (mobile)
-      try {
-        await navigator.share(shareData);
-      } catch (e) {
-        // User cancelled or share failed — fallback to copy
-        this.copyLink();
-      }
-    } else {
-      // Desktop fallback — copy link
-      this.copyLink();
-    }
+    await shareLink(shareData, this.uiUtil);
   }
 
   /**
@@ -144,12 +150,6 @@ export class BlogPostPage implements OnInit {
         event.timeSpent,
         blogTitle
       ).catch(err => console.warn('Blog read complete logging failed:', err));
-    });
-  }
-
-  private copyLink() {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-      alert('Link copied to clipboard!');
     });
   }
 }

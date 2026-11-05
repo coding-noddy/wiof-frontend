@@ -1,1 +1,13 @@
 @use '../../admin-shared' as *;
+
+// An occasion whose Today on WIOF fact still needs an admin's review.
+.fact-chip {
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--wiof-marigold) 22%, var(--wiof-warm-white));
+  color: var(--wiof-marigold-text);
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}

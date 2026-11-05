@@ -7,6 +7,113 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.9.0] - 2026-11-05
+
+Measurement (see `docs/ANALYTICS.md`). **Deploy with `-Backend`** (new functions `buildDailyStats`, a schedule, and `refreshDailyStats`; rules for `suggestion_click` and `analytics_daily`). The first scheduled function turns on Cloud Scheduler for the project. Then fill past days with `node scripts/daily-stats.js --project prod --days 90` (dry run, then `--apply`), and do the one-time Google Analytics setup in `docs/ANALYTICS.md`.
+
+### Added
+- **Google Analytics gets real page data.** Every page has its own browser title (e.g. "Rainwater Harvesting & it's Benefits · Water · World Is One Family"; story and video pages wait for their content's title). The site sends one `page_view` per navigation with the path, that title, a page group (GA4's `content_group`: home, element, story, video, take_action, my_journey, admin…) and the element. Before, every page was titled "World Is One Family", so GA showed one row. The user property `user_type` (guest, member, admin) lets reports leave out the team.
+- **Suggestion clicks** from Explore next, "The story behind this", Today on WIOF and Next for you go to GA as `select_content` (where it was shown, what, position, reason). For signed-in members they're also saved as a checked `suggestion_click` event, once a day per suggestion and place (rules + server checks).
+- **Admin → Analytics, rebuilt**: 7/30/90-day ranges over one small summary per day (`analytics_daily/{day}`, `functions/daily-stats.js`, India-time days, team accounts left out). It shows members active and engaged per day, new members, stories read, videos watched, actions done and EQ checks. It also shows suggestions (clicks and how many led to a read, watch or action the same day), activity by element, the first-steps funnel, and the most-read stories and most-done actions. Once Google Analytics is connected, it adds visitors, page views, top pages and views by kind of page (GA4 Data API, `functions/ga-traffic.js`, `GA4_PROPERTY_ID`). Summaries are rebuilt every 3 hours and by a Refresh button. Before, the page loaded every activity event of the last 30 days live.
+- `scripts/daily-stats.js` (past days, dry run unless `--apply`); browser test `npm run e2e:analytics` (captures the site's real GA requests).
+
+### Added (consent)
+- **Google Analytics is opt-in** (GDPR): a consent banner on whatever page a visitor lands on, with Accept and Decline equally easy, remembered on the device and changeable any time from **Cookie settings** in the footer. Until Accept, analytics collection is off, so nothing is sent to Google (Google Consent Mode: analytics denied; ad signals always denied, as WIOF shows no ads). Accepting counts the page the visitor is on. The old home-only "Got it" bar is gone.
+
+### Changed
+- Firebase's automatic `page_view` on load and AngularFire's `screen_view` tracking are off: both reported the wrong title or a component name.
+- Privacy policy: Google Analytics runs only with consent (how to accept, decline or withdraw), and receives the pages visited and suggestions clicked.
+
+## [8.8.0] - 2026-11-05
+
+Release hardening for the Phase 2 prod launch (8.4.0–8.8.0 ship in one deploy; follow `docs/PHASE2_RELEASE_RUNBOOK.md`). **Deploy with `-Backend`** (submitEqAssessment, the occasion matcher), then run `scripts/apply-occasion-facts.js`, `scripts/rebuild-related-content.js` and `scripts/recompute-user-metrics.js` (dry run, then `--apply`).
+
+### Added
+- **Release and rollback tooling** (`scripts/release.js`): `preflight` (what's live against this checkout: Hosting version, new or removed functions, index drift), `snapshot` (saves the live rules, indexes, Hosting version and functions with a ROLLBACK.md), `wait-indexes`, `verify` (post-deploy checks) and `rollback --only hosting|rules|functions` (dry run unless `--apply`). Runbook: `docs/PHASE2_RELEASE_RUNBOOK.md`.
+- **Facts for Today on WIOF**: occasions get their own `fact`, `factSource` and `factStatus` (draft / reviewed), edited in Admin → Calendar (the list marks "Fact: needs review"). The card shows "Did you know?" under the description; its link is called the fact's "Source" only once an admin has reviewed the fact and added its source, else the occasion's page is offered as "Learn more". 133 draft facts written by the WIOF team (`scripts/data/occasion-facts.json`), applied by `scripts/apply-occasion-facts.js`, which never overwrites a reviewed fact. Facts also feed the occasion matching.
+- `scripts/report-topics.js`: the topic names in use per element, for the shared topic list proposed in `docs/TOPICS_AND_TAGS.md`.
+- Browser test `npm run e2e:eq` (staging only).
+
+### Changed
+- **EQ: at most two saved checks a day** for a signed-in user (decided 2026-11-05: a score doesn't change much in a day). The server saves each check in a fixed daily slot (`{uid}_eq_completion_{day}_{1|2}`, in a transaction); a third is still scored and shown, just not saved, and the result screen says so. Guests' checks were never saved and still aren't.
+- **Privacy policy** (5 November 2026): personalised suggestions (what they use, that they're rule-based, not for advertising, how to change or clear them), the welcome and checklist state, server checks on activity, EQ saving for guests and signed-in users, and "Hide for today".
+
+## [8.7.0] - 2026-11-05
+
+Phase 2 step 7: rule-based "Next for you" (see `docs/PHASE2_PLAN.md` section F). Hosting only: no rules, index or function changes.
+
+### Added
+- **Next for you** in the home journey panel for signed-in users: up to four picks (two stories, two actions; one kind fills in if the other runs short), each with the reason it was picked. Stories: similar to the last three stories read to the end ("Because you read …"), then the newest in each of the user's elements ("New in Water"). Actions: ones started but not done ("You started this"), then ones that go with a recent read ("Goes with …"), then the element's actions in the Take Action order ("Try in Earth"). Stories read to the end and completed actions never show. Suggestions come from the elements the user chose, else the ones they've explored, and the panel says which, with a link to change them. Shows nothing until there's something to suggest.
+- Browser test `npm run e2e:next` (staging only).
+
+### Changed
+- The journey panel's actions tile no longer names its own "Next:" action (Next for you suggests it now, with a reason).
+
+## [8.6.0] - 2026-11-05
+
+Phase 2 step 6: "Today on WIOF" (see `docs/PHASE2_PLAN.md` section E). **Deploy with `-Backend`** (new `onEnvcalWritten` trigger), then run `node scripts/rebuild-related-content.js --project prod` (dry run) and `--apply` to match the calendar occasions.
+
+### Added
+- **Today on WIOF** on the home page: today's calendar occasion, its fact (the occasion's description) and source (its "Show more" link, opening in a new tab), plus one story or video to read and one small action to try today. The occasion's own Related Content links come first, then the best keyword matches. With no good match it shows just the fact. "Hide for today" hides it until tomorrow on this device; a day with no occasion shows nothing. "See the full calendar" scrolls down to the Environment Calendar on the same page (instantly with reduced motion), moves focus to its heading and briefly highlights today in the agenda.
+- **Calendar occasions are matched to stories and actions** by the related-content matcher, as queries only: they are never suggested themselves, and they don't change any story or action match. Short occasion texts get a stricter bar: calendar boilerplate ("world", "day", "celebrated"…) is ignored, the score must reach 0.10 (not 0.08), and at least two terms must be shared. New trigger `onEnvcalWritten` rebuilds the matches when an occasion is edited.
+- Browser test `npm run e2e:today` (staging only).
+
+### Changed
+- `scripts/rebuild-related-content.js` lists occasions too.
+
+## [8.5.0] - 2026-11-05
+
+Phase 2 step 5: the journey experience (see `docs/PHASE2_PLAN.md` section D). **Deploy with `-Backend`** (rules and functions), then run `node scripts/recompute-user-metrics.js --project prod` (dry run) and `--apply` to fill the new per-element counts.
+
+### Added
+- **A welcome after sign-in:** two short, skippable steps on the home page, shown once to a signed-in user who hasn't chosen elements. 1: which elements matter to you (saved as your preferred elements, editable in Settings). 2: where to start — a story, a small action or the EQ check, for your first chosen element. Skipping counts as done. Phones get a bottom sheet. The guest welcome is now for guests only, so the two never stack.
+- **Your first steps** on the home panel and My Journey: choose your elements, read a story to the end, watch a video, check your EQ, do your first action. Each step is ticked by the server's trusted counts, never the browser. Hide it once and it stays hidden on every device; it also goes away when all five are done.
+- **My Journey tells your story:** "Since you joined in March 2026, you've read 9 stories, watched 3 videos and done 17 actions across 4 elements", with the five elements shown as explored or not yet.
+- New trusted metric `qualityReadsByElement` (`docs/METRICS.md`): quality reads per element, counted by `onActivityLogCreated` and by the recompute, cleared by "Clear My Engagement Data".
+- Browser test `npm run e2e:journey` (staging only).
+
+### Changed
+- Profile rules: `preferredElements` must be up to five of the five elements (checked only when changed), and the new `onboarding` record holds two timestamps, each set once by the server clock.
+- The recompute report prints per-element maps readably.
+
+### Fixed
+- Home "Pick up where you left off" linked every story under Earth; it now links under the story's own element.
+
+## [8.4.1] - 2026-11-05
+
+Explore next, redesigned so it reads as a "what now?" moment instead of a plain list. **Deploy with `-Backend`**: one new Firestore index.
+
+### Changed
+- **Actions you can do right there:** on blog and video pages the **Your next step** group (was "Take action on this") shows full Take Action cards, with time, difficulty, "Learn more" and **Mark as Done**. Guests get the same sign-in prompt as on the Take Action page.
+- **The heading says what the page is about:** "Because you read about Veganism" (the story's topic), "Because you read this story" or "Because you watched this video", under a small "Explore next" label. Modals keep "Explore next".
+- **Its own section:** a soft band tinted with the element's colour.
+- **The same story and video cards as the element pages** (with bookmark and share), three in a row. On phones they're a row you swipe sideways (CSS scroll-snap) instead of a long stack.
+- A loading placeholder in the block's shape, and a short fade-in (off with reduced motion).
+- **The action details no longer carry an Explore next block.** The modal is for deciding to do the action, so it now ends with one line, **The story behind this**, to the action's linked story or video (or one that links to it, or its best similar story), shown only when there's a real match.
+- The calendar popup keeps its small linked-items list; compact action cards there use the element's colour for their icon tile, as on Take Action.
+- Blog cards link to the full post path, so they also work outside the element's own pages, and a long author name ends in "…" instead of a clipped letter.
+- The heading's topic is shown capitalised ("Khalsa Aid"), and only when it's short enough to be a topic; otherwise it reads "Because you read this story".
+- The "more from this element" fallback reads at most 12 newest and 12 same-topic stories instead of every story in the element (new index: `blog_summaries` category + publishDate). If the index isn't there yet, only the fallback is lost, not the block.
+
+### Fixed
+- Share on a blog card or post: "Link copied" is now a toast instead of a browser pop-up, and closing the phone's share sheet no longer copies the link and says it did.
+- Screen readers: card titles inside Explore next are a level below their group heading, instead of the same level.
+
+### Tests
+- Unit tests for Explore next (heading, topics, card choice, loading), "The story behind this", the blog card link and sharing.
+- The browser end-to-end tests are now in the repo (`tests/e2e`, staging only): `npm run e2e:smoke` and `npm run e2e:explore`. Test account details come from environment variables, never the repo.
+- Take Action cards everywhere now show the action's time and difficulty, as the details already did.
+
+## [8.4.0] - 2026-11-05
+
+Phase 2 step 4: connected content, "What can I explore next?" (see `docs/PHASE2_PLAN.md` section C).
+
+### Added
+- An **Explore next** block on blog and video pages, in the Take Action details and in the calendar occasion popup, in two groups by intent: **Keep reading** (up to 3 stories or videos) and **Take action on this** (up to 2 actions). In an action's details it reads **Learn more**, then **More actions like this**. Each group shows the item's own related links first, then items that link to it (a link works both ways), then **similar content**, then more from the same element (same-topic stories first, a different pick per page). The calendar popup shows linked items only.
+- **Similar content, matched by what the page is about:** a server-side keyword matcher (`functions/related-content.js`, TF-IDF with cosine similarity) compares every story's and action's title, topic, description and text, with a small thesaurus so words like "vegan", "plant-based" and "meat-free" match each other. Each item's best matches are stored in `related_auto/{type}_{id}` (public read, server write only), rebuilt by `onBlogWritten` and the new `onActionWritten` trigger after every admin edit, and by `scripts/rebuild-related-content.js` (dry run by default). Weak matches are left out. The Veganism story now suggests the vegan recipes and "Try a Plant-Forward Meal"; rainwater harvesting suggests "Take a Shorter Shower" and "Fix a Water Leak".
+- **Related Content** in the admin blog, Take Action and calendar forms: pick stories and actions by title, or add a YouTube video by link (the title is looked up on YouTube). Up to six links, in order. Stored as `relatedContent` plus `relatedKeys` (`type:id`) for the reverse lookup; `blog_summaries` copies the keys.
+- Take Action links (`/element/{element}/take-action?action={id}`) open that action's details.
+
 ## [8.3.0] - 2026-11-04
 
 Phase 2 step 3: the action model, ready for Planet Passport (see `docs/PHASE2_PLAN.md`, `docs/METRICS.md`).

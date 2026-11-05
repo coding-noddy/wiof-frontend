@@ -5,7 +5,7 @@
 
   <div class="card-body">
     <div class="card-title-row">
-      <h3 class="card-title">{{ action.title }}</h3>
+      <h3 class="card-title" [attr.aria-level]="headingLevel">{{ action.title }}</h3>
       @if (streak > 0) {
         <span class="streak-badge">
           <ion-icon aria-hidden="true" name="flame-outline"></ion-icon> {{ streak }}
@@ -17,6 +17,14 @@
       <div class="card-chips">
         @for (element of action.elementIds; track element) {
           <span class="chip" [ngClass]="element">{{ element }}</span>
+        }
+        @if (action.estimatedDurationMinutes) {
+          <span class="chip meta-chip">
+            <ion-icon aria-hidden="true" name="time-outline"></ion-icon> {{ action.estimatedDurationMinutes }} min
+          </span>
+        }
+        @if (action.difficulty) {
+          <span class="chip meta-chip">{{ action.difficulty | enumLabel }}</span>
         }
       </div>
     }

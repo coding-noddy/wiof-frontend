@@ -14,8 +14,9 @@
 const functions = require('firebase-functions/v1');
 const admin = require('firebase-admin');
 const { BLOG_SUMMARIES, buildBlogSummary } = require('./blog-summary');
-const { VALIDATOR_VERSION, scoreEqResponses, validateActivityEvent } = require('./activity-validation');
-const { makeContentLookups, recomputeUserMetrics } = require('./user-metrics');
+const { EQ_DAILY_LIMIT, VALIDATOR_VERSION, eqCalendarDay, eqSlotIds, scoreEqResponses, validateActivityEvent } = require('./activity-validation');
+const { elementOfBlog, makeContentLookups, recomputeUserMetrics } = require('./user-metrics');
+const { rebuildRelatedContent } = require('./related-content');
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -475,6 +476,8 @@ exports.resetEngagementData = functions
       lastEqScore: null,
       lastEqDate: null,
       lastBlogReadDate: null,
+      // delete(), not {}: a merge set would keep the old per-element keys.
+      qualityReadsByElement: admin.firestore.FieldValue.delete(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
 
@@ -536,16 +539,24 @@ exports.migrateSavedContentIds = functions
   }));
 
 /** The user_metrics change one accepted event makes, or null if it feeds no tally. */
-function metricsUpdateFor(entry) {
+async function metricsUpdateFor(entry) {
   const update = { updatedAt: admin.firestore.FieldValue.serverTimestamp() };
   switch (entry.activityType) {
     case 'blog_read':
       update.blogsRead = admin.firestore.FieldValue.increment(1);
       update.lastBlogReadDate = entry.timestamp;
       break;
-    case 'blog_read_complete':
+    case 'blog_read_complete': {
       update.qualityReads = admin.firestore.FieldValue.increment(1);
+      // Per element, for My Journey's "elements explored" (docs/METRICS.md).
+      // A nested map, as for actionsByElement below: set() with merge reads a
+      // dotted key as one literal field name.
+      const element = elementOfBlog(await activityLookups.getBlog(entry.contentId));
+      if (element) {
+        update.qualityReadsByElement = { [element]: admin.firestore.FieldValue.increment(1) };
+      }
       break;
+    }
     case 'video_view':
       update.videosWatched = admin.firestore.FieldValue.increment(1);
       break;
@@ -602,7 +613,7 @@ exports.onActivityLogCreated = functions
         fn: 'onActivityLogCreated', rejected: verdict.reason, docId: snap.id, activityType: entry.activityType || null
       }));
     }
-    const update = verdict.status === 'accepted' && entry.userId ? metricsUpdateFor(entry) : null;
+    const update = verdict.status === 'accepted' && entry.userId ? await metricsUpdateFor(entry) : null;
 
     await db.runTransaction(async (tx) => {
       const current = await tx.get(snap.ref);
@@ -748,11 +759,35 @@ exports.onBlogWritten = functions
   .firestore.document('Blogs/{blogId}')
   .onWrite(withTriggerErrorLogging('onBlogWritten', async (change, context) => {
     const summaryRef = db.collection(BLOG_SUMMARIES).doc(context.params.blogId);
-    if (!change.after.exists) {
+    if (change.after.exists) {
+      await summaryRef.set(await buildBlogSummary(change.after.data() || {}, storage.bucket()));
+    } else {
       await summaryRef.delete();
-      return null;
     }
-    await summaryRef.set(await buildBlogSummary(change.after.data() || {}, storage.bucket()));
+    await rebuildRelatedContent(db, { FieldValue: admin.firestore.FieldValue });
+    return null;
+  }));
+
+/**
+ * Rebuilds the automatic related content (related_auto, see
+ * related-content.js) when an admin adds, edits or deactivates an action, so
+ * Explore next keeps matching stories to the current catalogue. Blog edits do
+ * the same from onBlogWritten.
+ */
+exports.onActionWritten = functions
+  .region(REGION)
+  .firestore.document('actions/{actionId}')
+  .onWrite(withTriggerErrorLogging('onActionWritten', async () => {
+    await rebuildRelatedContent(db, { FieldValue: admin.firestore.FieldValue });
+    return null;
+  }));
+
+/** Calendar occasions are matched too (Today on WIOF), so an edit rebuilds the matches. */
+exports.onEnvcalWritten = functions
+  .region(REGION)
+  .firestore.document('Envcal/{occasionId}')
+  .onWrite(withTriggerErrorLogging('onEnvcalWritten', async () => {
+    await rebuildRelatedContent(db, { FieldValue: admin.firestore.FieldValue });
     return null;
   }));
 
@@ -803,22 +838,28 @@ exports.submitEqAssessment = functions
     if (!result) {
       throw new functions.https.HttpsError('invalid-argument', 'Expected 24 answers from 1 to 5.');
     }
-    // The browser's local day (as for every other event); the trigger
-    // rejects one more than a day away from the server time.
-    const calendarDay = data && typeof data.calendarDay === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(data.calendarDay)
-      ? data.calendarDay
-      : new Date().toISOString().slice(0, 10);
+    // The browser's local day (as for every other event), if plausible.
+    const calendarDay = eqCalendarDay(data && data.calendarDay);
 
-    await db.collection('activity_log').add({
-      userId: context.auth.uid,
-      activityType: 'eq_completion',
-      schemaVersion: 1,
-      score: result.score,
-      eqDimensions: result.eqDimensions,
-      timestamp: admin.firestore.FieldValue.serverTimestamp(),
-      calendarDay
+    // At most EQ_DAILY_LIMIT saved checks a day: each takes the next free
+    // fixed-ID slot, in a transaction so two at once can't share one.
+    const refs = eqSlotIds(context.auth.uid, calendarDay).map((id) => db.collection('activity_log').doc(id));
+    const savedAs = await db.runTransaction(async (tx) => {
+      const snaps = await Promise.all(refs.map((ref) => tx.get(ref)));
+      const free = snaps.findIndex((snap) => !snap.exists);
+      if (free < 0) return 0;
+      tx.create(refs[free], {
+        userId: context.auth.uid,
+        activityType: 'eq_completion',
+        schemaVersion: 1,
+        score: result.score,
+        eqDimensions: result.eqDimensions,
+        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+        calendarDay
+      });
+      return free + 1;
     });
-    return result;
+    return { ...result, saved: savedAs > 0, remainingToday: savedAs > 0 ? EQ_DAILY_LIMIT - savedAs : 0, dailyLimit: EQ_DAILY_LIMIT };
   }));
 
 /**
@@ -1081,3 +1122,59 @@ exports.socialMetaTags = functions
     res.redirect(originalUrl);
   }
 });
+
+// ─── Daily analytics (8.9.0) ─────────────────────────────────────────────
+// One analytics_daily/{YYYY-MM-DD} summary per India-time day for Admin →
+// Analytics (functions/daily-stats.js), plus the day's Google Analytics
+// traffic when GA4_PROPERTY_ID is set (functions/ga-traffic.js).
+
+const { buildDailyStatsDoc, addDays, istDay } = require('./daily-stats');
+const { fetchTraffic } = require('./ga-traffic');
+
+const buildDay = (day) => buildDailyStatsDoc(db, day, {
+  fetchTraffic,
+  Timestamp: admin.firestore.Timestamp,
+  FieldValue: admin.firestore.FieldValue
+});
+
+/**
+ * Every 3 hours: today so far, and yesterday (late events and GA's own
+ * processing delay settle within a day). Two small summaries per run.
+ */
+exports.buildDailyStats = functions
+  .region(REGION)
+  .runWith({ timeoutSeconds: 300, memory: '512MB' })
+  .pubsub.schedule('every 3 hours')
+  .timeZone('Asia/Kolkata')
+  .onRun(withTriggerErrorLogging('buildDailyStats', async () => {
+    const today = istDay();
+    await buildDay(addDays(today, -1));
+    await buildDay(today);
+    return null;
+  }));
+
+/**
+ * Admin → Analytics "Refresh": rebuilds today (or `day`), and with `days`
+ * (up to 31) that many days back. Admins only.
+ */
+exports.refreshDailyStats = functions
+  .region(REGION)
+  .runWith({ timeoutSeconds: 300, memory: '512MB', ...APP_CHECK })
+  .https.onCall(withErrorLogging('refreshDailyStats', async (data, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
+    }
+    const adminDoc = await db.collection('admins').doc(context.auth.uid).get();
+    if (!adminDoc.exists) {
+      throw new functions.https.HttpsError('permission-denied', 'Admin privileges required.');
+    }
+    const last = data && /^\d{4}-\d{2}-\d{2}$/.test(String(data.day || '')) ? data.day : istDay();
+    const days = Math.min(Math.max(Number(data && data.days) || 1, 1), 31);
+    const built = [];
+    for (let i = 0; i < days; i++) {
+      const day = addDays(last, -i);
+      await buildDay(day);
+      built.push(day);
+    }
+    return { built };
+  }));

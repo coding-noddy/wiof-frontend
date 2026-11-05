@@ -1,0 +1,140 @@
+@use '../../wiof-custom-theming' as *;
+
+:host {
+  display: block;
+}
+
+.next {
+  margin-top: 1.5rem;
+}
+
+.next-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.next-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--wiof-ink);
+}
+
+.next-basis {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--wiof-ink-muted);
+
+  a {
+    font-weight: 600;
+    color: var(--wiof-teal-text);
+    text-underline-offset: 3px;
+
+    &:focus-visible {
+      outline: 2px solid var(--wiof-teal-text);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+  }
+}
+
+// Same card as the journey panel's tiles above, so the panel reads as one.
+.next-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.next-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  height: 100%;
+  padding: 1rem 1.1rem;
+  background: var(--wiof-warm-white);
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  border-radius: 16px;
+  color: var(--wiof-ink);
+  text-decoration: none;
+  transition: transform 0.18s ease, border-color 0.18s ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--wiof-teal);
+    transform: translateY(-2px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--wiof-teal-text);
+    outline-offset: 2px;
+  }
+
+  &[data-kind='action'] .next-why {
+    color: var(--wiof-marigold-text);
+  }
+}
+
+.next-why {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--wiof-teal-text);
+
+  ion-icon {
+    flex-shrink: 0;
+    font-size: 1rem;
+  }
+}
+
+.next-card-title {
+  // !important: global.scss forces Noto Sans on every span (see the journey panel's .card-title).
+  font-family: 'Aleo', serif !important;
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.next-meta {
+  margin-top: auto;
+  font-size: 0.8rem;
+  color: var(--wiof-ink-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .next-card {
+    transition: none;
+
+    &:hover,
+    &:focus-visible {
+      transform: none;
+    }
+  }
+}
+
+@media (max-width: 991px) {
+  .next-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .next-list {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}

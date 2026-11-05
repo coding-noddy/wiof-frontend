@@ -190,6 +190,7 @@ export const FIREBASE_COLLECTION = {
   POLL_RESULTS: 'poll_results',
   USER_METRICS: 'user_metrics',
   ACTIONS: 'actions',
+  RELATED_AUTO: 'related_auto',
   USER_ACTIONS: 'user_actions',
   USER_ACTION_COMPLETIONS: 'user_action_completions',
   HERO_VIDEOS: 'hero_videos',

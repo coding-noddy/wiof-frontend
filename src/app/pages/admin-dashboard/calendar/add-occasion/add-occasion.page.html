@@ -60,6 +60,30 @@
         </div>
       </div>
 
+      <!-- Today on WIOF fact -->
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="bulb-outline"></ion-icon> Today on WIOF fact</div>
+        <p class="form-hint">One or two short sentences, shown as "Did you know?" on the home page on this day. Facts written by the WIOF team start as drafts: check the fact, add the page it comes from, then tick Reviewed. Until then the card links to the External Link above as "Learn more", not as the fact's source.</p>
+        @if (isEditMode && occasion.factStatus === 'draft') {
+          <p class="fact-draft-badge"><ion-icon aria-hidden="true" name="alert-circle-outline"></ion-icon> Draft: needs review</p>
+        }
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-textarea label="Fact" labelPlacement="floating" formControlName="fact" rows="2" auto-grow="true" [counter]="true" [maxlength]="factMax"></ion-textarea>
+          </ion-item>
+        </div>
+        <div class="form-row full-width">
+          <ion-item>
+            <ion-input label="Fact source (web page)" labelPlacement="floating" formControlName="factSource" type="url" placeholder="https://"></ion-input>
+          </ion-item>
+        </div>
+        <div class="form-row full-width">
+          <ion-item lines="none">
+            <ion-checkbox formControlName="factReviewed" labelPlacement="end">Reviewed: the fact is checked against its source</ion-checkbox>
+          </ion-item>
+        </div>
+      </div>
+
       <!-- Image Card -->
       <div class="form-card">
         <div class="form-card-title"><ion-icon aria-hidden="true" name="image-outline"></ion-icon> Occasion Image</div>
@@ -74,6 +98,10 @@
             <ion-img [src]="imageToDisplay"></ion-img>
           </div>
         }
+      </div>
+      <div class="form-card">
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="compass-outline"></ion-icon> Related Content (Explore next)</div>
+        <app-related-content-editor formControlName="relatedContent"></app-related-content-editor>
       </div>
     </form>
   </div>

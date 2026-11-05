@@ -23,10 +23,13 @@ const CONTENT_DEDUPED_TYPES = new Set([
 ]);
 
 const KNOWN_TYPES = new Set([
-  ...CONTENT_DEDUPED_TYPES, 'eq_completion', 'daily_visit', 'widget_usage', 'action_completed'
+  ...CONTENT_DEDUPED_TYPES, 'eq_completion', 'daily_visit', 'widget_usage', 'action_completed', 'suggestion_click'
 ]);
 
 const KNOWN_WIDGETS = new Set(['AQI', 'Energy Calculator', 'Food pH', 'Water Rainfall']);
+
+/** Where a suggestion can be shown (suggestion_click, 8.9.0). */
+const SUGGESTION_VIAS = new Set(['explore_next', 'story_behind', 'today', 'next_for_you']);
 
 const YOUTUBE_VIDEO_ID = /^[A-Za-z0-9_-]{11}$/;
 
@@ -65,6 +68,9 @@ function expectedDocId(entry) {
   }
   if (entry.activityType === 'daily_visit') {
     return `${entry.userId}_daily_visit_${entry.calendarDay}`;
+  }
+  if (entry.activityType === 'suggestion_click') {
+    return `${entry.userId}_suggestion_click_${entry.via}_${entry.contentType}_${entry.contentId}_${entry.calendarDay}`;
   }
   return null;
 }
@@ -173,6 +179,14 @@ async function validateActivityEvent(docId, entry, lookups, options = {}) {
       return (await lookups.pollExists(entry.contentId)) ? accept() : reject('content_not_found');
     case 'action_completed':
       return (await lookups.actionExists(entry.contentId)) ? accept() : reject('content_not_found');
+    case 'suggestion_click': {
+      // Counts nothing in user_metrics; the daily stats read it. The item must exist.
+      if (!SUGGESTION_VIAS.has(entry.via)) return reject('unknown_via');
+      if (entry.contentType === 'blog') return (await lookups.getBlog(entry.contentId)) ? accept() : reject('content_not_found');
+      if (entry.contentType === 'action') return (await lookups.actionExists(entry.contentId)) ? accept() : reject('content_not_found');
+      if (entry.contentType === 'video') return YOUTUBE_VIDEO_ID.test(entry.contentId || '') ? accept() : reject('invalid_video_id');
+      return reject('unknown_content_type');
+    }
     case 'widget_usage':
       return KNOWN_WIDGETS.has(entry.widgetName) ? accept() : reject('unknown_widget');
     case 'eq_completion': {
@@ -188,7 +202,31 @@ async function validateActivityEvent(docId, entry, lookups, options = {}) {
   return reject('unknown_type');
 }
 
+/**
+ * Saved EQ checks per user per day (decided 2026-11-05: a score doesn't
+ * change much in a day). A check over the limit is still scored and shown;
+ * it just isn't saved.
+ */
+const EQ_DAILY_LIMIT = 2;
+
+/**
+ * The day an EQ check is saved under: the browser's local day if it's
+ * plausible (one day either side of the server's UTC date), else the
+ * server's UTC date, so a made-up day can't open more slots.
+ */
+function eqCalendarDay(calendarDay, now = new Date()) {
+  return isPlausibleCalendarDay(calendarDay, now) ? calendarDay : now.toISOString().slice(0, 10);
+}
+
+/** The fixed IDs of a day's EQ slots: {uid}_eq_completion_{day}_{1..limit}. */
+function eqSlotIds(uid, calendarDay, limit = EQ_DAILY_LIMIT) {
+  return Array.from({ length: limit }, (_, i) => `${uid}_eq_completion_${calendarDay}_${i + 1}`);
+}
+
 module.exports = {
+  EQ_DAILY_LIMIT,
+  eqCalendarDay,
+  eqSlotIds,
   VALIDATOR_VERSION,
   blogWordCount,
   expectedDocId,

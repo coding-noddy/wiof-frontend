@@ -19,6 +19,16 @@ const METRIC_FIELDS = [
   'blogsRead', 'qualityReads', 'videosWatched', 'videosCompleted', 'pollsVoted', 'lastEqScore',
   'totalActionsCompleted', 'uniqueActionsCompleted'
 ];
+/** Per-element count maps, compared key by key in the report. */
+const MAP_FIELDS = ['qualityReadsByElement'];
+
+const ELEMENTS = new Set(['air', 'water', 'earth', 'energy', 'spirit']);
+
+/** A blog's element ('Earth' → 'earth'), or null when it has none we know. */
+function elementOfBlog(blog) {
+  const element = String((blog && blog.category) || '').trim().toLowerCase();
+  return ELEMENTS.has(element) ? element : null;
+}
 
 /**
  * Content lookups for validateActivityEvent, backed by Firestore.
@@ -56,6 +66,7 @@ function emptyUser() {
   return {
     blogsRead: new Set(),
     qualityReads: new Set(),
+    qualityReadsByElement: {},
     videosWatched: new Set(),
     videosCompleted: new Set(),
     pollsVoted: new Set(),
@@ -110,7 +121,12 @@ async function computeUserMetrics(activityDocs, actionDocs, lookups) {
       }
       case 'blog_read_complete': {
         const blog = await lookups.getBlog(data.contentId);
-        u.qualityReads.add(blog && blog.id ? blog.id : data.contentId);
+        const key = blog && blog.id ? blog.id : data.contentId;
+        const element = elementOfBlog(blog);
+        if (!u.qualityReads.has(key) && element) {
+          u.qualityReadsByElement[element] = (u.qualityReadsByElement[element] || 0) + 1;
+        }
+        u.qualityReads.add(key);
         break;
       }
       case 'video_view':
@@ -155,6 +171,7 @@ async function computeUserMetrics(activityDocs, actionDocs, lookups) {
     metrics.set(uid, {
       blogsRead: u.blogsRead.size,
       qualityReads: u.qualityReads.size,
+      qualityReadsByElement: u.qualityReadsByElement,
       videosWatched: u.videosWatched.size,
       videosCompleted: u.videosCompleted.size,
       pollsVoted: u.pollsVoted.size,
@@ -186,6 +203,10 @@ function diffMetrics(storedByUid, computedByUid) {
       const after = computed[field];
       const same = before === after || ((before || 0) === (after || 0) && field !== 'lastEqScore');
       if (!same) changes[field] = [before, after];
+    }
+    for (const field of MAP_FIELDS) {
+      const nonZero = (m) => JSON.stringify(Object.entries(m || {}).filter(([, n]) => n).sort());
+      if (nonZero(stored[field]) !== nonZero(computed[field])) changes[field] = [stored[field] || null, computed[field]];
     }
     if (Object.keys(changes).length > 0) diffs.push({ uid, changes });
   });
@@ -247,7 +268,12 @@ async function recomputeUserMetrics(db, { apply = false, FieldValue }) {
   };
   for (const [uid, fields] of metrics) {
     // merge: onActivityLogCreated / onUserActionWritten also write this doc.
-    batch.set(db.collection('user_metrics').doc(uid), { ...fields, updatedAt: FieldValue.serverTimestamp() }, { merge: true });
+    // A merge set merges nested maps key by key, so the per-element maps are
+    // replaced whole first: a stale key must not survive the recompute.
+    const ref = db.collection('user_metrics').doc(uid);
+    batch.set(ref, { ...fields, ...Object.fromEntries(MAP_FIELDS.map((f) => [f, FieldValue.delete()])), updatedAt: FieldValue.serverTimestamp() }, { merge: true });
+    await flushIfFull();
+    batch.set(ref, Object.fromEntries(MAP_FIELDS.map((f) => [f, fields[f] || {}])), { merge: true });
     await flushIfFull();
   }
   for (const verdict of newVerdicts) {
@@ -263,5 +289,5 @@ async function recomputeUserMetrics(db, { apply = false, FieldValue }) {
 }
 
 module.exports = {
-  METRIC_FIELDS, computeUserMetrics, diffMetrics, legacyVerdictField, makeContentLookups, recomputeUserMetrics
+  MAP_FIELDS, METRIC_FIELDS, computeUserMetrics, elementOfBlog, diffMetrics, legacyVerdictField, makeContentLookups, recomputeUserMetrics
 };

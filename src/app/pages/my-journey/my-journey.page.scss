@@ -975,3 +975,83 @@ $streak-color: var(--wiof-marigold);
 ion-content {
   --background: var(--wiof-ivory);
 }
+
+// ── Your journey so far (Phase 2 step 5) ───────────────────────────
+.journey-story {
+  margin-bottom: 1.25rem;
+  padding: 1.25rem 1.4rem;
+  border-radius: 18px;
+  border: 1.5px solid color-mix(in srgb, var(--wiof-teal) 35%, var(--wiof-warm-white));
+  background: color-mix(in srgb, var(--wiof-teal) 9%, var(--wiof-warm-white));
+}
+
+.journey-story-text {
+  margin: 0 0 0.9rem;
+  font-family: 'Aleo', serif;
+  font-size: 1.15rem;
+  line-height: 1.5;
+  color: var(--wiof-ink);
+}
+
+.journey-elements {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.journey-element {
+  --el: var(--wiof-teal);
+  --el-text: var(--wiof-teal-text);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  border: 1.5px dashed var(--wiof-brown-tint-40);
+  background: var(--wiof-warm-white);
+  color: var(--wiof-ink-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  ion-icon {
+    font-size: 1rem;
+  }
+
+  &[data-element='earth'] {
+    --el: var(--wiof-brown);
+    --el-text: var(--wiof-brown-text);
+  }
+
+  &[data-element='energy'] {
+    --el: var(--wiof-marigold);
+    --el-text: var(--wiof-marigold-text);
+  }
+
+  &.explored {
+    border-style: solid;
+    border-color: var(--el);
+    background: color-mix(in srgb, var(--el) 16%, var(--wiof-warm-white));
+    color: var(--wiof-ink);
+
+    ion-icon {
+      color: var(--el-text);
+    }
+  }
+}
+
+.journey-first-steps:not(:empty) {
+  display: block;
+  margin-bottom: 1.25rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

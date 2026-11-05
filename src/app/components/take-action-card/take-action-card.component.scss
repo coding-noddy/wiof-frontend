@@ -87,6 +87,18 @@
   // reads as visibly distinct from Earth instead of two near-identical
   // muted tan chips sitting side by side.
   &.energy { background: rgba(255, 194, 111, 0.2); color: var(--wiof-marigold-text); }
+
+  // Time and difficulty: same as TakeActionDetailComponent's meta chips.
+  &.meta-chip {
+    background: var(--wiof-ivory);
+    color: var(--wiof-ink);
+    text-transform: none;
+
+    ion-icon {
+      font-size: 0.8rem;
+      vertical-align: -1px;
+    }
+  }
 }
 
 .details-toggle {
