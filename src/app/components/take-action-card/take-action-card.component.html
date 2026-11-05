@@ -18,6 +18,14 @@
         @for (element of action.elementIds; track element) {
           <span class="chip" [ngClass]="element">{{ element }}</span>
         }
+        @if (action.estimatedDurationMinutes) {
+          <span class="chip meta-chip">
+            <ion-icon aria-hidden="true" name="time-outline"></ion-icon> {{ action.estimatedDurationMinutes }} min
+          </span>
+        }
+        @if (action.difficulty) {
+          <span class="chip meta-chip">{{ action.difficulty | enumLabel }}</span>
+        }
       </div>
     }
 

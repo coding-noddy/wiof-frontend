@@ -7,6 +7,19 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.4.1] - 2026-11-05
+
+Explore next, redesigned so it reads as a "what now?" moment instead of a plain list.
+
+### Changed
+- **Actions you can do right there:** on blog and video pages the **Your next step** group (was "Take action on this") shows full Take Action cards, with time, difficulty, "Learn more" and **Mark as Done**. Guests get the same sign-in prompt as on the Take Action page.
+- **The heading says what the page is about:** "Because you read about Veganism" (the story's topic), "Because you read this story" or "Because you watched this video", under a small "Explore next" label. Modals keep "Explore next".
+- **Its own section:** a soft band tinted with the element's colour.
+- **Story cards** show the read time and a two-line description; video cards get a play badge. On phones, stories are a row you swipe sideways (CSS scroll-snap) instead of a long stack.
+- A loading placeholder in the block's shape, and a short fade-in (off with reduced motion).
+- Compact action cards (in modals) use the element's colour for their icon tile, as on Take Action.
+- Take Action cards everywhere now show the action's time and difficulty, as the details already did.
+
 ## [8.4.0] - 2026-11-05
 
 Phase 2 step 4: connected content, "What can I explore next?" (see `docs/PHASE2_PLAN.md` section C).

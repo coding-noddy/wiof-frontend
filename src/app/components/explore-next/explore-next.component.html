@@ -1,35 +1,77 @@
-@if (groups$ | async; as groups) {
-  @if (groups.length) {
-    <section class="explore-next" [class.compact]="compact" [attr.aria-labelledby]="headingId">
+@if (view$ | async; as view) {
+  @if (!view.groups) {
+    <!-- Loading: a placeholder the same shape as the cards, so the page doesn't jump. -->
+    <div class="explore-next is-loading" [class.compact]="compact" [attr.data-accent]="accent" aria-hidden="true">
+      <div class="skeleton explore-skeleton-heading"></div>
+      <div class="explore-next-list">
+        @for (n of [1, 2, 3]; track n) {
+          <div class="skeleton explore-skeleton-card"></div>
+        }
+      </div>
+    </div>
+  } @else if (view.groups.length) {
+    <section class="explore-next" [class.compact]="compact" [attr.data-accent]="accent" [attr.aria-labelledby]="headingId">
+      @if (heading !== 'Explore next') {
+        <p class="explore-eyebrow">
+          <ion-icon aria-hidden="true" name="compass-outline"></ion-icon>
+          Explore next
+        </p>
+      }
       <h2 [id]="headingId" class="explore-next-heading">
-        <ion-icon aria-hidden="true" name="compass-outline"></ion-icon>
-        Explore next
+        @if (heading === 'Explore next') {
+          <ion-icon aria-hidden="true" name="compass-outline"></ion-icon>
+        }
+        {{ heading }}
       </h2>
-      @for (group of groups; track group.key) {
+      @for (group of view.groups; track group.key) {
         <div class="explore-group" [attr.data-group]="group.key">
           <h3 class="explore-group-title">
             <ion-icon aria-hidden="true" [name]="group.icon"></ion-icon>
             {{ group.title }}
-          </h3>
-          <ul class="explore-next-list">
-            @for (item of group.items; track item.type + item.id) {
-              <li>
-                <a class="explore-card" [routerLink]="item.link" [queryParams]="item.queryParams" (click)="navigate.emit()">
-                  <span class="explore-media" [class.is-icon]="!item.image">
-                    @if (item.image) {
-                      <img [src]="item.image" alt="" loading="lazy" />
-                    } @else {
-                      <ion-icon aria-hidden="true" [name]="item.icon"></ion-icon>
-                    }
-                  </span>
-                  <span class="explore-text">
-                    <span class="explore-type" [attr.data-type]="item.type">{{ typeLabel(item) }}</span>
-                    <span class="explore-title">{{ item.title }}</span>
-                  </span>
-                </a>
-              </li>
+            @if (group.subtitle && !compact) {
+              <span class="explore-group-subtitle">{{ group.subtitle }}</span>
             }
-          </ul>
+          </h3>
+          @if (asActionCards(group)) {
+            <ul class="explore-next-list explore-action-cards">
+              @for (item of group.items; track item.id) {
+                <li>
+                  <app-take-action-card [action]="item.action"></app-take-action-card>
+                </li>
+              }
+            </ul>
+          } @else {
+            <ul class="explore-next-list">
+              @for (item of group.items; track item.type + item.id) {
+                <li>
+                  <a class="explore-card" [routerLink]="item.link" [queryParams]="item.queryParams" (click)="navigate.emit()">
+                    <span class="explore-media" [class.is-icon]="!item.image" [attr.data-element]="item.action?.elementIds?.[0]">
+                      @if (item.image) {
+                        <img [src]="item.image" alt="" loading="lazy" />
+                      } @else {
+                        <ion-icon aria-hidden="true" [name]="item.icon"></ion-icon>
+                      }
+                      @if (item.type === 'video') {
+                        <ion-icon class="explore-play" aria-hidden="true" name="play-circle"></ion-icon>
+                      }
+                    </span>
+                    <span class="explore-text">
+                      <span class="explore-type" [attr.data-type]="item.type">
+                        {{ typeLabel(item) }}
+                        @if (item.meta) {
+                          <span class="explore-meta">· {{ item.meta }}</span>
+                        }
+                      </span>
+                      <span class="explore-title">{{ item.title }}</span>
+                      @if (item.description && !compact) {
+                        <span class="explore-description">{{ item.description }}</span>
+                      }
+                    </span>
+                  </a>
+                </li>
+              }
+            </ul>
+          }
         </div>
       }
     </section>

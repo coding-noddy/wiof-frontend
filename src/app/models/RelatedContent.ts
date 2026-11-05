@@ -10,6 +10,8 @@
  *   can find them with one `array-contains` query. A link therefore works both
  *   ways without editing both items.
  */
+import type { ActionItem } from './ActionItem';
+
 export type RelatedType = 'blog' | 'video' | 'action';
 
 export interface RelatedRef {
@@ -27,6 +29,12 @@ export interface ExploreItem {
   type: RelatedType;
   id: string;
   title: string;
+  /** One line under the title (a story's or action's short description). */
+  description?: string;
+  /** Small detail beside the type label, e.g. "4 min read". */
+  meta?: string;
+  /** The full action, so a page can show it as a Take Action card. */
+  action?: ActionItem;
   image: string | null;
   /** Ionic icon shown when there's no image (actions). */
   icon?: string;
