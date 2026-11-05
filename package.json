@@ -1,6 +1,6 @@
 {
   "name": "wiof_frontend",
-  "version": "8.5.0",
+  "version": "8.6.0",
   "author": "Ionic Framework",
   "homepage": "https://ionicframework.com/",
   "scripts": {
@@ -14,6 +14,7 @@
     "e2e:smoke": "node tests/e2e/public-smoke.e2e.js",
     "e2e:explore": "node tests/e2e/explore-next.e2e.js",
     "e2e:journey": "node tests/e2e/journey.e2e.js",
+    "e2e:today": "node tests/e2e/today.e2e.js",
     "predeploy:staging": "npm run test:functions && npm run test:rules",
     "deploy:staging": "powershell -ExecutionPolicy Bypass -File ./deploy.ps1 -Target staging",
     "predeploy:prod": "npm run test:functions && npm run test:rules",

@@ -4,7 +4,7 @@
  */
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
-const { MIN_SCORE, computeRelated, corpusFrom, rebuildRelatedContent, terms } = require('./related-content');
+const { MIN_SCORE, OCCASION_MIN_SCORE, computeRelated, corpusFrom, rebuildRelatedContent, terms } = require('./related-content');
 
 const blog = (id, title, content, extra = {}) => ({ type: 'blog', id, title, content, elements: ['earth'], ...extra });
 const action = (id, title, shortDescription, extra = {}) => ({ type: 'action', id, title, shortDescription, elements: ['earth'], ...extra });
@@ -57,6 +57,40 @@ describe('computeRelated', () => {
   it('gives every item a list, even with nothing similar', () => {
     const lonely = computeRelated([blog('a', 'Quantum chromodynamics', 'gluons'), action('b', 'Water the garden', 'hose')]);
     assert.deepEqual(lonely.get('blog_a'), { blogs: [], actions: [] });
+  });
+});
+
+describe('calendar occasions', () => {
+  const occasion = { type: 'occasion', id: 'veg-day', title: 'World Vegetarian Day', description: 'The health and environmental benefits of a vegetarian, plant-based diet.', elements: [] };
+
+  it('get matched to stories and actions, and are never suggested themselves', () => {
+    const related = computeRelated([...CORPUS, occasion]);
+    assert.equal(related.get('occasion_veg-day').actions[0].id, 'meal');
+    assert.equal(related.get('occasion_veg-day').blogs[0].id, 'vegan');
+    for (const [, lists] of related) assert.ok(![...lists.blogs, ...lists.actions].some((x) => x.id === 'veg-day'));
+  });
+
+  it('need two real words in common, ignoring calendar boilerplate', () => {
+    const run = { type: 'occasion', id: 'run', title: 'World Run Day', description: 'A global day to celebrate running.', elements: [] };
+    const water = { type: 'action', id: 'tap', title: 'Stop unnecessary running water', shortDescription: 'Turn off the tap.', elements: [] };
+    assert.deepEqual(computeRelated([...CORPUS, water, run]).get('occasion_run'), { blogs: [], actions: [] });
+  });
+
+  it('use a stricter bar than stories and actions', () => {
+    const related = computeRelated([...CORPUS, occasion]);
+    for (const x of [...related.get('occasion_veg-day').blogs, ...related.get('occasion_veg-day').actions]) assert.ok(x.score >= OCCASION_MIN_SCORE);
+    assert.ok(OCCASION_MIN_SCORE > MIN_SCORE);
+  });
+
+  it("don't change the matches between stories and actions", () => {
+    const without = computeRelated(CORPUS);
+    const withOccasion = computeRelated([...CORPUS, occasion]);
+    for (const [key, lists] of without) assert.deepEqual(withOccasion.get(key), lists, key);
+  });
+
+  it('are read from Envcal by corpusFrom', () => {
+    const items = corpusFrom([], [], [doc('o1', { occasion: 'Earth Day', description: 'Protect the planet' })]);
+    assert.deepEqual(items.map((i) => `${i.type}:${i.id}:${i.title}`), ['occasion:o1:Earth Day']);
   });
 });
 

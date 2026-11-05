@@ -6,6 +6,7 @@ These drive the real staging site (`https://wiof-staging.web.app`) in Chrome. Th
 |---|---|---|
 | `npm run e2e:smoke` | Public pages on a phone and a desktop viewport: no console errors, no sideways scroll, key content present. | No |
 | `npm run e2e:journey` | The welcome after sign-in (desktop and phone), the saved profile, "Your first steps" on home and My Journey, Hide and Skip. | Yes, the non-admin test user's elements and welcome state, restored at the end |
+| `npm run e2e:today` | "Today on WIOF" for today's real occasion: fact and source, the matcher re-running on an edit, admin links first, the action link, "Not today", phone. Skips on a day with no occasion. | Yes, today's occasion's text and links, restored at the end (admin account) |
 | `npm run e2e:explore` | Explore next: the admin Related Content picker, Explore next on a blog, a video and the calendar popup, similar content on an unlinked story, and "The story behind this" in an action's details. | Yes, a few staging links, restored at the end |
 
 ## Setup

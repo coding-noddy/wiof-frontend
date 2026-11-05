@@ -61,15 +61,17 @@ async function main() {
   const report = await rebuildRelatedContent(db, { apply, FieldValue });
 
   // Titles, so the matches can be checked by eye.
-  const [blogs, actions] = await Promise.all([db.collection('Blogs').get(), db.collection('actions').get()]);
+  const [blogs, actions, occasions] = await Promise.all([db.collection('Blogs').get(), db.collection('actions').get(), db.collection('Envcal').get()]);
   const title = new Map([
     ...blogs.docs.map((d) => [`blog_${d.id}`, d.get('title')]),
-    ...actions.docs.map((d) => [`action_${d.id}`, d.get('title')])
+    ...actions.docs.map((d) => [`action_${d.id}`, d.get('title')]),
+    ...occasions.docs.map((d) => [`occasion_${d.id}`, d.get('occasion')])
   ]);
+  const LABEL = { blog: 'STORY   ', action: 'ACTION  ', occasion: 'OCCASION' };
   const name = (type, id) => String(title.get(`${type}_${id}`) || id).trim().slice(0, 40);
   for (const [docId, lists] of report.related) {
     const [type, ...rest] = docId.split('_');
-    console.log(`${type === 'blog' ? 'STORY ' : 'ACTION'} ${name(type, rest.join('_'))}`);
+    console.log(`${LABEL[type] || type} ${name(type, rest.join('_'))}`);
     console.log(`   stories: ${lists.blogs.map((b) => `${name('blog', b.id)} (${b.score})`).join('; ') || '-'}`);
     console.log(`   actions: ${lists.actions.map((a) => `${name('action', a.id)} (${a.score})`).join('; ') || '-'}`);
   }

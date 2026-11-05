@@ -1,6 +1,6 @@
 # Phase 2 Plan: Journey & Engagement Foundations
 
-**Status:** approved 2026-11-04 with the recommended defaults (section 6). Step 1 shipped in 8.1.0, step 2 in 8.2.0 (prod metrics recomputed 2026-11-04), step 3 in 8.3.0, step 4 (connected content) in 8.4.0 and 8.4.1, step 5 (journey experience) in 8.5.0. Steps 1–3 are the Planet Passport foundation; next is step 6 (Today on WIOF).
+**Status:** approved 2026-11-04 with the recommended defaults (section 6). Step 1 shipped in 8.1.0, step 2 in 8.2.0 (prod metrics recomputed 2026-11-04), step 3 in 8.3.0, step 4 (connected content) in 8.4.0 and 8.4.1, step 5 (journey experience) in 8.5.0, step 6 (Today on WIOF) in 8.6.0. Steps 1–3 are the Planet Passport foundation; next is step 7 (rule-based "Next for you").
 **Sources:** `WIOF_Plan_v4/WIOF_Future_Enhancements_and_Product_Roadmap_v4.md` (sections 0, 5–10, 14), `WIOF_Plan_v4/WIOF_Foundation_Hardening_Plan_v4.md` (sections 16–18), and the current code on `master` (8.0.2).
 
 ## 1. What Phase 2 is for
@@ -137,3 +137,12 @@ Decisions (recommended defaults, 2026-11-05):
 - **Rules**: `users.onboarding` may hold only `welcomeDoneAt` and `checklistDismissedAt`, each set once to `request.time` and never changed or removed; `preferredElements` must be up to five of the five elements, checked only when it changes so legacy values never block an edit.
 - **Tests**: unit tests for the journey rules, the welcome and the first steps; function tests for the per-element count and its report; rules tests for `onboarding` and `preferredElements`; staging E2E `npm run e2e:journey` (welcome on desktop and phone, saved profile, first steps on home and My Journey, Hide, Skip; restores the test user).
 - Fixed on the way: the home panel's "Pick up where you left off" always linked under Earth.
+
+## 10. Step 6 as built
+
+- **The fact** (decided 2026-11-05, replacing decision 5 for now): each occasion's existing description is the fact and its "Show more" link the source; all 133 staging occasions have both. A separate team-written, sourced fact can replace it later without changing the page.
+- **Where** (`components/today-on-wiof`, `models/TodayOnWiof.ts`): a card on the home page under the journey panel, not a pop-up, so it never stacks with the welcomes and needs no "once a day" timer: it is simply there each day. "Not today" hides it until tomorrow (`localStorage`, per device; a per-viewer convenience, not account state). Shown to guests and signed-in users.
+- **What goes with it**: one story or video and one action, from the occasion's own Related Content links first, then the server's keyword matches (`related_auto/occasion_{id}`). No element fallback: with no real match the card shows just the fact.
+- **Matching occasions** (`functions/related-content.js`): occasions join the corpus as queries only. Document frequency is computed over stories and actions only, so story and action matches are unchanged (tested). Because occasion texts are a sentence or two, chance overlaps score higher, so occasions use a stricter bar: boilerplate words are removed, the score must reach 0.10, and at least two terms must be shared. On staging this keeps e.g. Vegetarian Day → the Veganism story, Food Day → the surplus-food actions, Yoga Day → gentle yoga, Bee Day → the honey bee story, and drops e.g. Run Day → "Stop Unnecessary Running Water". Weaker keyword matches remain possible; an admin's links on the occasion always win.
+- **Kept current** by the new `onEnvcalWritten` trigger, and by `scripts/rebuild-related-content.js`.
+- **Tests**: function tests (occasions matched, never suggested, no effect on other matches, stricter bar, two shared terms); unit tests for the card and its helpers; staging E2E `npm run e2e:today` (fact and source, the trigger, admin links first, the action link, Not today, phone).

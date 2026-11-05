@@ -7,6 +7,18 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.6.0] - 2026-11-05
+
+Phase 2 step 6: "Today on WIOF" (see `docs/PHASE2_PLAN.md` section E). **Deploy with `-Backend`** (new `onEnvcalWritten` trigger), then run `node scripts/rebuild-related-content.js --project prod` (dry run) and `--apply` to match the calendar occasions.
+
+### Added
+- **Today on WIOF** on the home page: today's calendar occasion, its fact (the occasion's description) and source (its "Show more" link, opening in a new tab), plus one story or video to read and one small action to try today. The occasion's own Related Content links come first, then the best keyword matches. With no good match it shows just the fact. "Not today" hides it until tomorrow on this device; a day with no occasion shows nothing.
+- **Calendar occasions are matched to stories and actions** by the related-content matcher, as queries only: they are never suggested themselves, and they don't change any story or action match. Short occasion texts get a stricter bar: calendar boilerplate ("world", "day", "celebrated"…) is ignored, the score must reach 0.10 (not 0.08), and at least two terms must be shared. New trigger `onEnvcalWritten` rebuilds the matches when an occasion is edited.
+- Browser test `npm run e2e:today` (staging only).
+
+### Changed
+- `scripts/rebuild-related-content.js` lists occasions too.
+
 ## [8.5.0] - 2026-11-05
 
 Phase 2 step 5: the journey experience (see `docs/PHASE2_PLAN.md` section D). **Deploy with `-Backend`** (rules and functions), then run `node scripts/recompute-user-metrics.js --project prod` (dry run) and `--apply` to fill the new per-element counts.

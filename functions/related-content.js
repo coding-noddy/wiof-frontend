@@ -26,6 +26,17 @@
 const RELATED_AUTO = 'related_auto';
 const RELATED_VERSION = 1;
 const MIN_SCORE = 0.08;
+// Occasions have a sentence or two of text, so chance overlaps score higher:
+// a stricter bar (on staging, 0.08–0.09 matches were things like World Sparrow
+// Day -> a Covid story; 0.10+ were right, e.g. Vegetarian Day -> Veganism).
+const OCCASION_MIN_SCORE = 0.1;
+// ...and at least this many terms in common, so one shared word can't carry
+// a match: "World Run Day" shared only "run" with "Stop Unnecessary Running
+// Water". (A word and its thesaurus concept count as two, as for
+// "plant-based" -> #plantdiet.)
+const OCCASION_MIN_SHARED = 2;
+// Calendar boilerplate that says nothing about an occasion's topic.
+const OCCASION_BOILERPLATE = /\b(world|worldwide|international|national|global|day|days|week|month|year|years|yearly|annual|annually|celebrat\w*|observ\w*|commemorat\w*|awareness|dedicated|held|marks?|aims?|raise|raising|spread|recogni[sz]\w*|honou?r\w*|occasion|event|people|across|around|together|whole|highlight\w*|importance|issues?)\b/gi;
 const ELEMENT_BONUS = 0.04;
 const PER_TYPE = 4;
 const BODY_WORDS = 600;
@@ -100,8 +111,15 @@ function terms(text) {
 const words = (text, max) => String(text || '').replace(/<[^>]*>/g, ' ').split(/\s+/).slice(0, max).join(' ');
 const list = (value) => (Array.isArray(value) ? value.join(' ') : '');
 
-/** The weighted text fields of a blog or action. */
+/** The weighted text fields of a blog, action or calendar occasion. */
 function fieldsOf(item) {
+  if (item.type === 'occasion') {
+    const topic = (text) => String(text || '').replace(OCCASION_BOILERPLATE, ' ');
+    return [
+      [topic(item.title), 3],
+      [topic(item.description), 2]
+    ];
+  }
   if (item.type === 'blog') {
     return [
       [item.title, 3],
@@ -118,7 +136,11 @@ function fieldsOf(item) {
   ];
 }
 
-/** TF-IDF vectors (unit length) for every item. */
+/**
+ * TF-IDF vectors (unit length) for every item. Document frequency comes from
+ * the targets (blogs and actions) only: calendar occasions are queries, so
+ * adding them must not shift how rare a word is among the things we suggest.
+ */
 function vectorize(items) {
   const tfs = items.map((item) => {
     const tf = new Map();
@@ -128,13 +150,16 @@ function vectorize(items) {
     return tf;
   });
   const df = new Map();
-  for (const tf of tfs) for (const term of tf.keys()) df.set(term, (df.get(term) || 0) + 1);
-  const n = items.length;
+  tfs.forEach((tf, i) => {
+    if (items[i].type === 'occasion') return;
+    for (const term of tf.keys()) df.set(term, (df.get(term) || 0) + 1);
+  });
+  const n = items.filter((item) => item.type !== 'occasion').length;
   return tfs.map((tf) => {
     const vector = new Map();
     let norm = 0;
     for (const [term, count] of tf) {
-      const weight = Math.log(1 + count) * (Math.log((n + 1) / (df.get(term) + 1)) + 1);
+      const weight = Math.log(1 + count) * (Math.log((n + 1) / ((df.get(term) || 0) + 1)) + 1);
       vector.set(term, weight);
       norm += weight * weight;
     }
@@ -159,17 +184,25 @@ function cosine(a, b) {
  * elements: string[], ...text fields}]. Returns Map(`${type}_${id}` ->
  * {blogs, actions}), each best first, at most PER_TYPE, score >= MIN_SCORE.
  */
+/** Terms two vectors have in common (words and thesaurus concepts). */
+function sharedTerms(a, b) {
+  let n = 0;
+  for (const term of a.keys()) if (b.has(term)) n++;
+  return n;
+}
+
 function computeRelated(items) {
   const vectors = vectorize(items);
   const result = new Map();
   items.forEach((item, i) => {
     const scored = [];
     items.forEach((other, j) => {
-      if (i === j) return;
+      if (i === j || other.type === 'occasion') return; // occasions are never suggested
       let score = cosine(vectors[i], vectors[j]);
       if (score <= 0) return;
+      if (item.type === 'occasion' && sharedTerms(vectors[i], vectors[j]) < OCCASION_MIN_SHARED) return;
       if ((item.elements || []).some((e) => (other.elements || []).includes(e))) score += ELEMENT_BONUS;
-      if (score >= MIN_SCORE) scored.push({ type: other.type, id: other.id, score: Math.round(score * 1000) / 1000 });
+      if (score >= (item.type === 'occasion' ? OCCASION_MIN_SCORE : MIN_SCORE)) scored.push({ type: other.type, id: other.id, score: Math.round(score * 1000) / 1000 });
     });
     scored.sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
     const pick = (type) => scored.filter((s) => s.type === type).slice(0, PER_TYPE).map(({ id, score }) => ({ id, score }));
@@ -179,7 +212,7 @@ function computeRelated(items) {
 }
 
 /** Blogs and active actions as matcher items. */
-function corpusFrom(blogDocs, actionDocs) {
+function corpusFrom(blogDocs, actionDocs, occasionDocs = []) {
   const blogs = blogDocs.map((doc) => {
     const d = doc.data() || {};
     return {
@@ -197,7 +230,12 @@ function corpusFrom(blogDocs, actionDocs) {
         elements: Array.isArray(d.elementIds) ? d.elementIds : []
       };
     });
-  return [...blogs, ...actions];
+  // Calendar occasions: matched to stories and actions for "Today on WIOF", never suggested themselves.
+  const occasions = occasionDocs.map((doc) => {
+    const d = doc.data() || {};
+    return { type: 'occasion', id: doc.id, title: d.occasion, description: d.description, elements: [] };
+  });
+  return [...blogs, ...actions, ...occasions];
 }
 
 /**
@@ -206,12 +244,13 @@ function corpusFrom(blogDocs, actionDocs) {
  * deactivated). Dry run unless `apply`. Returns a report.
  */
 async function rebuildRelatedContent(db, { apply = true, FieldValue } = {}) {
-  const [blogSnap, actionSnap, autoSnap] = await Promise.all([
+  const [blogSnap, actionSnap, occasionSnap, autoSnap] = await Promise.all([
     db.collection('Blogs').get(),
     db.collection('actions').get(),
+    db.collection('Envcal').get(),
     db.collection(RELATED_AUTO).get()
   ]);
-  const related = computeRelated(corpusFrom(blogSnap.docs, actionSnap.docs));
+  const related = computeRelated(corpusFrom(blogSnap.docs, actionSnap.docs, occasionSnap.docs));
   const existing = new Map(autoSnap.docs.map((doc) => [doc.id, doc.data() || {}]));
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   const writes = [];
@@ -239,4 +278,4 @@ async function rebuildRelatedContent(db, { apply = true, FieldValue } = {}) {
   return { items: related.size, written: writes.length, deleted: deletes.length, related };
 }
 
-module.exports = { RELATED_AUTO, RELATED_VERSION, MIN_SCORE, computeRelated, corpusFrom, rebuildRelatedContent, terms, stem };
+module.exports = { RELATED_AUTO, RELATED_VERSION, MIN_SCORE, OCCASION_MIN_SCORE, computeRelated, corpusFrom, rebuildRelatedContent, terms, stem };

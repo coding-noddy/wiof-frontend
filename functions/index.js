@@ -782,6 +782,15 @@ exports.onActionWritten = functions
     return null;
   }));
 
+/** Calendar occasions are matched too (Today on WIOF), so an edit rebuilds the matches. */
+exports.onEnvcalWritten = functions
+  .region(REGION)
+  .firestore.document('Envcal/{occasionId}')
+  .onWrite(withTriggerErrorLogging('onEnvcalWritten', async () => {
+    await rebuildRelatedContent(db, { FieldValue: admin.firestore.FieldValue });
+    return null;
+  }));
+
 /**
  * Recomputes user_metrics for every user from the full activity_log +
  * user_actions history (Phase 2 step 2; definitions in docs/METRICS.md),

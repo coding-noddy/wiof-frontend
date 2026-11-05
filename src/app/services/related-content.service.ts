@@ -29,6 +29,11 @@ export interface ExploreSource {
   element?: string;
   /** A blog's sub-category: fallback stories on the same topic come first. */
   subCategory?: string;
+  /**
+   * The related_auto doc with this item's similar content, when it isn't
+   * `{type}_{id}` (a calendar occasion: `occasion_{id}`, Today on WIOF).
+   */
+  autoKey?: string;
 }
 
 const REVERSE_LIMIT = 6;
@@ -98,13 +103,15 @@ export class RelatedContentService {
   }
 
   /**
-   * The server's best keyword matches for a blog or action
-   * (related_auto/{type}_{id}, functions/related-content.js), best first.
-   * Videos have no doc of their own, so they get none.
+   * The server's best keyword matches for a blog, action or calendar
+   * occasion (related_auto/{type}_{id} or source.autoKey,
+   * functions/related-content.js), best first. Videos have no doc of their
+   * own, so they get none.
    */
   private similarTo(source: ExploreSource): Observable<ExploreItem[]> {
-    if (!source.id || (source.type !== 'blog' && source.type !== 'action')) return of([]);
-    return this.docOrNull(`${FIREBASE_COLLECTION.RELATED_AUTO}/${source.type}_${source.id}`).pipe(
+    const key = source.autoKey || (source.id && (source.type === 'blog' || source.type === 'action') ? `${source.type}_${source.id}` : null);
+    if (!key) return of([]);
+    return this.docOrNull(`${FIREBASE_COLLECTION.RELATED_AUTO}/${key}`).pipe(
       switchMap((auto) => {
         // One spare of each, in case a match is also linked or inactive.
         const blogIds: string[] = (auto?.blogs || []).slice(0, EXPLORE_LIMITS.read + 1).map((b: any) => b.id);

@@ -1,0 +1,56 @@
+@if (!hidden) {
+  @if (view$ | async; as today) {
+    <section class="today" aria-labelledby="today-on-wiof-title">
+      <div class="today-main">
+        @if (today.occasion.image | async; as image) {
+          <img class="today-image" [src]="image" alt="" loading="lazy" />
+        }
+        <div class="today-text">
+          <p class="today-eyebrow">
+            <ion-icon aria-hidden="true" name="calendar-outline"></ion-icon>
+            Today on WIOF · {{ todayLabel }}
+          </p>
+          <h2 class="today-title" id="today-on-wiof-title">{{ today.occasion.occasion }}</h2>
+          <p class="today-fact">{{ today.occasion.description }}</p>
+          @if (today.source) {
+            <a class="today-source" [href]="today.occasion.showMoreLink" target="_blank" rel="noopener noreferrer">
+              Source: {{ today.source }}
+              <ion-icon aria-hidden="true" name="open-outline"></ion-icon>
+              <span class="visually-hidden">(opens in a new tab)</span>
+            </a>
+          }
+        </div>
+        <button type="button" class="today-hide" (click)="notToday()">Not today</button>
+      </div>
+
+      @if (today.story || today.action) {
+        <ul class="today-picks">
+          @if (today.story; as story) {
+            <li>
+              <a class="today-pick" [routerLink]="story.link">
+                <ion-icon aria-hidden="true" [name]="story.type === 'video' ? 'play-circle-outline' : 'book-outline'"></ion-icon>
+                <span class="pick-text">
+                  <span class="pick-label">{{ story.type === 'video' ? 'Watch' : 'Read' }}</span>
+                  <span class="pick-title">{{ story.title }}</span>
+                </span>
+                <ion-icon class="pick-arrow" aria-hidden="true" name="arrow-forward"></ion-icon>
+              </a>
+            </li>
+          }
+          @if (today.action; as action) {
+            <li>
+              <a class="today-pick" data-kind="action" [routerLink]="action.link" [queryParams]="action.queryParams">
+                <ion-icon aria-hidden="true" [name]="action.icon || 'leaf-outline'"></ion-icon>
+                <span class="pick-text">
+                  <span class="pick-label">Try today</span>
+                  <span class="pick-title">{{ action.title }}</span>
+                </span>
+                <ion-icon class="pick-arrow" aria-hidden="true" name="arrow-forward"></ion-icon>
+              </a>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  }
+}
