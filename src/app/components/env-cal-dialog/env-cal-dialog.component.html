@@ -5,7 +5,7 @@
         #swiperCal
         [attr.slides-per-view]="1"
         [attr.space-between]="10"
-        (slidechange)="activeIndex = swiperCal.swiper.activeIndex"
+        (swiperslidechange)="activeIndex = swiperCal.swiper.activeIndex"
         >
         @for (occasn of occasionDetails.occasion; track occasn; let i = $index) {
           <swiper-slide>
