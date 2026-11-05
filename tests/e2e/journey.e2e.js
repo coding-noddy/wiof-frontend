@@ -130,7 +130,7 @@ async function signIn(page) {
       count: document.querySelector('ion-modal app-first-steps .first-steps-count')?.textContent.trim()
     }));
     check('the welcome does not come back', !line.welcome);
-    check('home shows one "Your first steps" line, not the checklist itself', /Your first steps \d of 5 done/.test(line.text || '') && !line.inline, line.text);
+    check('home shows one "Your first steps" line, not the checklist itself', /Your first steps\s*\d of 5 done/.test(line.text || '') && !line.inline, line.text);
     check('the line opens the checklist, with "Choose your elements" ticked', home.steps.length === 5 && home.steps[0] === 'x Choose your elements', `${home.count}: ${home.steps.join(' / ')}`);
     await page.evaluate(() => document.querySelector('ion-modal .sheet-close')?.click());
     await sleep(800);
