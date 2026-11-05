@@ -13,7 +13,7 @@ Explore next connects to what you just read. Hosting only.
 
 ### Changed
 - **The heading names the story or video** ("Because you read “Kalpasar Project: India’s Moonshot Water Vision”", shortened at a word after 48 characters); the topic heading stays as the fallback.
-- **Each card says why it's there**, in a few words above it: "Picked by our team" (an admin's link, either way), "Also about {topic}" (a similar story, by its own topic), "Goes with this story" / "Goes with this video" (a similar action), or "More in {element}" (the element fallback; an action's main element).
+- **Each card says why it's there**, in a few words above it: "Picked by our team" (an admin's link, either way), "Also about {topic}" (a similar story, by its own topic), "Goes with this story" / "Goes with this video" (a similar action), or "More in {element}" (the element fallback; an action's main element). When every card in a group has the same reason, it's said once beside the group title ("More in Water", "Goes with this story · pick one to try").
 - **Actions are compact rows with "I'll try this"**: icon, title (opens the details), one line, time and difficulty, and one button. "I'll try this" saves the action as started (`IN_PROGRESS`, the existing `UserActionService.startAction`, never used by the UI before), then the button becomes "Done it". Started actions show "You're trying this" here and on Take Action, and come back in Next for you as "You started this". The Take Action page keeps its one-tap "Mark as Done". The section is about half as tall on phones.
 
 ## [8.9.1] - 2026-11-05

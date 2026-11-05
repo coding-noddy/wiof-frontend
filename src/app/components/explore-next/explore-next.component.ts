@@ -73,9 +73,9 @@ interface ExploreView {
  * one "story behind this" line instead: RelatedContentService.storyBehind.)
  *
  * On a page (not compact) every item is the site's own card: stories and
- * videos as on the element pages, actions as Take Action cards (so a reader
- * can mark one done right under the story). The heading names what the page
- * is about ("Because you read about Veganism").
+ * videos as on the element pages, actions as compact Take Action rows ("I'll
+ * try this", then "Done it"). The heading names the story or video, and
+ * each card says why it's there (exploreReason).
  */
 @Component({
     selector: 'app-explore-next',
@@ -125,19 +125,27 @@ export class ExploreNextComponent implements OnChanges {
     }
     this.view$ = this.relatedContent.exploreNext(this.source).pipe(
       map(({ read, act }): ExploreView => {
-        const view = (items: ExploreItem[]) => items.map((item) => ({ item, why: exploreReason(item, this.source?.type) }));
-        const readGroup: ExploreGroupView = { key: 'read', title: 'Keep reading', icon: 'book-outline', items: view(read) };
-        const actGroup: ExploreGroupView = {
-          key: 'act',
-          title: 'Your next step',
-          subtitle: this.compact ? undefined : 'Pick one to try',
-          icon: 'leaf-outline',
-          items: view(act)
-        };
+        const readGroup: ExploreGroupView = { key: 'read', title: 'Keep reading', icon: 'book-outline', ...this.withReasons(read) };
+        const actGroup: ExploreGroupView = { key: 'act', title: 'Your next step', icon: 'leaf-outline', ...this.withReasons(act, 'Pick one to try') };
         return { groups: [readGroup, actGroup].filter((g) => g.items.length) };
       }),
       startWith({ groups: null })
     );
+  }
+
+  /**
+   * Each card's reason. When they're all the same ("More in Water" five
+   * times on a video page), it's said once beside the group title instead.
+   */
+  private withReasons(items: ExploreItem[], hint?: string): Pick<ExploreGroupView, 'items' | 'subtitle'> {
+    const views = items.map((item) => ({ item, why: exploreReason(item, this.source?.type) }));
+    if (this.compact) return { items: views };
+    const shared = views.length > 1 && views.every((v) => v.why === views[0].why) ? views[0].why : null;
+    if (!shared) return { items: views, subtitle: hint };
+    return {
+      items: views.map((v) => ({ ...v, why: '' })),
+      subtitle: hint ? `${shared} · ${hint.charAt(0).toLowerCase()}${hint.slice(1)}` : shared
+    };
   }
 
   /** The heading says what the page is about, when we know. */

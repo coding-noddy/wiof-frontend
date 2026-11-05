@@ -36,7 +36,9 @@
             <ul class="explore-next-list explore-action-cards">
               @for (entry of group.items; track entry.item.id; let i = $index) {
                 <li (click)="picked($event, entry.item, i)">
-                  <p class="explore-why">{{ entry.why }}</p>
+                  @if (entry.why) {
+                    <p class="explore-why">{{ entry.why }}</p>
+                  }
                   <app-take-action-card [action]="entry.item.action" [headingLevel]="4" layout="row" [offerTry]="true"></app-take-action-card>
                 </li>
               }
@@ -45,7 +47,9 @@
             <ul class="explore-next-list explore-site-cards">
               @for (entry of group.items; track entry.item.type + entry.item.id; let i = $index) {
                 <li (click)="picked($event, entry.item, i)">
-                  <p class="explore-why">{{ entry.why }}</p>
+                  @if (entry.why) {
+                    <p class="explore-why">{{ entry.why }}</p>
+                  }
                   @if (entry.item.blog) {
                     <app-blog-card [blog]="entry.item.blog" [element]="entry.item.element" [headingLevel]="4"></app-blog-card>
                   } @else {

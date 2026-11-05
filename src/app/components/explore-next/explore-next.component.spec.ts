@@ -109,6 +109,21 @@ describe('ExploreNextComponent', () => {
     expect(exploreReason(item('video', 'v', { reason: 'element', element: 'water' }), 'video')).toBe('More in Water');
   });
 
+  it('says a reason all cards share once, beside the group title', () => {
+    const fallback = (id: string) => item('blog', id, { reason: 'element', element: 'water', blog: {} as any });
+    const act = [item('action', 'a1', { action: {} as any }), item('action', 'a2', { action: {} as any })];
+    const { views } = render({ type: 'video', id: 'v' }, { read: [fallback('b1'), fallback('b2')], act });
+    const [readGroup, actGroup] = views[views.length - 1].groups;
+    expect(readGroup.subtitle).toBe('More in Water');
+    expect(readGroup.items.map((v: any) => v.why)).toEqual(['', '']);
+    expect(actGroup.subtitle).toBe('Goes with this video · pick one to try');
+
+    const mixed = render({ type: 'blog', id: 'x' }, { read: [fallback('b1'), item('blog', 'b2', { reason: 'linked', blog: {} as any })], act: [] });
+    const group = mixed.views[mixed.views.length - 1].groups[0];
+    expect(group.subtitle).toBeUndefined();
+    expect(group.items.map((v: any) => v.why)).toEqual(['More in Water', 'Picked by our team']);
+  });
+
   it('tints the section by element', () => {
     expect(render({ type: 'blog', id: 'x', element: 'Earth' }, { read: [], act: [] }).component.accent).toBe('earth');
     expect(render({ type: 'blog', id: 'x', element: 'energy' }, { read: [], act: [] }).component.accent).toBe('energy');
