@@ -17,6 +17,8 @@ import { BREAKING_NEWS_SLIDER_OPTIONS } from 'src/app/app.constants';
 })
 export class EnvCalDialogComponent implements OnInit {
   @Input() occasionDetails: any;
+  /** Opened from Today on WIOF: end with a pointer to the full calendar. */
+  @Input() calendarHint = false;
   @Output() close: EventEmitter<any> = new EventEmitter();
   width: number;
   slideOpts = BREAKING_NEWS_SLIDER_OPTIONS;
@@ -86,6 +88,11 @@ export class EnvCalDialogComponent implements OnInit {
 
   isImageError(index: number) {
     return this.imageLoadState[index]?.error === true;
+  }
+
+  /** Closes with role "calendar"; the opener scrolls to the Environment Calendar. */
+  openCalendar() {
+    this.modalCtrl.dismiss(null, 'calendar');
   }
 
   closeDialog() {

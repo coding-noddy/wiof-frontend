@@ -117,6 +117,30 @@
   }
 }
 
+// Its own button style: the admin pages' .btn-secondary doesn't reach inside this
+// component, so it showed as the browser's grey default, cut off at the edge.
+.related-add-btn {
+  flex: 0 0 auto;
+  padding: 0.55rem 1rem;
+  border: 1.5px solid var(--wiof-teal-fill);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--wiof-teal-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--wiof-ivory);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
 .related-input,
 .related-select {
   min-width: 0;

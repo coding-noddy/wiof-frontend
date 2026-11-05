@@ -7,7 +7,32 @@
       </div>
       <a routerLink="/my-journey" class="journey-link">View My Journey →</a>
     </div>
-    <app-first-steps class="journey-first-steps" [profile]="profile$ | async" [metrics]="metrics$ | async" [compact]="true"></app-first-steps>
+    <!-- One quiet line each; the checklist and the picks open in a modal. -->
+    @if ((stepsGlance$ | async) || pickCount) {
+      <div class="journey-glance">
+        @if (stepsGlance$ | async; as steps) {
+          <button type="button" class="glance-line" (click)="sheet = 'steps'">
+            <ion-icon class="glance-icon" aria-hidden="true" name="footsteps-outline"></ion-icon>
+            <span class="glance-text">
+              <span class="glance-title">Your first steps</span>
+              <span class="glance-meta">{{ steps.done }} of {{ steps.total }} done</span>
+            </span>
+            <span class="glance-bar" aria-hidden="true"><span [style.width.%]="(steps.done / steps.total) * 100"></span></span>
+            <ion-icon class="glance-arrow" aria-hidden="true" name="chevron-forward"></ion-icon>
+          </button>
+        }
+        @if (pickCount) {
+          <button type="button" class="glance-line" (click)="sheet = 'next'">
+            <ion-icon class="glance-icon is-spark" aria-hidden="true" name="sparkles-outline"></ion-icon>
+            <span class="glance-text">
+              <span class="glance-title">{{ pickCount }} {{ pickCount === 1 ? 'idea' : 'ideas' }} picked for you</span>
+              <span class="glance-meta">From what you read and do</span>
+            </span>
+            <ion-icon class="glance-arrow" aria-hidden="true" name="chevron-forward"></ion-icon>
+          </button>
+        }
+      </div>
+    }
     @if (!isLoading) {
       <div class="journey-cards">
         @if (lastActivity; as activity) {
@@ -50,7 +75,6 @@
           <span class="card-meta">Explore what you can do today</span>
         </a>
       </div>
-      <app-next-for-you [picks]="nextForYou"></app-next-for-you>
     } @else {
       <div class="journey-cards">
         <div class="journey-card skeleton skeleton-card"></div>
@@ -58,6 +82,22 @@
         <div class="journey-card skeleton skeleton-card"></div>
       </div>
     }
+
+    <ion-modal class="journey-sheet-modal" [isOpen]="sheet !== null" (didDismiss)="sheet = null">
+      <ng-template>
+        <div class="journey-sheet" (click)="closeOnLink($event)">
+          <button type="button" class="sheet-close" (click)="sheet = null" aria-label="Close">
+            <ion-icon aria-hidden="true" name="close"></ion-icon>
+          </button>
+          @if (sheet === 'steps') {
+            <app-first-steps [profile]="profile$ | async" [metrics]="metrics$ | async"></app-first-steps>
+          } @else if (sheet === 'next') {
+            <app-next-for-you [picks]="nextForYou"></app-next-for-you>
+          }
+          <a class="sheet-more" routerLink="/my-journey">See everything on My Journey →</a>
+        </div>
+      </ng-template>
+    </ion-modal>
   </div>
 } @else {
   <div class="guest-panel">

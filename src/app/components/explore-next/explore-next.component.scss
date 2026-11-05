@@ -4,16 +4,17 @@
   display: block;
 }
 
-// On a page: its own section, tinted with the element's colour, so it reads
-// as "what now?" rather than more of the article.
+// On a page: its own calm white section (8.11.0: no tinted background), so
+// it reads as "what now?" rather than more of the article. The element's
+// colour is only in the small text: the eyebrow and each card's reason.
 .explore-next {
   --explore-accent: var(--wiof-teal);
   --explore-accent-text: var(--wiof-teal-text);
-  margin: 2rem 0 0;
-  padding: 1.5rem;
+  margin: 2.5rem 0 0;
+  padding: 1.75rem;
   border-radius: 20px;
-  background: color-mix(in srgb, var(--explore-accent) 14%, var(--wiof-warm-white));
-  border: 1.5px solid color-mix(in srgb, var(--explore-accent) 38%, var(--wiof-warm-white));
+  background: #fff;
+  border: 1px solid var(--wiof-brown-tint-40);
   animation: explore-in 0.35s ease-out both;
 
   &[data-accent='earth'] {
@@ -77,7 +78,7 @@
 }
 
 .explore-group + .explore-group {
-  margin-top: 1.5rem;
+  margin-top: 1.9rem;
 }
 
 .explore-group-title {
@@ -297,7 +298,13 @@
   }
 
   ::ng-deep .blog-image-wrap {
-    height: 150px;
+    height: 140px;
+  }
+
+  // Picture, reason, title and reading time are enough to choose by: the
+  // excerpt made the section a wall of text (and is weak on older stories).
+  ::ng-deep .blog-excerpt {
+    display: none;
   }
 }
 
@@ -408,7 +415,7 @@
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.02em;
-  color: var(--wiof-teal-text);
+  color: var(--explore-accent-text);
 }
 
 .explore-site-cards > li {

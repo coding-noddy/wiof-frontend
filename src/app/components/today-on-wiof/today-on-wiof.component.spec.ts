@@ -1,5 +1,5 @@
 import { of } from 'rxjs';
-import { factFields, hiddenToday, occasionSource, sourceName, TODAY_HIDDEN_KEY, todaysOccasion } from 'src/app/models/TodayOnWiof';
+import { dialogOccasion, factFields, hiddenToday, occasionSource, sourceName, TODAY_HIDDEN_KEY, todaysOccasion } from 'src/app/models/TodayOnWiof';
 import { toCalendarDay } from 'src/app/services/activity.service';
 import { CALENDAR_HEADING_ID, TodayOnWiofComponent } from './today-on-wiof.component';
 
@@ -39,13 +39,27 @@ describe('Today on WIOF', () => {
     expect(hiddenToday(null, '2026-11-05')).toBeFalse();
   });
 
+  it('dialogOccasion gives the calendar modal the fact, its link and the matches', () => {
+    const d = dialogOccasion(occasion({ fact: ' Meat-free days cut emissions. ', relatedContent: [{ type: 'blog', id: 'b1', title: 'Veganism' }] }));
+    expect(d.name).toBe('World Vegetarian Day');
+    expect(d.fact).toBe('Meat-free days cut emissions.');
+    expect(d.source).toEqual({ label: 'Learn more', url: 'https://www.navs-online.org/x', site: 'navs-online.org' });
+    expect(d.explore).toEqual({ links: [{ type: 'blog', id: 'b1', title: 'Veganism' }], autoKey: 'occasion_veg' });
+    expect(dialogOccasion(occasion({ fact: '  ' })).fact).toBeNull();
+  });
+
   describe('component', () => {
     let envcal: any;
     let related: any;
+    let dismissRole: string | undefined;
     beforeEach(() => {
       try { localStorage.removeItem(TODAY_HIDDEN_KEY); } catch {}
       envcal = { getUpcomingOccasions: jasmine.createSpy('getUpcomingOccasions').and.returnValue(of({ today: [occasion()], upcoming: [] })) };
-      related = { exploreNext: jasmine.createSpy('exploreNext').and.returnValue(of({ read: [{ type: 'blog', id: 'b1', title: 'Veganism' }], act: [] })) };
+      dismissRole = undefined;
+      // The modal controller (named "related" so the tests below read as before).
+      related = {
+        create: jasmine.createSpy('create').and.callFake(async () => ({ present: async () => {}, onDidDismiss: async () => ({ role: dismissRole }) }))
+      };
     });
     afterEach(() => {
       try { localStorage.removeItem(TODAY_HIDDEN_KEY); } catch {}
@@ -53,19 +67,27 @@ describe('Today on WIOF', () => {
 
     const views = (c: TodayOnWiofComponent) => {
       const out: any[] = [];
-      c.view$.subscribe((v) => out.push(v));
+      c.occasion$.subscribe((v) => out.push(v));
       return out;
     };
 
-    it("shows today's occasion with its source and the matched story, asking for one of each", () => {
+    it("shows today's occasion, and opens its story in the calendar's modal with a pointer to the calendar", async () => {
       const c = new TodayOnWiofComponent(envcal, related);
       c.ngOnInit();
-      const [view] = views(c);
-      expect(view.occasion.id).toBe('veg');
-      expect(view.source).toEqual({ label: 'Learn more', url: 'https://www.navs-online.org/x', site: 'navs-online.org' });
-      expect(view.story.title).toBe('Veganism');
-      expect(view.action).toBeNull();
-      expect(related.exploreNext).toHaveBeenCalledWith({ links: [], autoKey: 'occasion_veg' }, { read: 1, act: 1 });
+      const [day] = views(c);
+      expect(day.id).toBe('veg');
+      await c.openStory(day);
+      const props = related.create.calls.mostRecent().args[0].componentProps;
+      expect(props.calendarHint).toBeTrue();
+      expect(props.occasionDetails.occasion).toEqual([dialogOccasion(day)]);
+    });
+
+    it('"Find them all in the Environment Calendar" in the modal scrolls to the calendar', async () => {
+      dismissRole = 'calendar';
+      const c = new TodayOnWiofComponent(envcal, related);
+      const scroll = spyOn(c, 'seeCalendar');
+      await c.openStory(occasion());
+      expect(scroll).toHaveBeenCalled();
     });
 
     it('shows nothing on a day without an occasion', () => {

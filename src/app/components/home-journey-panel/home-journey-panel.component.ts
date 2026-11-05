@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { forkJoin, Observable, of, Subject } from 'rxjs';
-import { first, takeUntil } from 'rxjs/operators';
+import { combineLatest, forkJoin, Observable, of, Subject } from 'rxjs';
+import { first, map, shareReplay, takeUntil } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { ActivityService } from 'src/app/services/activity.service';
 import { SavedContentService } from 'src/app/services/saved-content.service';
@@ -10,7 +10,7 @@ import { UserProfile, UserProfileService } from 'src/app/services/user-profile.s
 import { BlogService } from 'src/app/services/blog.service';
 import { EngagementMetrics } from 'src/app/services/activity.service';
 import { NextForYou, nextForYouElements } from 'src/app/models/NextForYou';
-import { preferredElements } from 'src/app/models/Journey';
+import { firstSteps, preferredElements, showFirstSteps } from 'src/app/models/Journey';
 import { NextForYouService } from 'src/app/services/next-for-you.service';
 
 interface LastActivity {
@@ -54,6 +54,23 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
   // case the template falls back to the plain unpersonalized greeting.
   firstName: string | null = null;
 
+  /**
+   * The home page stays calm (8.11.0): first steps and "Next for you" are one
+   * quiet line each, and open in a modal when the reader is curious.
+   */
+  sheet: 'steps' | 'next' | null = null;
+  /** "3 of 5" for the first-steps line; null once they're done or hidden. */
+  stepsGlance$: Observable<{ done: number; total: number } | null> = of(null);
+
+  get pickCount(): number {
+    return (this.nextForYou?.read.length || 0) + (this.nextForYou?.act.length || 0);
+  }
+
+  /** Following a link inside the modal closes it. */
+  closeOnLink(event: Event): void {
+    if ((event.target as HTMLElement | null)?.closest?.('a[href]')) this.sheet = null;
+  }
+
   // Live, for the first-steps checklist: it ticks as soon as the server counts a step.
   profile$: Observable<UserProfile | null> = of(null);
   metrics$: Observable<EngagementMetrics | null> = of(null);
@@ -79,8 +96,15 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
         this.isAuthenticated = !!user;
         this.userId = user?.uid || null;
         if (user) {
-          this.profile$ = this.userProfileService.getProfile(user.uid);
-          this.metrics$ = this.activityService.getActivityCounts(user.uid);
+          // Shared: the first-steps line and the checklist in its modal read the same listeners.
+          this.profile$ = this.userProfileService.getProfile(user.uid).pipe(shareReplay({ bufferSize: 1, refCount: true }));
+          this.metrics$ = this.activityService.getActivityCounts(user.uid).pipe(shareReplay({ bufferSize: 1, refCount: true }));
+          this.stepsGlance$ = combineLatest([this.profile$, this.metrics$]).pipe(
+            map(([profile, metrics]) => {
+              const steps = firstSteps(profile, metrics);
+              return showFirstSteps(profile, steps) ? { done: steps.filter((s) => s.done).length, total: steps.length } : null;
+            })
+          );
           this.loadJourney(user.uid);
         } else {
           this.isLoading = false;

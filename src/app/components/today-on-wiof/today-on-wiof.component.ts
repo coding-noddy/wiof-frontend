@@ -1,32 +1,26 @@
-import { Component, OnInit, Optional } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 import { Observable, of } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { EnvDay } from 'src/app/models/env-cal-data';
-import { ExploreItem } from 'src/app/models/RelatedContent';
-import { hiddenToday, occasionSource, TODAY_HIDDEN_KEY, TodaySource, todaysOccasion } from 'src/app/models/TodayOnWiof';
+import { dialogOccasion, hiddenToday, TODAY_HIDDEN_KEY, todaysOccasion } from 'src/app/models/TodayOnWiof';
 import { toCalendarDay } from 'src/app/services/activity.service';
 import { EnvcalService } from 'src/app/services/envcal-service';
-import { RelatedContentService } from 'src/app/services/related-content.service';
-import { SuggestionTrackingService } from 'src/app/services/suggestion-tracking.service';
+import { buildModalZoomAnimation } from 'src/app/util/modal-zoom-animation';
+import { EnvCalDialogComponent } from '../env-cal-dialog/env-cal-dialog.component';
 
 /** The Environment Calendar heading on the home page. */
 export const CALENDAR_HEADING_ID = 'environment-calendar';
 
-interface TodayView {
-  occasion: EnvDay;
-  source: TodaySource | null;
-  story: ExploreItem | null;
-  action: ExploreItem | null;
-}
-
 /**
- * "Today on WIOF" on the home page (Phase 2 step 6): today's occasion, its
- * fact and source, and one story and one action to go with it — the
- * admin's own links first, then the server's keyword matches
- * (related_auto/occasion_{id}). Nothing is padded in: with no match it
- * shows just the fact. "Hide for today" hides it until tomorrow on this device;
- * a day with no occasion shows nothing. "See the full calendar" takes the
- * reader down to the Environment Calendar on the same page.
+ * "Today on WIOF" on the home page (Phase 2 step 6; a small invitation since
+ * 8.11.0): the date and today's occasion, nothing more. Tapping it opens the
+ * calendar's own day modal (EnvCalDialogComponent) with the description,
+ * the "Did you know?" fact and the stories and actions that go with it, and
+ * a pointer to the full calendar. Curiosity opens it; the page stays calm.
+ * The × hides it until tomorrow on this device; a day with no occasion
+ * shows nothing. "See the full calendar" takes the reader down to the
+ * Environment Calendar on the same page.
  */
 @Component({
     selector: 'app-today-on-wiof',
@@ -35,33 +29,21 @@ interface TodayView {
     standalone: false
 })
 export class TodayOnWiofComponent implements OnInit {
-  view$: Observable<TodayView | null> = of(null);
+  occasion$: Observable<EnvDay | null> = of(null);
   hidden = false;
   readonly todayLabel = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
   private readonly today = toCalendarDay(new Date());
 
   constructor(
     private envcal: EnvcalService,
-    private relatedContent: RelatedContentService,
-    @Optional() private suggestions?: SuggestionTrackingService
+    private modalCtrl: ModalController
   ) {}
-
-  picked(item: ExploreItem, position: number): void {
-    this.suggestions?.clicked('today', item, position);
-  }
 
   ngOnInit(): void {
     this.hidden = hiddenToday(this.read(), this.today);
     if (this.hidden) return;
-    this.view$ = this.envcal.getUpcomingOccasions(new Date(), 1).pipe(
+    this.occasion$ = this.envcal.getUpcomingOccasions(new Date(), 1).pipe(
       map(({ today }) => todaysOccasion(today)),
-      switchMap((occasion) => {
-        if (!occasion) return of(null);
-        const base: TodayView = { occasion, source: occasionSource(occasion), story: null, action: null };
-        return this.relatedContent
-          .exploreNext({ links: occasion.relatedContent || [], autoKey: `occasion_${occasion.id}` }, { read: 1, act: 1 })
-          .pipe(map(({ read, act }) => ({ ...base, story: read[0] || null, action: act[0] || null })));
-      }),
       catchError((err) => {
         console.warn('Today on WIOF failed to load:', err);
         return of(null);
@@ -89,6 +71,24 @@ export class TodayOnWiofComponent implements OnInit {
       today.classList.add('is-flashing');
       setTimeout(() => today.classList.remove('is-flashing'), 2000);
     }
+  }
+
+  /** The day's story in the calendar's modal; "Find them all…" there scrolls to the calendar. */
+  async openStory(occasion: EnvDay, event?: Event): Promise<void> {
+    const originRect = (event?.currentTarget as HTMLElement | null)?.getBoundingClientRect();
+    // The modal's slider needs Swiper (instant where a page already loaded it).
+    await import('../../util/swiper-elements');
+    const modal = await this.modalCtrl.create({
+      component: EnvCalDialogComponent,
+      componentProps: { occasionDetails: { occasion: [dialogOccasion(occasion)] }, calendarHint: true },
+      cssClass: 'env-cal-modal',
+      backdropDismiss: true,
+      enterAnimation: (baseEl) => buildModalZoomAnimation(baseEl, originRect, false),
+      leaveAnimation: (baseEl) => buildModalZoomAnimation(baseEl, originRect, true)
+    });
+    await modal.present();
+    const { role } = await modal.onDidDismiss();
+    if (role === 'calendar') this.seeCalendar(new Event('click'));
   }
 
   hideForToday(): void {
