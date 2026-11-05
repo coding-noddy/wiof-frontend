@@ -1,13 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, of, Subject } from 'rxjs';
-import { takeUntil, first, catchError, distinctUntilChanged, map, shareReplay } from 'rxjs/operators';
+import { forkJoin, Observable, of, Subject } from 'rxjs';
+import { takeUntil, first, catchError, distinctUntilChanged, map, shareReplay, switchMap } from 'rxjs/operators';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { AuthService } from 'src/app/services/auth.service';
 import { ActivityService, EngagementMetrics } from 'src/app/services/activity.service';
 import { SavedContentService, SavedContentDocument } from 'src/app/services/saved-content.service';
 import { UserProfile, UserProfileService } from 'src/app/services/user-profile.service';
-import { elementsExplored, JOURNEY_ELEMENTS, journeyStory } from 'src/app/models/Journey';
+import { elementsExplored, JOURNEY_ELEMENTS, journeyStory, preferredElements } from 'src/app/models/Journey';
+import { NextForYou, nextForYouElements } from 'src/app/models/NextForYou';
+import { NextForYouService } from 'src/app/services/next-for-you.service';
 import { QualityReadEntry, EqHistoryEntry, PollHistoryEntry, VideoWatchHistoryEntry } from 'src/app/models/engagement-history';
 import { UserActionService } from 'src/app/services/user-action.service';
 import { ActionService } from 'src/app/services/action.service';
@@ -101,8 +103,11 @@ export class MyJourneyPage implements OnInit, OnDestroy {
     private userActionService: UserActionService,
     private actionService: ActionService,
     private storage: AngularFireStorage,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private nextForYouService: NextForYouService
   ) {}
+
+  nextForYou: NextForYou | null = null;
 
   ngOnInit(): void {
     this.authService.currentUser$
@@ -152,6 +157,35 @@ export class MyJourneyPage implements OnInit, OnDestroy {
     this.loadPollHistory(userId);
     this.loadVideoWatchHistory(userId);
     this.loadActionsTaken(userId);
+    this.loadNextForYou(userId);
+  }
+
+  /**
+   * "Next for you" lives here (8.11.0) rather than on the home page, which
+   * only offers it in a modal: My Journey is where people look back and plan.
+   */
+  private loadNextForYou(userId: string): void {
+    forkJoin({
+      reads: this.activityService.getQualityReads(userId),
+      metrics: this.activityService.getActivityCounts(userId).pipe(first()),
+      actions: this.actionService.getActiveActions().pipe(first()),
+      actionHistory: this.userActionService.getUserActionHistory(userId).pipe(first()),
+      profile: this.userProfileService.getProfile(userId).pipe(first())
+    })
+      .pipe(
+        switchMap(({ reads, metrics, actions, actionHistory, profile }) => {
+          const basis: NextForYou['basis'] = preferredElements(profile).length ? 'chosen' : 'explored';
+          return this.nextForYouService
+            .nextForYou({ elements: nextForYouElements(profile, metrics), reads, activeActions: actions, actionHistory })
+            .pipe(map((picks): NextForYou => ({ ...picks, basis })));
+        }),
+        catchError((err) => {
+          console.warn('Next for you failed to load:', err);
+          return of(null);
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((picks) => (this.nextForYou = picks));
   }
 
   /**

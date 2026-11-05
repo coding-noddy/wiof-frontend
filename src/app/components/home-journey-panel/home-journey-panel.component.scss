@@ -199,8 +199,153 @@ h2 {
   }
 }
 
-// First steps: only takes space when it shows (hidden, it holds just Angular comment nodes).
-.journey-first-steps:not(:empty) {
+// ── A calm home (8.11.0) ───────────────────────────────────────────
+// First steps and "Next for you" are one quiet line each; tapping opens
+// the checklist or the picks in a modal (.journey-sheet).
+.journey-glance {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 0.6rem;
+  margin-bottom: 1.1rem;
+}
+
+.glance-line {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 0.95rem;
+  border: 1px solid var(--wiof-brown-tint-40);
+  border-radius: 14px;
+  background: #fff;
+  font: inherit;
+  color: var(--wiof-ink);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--wiof-teal-fill);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--wiof-teal-text);
+    outline-offset: 2px;
+  }
+}
+
+.glance-icon {
+  flex-shrink: 0;
+  font-size: 1.25rem;
+  color: var(--wiof-teal-text);
+
+  &.is-spark {
+    color: var(--wiof-marigold-text);
+  }
+}
+
+.glance-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.glance-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.glance-meta {
+  font-size: 0.78rem;
+  color: var(--wiof-ink-muted);
+}
+
+.glance-bar {
+  flex: 0 0 64px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--wiof-ivory);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--wiof-teal-fill);
+  }
+}
+
+.glance-arrow {
+  flex-shrink: 0;
+  color: var(--wiof-ink-muted);
+}
+
+.journey-sheet {
+  position: relative;
+  padding: 1.5rem 1.25rem 1rem;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+// In the modal the picks sit two by two (four in a row were squeezed).
+.journey-sheet ::ng-deep .next-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 480px) {
+  .journey-sheet ::ng-deep .next-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sheet-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: var(--wiof-ivory);
+  color: var(--wiof-ink);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.sheet-more {
   display: block;
-  margin-bottom: 1.25rem;
+  margin-top: 0.9rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--wiof-brown-tint-40);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--wiof-teal-text);
+  text-decoration: none;
+}
+
+// On phones the four tiles sit two by two, title only.
+@media (max-width: 767px) {
+  .journey-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
+  }
+
+  .journey-card {
+    padding: 0.85rem;
+    gap: 0.25rem;
+  }
+
+  .journey-card .card-title {
+    font-size: 1rem;
+  }
+
+  .journey-card .card-meta {
+    display: none;
+  }
 }

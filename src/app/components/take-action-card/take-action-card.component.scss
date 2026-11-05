@@ -257,3 +257,103 @@
     }
   }
 }
+
+// Compact row (layout="row", Explore next under a story or video): icon,
+// title + one-line description + time, and the button on the right. On
+// phones the button drops under the text so the title keeps its width.
+.take-action-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem 0.85rem;
+  padding: 0.8rem 0.95rem;
+  border-radius: 16px;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  background: var(--wiof-warm-white);
+
+  .card-icon {
+    align-self: start;
+  }
+
+  .card-title {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+
+  .row-title-btn {
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: var(--wiof-brown-tint-40);
+    text-underline-offset: 3px;
+
+    &:hover {
+      text-decoration-color: currentColor;
+    }
+  }
+
+  .row-desc {
+    margin: 0.15rem 0 0;
+    font-size: 0.82rem;
+    line-height: 1.35;
+    color: var(--wiof-ink-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .row-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    margin: 0.3rem 0 0;
+    font-size: 0.74rem;
+    color: var(--wiof-ink-muted);
+
+    ion-icon {
+      font-size: 0.8rem;
+      vertical-align: -1px;
+    }
+  }
+
+  .row-status {
+    font-weight: 700;
+    color: var(--wiof-teal-text);
+  }
+
+  .action-btn {
+    width: auto;
+    white-space: nowrap;
+    padding: 0.5rem 0.95rem;
+    font-size: 0.8rem;
+
+    // "I'll try this": an invitation, so lighter than "Done it".
+    &.try {
+      background: transparent;
+      color: var(--wiof-teal-text);
+      box-shadow: inset 0 0 0 1.5px var(--wiof-teal-fill);
+    }
+  }
+
+  .sign-in-prompt {
+    left: auto;
+    width: min(260px, 80vw);
+  }
+}
+
+@media (max-width: 480px) {
+  .take-action-row {
+    grid-template-columns: auto minmax(0, 1fr);
+
+    .row-action {
+      grid-column: 2;
+      justify-self: start;
+    }
+  }
+}

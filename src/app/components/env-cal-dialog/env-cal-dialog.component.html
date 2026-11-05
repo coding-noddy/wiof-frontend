@@ -59,15 +59,30 @@
               <!-- ── Body ──────────────────────────────────────────────── -->
               <ion-card-content class="occasion-body">
                 <p [innerHTML]="occasn.desc"></p>
-                @if (occasn.link) {
+                @if (occasn.fact) {
+                  <p class="occasion-fact"><strong>Did you know?</strong> {{ occasn.fact }}</p>
+                }
+                @if (occasn.source; as source) {
+                  <a class="occasion-source" target="_blank" rel="noopener noreferrer" [href]="source.url">
+                    {{ source.label }}: {{ source.site }}
+                    <ion-icon aria-hidden="true" name="open-outline"></ion-icon>
+                    <span class="visually-hidden">(opens in a new tab)</span>
+                  </a>
+                } @else if (occasn.link) {
                   <div class="occasion-cta">
-                    <a class="wiof-primary-link" target="_blank" [href]="occasn.link">
+                    <a class="wiof-primary-link" target="_blank" rel="noopener noreferrer" [href]="occasn.link">
                       Know More
                     </a>
                   </div>
                 }
-                @if (occasn.explore?.links?.length) {
+                @if (occasn.explore?.links?.length || occasn.explore?.autoKey) {
                   <app-explore-next [source]="occasn.explore" [compact]="true" (navigate)="closeDialog()"></app-explore-next>
+                }
+                @if (calendarHint) {
+                  <p class="occasion-hint">
+                    Every day has a story.
+                    <button type="button" class="occasion-hint-link" (click)="openCalendar()">Find them all in the Environment Calendar</button>
+                  </p>
                 }
                 @if (showNavigation) {
                   <div class="occasion-dots">

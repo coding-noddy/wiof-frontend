@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { ModalController } from '@ionic/angular';
 import { EnvDay } from '../../models/env-cal-data';
+import { dialogOccasion } from '../../models/TodayOnWiof';
 import { EnvcalService } from '../../services/envcal-service';
 import { EnvCalDialogComponent } from '../env-cal-dialog/env-cal-dialog.component';
 import { buildModalZoomAnimation } from '../../util/modal-zoom-animation';
@@ -66,15 +67,7 @@ export class EnvCalenderComponent implements OnInit {
     const occasion = new Array();
     this.EnvDays.forEach((x) => {
       if (x.day == day && x.month == month) {
-        occasion.push({
-          day: x.day,
-          month: x.month,
-          name: x.occasion,
-          image: x.image,
-          desc: x.description,
-          link: x.showMoreLink,
-          explore: { links: x.relatedContent }
-        });
+        occasion.push(dialogOccasion(x));
       }
     });
     return occasion;

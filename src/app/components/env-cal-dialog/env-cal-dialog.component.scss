@@ -207,6 +207,72 @@
   text-align: center;
 }
 
+// The fact's link: a quiet text link under the fact, not a second big button.
+.occasion-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0 0 0.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--wiof-teal-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+
+  ion-icon {
+    font-size: 0.85rem;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+// The related stories and actions: a little air above, after the text.
+.occasion-body app-explore-next {
+  display: block;
+  margin-top: 1rem;
+}
+
+// The day's "Did you know?" (moved here from the home card in 8.11.0).
+.occasion-body p.occasion-fact {
+  padding: 0.65rem 0.85rem;
+  border-left: 3px solid var(--wiof-marigold);
+  border-radius: 0 10px 10px 0;
+  background: var(--wiof-ivory);
+  color: var(--wiof-ink);
+
+  strong {
+    color: var(--wiof-marigold-text);
+  }
+}
+
+// Opened from Today on WIOF: a quiet pointer to the rest of the calendar.
+.occasion-body p.occasion-hint {
+  margin: 1rem 0 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--wiof-brown-tint-40);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.occasion-hint-link {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: 700;
+  color: var(--wiof-teal-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
 // ── Loading state ────────────────────────────────────────────────────────────
 .dialog-loading {
   display: flex;

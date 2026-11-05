@@ -115,11 +115,21 @@ const readPicks = (page) => page.evaluate(() => {
   };
 });
 
+/**
+ * 8.11.0: home shows one quiet line ("N ideas picked for you"); the picks
+ * open in a modal. Returns the picks, plus whether the home page itself
+ * showed them inline (it shouldn't).
+ */
 async function home(page) {
   await page.goto(`${BASE}/home`, { waitUntil: 'networkidle2', timeout: 90000 });
-  await page.waitForSelector('app-next-for-you .next-card', { timeout: 30000 }).catch(() => {});
+  await page.waitForFunction(() => [...document.querySelectorAll('app-home-journey-panel .glance-line')].some((b) => /picked for you/.test(b.textContent)), { timeout: 30000 }).catch(() => {});
+  const inline = await page.evaluate(() => !!document.querySelector('app-home-journey-panel > * > app-next-for-you, app-home-journey-panel .journey-panel > app-next-for-you'));
+  const line = await page.evaluate(() => [...document.querySelectorAll('app-home-journey-panel .glance-line')].find((b) => /picked for you/.test(b.textContent))?.textContent.replace(/\s+/g, ' ').trim() || null);
+  await page.evaluate(() => [...document.querySelectorAll('app-home-journey-panel .glance-line')].find((b) => /picked for you/.test(b.textContent))?.click());
+  await page.waitForSelector('ion-modal app-next-for-you .next-card', { timeout: 30000 }).catch(() => {});
   await sleep(1200);
-  return readPicks(page);
+  const picks = await readPicks(page);
+  return picks && { ...picks, inline, line };
 }
 
 (async () => {
@@ -152,7 +162,8 @@ async function home(page) {
     let picks = await home(page);
     const doneTitles = (await Promise.all(done.map((id) => db.doc(`actions/${id}`).get()))).map((d) => d.data()?.title).filter(Boolean);
     console.log(`      ${(picks?.cards || []).map((c) => `[${c.why}] ${c.title}`).join(' | ')}`);
-    check('home shows "Next for you", from the chosen elements', picks?.basis === 'From your elements: Water and Earth · Change', picks?.basis);
+    check('home shows one line ("ideas picked for you"), not the picks themselves', !!picks?.line && !picks.inline, picks?.line);
+    check('the line opens "Next for you" in a modal, from the chosen elements', picks?.basis === 'From your elements: Water and Earth · Change', picks?.basis);
     check('up to four picks, stories first', !!picks && picks.cards.length > 0 && picks.cards.length <= 4
       && picks.cards.findIndex((c) => c.kind === 'action') >= picks.cards.filter((c) => c.kind !== 'action').length, picks?.cards.map((c) => c.kind).join(','));
     check('a story similar to the one read, with the reason', picks?.cards.some((c) => c.kind === 'blog' && c.why.startsWith('Because you read “Kalpasar')), picks?.cards.map((c) => c.why).join(' | '));
@@ -162,16 +173,29 @@ async function home(page) {
     check('never a completed action', !picks?.cards.some((c) => doneTitles.includes(c.title)), doneTitles.join(', '));
     check('every pick is under Water or Earth', !!picks?.cards.every((c) => /^\/element\/(water|earth)\//.test(c.href || '')), picks?.cards.map((c) => c.href).join(' '));
     check('the actions tile no longer suggests its own "Next:" action', picks?.actionTile === 'Explore what you can do today', picks?.actionTile);
-    await page.evaluate(() => document.querySelector('app-next-for-you').scrollIntoView({ block: 'center' }));
-    await sleep(600);
     await page.screenshot({ path: path.join(OUT, 'next-for-you-desktop.png') });
+    const grid = await page.evaluate(() => {
+      const cards = [...document.querySelectorAll('ion-modal app-next-for-you .next-card')].map((c) => c.getBoundingClientRect());
+      return { cols: new Set(cards.map((r) => Math.round(r.left))).size, n: cards.length };
+    });
+    check('on a desktop the modal shows the picks two by two', grid.n < 2 || grid.cols === 2, JSON.stringify(grid));
 
     // 2. An action pick opens its details.
-    await page.evaluate(() => document.querySelector('app-next-for-you .next-card[data-kind="action"]').click());
+    await page.evaluate(() => document.querySelector('ion-modal app-next-for-you .next-card[data-kind="action"]').click());
     await page.waitForSelector('ion-modal app-take-action-detail', { timeout: 20000 }).catch(() => {});
     await sleep(1200);
     const modal = await page.evaluate(() => document.querySelector('ion-modal .detail-title')?.textContent.trim());
     check('an action pick opens that action\'s details', modal === STARTED.title, modal);
+
+    // 2b. My Journey shows them too, after the summary tiles.
+    await page.goto(`${BASE}/my-journey`, { waitUntil: 'networkidle2', timeout: 90000 });
+    await page.waitForSelector('app-next-for-you .next-card', { timeout: 30000 }).catch(() => {});
+    const order = await page.evaluate(() => {
+      const tiles = document.querySelector('.metrics-section');
+      const next = document.querySelector('app-next-for-you .next');
+      return { tiles: !!tiles, next: !!next, after: !!(tiles && next && (tiles.compareDocumentPosition(next) & Node.DOCUMENT_POSITION_FOLLOWING)) };
+    });
+    check('My Journey shows "Next for you" after the summary tiles', order.after, JSON.stringify(order));
 
     // 3. No chosen elements: the ones explored (from the completed actions).
     await userRef.update({ preferredElements: [] });
@@ -183,11 +207,10 @@ async function home(page) {
     const phone = await newPage(browser, { width: 390, height: 844, isMobile: true }, errors);
     await signIn(phone);
     await home(phone);
-    await phone.evaluate(() => document.querySelector('app-next-for-you')?.scrollIntoView({ block: 'start' }));
     await sleep(800);
     const fit = await phone.evaluate(() => {
-      const el = document.querySelector('app-next-for-you .next');
-      const cards = [...document.querySelectorAll('app-next-for-you .next-card')].map((c) => Math.round(c.getBoundingClientRect().width));
+      const el = document.querySelector('ion-modal app-next-for-you .next');
+      const cards = [...document.querySelectorAll('ion-modal app-next-for-you .next-card')].map((c) => Math.round(c.getBoundingClientRect().width));
       return el && { width: Math.round(el.getBoundingClientRect().width), cards, hScroll: document.documentElement.scrollWidth > innerWidth };
     });
     check('on a phone the picks stack in one column, no sideways scroll', !!fit && fit.width <= 390 && !fit.hScroll && new Set(fit.cards).size === 1, JSON.stringify(fit));

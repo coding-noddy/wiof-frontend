@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { EnvcalService } from 'src/app/services/envcal-service';
 import { EnvDay } from 'src/app/models/env-cal-data';
+import { dialogOccasion } from 'src/app/models/TodayOnWiof';
 import { EnvCalDialogComponent } from '../env-cal-dialog/env-cal-dialog.component';
 import { buildModalZoomAnimation } from 'src/app/util/modal-zoom-animation';
 
@@ -71,15 +72,7 @@ export class EnvCalendarAgendaComponent implements OnInit {
   // occasions sharing that date are passed together so the modal's own
   // prev/next navigation between same-day events still works.
   async openOccasion(occasions: EnvDay[], event?: MouseEvent): Promise<void> {
-    const occasion = occasions.map((day) => ({
-      day: day.day,
-      month: day.month,
-      name: day.occasion,
-      image: day.image,
-      desc: day.description,
-      link: day.showMoreLink,
-      explore: { links: day.relatedContent }
-    }));
+    const occasion = occasions.map(dialogOccasion);
 
     const originEl = event?.currentTarget as HTMLElement;
     const originRect = originEl?.getBoundingClientRect();

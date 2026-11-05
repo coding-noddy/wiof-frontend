@@ -1,69 +1,122 @@
-<div class="take-action-card">
-  <div class="card-icon" [ngClass]="action.elementIds?.[0]">
-    <ion-icon aria-hidden="true" [name]="action.iconName || 'checkmark-circle-outline'"></ion-icon>
-  </div>
-
-  <div class="card-body">
-    <div class="card-title-row">
-      <h3 class="card-title" [attr.aria-level]="headingLevel">{{ action.title }}</h3>
-      @if (streak > 0) {
-        <span class="streak-badge">
-          <ion-icon aria-hidden="true" name="flame-outline"></ion-icon> {{ streak }}
-        </span>
-      }
+@if (layout === 'row') {
+  <!-- Compact row (Explore next): the title opens the details, the button saves it. -->
+  <div class="take-action-row">
+    <div class="card-icon" [ngClass]="action.elementIds?.[0]">
+      <ion-icon aria-hidden="true" [name]="action.iconName || 'checkmark-circle-outline'"></ion-icon>
     </div>
-    <p class="card-desc">{{ action.shortDescription }}</p>
-    @if (action.elementIds?.length) {
-      <div class="card-chips">
-        @for (element of action.elementIds; track element) {
-          <span class="chip" [ngClass]="element">{{ element }}</span>
+
+    <div class="row-body">
+      <h3 class="card-title" [attr.aria-level]="headingLevel">
+        @if (hasDetails) {
+          <button type="button" class="row-title-btn" (click)="openDetails($event)">{{ action.title }}</button>
+        } @else {
+          {{ action.title }}
         }
+      </h3>
+      <p class="row-desc">{{ action.shortDescription }}</p>
+      <p class="row-meta">
         @if (action.estimatedDurationMinutes) {
-          <span class="chip meta-chip">
-            <ion-icon aria-hidden="true" name="time-outline"></ion-icon> {{ action.estimatedDurationMinutes }} min
-          </span>
+          <span><ion-icon aria-hidden="true" name="time-outline"></ion-icon> {{ action.estimatedDurationMinutes }} min</span>
         }
         @if (action.difficulty) {
-          <span class="chip meta-chip">{{ action.difficulty | enumLabel }}</span>
+          <span>{{ action.difficulty | enumLabel }}</span>
+        }
+        @if (statusNote) {
+          <span class="row-status">{{ statusNote }}</span>
+        }
+      </p>
+    </div>
+
+    <div class="card-action row-action">
+      <button
+        class="action-btn"
+        [class.done]="isDone"
+        [class.loading]="isLoading"
+        [class.try]="tryFirst"
+        (click)="onActionClick()"
+        [disabled]="isLoading || isDone"
+        type="button"
+        >
+        <ion-icon aria-hidden="true" [name]="buttonIcon"></ion-icon>
+        {{ buttonLabel }}
+      </button>
+      @if (showSignInPrompt) {
+        <ng-container *ngTemplateOutlet="signInPrompt"></ng-container>
+      }
+    </div>
+  </div>
+} @else {
+  <div class="take-action-card">
+    <div class="card-icon" [ngClass]="action.elementIds?.[0]">
+      <ion-icon aria-hidden="true" [name]="action.iconName || 'checkmark-circle-outline'"></ion-icon>
+    </div>
+
+    <div class="card-body">
+      <div class="card-title-row">
+        <h3 class="card-title" [attr.aria-level]="headingLevel">{{ action.title }}</h3>
+        @if (streak > 0) {
+          <span class="streak-badge">
+            <ion-icon aria-hidden="true" name="flame-outline"></ion-icon> {{ streak }}
+          </span>
         }
       </div>
-    }
+      <p class="card-desc">{{ action.shortDescription }}</p>
+      @if (action.elementIds?.length) {
+        <div class="card-chips">
+          @for (element of action.elementIds; track element) {
+            <span class="chip" [ngClass]="element">{{ element }}</span>
+          }
+          @if (action.estimatedDurationMinutes) {
+            <span class="chip meta-chip">
+              <ion-icon aria-hidden="true" name="time-outline"></ion-icon> {{ action.estimatedDurationMinutes }} min
+            </span>
+          }
+          @if (action.difficulty) {
+            <span class="chip meta-chip">{{ action.difficulty | enumLabel }}</span>
+          }
+        </div>
+      }
 
-    @if (hasDetails) {
-      <button type="button" class="details-toggle" (click)="openDetails($event)">
-        Learn more
-        <ion-icon aria-hidden="true" name="chevron-forward-outline"></ion-icon>
+      @if (hasDetails) {
+        <button type="button" class="details-toggle" (click)="openDetails($event)">
+          Learn more
+          <ion-icon aria-hidden="true" name="chevron-forward-outline"></ion-icon>
+        </button>
+      }
+    </div>
+
+    <div class="card-action">
+      @if (statusNote) {
+        <span class="completion-count">{{ statusNote }}</span>
+      }
+      <button
+        class="action-btn"
+        [class.done]="isDone"
+        [class.loading]="isLoading"
+        (click)="onActionClick()"
+        [disabled]="isLoading || isDone"
+        type="button"
+        >
+        <ion-icon aria-hidden="true" [name]="buttonIcon"></ion-icon>
+        {{ buttonLabel }}
       </button>
-    }
-  </div>
 
-  <div class="card-action">
-    @if (completionLabel) {
-      <span class="completion-count">{{ completionLabel }}</span>
-    }
-    <button
-      class="action-btn"
-      [class.done]="isDone"
-      [class.loading]="isLoading"
-      (click)="onActionClick()"
-      [disabled]="isLoading || isDone"
-      type="button"
-      >
-      <ion-icon aria-hidden="true" [name]="isDone ? 'checkmark-circle' : 'checkmark-circle-outline'"></ion-icon>
-      {{ buttonLabel }}
+      @if (showSignInPrompt) {
+        <ng-container *ngTemplateOutlet="signInPrompt"></ng-container>
+      }
+    </div>
+  </div>
+}
+
+<ng-template #signInPrompt>
+  <div class="sign-in-prompt" role="tooltip" aria-label="Sign in to save your progress">
+    <p class="prompt-text">Sign in to save your progress</p>
+    <button class="prompt-google-btn" (click)="signInWithGoogle()">
+      <ion-icon aria-hidden="true" name="logo-google"></ion-icon>
+      Continue with Google
     </button>
-
-    @if (showSignInPrompt) {
-      <div class="sign-in-prompt" role="tooltip" aria-label="Sign in to save your progress">
-        <p class="prompt-text">Sign in to save your progress</p>
-        <button class="prompt-google-btn" (click)="signInWithGoogle()">
-          <ion-icon aria-hidden="true" name="logo-google"></ion-icon>
-          Continue with Google
-        </button>
-        <button class="prompt-dismiss-btn" (click)="dismissPrompt()" aria-label="Dismiss sign-in prompt">
-          <ion-icon aria-hidden="true" name="close-outline"></ion-icon>
-        </button>
-      </div>
-    }
+    <button class="prompt-dismiss-btn" (click)="dismissPrompt()" aria-label="Dismiss sign-in prompt">
+      <ion-icon aria-hidden="true" name="close-outline"></ion-icon>
+    </button>
   </div>
-</div>
+</ng-template>

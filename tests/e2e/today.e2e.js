@@ -67,18 +67,39 @@ async function newPage(browser, viewport, errors) {
   return page;
 }
 
+// 8.11.0: the home card is a small invitation (date and name); the story,
+// the fact, its link and the matches open in the calendar's day modal.
 const readCard = (page) => page.evaluate(() => {
   const s = document.querySelector('app-today-on-wiof .today');
   if (!s) return null;
-  const src = s.querySelector('.today-source');
-  return {
-    title: s.querySelector('.today-title')?.textContent.trim(),
-    fact: s.querySelector('.today-fact')?.textContent.trim(),
-    didYouKnow: s.querySelector('.today-didyouknow')?.textContent.replace(/\s+/g, ' ').trim() || null,
-    source: src ? { text: src.textContent.replace(/\s+/g, ' ').trim(), target: src.target, rel: src.rel, href: src.href } : null,
-    picks: [...s.querySelectorAll('.today-pick')].map((a) => `${a.querySelector('.pick-label').textContent.trim()}: ${a.querySelector('.pick-title').textContent.trim()}`)
-  };
+  return { title: s.querySelector('.today-title')?.textContent.trim(), cta: s.querySelector('.today-cta')?.textContent.trim(), text: s.innerText };
 });
+
+/** Opens the card's modal and reads it (picks: the related items, stories first). */
+async function openModal(page) {
+  await page.evaluate(() => document.querySelector('app-today-on-wiof .today-open').click());
+  await page.waitForSelector('ion-modal app-env-cal-dialog .occasion-body', { timeout: 20000 });
+  await page.waitForFunction(() => !document.querySelector('ion-modal app-explore-next .is-loading'), { timeout: 20000 }).catch(() => {});
+  await sleep(800);
+  return page.evaluate(() => {
+    const m = document.querySelector('ion-modal app-env-cal-dialog');
+    const src = m.querySelector('.occasion-source, .occasion-cta a');
+    return {
+      title: m.querySelector('.occasion-name')?.textContent.trim(),
+      desc: m.querySelector('.occasion-body > p')?.textContent.trim(),
+      didYouKnow: m.querySelector('.occasion-fact')?.textContent.replace(/\s+/g, ' ').trim() || null,
+      source: src ? { text: src.textContent.replace('(opens in a new tab)', '').replace(/\s+/g, ' ').trim(), target: src.target, rel: src.rel, href: src.href } : null,
+      picks: [...m.querySelectorAll('app-explore-next .explore-title')].map((t) => t.textContent.trim()),
+      hint: !!m.querySelector('.occasion-hint-link')
+    };
+  });
+}
+
+const closeModal = async (page) => {
+  await page.evaluate(() => document.querySelector('ion-modal app-env-cal-dialog .occasion-close-btn')?.click());
+  await page.waitForFunction(() => !document.querySelector('ion-modal app-env-cal-dialog'), { timeout: 10000 }).catch(() => {});
+  await sleep(500);
+};
 
 (async () => {
   const s = await (await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`, {
@@ -106,17 +127,21 @@ const readCard = (page) => page.evaluate(() => {
     const page = await newPage(browser, { width: 1280, height: 900 }, errors);
     await page.goto(`${BASE}/home`, { waitUntil: 'networkidle2', timeout: 90000 });
     await page.waitForSelector('app-today-on-wiof .today', { timeout: 30000 }).catch(() => {});
-    let card = await readCard(page);
-    check("home shows today's occasion and its fact", card?.title === occasion.name && card?.fact === occasion.description.trim(), card?.title);
+    const card = await readCard(page);
+    check("home shows today's occasion as a small invitation: its name, no description or fact", card?.title === occasion.name && /Discover the story of this day/.test(card?.cta || '') && !card.text.includes(occasion.description.trim().slice(0, 40)), card?.title);
+    let modal = await openModal(page);
+    check("tapping it opens the day's story in the calendar modal", modal.title === occasion.name && modal.desc === occasion.description.trim(), modal.title);
     const host = (() => { try { return new URL(occasion.link).hostname.replace(/^www\./, ''); } catch { return null; } })();
-    check('the source names the site and opens safely in a new tab', !host || (card?.source?.text.includes(host) && card.source.target === '_blank' && /noopener/.test(card.source.rel)), JSON.stringify(card?.source));
+    check('the source names the site and opens safely in a new tab', !host || (modal.source?.text.includes(host) && modal.source.target === '_blank' && /noopener/.test(modal.source.rel)), JSON.stringify(modal.source));
     if (occasion.fact) {
-      check('the occasion\'s fact shows as "Did you know?"', card?.didYouKnow === `Did you know? ${occasion.fact.trim()}`, card?.didYouKnow);
-      check('a draft fact links the occasion\'s page as "Learn more", not as its source', occasion.factStatus === 'reviewed' || /^Learn more: /.test(card?.source?.text || ''), card?.source?.text);
+      check('the occasion\'s fact shows as "Did you know?"', modal.didYouKnow === `Did you know? ${occasion.fact.trim()}`, modal.didYouKnow);
+      check('a draft fact links the occasion\'s page as "Learn more", not as its source', occasion.factStatus === 'reviewed' || /^Learn more: /.test(modal.source?.text || ''), modal.source?.text);
     } else {
       console.log('      (no fact on this occasion yet: run scripts/apply-occasion-facts.js)');
     }
-    console.log(`      matched without links: ${card?.picks.join(' | ') || '(none: fact only)'}`);
+    check('the modal points to the full calendar', modal.hint);
+    console.log(`      matched without links: ${modal.picks.join(' | ') || '(none: fact only)'}`);
+    await closeModal(page);
 
     // 2. Editing the occasion's text re-runs the matcher (onEnvcalWritten).
     // The rebuild writes only lists that change, so the edit must change the
@@ -140,18 +165,19 @@ const readCard = (page) => page.evaluate(() => {
     check('linking a story and an action to the occasion saved', (await setLinks(`/Envcal/${occasion.id}`, [STORY, ACTION])).status === 200);
 
     await page.reload({ waitUntil: 'networkidle2' });
-    await page.waitForSelector('app-today-on-wiof .today-pick', { timeout: 30000 }).catch(() => {});
-    card = await readCard(page);
-    check('the linked story and action show, the admin links first', card?.picks.join(' | ') === `Read: ${STORY.title} | Try today: ${ACTION.title}`, card?.picks.join(' | '));
+    await page.waitForSelector('app-today-on-wiof .today', { timeout: 30000 }).catch(() => {});
     await page.evaluate(() => document.querySelector('app-today-on-wiof').scrollIntoView({ block: 'center' }));
     await sleep(600);
     await page.screenshot({ path: path.join(OUT, 'today-desktop.png') });
+    modal = await openModal(page);
+    check('the linked story and action show in the modal, the admin links first', modal.picks[0] === STORY.title && modal.picks.includes(ACTION.title), modal.picks.join(' | '));
+    await page.screenshot({ path: path.join(OUT, 'today-modal-desktop.png') });
 
-    await page.evaluate(() => document.querySelector('app-today-on-wiof .today-pick[data-kind="action"]').click());
+    await page.evaluate((title) => [...document.querySelectorAll('ion-modal app-explore-next .explore-card')].find((a) => a.querySelector('.explore-title')?.textContent.trim() === title).click(), ACTION.title);
     await page.waitForSelector('ion-modal app-take-action-detail', { timeout: 20000 }).catch(() => {});
     await sleep(1200);
-    const modal = await page.evaluate(() => ({ path: location.pathname + location.search, title: document.querySelector('ion-modal .detail-title')?.textContent.trim() }));
-    check('"Try today" opens the action\'s details', modal.title === ACTION.title, JSON.stringify(modal));
+    const modalAction = await page.evaluate(() => ({ path: location.pathname + location.search, title: document.querySelector('ion-modal .detail-title')?.textContent.trim() }));
+    check('the action in the modal opens its details', modalAction.title === ACTION.title, JSON.stringify(modalAction));
 
     // 3b. "See the full calendar" brings the calendar heading into view and focus.
     const toCalendar = async (p) => {

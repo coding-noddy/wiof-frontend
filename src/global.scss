@@ -170,6 +170,16 @@ ion-content::part(scroll) {
   --background: var(--wiof-warm-white);
 }
 
+/* Home journey panel: first steps / Next for you, opened from one quiet line (8.11.0) */
+.journey-sheet-modal {
+  --width: 600px;
+  --max-width: 95vw;
+  --height: auto;
+  --max-height: 85vh;
+  --border-radius: 18px;
+  --background: #fff;
+}
+
 /* NGO in Focus detail dialog - presented via ModalController (viewport-centered) */
 .ngo-detail-modal {
   --width: 800px;

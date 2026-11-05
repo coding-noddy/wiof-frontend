@@ -7,6 +7,27 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.11.0] - 2026-11-06
+
+A calmer home page: each section shows one thing and hints at the next; more opens in a modal when the reader is curious. Hosting only.
+
+### Changed
+- **Today on WIOF is a small white card**: the date, the day's name and "Discover the story of this day →" (about 510px → 170px on a phone). Tapping it opens the calendar's own day modal, which now also shows the "Did you know?" fact and its link, the stories and actions that go with the day (the admin's links and the server's matches, also in the calendar grid and agenda: `dialogOccasion`), and ends with "Every day has a story. Find them all in the Environment Calendar". "See the full calendar" stays as the card's footer; "Hide for today" is a small ×.
+- **Signed-in home panel**: first steps and Next for you are one quiet line each ("Your first steps · 3 of 5 done", "2 ideas picked for you") that open the checklist or the picks in a modal. The four tiles sit two by two on phones. **Next for you also shows on My Journey**, under first steps.
+- **Explore next is calmer**: a white section with a hairline border (no tinted background); the element colour is only in the eyebrow and the reasons; story cards drop the excerpt (picture, reason, title, reading time); more space between groups.
+
+### Fixed
+- Admin Related Content: the "Add video" button showed as the browser's grey default, cut off at the edge; it has its own style now.
+
+## [8.10.0] - 2026-11-06
+
+Explore next connects to what you just read. Hosting only.
+
+### Changed
+- **The heading names the story or video** ("Because you read “Kalpasar Project: India’s Moonshot Water Vision”", shortened at a word after 48 characters); the topic heading stays as the fallback.
+- **Each card says why it's there**, in a few words above it: "Picked by our team" (an admin's link, either way), "Also about {topic}" (a similar story, by its own topic), "Goes with this story" / "Goes with this video" (a similar action), or "More in {element}" (the element fallback; an action's main element). When every card in a group has the same reason, it's said once beside the group title ("More in Water", "Goes with this story · pick one to try").
+- **Actions are compact rows with "I'll try this"**: icon, title (opens the details), one line, time and difficulty, and one button. "I'll try this" saves the action as started (`IN_PROGRESS`, the existing `UserActionService.startAction`, never used by the UI before), then the button becomes "Done it". Started actions show "You're trying this" here and on Take Action, and come back in Next for you as "You started this". The Take Action page keeps its one-tap "Mark as Done". The section is about half as tall on phones.
+
 ## [8.9.1] - 2026-11-05
 
 Security updates and better-fitting action suggestions. **Deploy with `-Backend`** (the matcher changed), then run `node scripts/rebuild-related-content.js --project prod` (dry run, then `--apply`): every list is rewritten once, because the matcher version changed.

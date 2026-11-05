@@ -58,3 +58,24 @@ export function factFields(fact: string | null | undefined, source: string | nul
 export function hiddenToday(storedDay: string | null, today: string): boolean {
   return storedDay === today;
 }
+
+/**
+ * One occasion as the calendar's day modal (EnvCalDialogComponent) shows it:
+ * the description, the "Did you know?" fact and its link, and the stories and
+ * actions that go with it (the admin's links, then the server's matches,
+ * related_auto/occasion_{id}). Used by Today on WIOF, the calendar grid and
+ * the agenda, so the modal is the same wherever it opens (8.11.0).
+ */
+export function dialogOccasion(day: EnvDay) {
+  return {
+    day: day.day,
+    month: day.month,
+    name: day.occasion,
+    image: day.image,
+    desc: day.description,
+    fact: day.fact?.trim() || null,
+    source: occasionSource(day),
+    link: day.showMoreLink,
+    explore: { links: day.relatedContent || [], autoKey: day.id ? `occasion_${day.id}` : undefined }
+  };
+}

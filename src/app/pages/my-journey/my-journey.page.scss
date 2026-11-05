@@ -1042,7 +1042,8 @@ ion-content {
   }
 }
 
-.journey-first-steps:not(:empty) {
+.journey-first-steps:not(:empty),
+.journey-next-for-you:not(:empty) {
   display: block;
   margin-bottom: 1.25rem;
 }

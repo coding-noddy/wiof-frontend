@@ -32,6 +32,14 @@ export class TakeActionCardComponent implements OnInit, OnChanges, OnDestroy {
    * a heading deeper than the page's own (e.g. 4 inside Explore next's groups).
    */
   @Input() headingLevel: number | null = null;
+  /** `row`: one compact line (icon, title, time, button), for Explore next under a story. */
+  @Input() layout: 'card' | 'row' = 'card';
+  /**
+   * Under a story or video the first step is "I'll try this" (saved as
+   * started, IN_PROGRESS), then "Done it": asking someone who has just read
+   * about it to say they've already done it is asking too much (8.10.0).
+   */
+  @Input() offerTry = false;
 
   isAuthenticated = false;
   private userId: string | null = null;
@@ -158,8 +166,29 @@ export class TakeActionCardComponent implements OnInit, OnChanges, OnDestroy {
     return `Completed ${count}x${today}`;
   }
 
+  /** Not started or done yet, where the card offers "I'll try this" first. */
+  get tryFirst(): boolean {
+    return this.offerTry && !this.userAction;
+  }
+
+  get isTrying(): boolean {
+    return this.userAction?.status === USER_ACTION_STATUS.IN_PROGRESS;
+  }
+
+  /** The line above the button: started, or how often it's been done. */
+  get statusNote(): string {
+    return this.isTrying ? "You're trying this" : this.completionLabel;
+  }
+
+  get buttonIcon(): string {
+    if (this.tryFirst) return 'add-circle-outline';
+    return this.isDone ? 'checkmark-circle' : 'checkmark-circle-outline';
+  }
+
   /** "Completed" alone doesn't tell a DAILY user when they can do it again. */
   get buttonLabel(): string {
+    if (this.tryFirst) return "I'll try this";
+    if (this.offerTry && this.isTrying) return 'Done it';
     if (!this.isDone) {
       return this.isRepeatable && this.userAction?.completionCount ? 'Do it again' : 'Mark as Done';
     }
@@ -174,6 +203,11 @@ export class TakeActionCardComponent implements OnInit, OnChanges, OnDestroy {
       return;
     }
     if (this.isLoading || this.isDone) {
+      return;
+    }
+
+    if (this.tryFirst) {
+      await this.startTrying();
       return;
     }
 
@@ -192,10 +226,26 @@ export class TakeActionCardComponent implements OnInit, OnChanges, OnDestroy {
       // stay in its pre-completion state until something else happened to
       // re-create this component (e.g. a full page reload). Re-fetch now so
       // "Mark as Done" actually shows "Completed" / the new streak right away.
+      // (Not loading any more first, or the status read would be ignored.)
+      this.isLoading = false;
       this.subscribeToStatus();
       this.subscribeToStreak();
     } catch (error) {
       await this.uiUtil.presentToast('Could not record this action. Please try again.', 'error');
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  private async startTrying(): Promise<void> {
+    this.isLoading = true;
+    try {
+      await this.userActionService.startAction(this.userId!, this.action);
+      void this.uiUtil.presentToast("Saved. Mark it done here or on Take Action once you've tried it.", 'success', 3000);
+      this.isLoading = false;
+      this.subscribeToStatus();
+    } catch (error) {
+      await this.uiUtil.presentToast('Could not save this action. Please try again.', 'error');
     } finally {
       this.isLoading = false;
     }
