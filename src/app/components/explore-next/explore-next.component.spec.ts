@@ -1,16 +1,17 @@
 import { of } from 'rxjs';
 import { ExploreGroups, ExploreItem } from 'src/app/models/RelatedContent';
-import { ExploreNextComponent, headingTopic } from './explore-next.component';
+import { ExploreNextComponent, exploreReason, headingTopic } from './explore-next.component';
 
 const item = (type: ExploreItem['type'], id: string, extra: Partial<ExploreItem> = {}): ExploreItem =>
   ({ type, id, title: id, image: null, link: [], reason: 'similar', ...extra });
 
 /** The component's view once loaded, for a source and what the service returns. */
-function render(source: any, groups: ExploreGroups, compact = false) {
+function render(source: any, groups: ExploreGroups, compact = false, sourceTitle: string | null = null) {
   const service = { exploreNext: jasmine.createSpy('exploreNext').and.returnValue(of(groups)) };
   const component = new ExploreNextComponent(service as any);
   component.source = source;
   component.compact = compact;
+  component.sourceTitle = sourceTitle;
   component.ngOnChanges();
   const views: any[] = [];
   component.view$.subscribe((v) => views.push(v));
@@ -79,6 +80,33 @@ describe('ExploreNextComponent', () => {
     c.picked(at(card.querySelector('app-bookmark-icon span')!), item, 0);
     c.picked(at(document.createElement('div')), item, 0);
     expect(clicked).toHaveBeenCalledOnceWith('explore_next', item, 1);
+  });
+
+  it('names the story or video itself when its title is known', () => {
+    const empty = { read: [item('blog', 'b')], act: [] };
+    expect(render({ type: 'blog', id: 'x', subCategory: 'Water' }, empty, false, 'Kalpasar Project: India’s Moonshot Water Vision').component.heading)
+      .toBe('Because you read “Kalpasar Project: India’s Moonshot Water Vision”');
+    expect(render({ type: 'blog', id: 'x' }, empty, false, 'THE OTHER PERSPECTIVE: COVID-19 OUTBREAK & WATER CRISIS').component.heading)
+      .toBe('Because you read “THE OTHER PERSPECTIVE: COVID-19 OUTBREAK & WATER…”');
+    expect(render({ type: 'video', id: 'v' }, empty, false, 'River clean-up').component.heading).toBe('Because you watched “River clean-up”');
+  });
+
+  it('a video title arriving later changes the heading without loading the suggestions again', () => {
+    const { component, service } = render({ type: 'video', id: 'v' }, { read: [item('blog', 'b')], act: [] });
+    component.sourceTitle = 'River clean-up';
+    component.ngOnChanges({ sourceTitle: {} as any });
+    expect(component.heading).toBe('Because you watched “River clean-up”');
+    expect(service.exploreNext).toHaveBeenCalledTimes(1);
+  });
+
+  it('says why each card is shown', () => {
+    expect(exploreReason(item('blog', 'b', { reason: 'linked' }), 'blog')).toBe('Picked by our team');
+    expect(exploreReason(item('blog', 'b', { blog: { subCategory: 'rainwater harvesting' } as any }), 'blog')).toBe('Also about Rainwater Harvesting');
+    expect(exploreReason(item('blog', 'b', { blog: {} as any }), 'blog')).toBe('On a similar topic');
+    expect(exploreReason(item('action', 'a'), 'blog')).toBe('Goes with this story');
+    expect(exploreReason(item('action', 'a'), 'video')).toBe('Goes with this video');
+    expect(exploreReason(item('action', 'a', { reason: 'element', element: 'water', action: { elementIds: ['earth', 'water'] } as any }), 'video')).toBe('More in Earth');
+    expect(exploreReason(item('video', 'v', { reason: 'element', element: 'water' }), 'video')).toBe('More in Water');
   });
 
   it('tints the section by element', () => {

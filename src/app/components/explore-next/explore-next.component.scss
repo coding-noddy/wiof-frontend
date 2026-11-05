@@ -116,10 +116,6 @@
   list-style: none;
 }
 
-.explore-action-cards {
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-}
-
 .explore-card {
   display: flex;
   align-items: center;
@@ -403,4 +399,24 @@
     width: 64px;
     height: 44px;
   }
+}
+
+// Why each card is shown (8.10.0): a few words above it, so the reader sees
+// how it connects to the page ("Also about Rainwater", "Goes with this story").
+.explore-why {
+  margin: 0 0 0.35rem 0.15rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--wiof-teal-text);
+}
+
+.explore-site-cards > li {
+  flex-direction: column;
+}
+
+// Actions are compact rows, one under the other (two side by side on wide screens).
+.explore-action-cards {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+  gap: 0.6rem 0.85rem;
 }

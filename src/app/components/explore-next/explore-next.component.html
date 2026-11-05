@@ -34,27 +34,30 @@
           </h3>
           @if (asActionCards(group)) {
             <ul class="explore-next-list explore-action-cards">
-              @for (item of group.items; track item.id; let i = $index) {
-                <li (click)="picked($event, item, i)">
-                  <app-take-action-card [action]="item.action" [headingLevel]="4"></app-take-action-card>
+              @for (entry of group.items; track entry.item.id; let i = $index) {
+                <li (click)="picked($event, entry.item, i)">
+                  <p class="explore-why">{{ entry.why }}</p>
+                  <app-take-action-card [action]="entry.item.action" [headingLevel]="4" layout="row" [offerTry]="true"></app-take-action-card>
                 </li>
               }
             </ul>
           } @else if (asSiteCards(group)) {
             <ul class="explore-next-list explore-site-cards">
-              @for (item of group.items; track item.type + item.id; let i = $index) {
-                <li (click)="picked($event, item, i)">
-                  @if (item.blog) {
-                    <app-blog-card [blog]="item.blog" [element]="item.element" [headingLevel]="4"></app-blog-card>
+              @for (entry of group.items; track entry.item.type + entry.item.id; let i = $index) {
+                <li (click)="picked($event, entry.item, i)">
+                  <p class="explore-why">{{ entry.why }}</p>
+                  @if (entry.item.blog) {
+                    <app-blog-card [blog]="entry.item.blog" [element]="entry.item.element" [headingLevel]="4"></app-blog-card>
                   } @else {
-                    <app-video-card [video]="item.video" [element]="item.element" [headingLevel]="4"></app-video-card>
+                    <app-video-card [video]="entry.item.video" [element]="entry.item.element" [headingLevel]="4"></app-video-card>
                   }
                 </li>
               }
             </ul>
           } @else {
             <ul class="explore-next-list">
-              @for (item of group.items; track item.type + item.id; let i = $index) {
+              @for (entry of group.items; track entry.item.type + entry.item.id; let i = $index) {
+                @let item = entry.item;
                 <li (click)="picked($event, item, i)">
                   <a class="explore-card" [routerLink]="item.link" [queryParams]="item.queryParams" (click)="navigate.emit()">
                     <span class="explore-media" [class.is-icon]="!item.image" [attr.data-element]="item.action?.elementIds?.[0]">

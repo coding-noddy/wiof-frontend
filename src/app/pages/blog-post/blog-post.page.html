@@ -99,7 +99,7 @@
           </div>
         }
       </article>
-      <app-explore-next class="blog-explore-next" [source]="exploreSource$ | async"></app-explore-next>
+      <app-explore-next class="blog-explore-next" [source]="exploreSource$ | async" [sourceTitle]="blog.title"></app-explore-next>
     </div>
   } @else {
     <div class="blog-loading">
