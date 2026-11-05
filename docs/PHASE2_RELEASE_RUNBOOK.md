@@ -15,7 +15,7 @@ The scripts are [`scripts/release.js`](../scripts/release.js) (preflight, snapsh
 
 ## 1. Merge and check out
 
-1. Merge the PR from `feat/phase2-release-hardening` into `master` with **Create a merge commit**.
+1. Merge the PR from `feat/analytics-consent` into `master` with **Create a merge commit** (done: #51).
 2. `git checkout master` and `git pull`.
 3. Keep `git status` clean apart from the footer version line, which the deploy writes itself.
 
@@ -28,7 +28,7 @@ node scripts/release.js snapshot --project prod
 
 **Preflight** should show:
 - Last prod tag `v8.3.0-prod`.
-- **NEW** functions `onActionWritten` and `onEnvcalWritten`, and no REMOVED functions.
+- **NEW** functions `onActionWritten`, `onEnvcalWritten`, `buildDailyStats` and `refreshDailyStats`, and no REMOVED functions.
 - **NEW** index `blog_summaries(category ASCENDING, publishDate DESCENDING)`.
 - No **DRIFT**. If it lists drift, stop and send me the output. Never deploy with `--force`.
 
@@ -47,7 +47,7 @@ Use `npm.cmd`, not `npm`: PowerShell's `npm` drops `-Backend`. The script asks y
 2. rules;
 3. Hosting.
 
-It then tags `v8.8.0-prod`. If function discovery times out, set `$env:FUNCTIONS_DISCOVERY_TIMEOUT=60` and run it again.
+It then tags `v8.9.0-prod`. If function discovery times out, set `$env:FUNCTIONS_DISCOVERY_TIMEOUT=60` and run it again.
 
 ## 4. Wait for the index (about 5 minutes)
 
@@ -115,7 +115,8 @@ It also reports how many facts are still drafts.
 7. **My Journey:** shows the story sentence and the element chips.
 8. Take EQ three times. The second result says that was the last save for today, and the third says it wasn't saved.
 9. **Admin → Calendar:** occasions show "Fact: needs review". Opening one shows the fact card.
-10. **Admin → Analytics:** press Refresh. Today's numbers appear. Google Analytics → Realtime shows page views with real page titles (e.g. "Take Action · World Is One Family").
+10. **Admin → Analytics:** press Refresh. Today's numbers appear.
+11. **Consent banner (signed out, private window):** it appears on the first visit with Decline and Accept the same size. Decline: Google Analytics → Realtime shows nothing from you. Footer → Cookie settings reopens it; Accept: Realtime shows the page view with its real title (e.g. "Take Action · World Is One Family"). Expect GA numbers to drop after this release: GA now counts only visitors who accept.
 
 ## Rollback
 

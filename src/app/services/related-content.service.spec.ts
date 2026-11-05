@@ -43,3 +43,18 @@ describe('RelatedContentService.storyBehind', () => {
     });
   });
 });
+
+describe('RelatedContentService element fallback (video pages)', () => {
+  const action = (id: string, elementIds: string[]) => ({ id, title: id, isActive: true, elementIds, displayOrder: 0 });
+  const noStories = { collection: () => ({ get: () => of({ docs: [] }) }) };
+
+  it("shows the element's own actions before those that have it only as an extra", (done) => {
+    const actions = [action('sort-waste', ['earth', 'water']), action('cleanup', ['earth', 'water', 'air']), action('leak', ['water']), action('tap', ['water'])];
+    const service = new RelatedContentService(noStories as any, { getActionsForElement: () => of(actions) } as any, null as any);
+    (service as any).moreFromElement('water', 'video:river').subscribe((items: ExploreItem[]) => {
+      expect(items.map((i) => i.id).slice(0, 2).sort()).toEqual(['leak', 'tap']);
+      expect(items.map((i) => i.id).slice(2).sort()).toEqual(['cleanup', 'sort-waste']);
+      done();
+    });
+  });
+});

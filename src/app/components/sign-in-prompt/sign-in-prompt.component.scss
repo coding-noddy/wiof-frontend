@@ -137,6 +137,17 @@
 }
 
 // ── Error Message ────────────────────────────────────────────────
+.prompt-privacy {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--wiof-ink-muted);
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+  }
+}
+
 .prompt-error {
   margin: 0;
   font-size: 0.78rem;

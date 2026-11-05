@@ -83,7 +83,8 @@ welcome is a starting point rather than a wall of information. -->
             <button type="button" class="sign-in-link" (click)="signIn()" [disabled]="signingIn">
               {{ signingIn ? 'Signing in…' : 'Sign in with Google' }}
             </button>
-            to save your actions and track your journey.
+            to save your actions and track your journey
+            (see our <a routerLink="/privacy-policy" (click)="dismiss()">Privacy Policy</a>).
           </p>
         }
       </div>
