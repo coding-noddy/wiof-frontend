@@ -75,6 +75,12 @@ export interface UserProfile {
   currentStreak: number;         // Min 0
   longestStreak: number;         // Min 0 — the best currentStreak has ever reached
   savedBlogsCount: number;       // Min 0
+  // The welcome after sign-in and the first-steps checklist (Phase 2 step 5).
+  // Each timestamp is set once, by the server clock (firestore.rules).
+  onboarding?: {
+    welcomeDoneAt?: firebase.firestore.Timestamp;
+    checklistDismissedAt?: firebase.firestore.Timestamp;
+  };
 }
 
 /** Result of the resetEngagementData Cloud Function — see UserProfileService.resetEngagementData(). */
@@ -257,6 +263,28 @@ export class UserProfileService {
       .collection(FIREBASE_COLLECTION.USERS)
       .doc(uid)
       .update({ preferredElements: trimmedElements });
+  }
+
+  /**
+   * Finishes (or skips) the welcome after sign-in: saves the chosen
+   * elements, if any, and records when, so it isn't shown again.
+   */
+  async completeWelcome(uid: string, elements: string[]): Promise<void> {
+    const update: Record<string, unknown> = {
+      'onboarding.welcomeDoneAt': firebase.firestore.FieldValue.serverTimestamp()
+    };
+    if (elements.length) {
+      update['preferredElements'] = elements.slice(0, 5);
+    }
+    await this.firestore.collection(FIREBASE_COLLECTION.USERS).doc(uid).update(update);
+  }
+
+  /** Hides the first-steps checklist for good, on every device. */
+  async dismissFirstSteps(uid: string): Promise<void> {
+    await this.firestore
+      .collection(FIREBASE_COLLECTION.USERS)
+      .doc(uid)
+      .update({ 'onboarding.checklistDismissedAt': firebase.firestore.FieldValue.serverTimestamp() });
   }
 
   /**

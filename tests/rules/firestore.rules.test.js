@@ -113,6 +113,42 @@ describe('users/{userId}', () => {
     );
   });
 
+  it('lets the owner choose up to five known elements, and nothing else', async () => {
+    await seed((db) => db.collection('users').doc('alice').set(validProfile('alice')));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    const ref = db.collection('users').doc('alice');
+    await assertSucceeds(ref.update({ preferredElements: ['water', 'earth'] }));
+    await assertFails(ref.update({ preferredElements: ['water', 'fire'] }));
+    await assertFails(ref.update({ preferredElements: 'water' }));
+    await assertFails(ref.update({ preferredElements: ['air', 'water', 'earth', 'energy', 'spirit', 'air'] }));
+  });
+
+  it('keeps a legacy preferredElements value from blocking an unrelated edit', async () => {
+    await seed((db) => db.collection('users').doc('alice').set(validProfile('alice', { preferredElements: ['Old Value'] })));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertSucceeds(db.collection('users').doc('alice').update({ displayName: 'Alice' }));
+  });
+
+  it('lets the owner record the welcome and the checklist dismissal with the server clock', async () => {
+    await seed((db) => db.collection('users').doc('alice').set(validProfile('alice')));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    const ref = db.collection('users').doc('alice');
+    await assertSucceeds(ref.update({ 'onboarding.welcomeDoneAt': serverTimestamp(), preferredElements: ['air'] }));
+    await assertSucceeds(ref.update({ 'onboarding.checklistDismissedAt': serverTimestamp() }));
+  });
+
+  it('denies a backdated, changed, removed or padded onboarding record', async () => {
+    await seed((db) => db.collection('users').doc('alice').set(validProfile('alice')));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    const ref = db.collection('users').doc('alice');
+    await assertFails(ref.update({ 'onboarding.welcomeDoneAt': new Date('2020-01-01') }));
+    await assertFails(ref.update({ 'onboarding.badge': serverTimestamp() }));
+    await assertFails(ref.update({ onboarding: 'done' }));
+    await assertSucceeds(ref.update({ 'onboarding.welcomeDoneAt': serverTimestamp() }));
+    await assertFails(ref.update({ 'onboarding.welcomeDoneAt': serverTimestamp() }));
+    await assertFails(ref.update({ onboarding: {} }));
+  });
+
   it('denies the owner changing their own role via update', async () => {
     await seed((db) => db.collection('users').doc('alice').set(validProfile('alice')));
     const db = testEnv.authenticatedContext('alice').firestore();

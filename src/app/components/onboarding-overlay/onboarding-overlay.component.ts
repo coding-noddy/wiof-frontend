@@ -34,6 +34,9 @@ export class OnboardingOverlayComponent implements OnInit, OnDestroy {
   ];
 
   private routerSub?: Subscription;
+  private authSub?: Subscription;
+  // Signed-in users get JourneyWelcomeComponent instead, so the two never stack.
+  private signedIn = false;
 
   constructor(private router: Router, private authService: AuthService) {
     this.isAuthenticated$ = this.authService.isAuthenticated$;
@@ -43,6 +46,12 @@ export class OnboardingOverlayComponent implements OnInit, OnDestroy {
     if (!this.shouldShowOverlay()) {
       return;
     }
+    this.authSub = this.isAuthenticated$.subscribe((signedIn) => {
+      this.signedIn = signedIn;
+      if (signedIn && this.visible) {
+        this.visible = false;
+      }
+    });
     this.onRoute(this.router.url);
     this.routerSub = this.router.events
       .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
@@ -51,6 +60,7 @@ export class OnboardingOverlayComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.routerSub?.unsubscribe();
+    this.authSub?.unsubscribe();
   }
 
   @HostListener('document:keydown.escape')
@@ -97,7 +107,7 @@ export class OnboardingOverlayComponent implements OnInit, OnDestroy {
   }
 
   private onRoute(url: string): void {
-    const shouldShow = WELCOME_PATHS.includes(this.pathOf(url));
+    const shouldShow = !this.signedIn && WELCOME_PATHS.includes(this.pathOf(url));
     if (shouldShow && !this.visible) {
       this.visible = true;
       // Ionic's gesture controller (used by the home page's sliders) blurs

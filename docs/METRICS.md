@@ -38,6 +38,7 @@ A Passport milestone must state the trust level of the metric it uses. Self-repo
 |---|---|---|---|---|
 | `blogsRead` | My Journey "Blogs Opened" | Distinct blogs with an accepted `blog_read`. A read under the blog's slug and one under its document ID count as one blog. | blogs · lifetime | Checked: the blog exists. |
 | `qualityReads` (new) | My Journey "Quality Reads" | Distinct blogs with an accepted `blog_read_complete`. **Quality read:** scrolled past 75% of the article **and** stayed at least 60% of its estimated reading time (word count ÷ 200 words a minute). The server recomputes the reading time from the stored blog and allows 10% slack for word-count differences. | blogs · lifetime | Checked |
+| `qualityReadsByElement` (8.5.0) | My Journey "elements explored" | Quality reads per element (air, water, earth, energy, spirit): each distinct quality-read blog counts once, toward its category's element. Blogs without an element category don't count here (they still count in `qualityReads`). | blogs per element · lifetime | Checked |
 | `lastBlogReadDate` | "Last read" date | Latest accepted `blog_read` timestamp. | timestamp | Checked |
 | `videosWatched` | not shown | Distinct videos with an accepted `video_view` (video page opened). The video ID must be a valid YouTube ID; WIOF has no video catalogue to check it against. | videos · lifetime | Checked (format only) |
 | `videosCompleted` | My Journey "**Videos Watched**" | Distinct videos with an accepted `video_watch_complete`: the player reported at least 75% of the video's length reached. Recorded against the YouTube video ID wherever the video was watched (video page, In Focus, coffee conversation, NGO, hero video), so the same video in two places counts once. Watches recorded before 8.2.0 used a title or topic as the ID and still count, once each. | videos · lifetime | Checked (format only) |
@@ -58,6 +59,14 @@ A Passport milestone must state the trust level of the metric it uses. Self-repo
 | `uniqueActionsCompleted` | home panel | Number of distinct actions completed at least once. | actions · lifetime | Self-reported |
 | `actionsByElement` | element progress | Completions per element (air, water, earth, energy, spirit), from each action's elements when it was completed. An action with two elements counts toward both. | completions per element | Self-reported |
 | `lastActionAt` | — | Latest completion time. | timestamp | Self-reported |
+
+### Journey (derived on the page, not stored; `src/app/models/Journey.ts`)
+
+| Shown as | Rule | Trust |
+|---|---|---|
+| **Elements explored** (My Journey chips, "across N elements") | An element counts once it has at least one quality read (`qualityReadsByElement`) or one completed action (`actionsByElement`). | Checked reads; self-reported actions |
+| **Your first steps** (home panel, My Journey) | Choose elements: `preferredElements` not empty. Read a story: `qualityReads` ≥ 1. Watch a video: `videosCompleted` ≥ 1. Check your EQ: `lastEqScore` set. First action: `totalActionsCompleted` ≥ 1. Hidden once all five are done or the user hides it (`users.onboarding.checklistDismissedAt`). | As the metrics above |
+| **Journey story** (My Journey) | "Since you joined in {month year}, you've read N stories, watched N videos and done N actions across N elements", from `qualityReads`, `videosCompleted`, `totalActionsCompleted`, elements explored and `users.joinedDate`. Parts that are 0 are left out. | As the metrics above |
 | Completion events | (Passport) | One immutable `action_completed` event per completion, written by the server (`onUserActionWritten`) with ID `{uid}_action_completed_{actionId}_{n}`, where n is the completion number. It carries the elements, the action version, `completionMethod` and `verificationStatus` (both `SELF_REPORTED` today), the server timestamp, and, for DAILY actions, the local day. Browsers can't write these. Server-written events exist from 8.3.0; earlier completions have browser-written events (random IDs) and are counted in the totals through `user_actions`. | one per completion | Self-reported |
 | Action streak | flame badge on a DAILY card | Consecutive local days, ending today or yesterday, with a completion of that action (`user_action_completions`). Computed when the card loads, not stored. | days | Self-reported |
 
@@ -73,7 +82,7 @@ A Passport milestone must state the trust level of the metric it uses. Self-repo
 
 ## Resets
 
-"Clear My Engagement Data" (`resetEngagementData`) deletes the user's reading, watching, poll, EQ, visit and widget events and their saved content. It also zeroes the visit counters and those fields of `user_metrics`.
+"Clear My Engagement Data" (`resetEngagementData`) deletes the user's reading, watching, poll, EQ, visit and widget events and their saved content. It also zeroes the visit counters and those fields of `user_metrics` (and removes `qualityReadsByElement`).
 
 **Take Action progress is kept** (decided 2026-11-04, 8.3.0): `user_actions`, the `action_completed` events and the action counters stay. A reset therefore never makes "Actions Taken" disagree with the action cards, and a recompute can't undo a reset. The Settings page says so before the user confirms.
 

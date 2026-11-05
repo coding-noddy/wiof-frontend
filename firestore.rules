@@ -36,12 +36,40 @@ service cloud.firestore {
     // profile documents may not have every field (e.g. 'role'), and reading a
     // missing map key directly throws and denies the whole request.
     function isValidOwnProfileUpdate() {
-      let allowedKeys = ['displayName', 'firstName', 'lastName', 'photoURL', 'preferredElements'];
-      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(allowedKeys)
+      let allowedKeys = ['displayName', 'firstName', 'lastName', 'photoURL', 'preferredElements', 'onboarding'];
+      let changed = request.resource.data.diff(resource.data).affectedKeys();
+      return changed.hasOnly(allowedKeys)
+        && (!changed.hasAny(['preferredElements']) || isValidPreferredElements(request.resource.data.preferredElements))
+        && (!changed.hasAny(['onboarding']) || isValidOnboarding())
         && request.resource.data.get('role', null) == resource.data.get('role', null)
         && request.resource.data.get('uid', null) == resource.data.get('uid', null)
         && request.resource.data.get('email', null) == resource.data.get('email', null)
         && request.resource.data.get('joinedDate', null) == resource.data.get('joinedDate', null);
+    }
+
+    // Up to five of the five elements, no repeats beyond that (checked only
+    // when changed, so a legacy value never blocks an unrelated edit).
+    function isValidPreferredElements(elements) {
+      return elements is list && elements.size() <= 5
+        && elements.hasOnly(['air', 'water', 'earth', 'energy', 'spirit']);
+    }
+
+    // The welcome-after-sign-in and first-steps state (Phase 2 step 5):
+    // two optional timestamps, each set to the server's clock when first
+    // written and never changed or removed after that.
+    function isValidOnboarding() {
+      let before = resource.data.get('onboarding', {});
+      let after = request.resource.data.onboarding;
+      return after is map
+        && after.keys().hasOnly(['welcomeDoneAt', 'checklistDismissedAt'])
+        && onboardingStamp(before, after, 'welcomeDoneAt')
+        && onboardingStamp(before, after, 'checklistDismissedAt');
+    }
+
+    function onboardingStamp(before, after, key) {
+      return before.get(key, null) == null
+        ? (after.get(key, null) == null || after.get(key, null) == request.time)
+        : after.get(key, null) == before.get(key, null);
     }
 
     // ─── User Profiles ──────────────────────────────────────────────────────

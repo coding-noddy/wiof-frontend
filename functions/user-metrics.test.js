@@ -4,13 +4,14 @@
  */
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
-const { computeUserMetrics, diffMetrics, makeContentLookups } = require('./user-metrics');
+const { computeUserMetrics, diffMetrics, elementOfBlog, makeContentLookups } = require('./user-metrics');
 const { VALIDATOR_VERSION } = require('./activity-validation');
 
 const at = (iso) => ({ toMillis: () => Date.parse(iso) });
-const BLOG = { id: 'blogDocId', slug: 'kalpasar', content: '<p>' + 'word '.repeat(400) + '</p>' };
+const BLOG = { id: 'blogDocId', slug: 'kalpasar', category: 'Water', content: '<p>' + 'word '.repeat(400) + '</p>' };
+const BLOG2 = { id: 'blog2', slug: 'bees', category: 'Earth', content: '<p>' + 'word '.repeat(400) + '</p>' };
 const lookups = {
-  getBlog: async (id) => (id === 'kalpasar' || id === 'blogDocId' ? BLOG : null),
+  getBlog: async (id) => (id === 'kalpasar' || id === 'blogDocId' ? BLOG : id === 'bees' ? BLOG2 : null),
   pollExists: async (id) => id === 'poll-1',
   actionExists: async () => true
 };
@@ -34,6 +35,18 @@ describe('computeUserMetrics', () => {
     assert.equal(metrics.get('alice').qualityReads, 1);
     const { metrics: tooFast } = await computeUserMetrics([read('c', 5)], [], lookups);
     assert.equal(tooFast.has('alice'), false);
+  });
+
+  it('counts quality reads per element, once per blog', async () => {
+    const read = (id, contentId) => ev(id, 'blog_read_complete', { contentId, contentTitle: 'K', scrollDepth: 90, timeSpent: 100 });
+    const { metrics } = await computeUserMetrics([read('a', 'kalpasar'), read('b', 'blogDocId'), read('c', 'bees')], [], lookups);
+    assert.deepEqual(metrics.get('alice').qualityReadsByElement, { water: 1, earth: 1 });
+  });
+
+  it('elementOfBlog reads the category, and ignores ones that are not an element', () => {
+    assert.equal(elementOfBlog({ category: ' Earth ' }), 'earth');
+    assert.equal(elementOfBlog({ category: 'News' }), null);
+    assert.equal(elementOfBlog(null), null);
   });
 
   it('counts videos and polls once per item', async () => {
@@ -101,6 +114,14 @@ describe('diffMetrics', () => {
       totalActionsCompleted: 0, uniqueActionsCompleted: 0
     }]]);
     assert.deepEqual(diffMetrics(stored, computed), [{ uid: 'alice', changes: { blogsRead: [5, 3] } }]);
+  });
+
+  it('reports a changed per-element map, ignoring zero entries and key order', () => {
+    const base = { blogsRead: 0, qualityReads: 2, videosWatched: 0, videosCompleted: 0, pollsVoted: 0, lastEqScore: null, totalActionsCompleted: 0, uniqueActionsCompleted: 0 };
+    const stored = new Map([['alice', { ...base, qualityReadsByElement: { earth: 1, air: 0 } }]]);
+    assert.deepEqual(diffMetrics(stored, new Map([['alice', { ...base, qualityReadsByElement: { earth: 1 } }]])), []);
+    assert.deepEqual(diffMetrics(stored, new Map([['alice', { ...base, qualityReadsByElement: { water: 1, earth: 1 } }]])),
+      [{ uid: 'alice', changes: { qualityReadsByElement: [{ earth: 1, air: 0 }, { water: 1, earth: 1 }] } }]);
   });
 
   it('reports nothing for an unchanged user', () => {

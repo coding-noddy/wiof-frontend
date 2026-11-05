@@ -22,6 +22,7 @@ import { makeAngularFirestoreInjectionSafe } from './util/injection-safe-firesto
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { OnboardingOverlayComponent } from './components/onboarding-overlay/onboarding-overlay.component';
+import { JourneyWelcomeComponent } from './components/journey-welcome/journey-welcome.component';
 import { LaunchCurtainComponent } from './components/launch-curtain/launch-curtain.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
@@ -31,7 +32,7 @@ import {
 } from '@angular/fire/compat/analytics';
 
 @NgModule({
-  declarations: [AppComponent, OnboardingOverlayComponent, LaunchCurtainComponent],
+  declarations: [AppComponent, OnboardingOverlayComponent, JourneyWelcomeComponent, LaunchCurtainComponent],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),

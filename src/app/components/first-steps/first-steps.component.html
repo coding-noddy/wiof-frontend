@@ -1,0 +1,47 @@
+@if (visible) {
+  <section class="first-steps" [class.compact]="compact" aria-labelledby="first-steps-title">
+    <div class="first-steps-head">
+      <div>
+        <h2 class="first-steps-title" id="first-steps-title">Your first steps</h2>
+        <p class="first-steps-count">{{ doneCount }} of {{ steps.length }} done</p>
+      </div>
+      <button type="button" class="first-steps-hide" (click)="hide()">Hide</button>
+    </div>
+    <div
+      class="first-steps-bar"
+      role="progressbar"
+      aria-label="First steps done"
+      [attr.aria-valuenow]="doneCount"
+      aria-valuemin="0"
+      [attr.aria-valuemax]="steps.length"
+      >
+      <span [style.width.%]="(doneCount / steps.length) * 100"></span>
+    </div>
+    <ol class="first-steps-list">
+      @for (step of steps; track step.key) {
+        <li [class.done]="step.done" [class.next]="step.key === nextKey">
+          @if (step.done) {
+            <span class="step-row">
+              <ion-icon class="step-icon" aria-hidden="true" name="checkmark-circle"></ion-icon>
+              <span class="step-text">
+                <span class="step-title">{{ step.title }}</span>
+                <span class="visually-hidden">(done)</span>
+              </span>
+            </span>
+          } @else {
+            <a class="step-row" [routerLink]="step.link">
+              <ion-icon class="step-icon" aria-hidden="true" name="ellipse-outline"></ion-icon>
+              <span class="step-text">
+                <span class="step-title">{{ step.title }}</span>
+                @if (!compact || step.key === nextKey) {
+                  <span class="step-hint">{{ step.hint }}</span>
+                }
+              </span>
+              <ion-icon class="step-arrow" aria-hidden="true" name="chevron-forward"></ion-icon>
+            </a>
+          }
+        </li>
+      }
+    </ol>
+  </section>
+}

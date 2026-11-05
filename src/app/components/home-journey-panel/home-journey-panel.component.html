@@ -7,6 +7,7 @@
       </div>
       <a routerLink="/my-journey" class="journey-link">View My Journey →</a>
     </div>
+    <app-first-steps class="journey-first-steps" [profile]="profile$ | async" [metrics]="metrics$ | async" [compact]="true"></app-first-steps>
     @if (!isLoading) {
       <div class="journey-cards">
         @if (lastActivity; as activity) {

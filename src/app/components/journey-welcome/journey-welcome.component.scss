@@ -1,0 +1,330 @@
+@use '../../wiof-custom-theming' as *;
+
+// Same look as the guest welcome (onboarding-overlay), so the two read as one flow.
+.welcome-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  background: rgba(43, 36, 32, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: fade-in 250ms ease-out;
+}
+
+// A genuine overlay, so it keeps its elevation shadow (the documented
+// exception to the flat, shadow-free card rule).
+.welcome-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9998;
+  width: 520px;
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  border-radius: 18px;
+  background: var(--wiof-warm-white);
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  box-shadow: 0 20px 60px rgba(43, 36, 32, 0.2), 0 8px 20px rgba(43, 36, 32, 0.1);
+  animation: dialog-in 300ms ease-out;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes dialog-in {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.94); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome-backdrop,
+  .welcome-dialog {
+    animation: none;
+  }
+}
+
+.close-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 252, 246, 0.92);
+  color: var(--wiof-ink);
+  cursor: pointer;
+
+  ion-icon {
+    font-size: 1.2rem;
+    pointer-events: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--wiof-warm-white);
+    outline-offset: 2px;
+  }
+}
+
+// Text-safe teal: warm-white on raw Teal is ~3.4:1.
+.welcome-header {
+  padding: 1.4rem 3rem 1.2rem;
+  text-align: center;
+  color: var(--wiof-warm-white);
+  background: linear-gradient(135deg, var(--wiof-teal-fill) 0%, var(--wiof-teal-shade-40) 100%);
+}
+
+.welcome-step {
+  margin: 0 0 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.welcome-title {
+  margin: 0 0 0.3rem;
+  font-family: 'Aleo', serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--wiof-warm-white);
+}
+
+.welcome-desc {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+// Step 1: element toggles
+.element-choices {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 1.4rem 1.25rem 0.4rem;
+}
+
+.element-choice {
+  --choice: var(--wiof-teal);
+  --choice-text: var(--wiof-teal-text);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0.5rem 1.05rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--choice);
+  background: var(--wiof-warm-white);
+  color: var(--wiof-ink);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+
+  ion-icon {
+    font-size: 1.15rem;
+    color: var(--choice-text);
+  }
+
+  &[data-element='earth'] {
+    --choice: var(--wiof-brown);
+    --choice-text: var(--wiof-brown-text);
+  }
+
+  &[data-element='energy'] {
+    --choice: var(--wiof-marigold);
+    --choice-text: var(--wiof-marigold-text);
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &.selected {
+    background: color-mix(in srgb, var(--choice) 18%, var(--wiof-warm-white));
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--wiof-teal-text);
+    outline-offset: 2px;
+  }
+}
+
+// Step 2: where to start
+.start-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 1.1rem 1.25rem 0;
+  list-style: none;
+}
+
+.start-choice {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  background: var(--wiof-warm-white);
+  color: var(--wiof-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--wiof-teal);
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--wiof-teal-text);
+    outline-offset: 2px;
+  }
+}
+
+.start-icon {
+  flex-shrink: 0;
+  font-size: 1.6rem;
+  color: var(--wiof-teal-text);
+}
+
+.start-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.start-verb {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--wiof-teal-text);
+}
+
+[data-verb='Act'] {
+  .start-icon,
+  .start-verb {
+    color: var(--wiof-marigold-text);
+  }
+}
+
+[data-verb='Reflect'] {
+  .start-icon,
+  .start-verb {
+    color: var(--wiof-brown-text);
+  }
+}
+
+.start-title {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.start-desc {
+  font-size: 0.85rem;
+  color: var(--wiof-ink-muted);
+}
+
+.start-arrow {
+  flex-shrink: 0;
+  color: var(--wiof-ink-muted);
+}
+
+.welcome-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 1.1rem 1.25rem 1.25rem;
+}
+
+.primary-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 999px;
+  border: none;
+  background: var(--wiof-marigold);
+  color: var(--wiof-ink);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--wiof-marigold-tint-20);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--wiof-teal-text);
+    outline-offset: 3px;
+  }
+}
+
+.secondary-link {
+  padding: 0.35rem 0.25rem;
+  border: none;
+  background: none;
+  color: var(--wiof-ink);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--wiof-teal-text);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+// Phones: a bottom sheet, as the guest welcome.
+@media (max-width: 600px) {
+  .welcome-dialog {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: 90vh;
+    transform: none;
+    border-radius: 18px 18px 0 0;
+    animation: sheet-in 300ms ease-out;
+  }
+
+  .welcome-header {
+    padding: 1.2rem 3rem 1rem;
+  }
+}
+
+@keyframes sheet-in {
+  from { transform: translateY(100%); }
+  to { transform: none; }
+}

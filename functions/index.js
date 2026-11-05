@@ -15,7 +15,7 @@ const functions = require('firebase-functions/v1');
 const admin = require('firebase-admin');
 const { BLOG_SUMMARIES, buildBlogSummary } = require('./blog-summary');
 const { VALIDATOR_VERSION, scoreEqResponses, validateActivityEvent } = require('./activity-validation');
-const { makeContentLookups, recomputeUserMetrics } = require('./user-metrics');
+const { elementOfBlog, makeContentLookups, recomputeUserMetrics } = require('./user-metrics');
 const { rebuildRelatedContent } = require('./related-content');
 
 admin.initializeApp();
@@ -476,6 +476,8 @@ exports.resetEngagementData = functions
       lastEqScore: null,
       lastEqDate: null,
       lastBlogReadDate: null,
+      // delete(), not {}: a merge set would keep the old per-element keys.
+      qualityReadsByElement: admin.firestore.FieldValue.delete(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
 
@@ -537,16 +539,24 @@ exports.migrateSavedContentIds = functions
   }));
 
 /** The user_metrics change one accepted event makes, or null if it feeds no tally. */
-function metricsUpdateFor(entry) {
+async function metricsUpdateFor(entry) {
   const update = { updatedAt: admin.firestore.FieldValue.serverTimestamp() };
   switch (entry.activityType) {
     case 'blog_read':
       update.blogsRead = admin.firestore.FieldValue.increment(1);
       update.lastBlogReadDate = entry.timestamp;
       break;
-    case 'blog_read_complete':
+    case 'blog_read_complete': {
       update.qualityReads = admin.firestore.FieldValue.increment(1);
+      // Per element, for My Journey's "elements explored" (docs/METRICS.md).
+      // A nested map, as for actionsByElement below: set() with merge reads a
+      // dotted key as one literal field name.
+      const element = elementOfBlog(await activityLookups.getBlog(entry.contentId));
+      if (element) {
+        update.qualityReadsByElement = { [element]: admin.firestore.FieldValue.increment(1) };
+      }
       break;
+    }
     case 'video_view':
       update.videosWatched = admin.firestore.FieldValue.increment(1);
       break;
@@ -603,7 +613,7 @@ exports.onActivityLogCreated = functions
         fn: 'onActivityLogCreated', rejected: verdict.reason, docId: snap.id, activityType: entry.activityType || null
       }));
     }
-    const update = verdict.status === 'accepted' && entry.userId ? metricsUpdateFor(entry) : null;
+    const update = verdict.status === 'accepted' && entry.userId ? await metricsUpdateFor(entry) : null;
 
     await db.runTransaction(async (tx) => {
       const current = await tx.get(snap.ref);

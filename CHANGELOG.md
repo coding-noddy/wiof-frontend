@@ -7,6 +7,24 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.5.0] - 2026-11-05
+
+Phase 2 step 5: the journey experience (see `docs/PHASE2_PLAN.md` section D). **Deploy with `-Backend`** (rules and functions), then run `node scripts/recompute-user-metrics.js --project prod` (dry run) and `--apply` to fill the new per-element counts.
+
+### Added
+- **A welcome after sign-in:** two short, skippable steps on the home page, shown once to a signed-in user who hasn't chosen elements. 1: which elements matter to you (saved as your preferred elements, editable in Settings). 2: where to start — a story, a small action or the EQ check, for your first chosen element. Skipping counts as done. Phones get a bottom sheet. The guest welcome is now for guests only, so the two never stack.
+- **Your first steps** on the home panel and My Journey: choose your elements, read a story to the end, watch a video, check your EQ, do your first action. Each step is ticked by the server's trusted counts, never the browser. Hide it once and it stays hidden on every device; it also goes away when all five are done.
+- **My Journey tells your story:** "Since you joined in March 2026, you've read 9 stories, watched 3 videos and done 17 actions across 4 elements", with the five elements shown as explored or not yet.
+- New trusted metric `qualityReadsByElement` (`docs/METRICS.md`): quality reads per element, counted by `onActivityLogCreated` and by the recompute, cleared by "Clear My Engagement Data".
+- Browser test `npm run e2e:journey` (staging only).
+
+### Changed
+- Profile rules: `preferredElements` must be up to five of the five elements (checked only when changed), and the new `onboarding` record holds two timestamps, each set once by the server clock.
+- The recompute report prints per-element maps readably.
+
+### Fixed
+- Home "Pick up where you left off" linked every story under Earth; it now links under the story's own element.
+
 ## [8.4.1] - 2026-11-05
 
 Explore next, redesigned so it reads as a "what now?" moment instead of a plain list. **Deploy with `-Backend`**: one new Firestore index.

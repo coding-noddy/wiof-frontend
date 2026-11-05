@@ -38,6 +38,7 @@ import { ElementTakeActionTeaserComponent } from './components/element-take-acti
 import { TakeActionCardComponent } from './components/take-action-card/take-action-card.component';
 import { TakeActionDetailComponent } from './components/take-action-detail/take-action-detail.component';
 import { ExploreNextComponent } from './components/explore-next/explore-next.component';
+import { FirstStepsComponent } from './components/first-steps/first-steps.component';
 import { RelatedContentEditorComponent } from './components/related-content-editor/related-content-editor.component';
 import { ContinueJourneyBannerComponent } from './components/continue-journey-banner/continue-journey-banner.component';
 import { BlogReadTrackerDirective } from './directives/blog-read-tracker.directive';
@@ -82,6 +83,7 @@ const COMPONENTS = [
   TakeActionCardComponent,
   TakeActionDetailComponent,
   ExploreNextComponent,
+  FirstStepsComponent,
   RelatedContentEditorComponent,
   ContinueJourneyBannerComponent,
   SearchBoxComponent,

@@ -1,17 +1,19 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { forkJoin, Subject } from 'rxjs';
+import { forkJoin, Observable, of, Subject } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { ActivityService } from 'src/app/services/activity.service';
 import { SavedContentService } from 'src/app/services/saved-content.service';
 import { ActionService } from 'src/app/services/action.service';
 import { UserActionService } from 'src/app/services/user-action.service';
-import { UserProfileService } from 'src/app/services/user-profile.service';
+import { UserProfile, UserProfileService } from 'src/app/services/user-profile.service';
+import { BlogService } from 'src/app/services/blog.service';
+import { EngagementMetrics } from 'src/app/services/activity.service';
 
 interface LastActivity {
   type: 'blog' | 'video';
   title: string;
-  link: string;
+  link: string | string[];
   date: Date;
 }
 
@@ -46,6 +48,10 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
   // case the template falls back to the plain unpersonalized greeting.
   firstName: string | null = null;
 
+  // Live, for the first-steps checklist: it ticks as soon as the server counts a step.
+  profile$: Observable<UserProfile | null> = of(null);
+  metrics$: Observable<EngagementMetrics | null> = of(null);
+
   private destroy$ = new Subject<void>();
   private userId: string | null = null;
 
@@ -55,7 +61,8 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
     private savedContentService: SavedContentService,
     private actionService: ActionService,
     private userActionService: UserActionService,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private blogService: BlogService
   ) {}
 
   ngOnInit(): void {
@@ -65,6 +72,8 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
         this.isAuthenticated = !!user;
         this.userId = user?.uid || null;
         if (user) {
+          this.profile$ = this.userProfileService.getProfile(user.uid);
+          this.metrics$ = this.activityService.getActivityCounts(user.uid);
           this.loadJourney(user.uid);
         } else {
           this.isLoading = false;
@@ -127,6 +136,21 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
         candidates.sort((a, b) => b.date.getTime() - a.date.getTime());
 
         this.lastActivity = candidates[0] || null;
+        // A read only records the blog's slug or ID, not its element: look
+        // the post up so the link goes to the right element (it used to
+        // always say Earth).
+        const last = this.lastActivity;
+        if (last?.type === 'blog' && latestRead) {
+          this.blogService
+            .getBlogLink(latestRead.contentId)
+            .pipe(first(), takeUntil(this.destroy$))
+            .subscribe({
+              next: (link) => {
+                if (link) last.link = link;
+              },
+              error: () => {}
+            });
+        }
         this.lastEqScore = metrics.lastEqScore;
         this.savedContentCount = savedIds.size;
         this.actionsCompletedCount = metrics.totalActionsCompleted || 0;

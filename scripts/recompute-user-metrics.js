@@ -67,8 +67,10 @@ async function main() {
   console.log('Rejected events by reason (old and new):', report.rejectedByReason);
   if (report.diffs.length) {
     console.log('\nChanges (field: before -> after):');
+    // Per-element maps print as {water:1, earth:2}.
+    const show = (v) => (v && typeof v === 'object' ? `{${Object.entries(v).map(([k, n]) => `${k}:${n}`).join(', ')}}` : v);
     for (const { uid, changes } of report.diffs) {
-      const text = Object.entries(changes).map(([field, [before, after]]) => `${field}: ${before} -> ${after}`).join(', ');
+      const text = Object.entries(changes).map(([field, [before, after]]) => `${field}: ${show(before)} -> ${show(after)}`).join(', ');
       console.log(`  ${uid.slice(0, 8)}…  ${text}`);
     }
     if (report.usersChanged > report.diffs.length) {

@@ -6,7 +6,8 @@ import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { AuthService } from 'src/app/services/auth.service';
 import { ActivityService, EngagementMetrics } from 'src/app/services/activity.service';
 import { SavedContentService, SavedContentDocument } from 'src/app/services/saved-content.service';
-import { UserProfileService } from 'src/app/services/user-profile.service';
+import { UserProfile, UserProfileService } from 'src/app/services/user-profile.service';
+import { elementsExplored, JOURNEY_ELEMENTS, journeyStory } from 'src/app/models/Journey';
 import { QualityReadEntry, EqHistoryEntry, PollHistoryEntry, VideoWatchHistoryEntry } from 'src/app/models/engagement-history';
 import { UserActionService } from 'src/app/services/user-action.service';
 import { ActionService } from 'src/app/services/action.service';
@@ -29,6 +30,8 @@ export class MyJourneyPage implements OnInit, OnDestroy {
 
   // Engagement metrics
   metrics: EngagementMetrics | null = null;
+  profile: UserProfile | null = null;
+  readonly journeyElements = JOURNEY_ELEMENTS;
   currentStreak = 0;
   longestStreak = 0;
   savedContentCount = 0;
@@ -315,6 +318,7 @@ export class MyJourneyPage implements OnInit, OnDestroy {
           this.metrics = {
             blogsRead: 0,
             qualityReads: 0,
+            qualityReadsByElement: {},
             videosWatched: 0,
             videosCompleted: 0,
             pollsVoted: 0,
@@ -368,6 +372,7 @@ export class MyJourneyPage implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (profile) => {
+          this.profile = profile;
           if (profile) {
             this.currentStreak = profile.currentStreak || 0;
             this.longestStreak = profile.longestStreak || 0;
@@ -702,6 +707,20 @@ export class MyJourneyPage implements OnInit, OnDestroy {
   /**
    * Returns chart point coordinates for the sparkline SVG (260x100 viewBox).
    */
+  /** "Since you joined in …, you've read 9 stories…" (models/Journey.ts); null with nothing to tell yet. */
+  get story(): string | null {
+    return journeyStory(this.profile, this.metrics);
+  }
+
+  /** Elements with a quality read or a completed action, for the element chips. */
+  isExplored(slug: string): boolean {
+    return elementsExplored(this.metrics).includes(slug as any);
+  }
+
+  get exploredCount(): number {
+    return elementsExplored(this.metrics).length;
+  }
+
   getEqChartPoints(): { x: number; y: number }[] {
     if (this.eqHistory.length < 2) return [];
     const scores = [...this.eqHistory].reverse().map(e => e.overallScore);

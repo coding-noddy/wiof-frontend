@@ -1,0 +1,164 @@
+@use '../../wiof-custom-theming' as *;
+
+:host {
+  display: block;
+}
+
+// Card convention: flat warm-white, bordered, no shadow.
+.first-steps {
+  padding: 1.15rem 1.25rem 1rem;
+  border-radius: 18px;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  background: var(--wiof-warm-white);
+}
+
+.first-steps-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.first-steps-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--wiof-ink);
+}
+
+.first-steps-count {
+  margin: 0.1rem 0 0;
+  font-size: 0.82rem;
+  color: var(--wiof-ink-muted);
+}
+
+.first-steps-hide {
+  padding: 0.3rem 0.5rem;
+  border: none;
+  background: none;
+  color: var(--wiof-ink-muted);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--wiof-teal-text);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+.first-steps-bar {
+  height: 6px;
+  margin: 0.75rem 0 0.6rem;
+  border-radius: 999px;
+  background: var(--wiof-ivory);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--wiof-teal);
+    transition: width 0.4s ease;
+  }
+}
+
+.first-steps-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 0.4rem;
+  border-radius: 10px;
+  color: var(--wiof-ink);
+  text-decoration: none;
+}
+
+a.step-row {
+  transition: background-color 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--wiof-ivory);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--wiof-teal-text);
+    outline-offset: 1px;
+  }
+}
+
+.step-icon {
+  flex-shrink: 0;
+  font-size: 1.3rem;
+  color: var(--wiof-brown-tint-40);
+}
+
+.step-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.step-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.step-hint {
+  font-size: 0.8rem;
+  color: var(--wiof-ink-muted);
+}
+
+.step-arrow {
+  flex-shrink: 0;
+  color: var(--wiof-ink-muted);
+}
+
+li.done {
+  .step-icon {
+    color: var(--wiof-teal);
+  }
+
+  .step-title {
+    color: var(--wiof-ink-muted);
+    text-decoration: line-through;
+    text-decoration-color: var(--wiof-brown-tint-40);
+  }
+}
+
+li.next a.step-row {
+  background: color-mix(in srgb, var(--wiof-marigold) 14%, var(--wiof-warm-white));
+
+  .step-icon {
+    color: var(--wiof-marigold-text);
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+// Home panel: tighter rows.
+.compact {
+  padding: 1rem 1rem 0.75rem;
+
+  .step-row {
+    padding: 0.4rem 0.35rem;
+  }
+}

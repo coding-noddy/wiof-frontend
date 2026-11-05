@@ -198,3 +198,9 @@ h2 {
     flex: 0 1 auto;
   }
 }
+
+// First steps: only takes space when it shows (hidden, it holds just Angular comment nodes).
+.journey-first-steps:not(:empty) {
+  display: block;
+  margin-bottom: 1.25rem;
+}

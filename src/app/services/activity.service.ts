@@ -74,6 +74,8 @@ export interface EngagementMetrics {
   blogsRead: number;
   /** Distinct blogs read to the quality threshold (docs/METRICS.md). */
   qualityReads: number;
+  /** Quality reads per element (air, water, …), from each blog's element. */
+  qualityReadsByElement: { [element: string]: number };
   videosWatched: number;
   videosCompleted: number;
   pollsVoted: number;
@@ -414,6 +416,7 @@ export class ActivityService {
         map(doc => ({
           blogsRead: doc?.blogsRead || 0,
           qualityReads: doc?.qualityReads || 0,
+          qualityReadsByElement: doc?.qualityReadsByElement || {},
           videosWatched: doc?.videosWatched || 0,
           videosCompleted: doc?.videosCompleted || 0,
           pollsVoted: doc?.pollsVoted || 0,

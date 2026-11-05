@@ -124,6 +124,25 @@ export class BlogService {
     );
   }
 
+  /**
+   * The post path for a blog known only by the slug or doc ID an activity
+   * event recorded (blog URLs use either), from the small blog_summaries
+   * docs. Null if the blog is gone.
+   */
+  getBlogLink(slugOrId: string): Observable<string[] | null> {
+    const toLink = (doc: any) => doc && ['/element', String(doc.category || 'earth').toLowerCase(), 'blog', doc.slug || slugOrId];
+    return this.database
+      .collection(FIREBASE_COLLECTION.BLOG_SUMMARIES, (ref) => ref.where('slug', '==', slugOrId).limit(1))
+      .get()
+      .pipe(
+        switchMap((snap) =>
+          snap.docs.length
+            ? of(toLink(snap.docs[0].data()))
+            : this.database.doc(`${FIREBASE_COLLECTION.BLOG_SUMMARIES}/${slugOrId}`).get().pipe(map((d) => (d.exists ? toLink(d.data()) : null)))
+        )
+      );
+  }
+
   getBlogBySlug(slug: string): Observable<Blog> {
     const blogCollection = this.database.collection(
       FIREBASE_COLLECTION.BLOGS,
