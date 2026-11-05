@@ -144,6 +144,21 @@ const readCard = (page) => page.evaluate(() => {
     const modal = await page.evaluate(() => ({ path: location.pathname + location.search, title: document.querySelector('ion-modal .detail-title')?.textContent.trim() }));
     check('"Try today" opens the action\'s details', modal.title === ACTION.title, JSON.stringify(modal));
 
+    // 3b. "See the full calendar" brings the calendar heading into view and focus.
+    const toCalendar = async (p) => {
+      await p.goto(`${BASE}/home`, { waitUntil: 'networkidle2', timeout: 90000 });
+      await p.waitForSelector('app-today-on-wiof .today-calendar', { timeout: 30000 });
+      await p.evaluate(() => document.querySelector('app-today-on-wiof .today-calendar').click());
+      await sleep(1500);
+      return p.evaluate(() => {
+        const h = document.getElementById('environment-calendar');
+        const r = h?.getBoundingClientRect();
+        return { inView: !!r && r.top >= 0 && r.top < innerHeight / 2, focused: document.activeElement === h, flash: !!document.querySelector('app-env-calendar-agenda .agenda-today.is-flashing') };
+      });
+    };
+    const cal = await toCalendar(page);
+    check('"See the full calendar" scrolls to the calendar, focuses its heading and highlights today', cal.inView && cal.focused && cal.flash, JSON.stringify(cal));
+
     // 4. Not today.
     await page.goto(`${BASE}/home`, { waitUntil: 'networkidle2', timeout: 90000 });
     await page.waitForSelector('app-today-on-wiof .today-hide', { timeout: 30000 });
@@ -166,6 +181,8 @@ const readCard = (page) => page.evaluate(() => {
     });
     check('on a phone it fits the screen, no sideways scroll', !!fit && fit.width <= 390 && !fit.hScroll, JSON.stringify(fit));
     await phone.screenshot({ path: path.join(OUT, 'today-phone.png') });
+    const phoneCal = await toCalendar(phone);
+    check('on a phone "See the full calendar" reaches the calendar too', phoneCal.inView && phoneCal.focused, JSON.stringify(phoneCal));
 
     const relevant = errors.filter((e) => !/favicon|ERR_BLOCKED|youtube|ytimg|doubleclick|googleads|Failed to load resource/i.test(e));
     check('no console errors', relevant.length === 0, relevant.slice(0, 3).join(' | '));

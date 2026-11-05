@@ -1,7 +1,7 @@
 import { of } from 'rxjs';
 import { hiddenToday, sourceName, TODAY_HIDDEN_KEY, todaysOccasion } from 'src/app/models/TodayOnWiof';
 import { toCalendarDay } from 'src/app/services/activity.service';
-import { TodayOnWiofComponent } from './today-on-wiof.component';
+import { CALENDAR_HEADING_ID, TodayOnWiofComponent } from './today-on-wiof.component';
 
 const occasion = (o: any = {}): any => ({ id: 'veg', occasion: 'World Vegetarian Day', description: 'A day for plant-based food.', showMoreLink: 'https://www.navs-online.org/x', relatedContent: [], ...o });
 
@@ -58,6 +58,33 @@ describe('Today on WIOF', () => {
       const c = new TodayOnWiofComponent(envcal, related);
       c.ngOnInit();
       expect(views(c)).toEqual([null]);
+    });
+
+    it('"See the full calendar" scrolls to and focuses the calendar heading, and highlights today', () => {
+      const heading = document.createElement('h2');
+      heading.id = CALENDAR_HEADING_ID;
+      heading.tabIndex = -1;
+      const agenda = document.createElement('app-env-calendar-agenda');
+      agenda.innerHTML = '<div class="agenda-day agenda-today"></div>';
+      document.body.append(heading, agenda);
+      try {
+        spyOn(heading, 'scrollIntoView');
+        const event = new Event('click', { cancelable: true });
+        new TodayOnWiofComponent(envcal, related).seeCalendar(event);
+        expect(event.defaultPrevented).toBeTrue();
+        expect(heading.scrollIntoView).toHaveBeenCalled();
+        expect(document.activeElement).toBe(heading);
+        expect(agenda.querySelector('.agenda-today')!.classList).toContain('is-flashing');
+      } finally {
+        heading.remove();
+        agenda.remove();
+      }
+    });
+
+    it('"See the full calendar" leaves the link alone when the calendar is not on the page', () => {
+      const event = new Event('click', { cancelable: true });
+      new TodayOnWiofComponent(envcal, related).seeCalendar(event);
+      expect(event.defaultPrevented).toBeFalse();
     });
 
     it('"Not today" hides it until tomorrow', () => {

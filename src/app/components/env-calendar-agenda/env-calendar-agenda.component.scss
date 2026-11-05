@@ -36,6 +36,26 @@
   overflow-y: auto;
 }
 
+// Brief highlight when "See the full calendar" on Today on WIOF brings
+// the reader here (the class is added by that card).
+.agenda-today.is-flashing {
+  border-radius: 12px;
+  animation: agenda-today-flash 1.8s ease-out;
+}
+
+@keyframes agenda-today-flash {
+  0%, 35% { background: color-mix(in srgb, var(--wiof-marigold) 28%, transparent); box-shadow: 0 0 0 6px color-mix(in srgb, var(--wiof-marigold) 28%, transparent); }
+  100% { background: transparent; box-shadow: 0 0 0 6px transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .agenda-today.is-flashing {
+    animation: none;
+    background: color-mix(in srgb, var(--wiof-marigold) 20%, transparent);
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--wiof-marigold) 20%, transparent);
+  }
+}
+
 .agenda-section-label {
   font-size: 0.75rem;
   font-weight: 700;

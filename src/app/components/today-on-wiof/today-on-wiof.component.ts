@@ -8,6 +8,9 @@ import { toCalendarDay } from 'src/app/services/activity.service';
 import { EnvcalService } from 'src/app/services/envcal-service';
 import { RelatedContentService } from 'src/app/services/related-content.service';
 
+/** The Environment Calendar heading on the home page. */
+export const CALENDAR_HEADING_ID = 'environment-calendar';
+
 interface TodayView {
   occasion: EnvDay;
   source: string | null;
@@ -21,7 +24,8 @@ interface TodayView {
  * admin's own links first, then the server's keyword matches
  * (related_auto/occasion_{id}). Nothing is padded in: with no match it
  * shows just the fact. "Not today" hides it until tomorrow on this device;
- * a day with no occasion shows nothing.
+ * a day with no occasion shows nothing. "See the full calendar" takes the
+ * reader down to the Environment Calendar on the same page.
  */
 @Component({
     selector: 'app-today-on-wiof',
@@ -54,6 +58,28 @@ export class TodayOnWiofComponent implements OnInit {
         return of(null);
       })
     );
+  }
+
+  /**
+   * Scrolls to the Environment Calendar heading (instantly with reduced
+   * motion), moves focus there for keyboard and screen-reader users, and
+   * briefly highlights today in the agenda. Without the section (another
+   * page) the link's own #fragment is left to the browser.
+   */
+  seeCalendar(event: Event): void {
+    const heading = document.getElementById(CALENDAR_HEADING_ID);
+    if (!heading) return;
+    event.preventDefault();
+    const reduce = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    heading.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    heading.focus({ preventScroll: true });
+    const today = document.querySelector('app-env-calendar-agenda .agenda-today');
+    if (today) {
+      today.classList.remove('is-flashing');
+      void (today as HTMLElement).offsetWidth; // restart the animation on a repeat click
+      today.classList.add('is-flashing');
+      setTimeout(() => today.classList.remove('is-flashing'), 2000);
+    }
   }
 
   notToday(): void {
