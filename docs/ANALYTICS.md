@@ -9,6 +9,10 @@ WIOF has two sources of numbers. They answer different questions.
 | **How trustworthy** | sampled and estimated by Google; blocked by some ad blockers | exact, from our checked events (docs/METRICS.md) |
 | **Where** | Google Analytics, plus traffic shown inside Admin → Analytics once connected | Admin → Analytics |
 
+## Consent (GDPR)
+
+Google Analytics is **opt-in**. A banner asks on the first visit, on any page. Accept and Decline are the same size. The choice is kept on the device (`wiof_analytics_consent` in localStorage) and can be changed with **Cookie settings** in the footer. Until the visitor accepts, collection is switched off and nothing is sent to Google: `util/analytics-init.ts` uses `setAnalyticsCollectionEnabled(false)` and Google Consent Mode `analytics_storage: denied`. The ad signals are always denied. So GA counts only visitors who accepted. Our own numbers (members, Admin → Analytics) don't depend on the banner: they come from our own checked events.
+
 ## What the site sends to Google Analytics (since 8.9.0)
 
 **One `page_view` per page**, sent by `PageTrackingService`. It carries:

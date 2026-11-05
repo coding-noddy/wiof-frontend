@@ -1,12 +1,18 @@
-<div class="consent-bar">
-  <div class="consent-content">
-    <ion-icon aria-hidden="true" name="shield-checkmark-outline" class="consent-icon"></ion-icon>
-    <p class="consent-text">
-      We value your privacy. By continuing to use this site, you agree to our
-      <a [routerLink]="['/privacy-policy']">Privacy Policy</a>.
-    </p>
-  </div>
-  <button class="consent-accept-btn" (click)="onAccept()">
-    Got it
-  </button>
-</div>
+@if (consent.bannerOpen$ | async) {
+  <section class="consent-bar" role="region" aria-labelledby="consent-title">
+    <div class="consent-content">
+      <ion-icon aria-hidden="true" name="shield-checkmark-outline" class="consent-icon"></ion-icon>
+      <p class="consent-text" id="consent-title">
+        May we use Google Analytics cookies? Only if you agree, they show us which pages are read so we can improve WIOF.
+        No ads, and we never sell your data. See our <a routerLink="/privacy-policy">Privacy Policy</a>.
+        @if (consent.choice$ | async; as choice) {
+          <span class="consent-current">(Now: {{ choice === 'granted' ? 'accepted' : 'declined' }}.)</span>
+        }
+      </p>
+    </div>
+    <div class="consent-actions">
+      <button type="button" class="consent-btn decline" (click)="consent.choose('denied')">Decline</button>
+      <button type="button" class="consent-btn accept" (click)="consent.choose('granted')">Accept</button>
+    </div>
+  </section>
+}

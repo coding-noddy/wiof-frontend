@@ -53,6 +53,7 @@ async function newPage(browser, viewport, errors) {
   await page.evaluateOnNewDocument(() => {
     localStorage.setItem('wiof_launch_ribbon_cut', '1');
     localStorage.setItem('privacyConsentAccepted', 'true');
+    localStorage.setItem('wiof_analytics_consent', 'denied');
     localStorage.setItem('wiof_today_hidden', new Date().toISOString().slice(0, 10));
   });
   return page;

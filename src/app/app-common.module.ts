@@ -4,7 +4,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { AqiScorecardComponent } from './components/aqi-scorecard/aqi-scorecard.component';
-import { ConcentPopupComponent } from './components/concent-popup/concent-popup.component';
 import { AqiWidgetComponent } from './components/aqi-widget/aqi-widget.component';
 import { BlogCardComponent } from './components/blog-card/blog-card.component';
 import { ElementWelcomeImageComponent } from './components/element-welcome-image/element-welcome-image.component';
@@ -41,6 +40,7 @@ import { ExploreNextComponent } from './components/explore-next/explore-next.com
 import { FirstStepsComponent } from './components/first-steps/first-steps.component';
 import { TodayOnWiofComponent } from './components/today-on-wiof/today-on-wiof.component';
 import { NextForYouComponent } from './components/next-for-you/next-for-you.component';
+import { CookieSettingsLinkComponent } from './components/cookie-settings-link/cookie-settings-link.component';
 import { RelatedContentEditorComponent } from './components/related-content-editor/related-content-editor.component';
 import { ContinueJourneyBannerComponent } from './components/continue-journey-banner/continue-journey-banner.component';
 import { BlogReadTrackerDirective } from './directives/blog-read-tracker.directive';
@@ -55,7 +55,6 @@ const COMPONENTS = [
   WiofFooterComponent,
   FeedbackDialogComponent,
   BlogCardComponent,
-  ConcentPopupComponent,
   ElementWelcomeImageComponent,
   EnvCalenderComponent,
   EnvCalendarAgendaComponent,
@@ -88,6 +87,7 @@ const COMPONENTS = [
   FirstStepsComponent,
   TodayOnWiofComponent,
   NextForYouComponent,
+  CookieSettingsLinkComponent,
   RelatedContentEditorComponent,
   ContinueJourneyBannerComponent,
   SearchBoxComponent,

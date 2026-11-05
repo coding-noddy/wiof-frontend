@@ -53,16 +53,17 @@ function captureGa(page) {
 }
 const events = (hits, name) => hits.filter((h) => h.en === name);
 
-async function newPage(browser, errors) {
+/** consent: 'granted', 'denied', or null for a first visit (not asked yet). */
+async function newPage(browser, errors, consent = 'granted') {
   const ctx = await browser.createBrowserContext();
   const page = await ctx.newPage();
   await page.setViewport({ width: 1280, height: 900 });
   page.on('pageerror', (e) => errors.push('pageerror: ' + e.message.slice(0, 160)));
-  await page.evaluateOnNewDocument(() => {
+  await page.evaluateOnNewDocument((choice) => {
     localStorage.setItem('wiof_launch_ribbon_cut', '1');
     localStorage.setItem('wiof_onboarding_seen', 'true');
-    localStorage.setItem('privacyConsentAccepted', 'true');
-  });
+    if (choice) localStorage.setItem('wiof_analytics_consent', choice);
+  }, consent);
   return page;
 }
 
@@ -92,6 +93,34 @@ const navigate = (page, url) => page.evaluate((u) => {
   const browser = await puppeteer.launch({ executablePath: CHROME, headless: 'new' });
   const errors = [];
   try {
+    // 0. Consent (GDPR opt-in): nothing reaches Google before Accept.
+    const first = await newPage(browser, errors, null);
+    const firstHits = captureGa(first);
+    await first.goto(`${BASE}${STORY.path}`, { waitUntil: 'networkidle2', timeout: 90000 });
+    await sleep(3000);
+    const banner = await first.evaluate(() => ({
+      text: document.querySelector('app-concent-popup .consent-bar')?.innerText.replace(/\s+/g, ' ').trim(),
+      buttons: [...document.querySelectorAll('app-concent-popup .consent-btn')].map((b) => [b.textContent.trim(), Math.round(b.getBoundingClientRect().height)])
+    }));
+    check('a first visit on any page (here a story) shows the consent banner, Accept and Decline the same height',
+      /Google Analytics/.test(banner.text || '') && banner.buttons.length === 2 && banner.buttons[0][1] === banner.buttons[1][1], JSON.stringify(banner.buttons));
+    check('before a choice, nothing is sent to Google Analytics', firstHits.length === 0, `${firstHits.length} requests`);
+    await first.click('app-concent-popup .consent-btn.decline');
+    await navigate(first, '/take-action');
+    await sleep(5000);
+    check('after Decline, still nothing is sent, and the banner is gone', firstHits.length === 0 && !(await first.$('app-concent-popup .consent-bar')), `${firstHits.length} requests`);
+    await first.reload({ waitUntil: 'networkidle2' });
+    await sleep(2000);
+    check('the choice is remembered on the next visit', !(await first.$('app-concent-popup .consent-bar')));
+    await first.evaluate(() => document.querySelector('app-cookie-settings-link button')?.click());
+    await sleep(800);
+    check('"Cookie settings" in the footer reopens the banner, showing the current choice',
+      /Now: declined/.test(await first.evaluate(() => document.querySelector('app-concent-popup .consent-bar')?.innerText || '')));
+    await first.click('app-concent-popup .consent-btn.accept');
+    for (let i = 0; i < 15 && !events(firstHits, 'page_view').length; i++) await sleep(1000);
+    const counted = events(firstHits, 'page_view');
+    check('after Accept, the page the visitor is on is counted', counted.length === 1 && counted[0]['ep.content_group'] === 'take_action', counted.map((v) => v.dt).join(' | '));
+
     // 1. A guest: titles, one page_view per page, page groups, no screen_view.
     const guest = await newPage(browser, errors);
     const hits = captureGa(guest);

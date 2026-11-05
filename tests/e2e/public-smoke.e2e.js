@@ -30,6 +30,7 @@ const PAGES = [
         localStorage.setItem('wiof_launch_ribbon_cut', '1');
         localStorage.setItem('wiof_onboarding_seen', 'true');
         localStorage.setItem('privacyConsentAccepted', 'true');
+        localStorage.setItem('wiof_analytics_consent', 'denied');
       });
       const errors = [];
       page.on('console', (m) => m.type() === 'error' && errors.push(m.text().slice(0, 140)));

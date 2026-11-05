@@ -83,7 +83,7 @@ const waitCards = async (page, scope) => {
     page.on('console', (m) => m.type() === 'error' && errors.push(m.text().slice(0, 160)));
     page.on('pageerror', (e) => errors.push('pageerror: ' + e.message.slice(0, 160)));
     page.on('dialog', (d) => d.accept());
-    await page.evaluateOnNewDocument(() => { localStorage.setItem('wiof_launch_ribbon_cut', '1'); localStorage.setItem('wiof_onboarding_seen', 'true'); localStorage.setItem('privacyConsentAccepted', 'true'); });
+    await page.evaluateOnNewDocument(() => { localStorage.setItem('wiof_launch_ribbon_cut', '1'); localStorage.setItem('wiof_onboarding_seen', 'true'); localStorage.setItem('privacyConsentAccepted', 'true'); localStorage.setItem('wiof_analytics_consent', 'denied'); });
     return page;
   };
 

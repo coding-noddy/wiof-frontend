@@ -24,12 +24,13 @@ import { AppComponent } from './app.component';
 import { OnboardingOverlayComponent } from './components/onboarding-overlay/onboarding-overlay.component';
 import { JourneyWelcomeComponent } from './components/journey-welcome/journey-welcome.component';
 import { LaunchCurtainComponent } from './components/launch-curtain/launch-curtain.component';
+import { ConcentPopupComponent } from './components/concent-popup/concent-popup.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AngularFireAnalyticsModule, UserTrackingService } from '@angular/fire/compat/analytics';
 import { initWiofAnalytics } from './util/analytics-init';
 
 @NgModule({
-  declarations: [AppComponent, OnboardingOverlayComponent, JourneyWelcomeComponent, LaunchCurtainComponent],
+  declarations: [AppComponent, OnboardingOverlayComponent, JourneyWelcomeComponent, LaunchCurtainComponent, ConcentPopupComponent],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
@@ -51,7 +52,8 @@ import { initWiofAnalytics } from './util/analytics-init';
     provideAppInitializer(() => {
       inject(FirebaseApp);
       initWiofAppCheck();
-      // Before AngularFire's analytics: no automatic page_view (PageTrackingService sends them).
+      // Before AngularFire's analytics: opt-in (nothing sent before consent),
+      // no automatic page_view (PageTrackingService sends them).
       initWiofAnalytics();
     }),
     // Page views come from PageTrackingService (started in AppComponent), not

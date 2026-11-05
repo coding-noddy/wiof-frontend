@@ -113,6 +113,17 @@
   display: flex;
   flex-direction: column;
 
+  // "Cookie settings" is a button, styled like the links beside it.
+  app-cookie-settings-link {
+    display: block;
+    margin-bottom: 0.65rem;
+    font-size: 0.88rem;
+    color: var(--wiof-ink);
+    opacity: 0.75;
+
+    &:hover { opacity: 1; color: var(--wiof-teal-text); }
+  }
+
   a {
     display: block;
     margin-bottom: 0.65rem;

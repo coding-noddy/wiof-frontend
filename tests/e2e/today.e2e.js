@@ -62,6 +62,7 @@ async function newPage(browser, viewport, errors) {
     localStorage.setItem('wiof_launch_ribbon_cut', '1');
     localStorage.setItem('wiof_onboarding_seen', 'true');
     localStorage.setItem('privacyConsentAccepted', 'true');
+    localStorage.setItem('wiof_analytics_consent', 'denied');
   });
   return page;
 }

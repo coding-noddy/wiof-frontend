@@ -17,9 +17,12 @@ Measurement (see `docs/ANALYTICS.md`). **Deploy with `-Backend`** (new functions
 - **Admin → Analytics, rebuilt**: 7/30/90-day ranges over one small summary per day (`analytics_daily/{day}`, `functions/daily-stats.js`, India-time days, team accounts left out). It shows members active and engaged per day, new members, stories read, videos watched, actions done and EQ checks. It also shows suggestions (clicks and how many led to a read, watch or action the same day), activity by element, the first-steps funnel, and the most-read stories and most-done actions. Once Google Analytics is connected, it adds visitors, page views, top pages and views by kind of page (GA4 Data API, `functions/ga-traffic.js`, `GA4_PROPERTY_ID`). Summaries are rebuilt every 3 hours and by a Refresh button. Before, the page loaded every activity event of the last 30 days live.
 - `scripts/daily-stats.js` (past days, dry run unless `--apply`); browser test `npm run e2e:analytics` (captures the site's real GA requests).
 
+### Added (consent)
+- **Google Analytics is opt-in** (GDPR): a consent banner on whatever page a visitor lands on, with Accept and Decline equally easy, remembered on the device and changeable any time from **Cookie settings** in the footer. Until Accept, analytics collection is off, so nothing is sent to Google (Google Consent Mode: analytics denied; ad signals always denied, as WIOF shows no ads). Accepting counts the page the visitor is on. The old home-only "Got it" bar is gone.
+
 ### Changed
 - Firebase's automatic `page_view` on load and AngularFire's `screen_view` tracking are off: both reported the wrong title or a component name.
-- Privacy policy: Google Analytics receives the pages visited and suggestions clicked.
+- Privacy policy: Google Analytics runs only with consent (how to accept, decline or withdraw), and receives the pages visited and suggestions clicked.
 
 ## [8.8.0] - 2026-11-05
 

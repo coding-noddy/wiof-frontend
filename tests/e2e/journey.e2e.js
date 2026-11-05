@@ -45,6 +45,7 @@ async function newPage(browser, viewport, errors) {
   await page.evaluateOnNewDocument(() => {
     localStorage.setItem('wiof_launch_ribbon_cut', '1');
     localStorage.setItem('privacyConsentAccepted', 'true');
+    localStorage.setItem('wiof_analytics_consent', 'denied');
   });
   return page;
 }

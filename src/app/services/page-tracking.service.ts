@@ -45,6 +45,11 @@ export class PageTrackingService {
     if (!this.sent) this.send();
   }
 
+  /** Analytics was just accepted: count the page the visitor is on (its view wasn't sent before). */
+  resendCurrent(): void {
+    if (this.current && this.sent) this.send();
+  }
+
   private onNavigation(url: string): void {
     // A view still waiting for its title goes out now, before the next page.
     if (this.current && !this.sent) this.send();

@@ -23,7 +23,6 @@ import { HomeJourneyPanelComponent } from 'src/app/components/home-journey-panel
     standalone: false
 })
 export class HomePage implements OnInit, ViewWillEnter {
-  viewConsentPopup = true;
   coffeeConversations$: Observable<CoffeeConversation[]>;
   ngosInFocus$: Observable<NgoInFocus[]>;
   coursesInFocus$: Observable<CourseInFocus[]>;
@@ -42,10 +41,6 @@ export class HomePage implements OnInit, ViewWillEnter {
   ) {}
 
   ngOnInit(): void {
-    const privacyConsentAccepted = localStorage.getItem(
-      'privacyConsentAccepted'
-    );
-    this.viewConsentPopup = privacyConsentAccepted !== 'true';
     this.newsList$ = this.newsService.getLatestNews(HOME_BREAKING_NEWS_LIMIT);
     // The home page features the newest conversation in the 'Home' category.
     // Falls back to the newest overall (the behaviour before the category
@@ -72,11 +67,6 @@ export class HomePage implements OnInit, ViewWillEnter {
    */
   ionViewWillEnter(): void {
     this.journeyPanel?.refresh();
-  }
-
-  onAccept(): void {
-    this.viewConsentPopup = false;
-    localStorage.setItem('privacyConsentAccepted', 'true');
   }
 
   scrollToElements(): void {
