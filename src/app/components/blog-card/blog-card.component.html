@@ -1,4 +1,4 @@
-<ion-card class="blog-card" [routerLink]="['blog', blog.slug || blog.id]" [ngClass]="element">
+<ion-card class="blog-card" [routerLink]="link" [ngClass]="element">
   <div class="blog-image-wrap">
     <img
       [src]="blog.image$ | async"
@@ -26,7 +26,7 @@
     <div class="blog-meta">
       <span class="blog-author">
         <ion-icon aria-hidden="true" name="person-outline"></ion-icon>
-        {{ blog.author }}
+        <span class="blog-author-name">{{ blog.author }}</span>
       </span>
       <span class="blog-read-time">
         <ion-icon aria-hidden="true" name="time-outline"></ion-icon>

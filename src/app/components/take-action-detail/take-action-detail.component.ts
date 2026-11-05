@@ -1,7 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
+import { Observable, of } from 'rxjs';
 import { ActionItem } from 'src/app/models/ActionItem';
-import { ExploreSource } from 'src/app/services/related-content.service';
+import { ExploreItem } from 'src/app/models/RelatedContent';
+import { RelatedContentService } from 'src/app/services/related-content.service';
 
 /**
  * Full-detail modal for one action — description, instructions, evidence,
@@ -10,6 +12,10 @@ import { ExploreSource } from 'src/app/services/related-content.service';
  * grid once an action carried real safety/evidence content; a modal scales
  * better and matches this app's existing info-panel pattern (see
  * EnvCalDialogComponent) instead of inventing a new one.
+ *
+ * The modal is for deciding to do the action, so it doesn't carry a full
+ * Explore next block (browsing other actions is the Take Action page's job):
+ * just one line to the story behind it, when there's a real match.
  */
 @Component({
     selector: 'app-take-action-detail',
@@ -19,20 +25,16 @@ import { ExploreSource } from 'src/app/services/related-content.service';
 })
 export class TakeActionDetailComponent implements OnInit {
   @Input() action: ActionItem;
-  /** The element page the modal was opened from, for links and the fallback. */
+  /** The element page the modal was opened from, for the story link. */
   @Input() element?: string;
-  exploreSource: ExploreSource;
+  storyBehind$: Observable<ExploreItem | null> = of(null);
 
-  constructor(private modalCtrl: ModalController) {}
+  constructor(private modalCtrl: ModalController, private relatedContent: RelatedContentService) {}
 
   ngOnInit(): void {
     const elements = this.action.elementIds || [];
-    this.exploreSource = {
-      type: 'action',
-      id: this.action.id,
-      links: this.action.relatedContent,
-      element: elements.includes(this.element) ? this.element : elements[0]
-    };
+    const element = elements.includes(this.element) ? this.element : elements[0];
+    this.storyBehind$ = this.relatedContent.storyBehind(this.action, element);
   }
 
   close(): void {

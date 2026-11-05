@@ -220,3 +220,64 @@
   font-style: italic;
   opacity: 0.75;
 }
+
+// One line to the story behind the action, in place of a full Explore next block.
+.story-behind {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 14px;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  background: var(--wiof-ivory);
+  color: var(--wiof-ink);
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--wiof-teal);
+
+    .story-behind-arrow {
+      transform: translateX(2px);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--wiof-teal);
+    outline-offset: 2px;
+  }
+
+  > ion-icon {
+    flex-shrink: 0;
+    font-size: 1.35rem;
+    color: var(--wiof-teal);
+  }
+}
+
+.story-behind-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.story-behind-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--wiof-teal-text);
+}
+
+.story-behind-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.story-behind-arrow {
+  transition: transform 0.15s ease;
+}

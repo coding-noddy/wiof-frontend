@@ -52,6 +52,10 @@ describe('Related content', () => {
     ]);
   });
 
+  it('mergeExploreItems returns nothing for a cap of 0 (a group that is turned off)', () => {
+    expect(mergeExploreItems(null, [item('action', 'a1')], [], 0)).toEqual([]);
+  });
+
   it('groupExploreItems splits reading from actions, primary items first, each capped', () => {
     const groups = groupExploreItems(
       'blog:self',

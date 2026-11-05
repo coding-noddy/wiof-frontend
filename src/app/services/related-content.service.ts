@@ -17,6 +17,7 @@ import {
   seededOrder
 } from '../models/RelatedContent';
 import { ActionService } from './action.service';
+import { BlogService } from './blog.service';
 
 /** The item an "Explore next" block is shown on. */
 export interface ExploreSource {
@@ -46,7 +47,30 @@ const FALLBACK_POOL = 12;
   providedIn: 'root'
 })
 export class RelatedContentService {
-  constructor(private database: AngularFirestore, private actionService: ActionService) {}
+  constructor(
+    private database: AngularFirestore,
+    private actionService: ActionService,
+    private blogService: BlogService
+  ) {}
+
+  /**
+   * The one story (or video) that explains why an action matters, for the
+   * action's details: its own link, else one that links to it, else its best
+   * similar story. No element fallback: null unless there's a real match.
+   */
+  storyBehind(action: ActionItem, element?: string): Observable<ExploreItem | null> {
+    return this.exploreNext(
+      { type: 'action', id: action.id, links: (action.relatedContent || []).filter((r) => r.type !== 'action'), element: undefined },
+      { read: 1, act: 0 }
+    ).pipe(
+      map(({ read }) => (read[0] ? { ...read[0], link: this.relink(read[0], element) } : null))
+    );
+  }
+
+  /** A video link needs an element; without the fallback, use the page's. */
+  private relink(item: ExploreItem, element?: string): string[] {
+    return item.type === 'video' && !item.element && element ? ['/element', element, 'video', item.id] : item.link;
+  }
 
   exploreNext(source: ExploreSource, limits = EXPLORE_LIMITS): Observable<ExploreGroups> {
     const selfKey = source.type && source.id ? relatedKey({ type: source.type, id: source.id }) : null;
@@ -188,15 +212,19 @@ export class RelatedContentService {
   }
 
   private blogItem(blog: any, reason: ExploreItem['reason']): ExploreItem {
+    const element = String(blog.category || '').toLowerCase();
     return {
       type: 'blog',
       id: blog.id,
       title: blog.title,
       description: blog.shortDescription || '',
       meta: blog.timeToRead ? `${blog.timeToRead} min read` : '',
+      // Summaries store the cover URL; older ones without it resolve it from Storage.
+      blog: { ...blog, image$: blog.imageUrl ? of(blog.imageUrl) : this.blogService.getImage(blog.imageName) },
+      element,
       image: blog.imageUrl || null,
       icon: 'book-outline',
-      link: ['/element', String(blog.category || '').toLowerCase(), 'blog', blog.slug || blog.id],
+      link: ['/element', element, 'blog', blog.slug || blog.id],
       reason
     };
   }
@@ -219,11 +247,14 @@ export class RelatedContentService {
   }
 
   private videoItem(ref: RelatedRef, element?: string): ExploreItem {
+    const image = `https://i.ytimg.com/vi/${ref.id}/mqdefault.jpg`;
     return {
       type: 'video',
       id: ref.id,
       title: ref.title,
-      image: `https://i.ytimg.com/vi/${ref.id}/mqdefault.jpg`,
+      video: { title: ref.title, url: ref.id, thumbnail: image, publishedDate: null },
+      element: ref.element || element,
+      image,
       icon: 'play-circle-outline',
       link: ['/element', ref.element || element, 'video', ref.id],
       reason: 'linked'

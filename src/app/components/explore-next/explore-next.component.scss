@@ -283,6 +283,28 @@
   }
 }
 
+// The element pages' blog and video cards, sized for a three-up row.
+.explore-site-cards {
+  > li {
+    display: flex;
+    min-width: 0;
+  }
+
+  app-blog-card,
+  app-video-card {
+    display: block;
+    width: 100%;
+  }
+
+  ::ng-deep .blog-card {
+    margin: 0;
+  }
+
+  ::ng-deep .blog-image-wrap {
+    height: 150px;
+  }
+}
+
 @media (max-width: 600px) {
   .explore-next:not(.compact) {
     padding: 1.15rem 1rem;

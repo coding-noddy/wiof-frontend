@@ -172,6 +172,18 @@
 
 .blog-author {
   flex-shrink: 1;
+
+  ion-icon {
+    flex-shrink: 0;
+  }
+}
+
+// text-overflow doesn't apply to a bare text node in a flex row, so the
+// name gets its own box: a narrow card shows "Anusha Krishn…", not a clipped letter.
+.blog-author-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .blog-read-time {

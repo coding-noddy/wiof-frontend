@@ -15,6 +15,16 @@ export class BlogCardComponent implements OnInit {
 
   ngOnInit() {}
 
+  /**
+   * A full link when the element is known, so the card also works on pages
+   * outside the element's own routes (e.g. Explore next on a blog page,
+   * where a relative 'blog/…' would nest under the current post).
+   */
+  get link(): string[] {
+    const id = this.blog.slug || this.blog.id;
+    return this.element ? ['/element', this.element, 'blog', id] : ['blog', id];
+  }
+
   async shareBlog(event: Event) {
     event.stopPropagation(); // prevent card navigation
     event.preventDefault();

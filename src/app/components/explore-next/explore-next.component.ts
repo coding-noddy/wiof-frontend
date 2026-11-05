@@ -32,9 +32,10 @@ interface ExploreView {
  * order flips: learn more about it first, then similar actions. Each group is
  * left out when empty; nothing renders when both are.
  *
- * On a page (not compact) actions show as full Take Action cards, so a
- * reader can mark one done right under the story, and the heading names
- * what the page is about ("Because you read about Veganism").
+ * On a page (not compact) every item is the site's own card: stories and
+ * videos as on the element pages, actions as Take Action cards (so a reader
+ * can mark one done right under the story). The heading names what the page
+ * is about ("Because you read about Veganism").
  */
 @Component({
     selector: 'app-explore-next',
@@ -93,6 +94,11 @@ export class ExploreNextComponent implements OnChanges {
   /** On a page, actions are full Take Action cards (with Mark as Done). */
   asActionCards(group: ExploreGroupView): boolean {
     return !this.compact && group.key === 'act' && group.items.every((item) => !!item.action);
+  }
+
+  /** On a page, stories and videos are the same cards as on the element pages. */
+  asSiteCards(group: ExploreGroupView): boolean {
+    return !this.compact && group.key === 'read' && group.items.every((item) => !!(item.blog || (item.video && item.element)));
   }
 
   typeLabel(item: ExploreItem): string {

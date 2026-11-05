@@ -11,6 +11,8 @@
  *   ways without editing both items.
  */
 import type { ActionItem } from './ActionItem';
+import type { Blog } from './Blog';
+import type { Video } from './Video';
 
 export type RelatedType = 'blog' | 'video' | 'action';
 
@@ -33,8 +35,15 @@ export interface ExploreItem {
   description?: string;
   /** Small detail beside the type label, e.g. "4 min read". */
   meta?: string;
-  /** The full action, so a page can show it as a Take Action card. */
+  /**
+   * The item in the shape the site's own cards take, so a page shows it as
+   * the same Take Action, blog or video card as everywhere else.
+   */
   action?: ActionItem;
+  blog?: Blog;
+  video?: Video;
+  /** The element its link is under. */
+  element?: string;
   image: string | null;
   /** Ionic icon shown when there's no image (actions). */
   icon?: string;
@@ -97,6 +106,7 @@ export function mergeExploreItems(
   fallback: ExploreItem[],
   max: number
 ): ExploreItem[] {
+  if (max <= 0) return [];
   const seen = new Set<string>(selfKey ? [selfKey] : []);
   const result: ExploreItem[] = [];
   for (const item of [...linked, ...fallback]) {

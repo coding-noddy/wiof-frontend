@@ -40,6 +40,18 @@
                 </li>
               }
             </ul>
+          } @else if (asSiteCards(group)) {
+            <ul class="explore-next-list explore-site-cards">
+              @for (item of group.items; track item.type + item.id) {
+                <li>
+                  @if (item.blog) {
+                    <app-blog-card [blog]="item.blog" [element]="item.element"></app-blog-card>
+                  } @else {
+                    <app-video-card [video]="item.video" [element]="item.element"></app-video-card>
+                  }
+                </li>
+              }
+            </ul>
           } @else {
             <ul class="explore-next-list">
               @for (item of group.items; track item.type + item.id) {

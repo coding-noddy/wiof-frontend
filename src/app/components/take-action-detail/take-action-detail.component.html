@@ -81,6 +81,15 @@
         }
       </div>
     }
-    <app-explore-next [source]="exploreSource" [compact]="true" (navigate)="close()"></app-explore-next>
+    @if (storyBehind$ | async; as story) {
+      <a class="story-behind" [routerLink]="story.link" (click)="close()">
+        <ion-icon aria-hidden="true" [name]="story.type === 'video' ? 'play-circle-outline' : 'book-outline'"></ion-icon>
+        <span class="story-behind-text">
+          <span class="story-behind-label">{{ story.type === 'video' ? 'Watch the story behind this' : 'The story behind this' }}</span>
+          <span class="story-behind-title">{{ story.title }}</span>
+        </span>
+        <ion-icon class="story-behind-arrow" aria-hidden="true" name="arrow-forward"></ion-icon>
+      </a>
+    }
   </ion-card-content>
 </ion-card>
