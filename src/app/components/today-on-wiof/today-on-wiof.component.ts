@@ -3,7 +3,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { EnvDay } from 'src/app/models/env-cal-data';
 import { ExploreItem } from 'src/app/models/RelatedContent';
-import { hiddenToday, sourceName, TODAY_HIDDEN_KEY, todaysOccasion } from 'src/app/models/TodayOnWiof';
+import { hiddenToday, occasionSource, TODAY_HIDDEN_KEY, TodaySource, todaysOccasion } from 'src/app/models/TodayOnWiof';
 import { toCalendarDay } from 'src/app/services/activity.service';
 import { EnvcalService } from 'src/app/services/envcal-service';
 import { RelatedContentService } from 'src/app/services/related-content.service';
@@ -13,7 +13,7 @@ export const CALENDAR_HEADING_ID = 'environment-calendar';
 
 interface TodayView {
   occasion: EnvDay;
-  source: string | null;
+  source: TodaySource | null;
   story: ExploreItem | null;
   action: ExploreItem | null;
 }
@@ -48,7 +48,7 @@ export class TodayOnWiofComponent implements OnInit {
       map(({ today }) => todaysOccasion(today)),
       switchMap((occasion) => {
         if (!occasion) return of(null);
-        const base: TodayView = { occasion, source: sourceName(occasion.showMoreLink), story: null, action: null };
+        const base: TodayView = { occasion, source: occasionSource(occasion), story: null, action: null };
         return this.relatedContent
           .exploreNext({ links: occasion.relatedContent || [], autoKey: `occasion_${occasion.id}` }, { read: 1, act: 1 })
           .pipe(map(({ read, act }) => ({ ...base, story: read[0] || null, action: act[0] || null })));

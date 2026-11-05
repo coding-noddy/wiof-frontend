@@ -1,6 +1,6 @@
 # Phase 2 Plan: Journey & Engagement Foundations
 
-**Status:** approved 2026-11-04 with the recommended defaults (section 6). Step 1 shipped in 8.1.0, step 2 in 8.2.0 (prod metrics recomputed 2026-11-04), step 3 in 8.3.0, step 4 (connected content) in 8.4.0 and 8.4.1, step 5 (journey experience) in 8.5.0, step 6 (Today on WIOF) in 8.6.0, step 7 (rule-based "Next for you") in 8.7.0. Steps 1–3 are the Planet Passport foundation; with step 7 all seven Phase 2 steps are built.
+**Status:** approved 2026-11-04 with the recommended defaults (section 6). Step 1 shipped in 8.1.0, step 2 in 8.2.0 (prod metrics recomputed 2026-11-04), step 3 in 8.3.0, step 4 (connected content) in 8.4.0 and 8.4.1, step 5 (journey experience) in 8.5.0, step 6 (Today on WIOF) in 8.6.0, step 7 (rule-based "Next for you") in 8.7.0. Steps 1–3 are the Planet Passport foundation; with step 7 all seven Phase 2 steps are built. 8.8.0 hardens the release (section 12).
 **Sources:** `WIOF_Plan_v4/WIOF_Future_Enhancements_and_Product_Roadmap_v4.md` (sections 0, 5–10, 14), `WIOF_Plan_v4/WIOF_Foundation_Hardening_Plan_v4.md` (sections 16–18), and the current code on `master` (8.0.2).
 
 ## 1. What Phase 2 is for
@@ -160,3 +160,13 @@ Decisions (recommended defaults, 2026-11-05):
 - **Cost** (`services/next-for-you.service.ts`): builds on what the panel already loads (reads, active actions, action history), so actions cost no extra reads. Stories: the related_auto doc and a few summaries for each of the last three reads, and the newest stories per element (6 each, the existing category + publishDate index) only when those don't fill the list.
 - **Guests** (the plan's second bullet): no profile, so nothing persistent; the element-based suggestions from the current page are Explore next's element fallback (step 4).
 - **Tests**: unit tests for the rules (order, reasons, read/done exclusions by ID and slug, element filter, limits and fill-in, de-dup, title trimming) and the component; staging E2E `npm run e2e:next` (chosen and explored elements, a real quality read driving "Because you read", a started action first, completed actions excluded, the action link, phone).
+
+## 12. Release hardening (8.8.0)
+
+Decided 2026-11-05, before the one Phase 2 prod deploy:
+
+- **Release and rollback** (`scripts/release.js`, `docs/PHASE2_RELEASE_RUNBOOK.md`): preflight, snapshot of what's live, wait for indexes, verify, and rollback by part (Hosting, rules, functions). Hosting alone is usually enough, because the old site works with the new backend. Phase 2 data is additive, and the old rules accept it (profile updates check only changed fields), so data needs no rollback. Rehearsed on staging.
+- **Facts** (replaces section 10's "the description is the fact"): occasions get `fact`, `factSource` and `factStatus`. Draft facts were written by the WIOF team for admins to check and source. The card names a link the fact's "Source" only for a reviewed fact with its own source; otherwise it offers the occasion's page as "Learn more". This honours decision 5 (facts with a source) without blocking on it.
+- **EQ daily limit**: two saved checks per user per day, in fixed slots taken in a transaction. A third is scored and shown, not saved. This closes step 1's known limit for EQ; widget use and action analytics still don't feed any counter.
+- **Privacy policy**: covers personalised suggestions and the new stored state.
+- **Topics**: proposal in `docs/TOPICS_AND_TAGS.md` (one shared, admin-managed topic list for every content type, including courses later), awaiting approval.

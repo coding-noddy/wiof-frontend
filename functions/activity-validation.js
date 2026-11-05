@@ -188,7 +188,31 @@ async function validateActivityEvent(docId, entry, lookups, options = {}) {
   return reject('unknown_type');
 }
 
+/**
+ * Saved EQ checks per user per day (decided 2026-11-05: a score doesn't
+ * change much in a day). A check over the limit is still scored and shown;
+ * it just isn't saved.
+ */
+const EQ_DAILY_LIMIT = 2;
+
+/**
+ * The day an EQ check is saved under: the browser's local day if it's
+ * plausible (one day either side of the server's UTC date), else the
+ * server's UTC date, so a made-up day can't open more slots.
+ */
+function eqCalendarDay(calendarDay, now = new Date()) {
+  return isPlausibleCalendarDay(calendarDay, now) ? calendarDay : now.toISOString().slice(0, 10);
+}
+
+/** The fixed IDs of a day's EQ slots: {uid}_eq_completion_{day}_{1..limit}. */
+function eqSlotIds(uid, calendarDay, limit = EQ_DAILY_LIMIT) {
+  return Array.from({ length: limit }, (_, i) => `${uid}_eq_completion_${calendarDay}_${i + 1}`);
+}
+
 module.exports = {
+  EQ_DAILY_LIMIT,
+  eqCalendarDay,
+  eqSlotIds,
   VALIDATOR_VERSION,
   blogWordCount,
   expectedDocId,

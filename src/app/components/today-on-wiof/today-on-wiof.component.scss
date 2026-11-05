@@ -73,6 +73,21 @@
   color: var(--wiof-ink);
 }
 
+.today-didyouknow {
+  margin: 0 0 0.5rem;
+  padding: 0.55rem 0.75rem;
+  border-left: 3px solid var(--wiof-marigold);
+  border-radius: 0 10px 10px 0;
+  background: color-mix(in srgb, var(--wiof-warm-white) 70%, transparent);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--wiof-ink);
+
+  strong {
+    color: var(--wiof-marigold-text);
+  }
+}
+
 .today-source {
   display: inline-flex;
   align-items: center;

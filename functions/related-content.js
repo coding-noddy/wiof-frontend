@@ -233,7 +233,8 @@ function corpusFrom(blogDocs, actionDocs, occasionDocs = []) {
   // Calendar occasions: matched to stories and actions for "Today on WIOF", never suggested themselves.
   const occasions = occasionDocs.map((doc) => {
     const d = doc.data() || {};
-    return { type: 'occasion', id: doc.id, title: d.occasion, description: d.description, elements: [] };
+    // The fact (Today on WIOF, 8.8.0) says more about the topic than most descriptions.
+    return { type: 'occasion', id: doc.id, title: d.occasion, description: [d.description, d.fact].filter(Boolean).join(' '), elements: [] };
   });
   return [...blogs, ...actions, ...occasions];
 }

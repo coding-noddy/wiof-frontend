@@ -12,9 +12,12 @@
           </p>
           <h2 class="today-title" id="today-on-wiof-title">{{ today.occasion.occasion }}</h2>
           <p class="today-fact">{{ today.occasion.description }}</p>
-          @if (today.source) {
-            <a class="today-source" [href]="today.occasion.showMoreLink" target="_blank" rel="noopener noreferrer">
-              Source: {{ today.source }}
+          @if (today.occasion.fact) {
+            <p class="today-didyouknow"><strong>Did you know?</strong> {{ today.occasion.fact }}</p>
+          }
+          @if (today.source; as source) {
+            <a class="today-source" [href]="source.url" target="_blank" rel="noopener noreferrer">
+              {{ source.label }}: {{ source.site }}
               <ion-icon aria-hidden="true" name="open-outline"></ion-icon>
               <span class="visually-hidden">(opens in a new tab)</span>
             </a>

@@ -275,6 +275,22 @@ $s-dark: color.adjust($s, $lightness: -22%);
 }
 
 // ── Citation ─────────────────────────────────────────────────
+// Signed-in users: whether this result was saved (two a day are).
+.eq-save-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 1rem 0 0;
+  padding: .6rem .8rem;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--wiof-marigold) 16%, var(--wiof-warm-white));
+  font-size: .82rem;
+  line-height: 1.45;
+  color: var(--wiof-ink);
+
+  ion-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; color: var(--wiof-marigold-text); }
+}
+
 .eq-citation {
   display: flex;
   flex-wrap: wrap;

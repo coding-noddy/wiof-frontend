@@ -1,1 +1,22 @@
 @use '../../admin-shared' as *;
+
+// Today on WIOF fact card
+.form-hint {
+  margin: 0 0 0.75rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--wiof-ink-muted);
+}
+
+.fact-draft-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0 0 0.5rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--wiof-marigold) 22%, var(--wiof-warm-white));
+  color: var(--wiof-marigold-text);
+  font-size: 0.78rem;
+  font-weight: 700;
+}

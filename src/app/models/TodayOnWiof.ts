@@ -1,9 +1,13 @@
 /**
  * "Today on WIOF" (Phase 2 step 6, docs/PHASE2_PLAN.md section E): today's
- * calendar occasion, one short fact with its source, and one related story
- * and action. For now the fact is the occasion's own description and the
- * source its "Show more" link (decided 2026-11-05: use what the calendar
- * already has; a separate team-written fact can replace it later).
+ * calendar occasion, its description, one short fact ("Did you know?"), and
+ * one related story and action.
+ *
+ * Facts (8.8.0) start as drafts written by the WIOF team and are checked by
+ * an admin, who adds the source. A link is only called the fact's "Source"
+ * once the fact is reviewed and has its own source; until then the
+ * occasion's "Show more" link is offered as "Learn more", so no site is
+ * credited with words it didn't write.
  */
 import type { EnvDay } from './env-cal-data';
 
@@ -23,6 +27,31 @@ export function sourceName(url: string | null | undefined): string | null {
   } catch {
     return null;
   }
+}
+
+export interface TodaySource {
+  label: 'Source' | 'Learn more';
+  url: string;
+  /** The site's name, e.g. "navs-online.org". */
+  site: string;
+}
+
+/** The link shown under the fact: its reviewed source, else the occasion's "Show more" link. */
+export function occasionSource(occasion: Pick<EnvDay, 'fact' | 'factSource' | 'factStatus' | 'showMoreLink'>): TodaySource | null {
+  const reviewed = !!occasion.fact?.trim() && occasion.factStatus === 'reviewed' && sourceName(occasion.factSource);
+  const url = reviewed ? occasion.factSource! : occasion.showMoreLink;
+  const site = sourceName(url);
+  return site ? { label: reviewed ? 'Source' : 'Learn more', url, site } : null;
+}
+
+/** The fact fields as the admin form saves them: a fact without a review is a draft. */
+export function factFields(fact: string | null | undefined, source: string | null | undefined, reviewed: boolean): Pick<EnvDay, 'fact' | 'factSource' | 'factStatus'> {
+  const text = (fact || '').trim();
+  return {
+    fact: text || null,
+    factSource: (source || '').trim() || null,
+    factStatus: text ? (reviewed ? 'reviewed' : 'draft') : null
+  };
 }
 
 /** Whether the reader hid the card today (any other day's value is stale). */

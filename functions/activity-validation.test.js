@@ -5,6 +5,9 @@
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
 const {
+  EQ_DAILY_LIMIT,
+  eqCalendarDay,
+  eqSlotIds,
   blogWordCount,
   expectedDocId,
   isPlausibleCalendarDay,
@@ -94,6 +97,20 @@ describe('validateActivityEvent', () => {
   it('accepts only the known widgets', async () => {
     assert.equal((await verdict(event('widget_usage', { widgetName: 'AQI' }))).status, 'accepted');
     assert.equal((await verdict(event('widget_usage', { widgetName: 'Fake' }))).reason, 'unknown_widget');
+  });
+
+  it('saves at most two EQ checks a day, in fixed slots', () => {
+    assert.equal(EQ_DAILY_LIMIT, 2);
+    assert.deepEqual(eqSlotIds('u1', '2026-11-05'), ['u1_eq_completion_2026-11-05_1', 'u1_eq_completion_2026-11-05_2']);
+  });
+
+  it('saves an EQ check under the browser day only if it is plausible', () => {
+    const now = new Date('2026-11-05T12:00:00Z');
+    assert.equal(eqCalendarDay('2026-11-06', now), '2026-11-06');
+    assert.equal(eqCalendarDay('2026-11-04', now), '2026-11-04');
+    assert.equal(eqCalendarDay('2026-11-09', now), '2026-11-05');
+    assert.equal(eqCalendarDay('nonsense', now), '2026-11-05');
+    assert.equal(eqCalendarDay(undefined, now), '2026-11-05');
   });
 
   it('accepts an EQ score only when it is the sum of valid dimensions', async () => {

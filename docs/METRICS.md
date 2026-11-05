@@ -49,7 +49,7 @@ A Passport milestone must state the trust level of the metric it uses. Self-repo
 | Metric (field) | Shown as | Formula | Unit · time basis | Trust |
 |---|---|---|---|---|
 | `lastEqScore`, `lastEqDate` | "EQ Score" + date | Score of the latest accepted `eq_completion`. **The server scores it** (`submitEqAssessment`) from the 24 answers (1–5): each dimension (attention, clarity, reparation) is the sum of its 8 answers (8–40), and the score is the sum of the three. | points, 24–120 · latest | **Verified** |
-| EQ history / trend | My Journey EQ list | Every accepted `eq_completion`, newest first (up to 50). | — | **Verified** |
+| EQ history / trend | My Journey EQ list | Every accepted `eq_completion`, newest first (up to 50). At most two are saved per user per day (8.8.0): `submitEqAssessment` writes each to a fixed slot `{uid}_eq_completion_{day}_{1|2}`; a third check that day is scored and shown but not saved. Guests' checks are never saved. | — | **Verified** |
 
 ### Action (Take Action)
 

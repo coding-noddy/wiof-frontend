@@ -64,6 +64,9 @@
                       <img class="cell-thumbnail" [src]="imgUrl" [alt]="occasion.occasion">
                     }
                     <span class="cell-title">{{ occasion.occasion }}</span>
+                    @if (occasion.factStatus === 'draft') {
+                      <span class="fact-chip" title="Its Today on WIOF fact is a draft: check it and add its source">Fact: needs review</span>
+                    }
                   </div>
                 </td>
                 <td><span class="cell-date">{{ months[occasion.month] }} {{ occasion.day }}</span></td>

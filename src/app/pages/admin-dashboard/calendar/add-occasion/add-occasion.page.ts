@@ -5,10 +5,14 @@ import { of, Subject, throwError } from 'rxjs';
 import { catchError, switchMap, takeUntil } from 'rxjs/operators';
 import { EnvDay } from 'src/app/models/env-cal-data';
 import { relatedFields } from 'src/app/models/RelatedContent';
+import { factFields } from 'src/app/models/TodayOnWiof';
 import { EnvcalService } from 'src/app/services/envcal-service';
 import { AppUtilService } from 'src/app/util/AppUtilService';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 import { Months, UI_MESSAGES, ITEMS } from 'src/app/app.constants';
+
+/** A "Today on WIOF" fact is one or two short sentences. */
+const FACT_MAX = 280;
 
 @Component({
     selector: 'app-add-occasion',
@@ -25,6 +29,7 @@ export class AddOccasionPage implements OnInit {
   isEditMode: boolean = false;
   occasion: EnvDay = {} as EnvDay;
   months = Months;
+  readonly factMax = FACT_MAX;
 
   pageContent = {
     addOccasionTitle: 'Add Occasion',
@@ -72,6 +77,9 @@ export class AddOccasionPage implements OnInit {
       imageName: new FormControl('', [Validators.required]),
       description: new FormControl('', [Validators.required]),
       showMoreLink: new FormControl('', [Validators.required]),
+      fact: new FormControl('', [Validators.maxLength(FACT_MAX)]),
+      factSource: new FormControl(''),
+      factReviewed: new FormControl(false),
       relatedContent: new FormControl([])
     });
   }
@@ -86,6 +94,9 @@ export class AddOccasionPage implements OnInit {
       showMoreLink: new FormControl(occasion.showMoreLink, [
         Validators.required
       ]),
+      fact: new FormControl(occasion.fact || '', [Validators.maxLength(FACT_MAX)]),
+      factSource: new FormControl(occasion.factSource || ''),
+      factReviewed: new FormControl(occasion.factStatus === 'reviewed'),
       relatedContent: new FormControl(occasion.relatedContent || [])
     });
   }
@@ -174,7 +185,8 @@ export class AddOccasionPage implements OnInit {
       addOccasionForm.value.description,
       addOccasionForm.value.showMoreLink
     );
-    return Object.assign(result, relatedFields(addOccasionForm.value.relatedContent));
+    const { fact, factSource, factReviewed } = addOccasionForm.value;
+    return Object.assign(result, relatedFields(addOccasionForm.value.relatedContent), factFields(fact, factSource, !!factReviewed));
   }
 
   ngOnDestroy(): void {

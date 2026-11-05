@@ -14,6 +14,11 @@ export class EnvDay {
   // Explore next links (see RelatedContent.ts).
   relatedContent?: RelatedRef[];
   relatedKeys?: string[];
+  // "Today on WIOF" fact (8.8.0): one short fact, its source once reviewed,
+  // and whether an admin has checked it ('draft' until then).
+  fact?: string | null;
+  factSource?: string | null;
+  factStatus?: 'draft' | 'reviewed' | null;
 
   constructor(id, day, month, occasion, imageName, description, showMoreLink) {
     this.id = id;

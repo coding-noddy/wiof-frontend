@@ -1,5 +1,5 @@
 import { of } from 'rxjs';
-import { hiddenToday, sourceName, TODAY_HIDDEN_KEY, todaysOccasion } from 'src/app/models/TodayOnWiof';
+import { factFields, hiddenToday, occasionSource, sourceName, TODAY_HIDDEN_KEY, todaysOccasion } from 'src/app/models/TodayOnWiof';
 import { toCalendarDay } from 'src/app/services/activity.service';
 import { CALENDAR_HEADING_ID, TodayOnWiofComponent } from './today-on-wiof.component';
 
@@ -16,6 +16,21 @@ describe('Today on WIOF', () => {
     expect(sourceName('https://www.navs-online.org/about')).toBe('navs-online.org');
     expect(sourceName('javascript:alert(1)')).toBeNull();
     expect(sourceName('')).toBeNull();
+  });
+
+  it('calls a link the "Source" only for a reviewed fact with its own source', () => {
+    const base = { showMoreLink: 'https://www.navs-online.org/x' };
+    expect(occasionSource(base)).toEqual({ label: 'Learn more', url: base.showMoreLink, site: 'navs-online.org' });
+    expect(occasionSource({ ...base, fact: 'A fact.', factStatus: 'draft', factSource: 'https://fao.org/a' })?.label).toBe('Learn more');
+    expect(occasionSource({ ...base, fact: 'A fact.', factStatus: 'reviewed', factSource: 'https://www.fao.org/a' })).toEqual({ label: 'Source', url: 'https://www.fao.org/a', site: 'fao.org' });
+    expect(occasionSource({ ...base, fact: 'A fact.', factStatus: 'reviewed', factSource: '' })?.label).toBe('Learn more');
+    expect(occasionSource({ showMoreLink: '' })).toBeNull();
+  });
+
+  it('saves a fact as a draft until it is reviewed', () => {
+    expect(factFields(' A fact. ', ' https://fao.org ', false)).toEqual({ fact: 'A fact.', factSource: 'https://fao.org', factStatus: 'draft' });
+    expect(factFields('A fact.', '', true)).toEqual({ fact: 'A fact.', factSource: null, factStatus: 'reviewed' });
+    expect(factFields('', 'https://fao.org', true)).toEqual({ fact: null, factSource: 'https://fao.org', factStatus: null });
   });
 
   it('hiddenToday only for today', () => {
@@ -47,7 +62,7 @@ describe('Today on WIOF', () => {
       c.ngOnInit();
       const [view] = views(c);
       expect(view.occasion.id).toBe('veg');
-      expect(view.source).toBe('navs-online.org');
+      expect(view.source).toEqual({ label: 'Learn more', url: 'https://www.navs-online.org/x', site: 'navs-online.org' });
       expect(view.story.title).toBe('Veganism');
       expect(view.action).toBeNull();
       expect(related.exploreNext).toHaveBeenCalledWith({ links: [], autoKey: 'occasion_veg' }, { read: 1, act: 1 });

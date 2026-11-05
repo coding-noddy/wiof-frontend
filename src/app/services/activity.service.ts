@@ -70,6 +70,13 @@ function isNotRejected(data: ActivityLogEntry): boolean {
   return data.validation?.status !== 'rejected';
 }
 
+/** Whether an EQ check was saved to the user's history (at most two a day). */
+export interface EqSaveResult {
+  saved: boolean;
+  remainingToday: number | null;
+  dailyLimit: number | null;
+}
+
 export interface EngagementMetrics {
   blogsRead: number;
   /** Distinct blogs read to the quality threshold (docs/METRICS.md). */
@@ -307,20 +314,23 @@ export class ActivityService {
    * submitEqAssessment Cloud Function, which scores them and writes the
    * eq_completion event itself: firestore.rules don't let a browser write
    * that event, so the stored score is always the server's (Phase 2 step 2).
-   * Each completion is recorded (retakes allowed). Failures are swallowed —
-   * they never disrupt the user experience.
+   * Retakes are allowed, but the server saves at most two a day (more are
+   * scored and shown, not saved). Resolves to whether this one was saved, or
+   * null if the call failed; failures never disrupt the user experience.
    */
-  async submitEqAssessment(responses: number[], overallScore: number): Promise<void> {
+  async submitEqAssessment(responses: number[], overallScore: number): Promise<EqSaveResult | null> {
     this.analyticsService.logEqCompleted(overallScore);
 
     try {
-      const submit = httpsCallable<{ responses: number[]; calendarDay: string }, { score: number }>(
+      const submit = httpsCallable<{ responses: number[]; calendarDay: string }, EqSaveResult & { score: number }>(
         getWiofFunctions(),
         'submitEqAssessment'
       );
-      await submit({ responses, calendarDay: toCalendarDay(new Date()) });
+      const { data } = await submit({ responses, calendarDay: toCalendarDay(new Date()) });
+      return { saved: data.saved !== false, remainingToday: data.remainingToday ?? null, dailyLimit: data.dailyLimit ?? null };
     } catch (error) {
       console.warn('EQ assessment submission failed:', error);
+      return null;
     }
   }
 

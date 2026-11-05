@@ -47,6 +47,7 @@ async function todaysOccasion() {
   const f = hit.fields;
   return {
     id: hit.name.split('/').pop(), name: f.occasion.stringValue, description: f.description.stringValue, link: f.showMoreLink?.stringValue || '',
+    fact: f.fact?.stringValue || '', factStatus: f.factStatus?.stringValue || '',
     hadLinks: (f.relatedKeys?.arrayValue?.values || []).length > 0
   };
 }
@@ -72,6 +73,7 @@ const readCard = (page) => page.evaluate(() => {
   return {
     title: s.querySelector('.today-title')?.textContent.trim(),
     fact: s.querySelector('.today-fact')?.textContent.trim(),
+    didYouKnow: s.querySelector('.today-didyouknow')?.textContent.replace(/\s+/g, ' ').trim() || null,
     source: src ? { text: src.textContent.replace(/\s+/g, ' ').trim(), target: src.target, rel: src.rel, href: src.href } : null,
     picks: [...s.querySelectorAll('.today-pick')].map((a) => `${a.querySelector('.pick-label').textContent.trim()}: ${a.querySelector('.pick-title').textContent.trim()}`)
   };
@@ -107,6 +109,12 @@ const readCard = (page) => page.evaluate(() => {
     check("home shows today's occasion and its fact", card?.title === occasion.name && card?.fact === occasion.description.trim(), card?.title);
     const host = (() => { try { return new URL(occasion.link).hostname.replace(/^www\./, ''); } catch { return null; } })();
     check('the source names the site and opens safely in a new tab', !host || (card?.source?.text.includes(host) && card.source.target === '_blank' && /noopener/.test(card.source.rel)), JSON.stringify(card?.source));
+    if (occasion.fact) {
+      check('the occasion\'s fact shows as "Did you know?"', card?.didYouKnow === `Did you know? ${occasion.fact.trim()}`, card?.didYouKnow);
+      check('a draft fact links the occasion\'s page as "Learn more", not as its source', occasion.factStatus === 'reviewed' || /^Learn more: /.test(card?.source?.text || ''), card?.source?.text);
+    } else {
+      console.log('      (no fact on this occasion yet: run scripts/apply-occasion-facts.js)');
+    }
     console.log(`      matched without links: ${card?.picks.join(' | ') || '(none: fact only)'}`);
 
     // 2. Editing the occasion's text re-runs the matcher (onEnvcalWritten).

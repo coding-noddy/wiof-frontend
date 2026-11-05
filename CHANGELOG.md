@@ -7,6 +7,20 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.8.0] - 2026-11-05
+
+Release hardening for the Phase 2 prod launch (8.4.0–8.8.0 ship in one deploy; follow `docs/PHASE2_RELEASE_RUNBOOK.md`). **Deploy with `-Backend`** (submitEqAssessment, the occasion matcher), then run `scripts/apply-occasion-facts.js`, `scripts/rebuild-related-content.js` and `scripts/recompute-user-metrics.js` (dry run, then `--apply`).
+
+### Added
+- **Release and rollback tooling** (`scripts/release.js`): `preflight` (what's live against this checkout: Hosting version, new or removed functions, index drift), `snapshot` (saves the live rules, indexes, Hosting version and functions with a ROLLBACK.md), `wait-indexes`, `verify` (post-deploy checks) and `rollback --only hosting|rules|functions` (dry run unless `--apply`). Runbook: `docs/PHASE2_RELEASE_RUNBOOK.md`.
+- **Facts for Today on WIOF**: occasions get their own `fact`, `factSource` and `factStatus` (draft / reviewed), edited in Admin → Calendar (the list marks "Fact: needs review"). The card shows "Did you know?" under the description; its link is called the fact's "Source" only once an admin has reviewed the fact and added its source, else the occasion's page is offered as "Learn more". 133 draft facts written by the WIOF team (`scripts/data/occasion-facts.json`), applied by `scripts/apply-occasion-facts.js`, which never overwrites a reviewed fact. Facts also feed the occasion matching.
+- `scripts/report-topics.js`: the topic names in use per element, for the shared topic list proposed in `docs/TOPICS_AND_TAGS.md`.
+- Browser test `npm run e2e:eq` (staging only).
+
+### Changed
+- **EQ: at most two saved checks a day** for a signed-in user (decided 2026-11-05: a score doesn't change much in a day). The server saves each check in a fixed daily slot (`{uid}_eq_completion_{day}_{1|2}`, in a transaction); a third is still scored and shown, just not saved, and the result screen says so. Guests' checks were never saved and still aren't.
+- **Privacy policy** (5 November 2026): personalised suggestions (what they use, that they're rule-based, not for advertising, how to change or clear them), the welcome and checklist state, server checks on activity, EQ saving for guests and signed-in users, and "Hide for today".
+
 ## [8.7.0] - 2026-11-05
 
 Phase 2 step 7: rule-based "Next for you" (see `docs/PHASE2_PLAN.md` section F). Hosting only: no rules, index or function changes.

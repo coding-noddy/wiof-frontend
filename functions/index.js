@@ -14,7 +14,7 @@
 const functions = require('firebase-functions/v1');
 const admin = require('firebase-admin');
 const { BLOG_SUMMARIES, buildBlogSummary } = require('./blog-summary');
-const { VALIDATOR_VERSION, scoreEqResponses, validateActivityEvent } = require('./activity-validation');
+const { EQ_DAILY_LIMIT, VALIDATOR_VERSION, eqCalendarDay, eqSlotIds, scoreEqResponses, validateActivityEvent } = require('./activity-validation');
 const { elementOfBlog, makeContentLookups, recomputeUserMetrics } = require('./user-metrics');
 const { rebuildRelatedContent } = require('./related-content');
 
@@ -838,22 +838,28 @@ exports.submitEqAssessment = functions
     if (!result) {
       throw new functions.https.HttpsError('invalid-argument', 'Expected 24 answers from 1 to 5.');
     }
-    // The browser's local day (as for every other event); the trigger
-    // rejects one more than a day away from the server time.
-    const calendarDay = data && typeof data.calendarDay === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(data.calendarDay)
-      ? data.calendarDay
-      : new Date().toISOString().slice(0, 10);
+    // The browser's local day (as for every other event), if plausible.
+    const calendarDay = eqCalendarDay(data && data.calendarDay);
 
-    await db.collection('activity_log').add({
-      userId: context.auth.uid,
-      activityType: 'eq_completion',
-      schemaVersion: 1,
-      score: result.score,
-      eqDimensions: result.eqDimensions,
-      timestamp: admin.firestore.FieldValue.serverTimestamp(),
-      calendarDay
+    // At most EQ_DAILY_LIMIT saved checks a day: each takes the next free
+    // fixed-ID slot, in a transaction so two at once can't share one.
+    const refs = eqSlotIds(context.auth.uid, calendarDay).map((id) => db.collection('activity_log').doc(id));
+    const savedAs = await db.runTransaction(async (tx) => {
+      const snaps = await Promise.all(refs.map((ref) => tx.get(ref)));
+      const free = snaps.findIndex((snap) => !snap.exists);
+      if (free < 0) return 0;
+      tx.create(refs[free], {
+        userId: context.auth.uid,
+        activityType: 'eq_completion',
+        schemaVersion: 1,
+        score: result.score,
+        eqDimensions: result.eqDimensions,
+        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+        calendarDay
+      });
+      return free + 1;
     });
-    return result;
+    return { ...result, saved: savedAs > 0, remainingToday: savedAs > 0 ? EQ_DAILY_LIMIT - savedAs : 0, dailyLimit: EQ_DAILY_LIMIT };
   }));
 
 /**
