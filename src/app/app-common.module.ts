@@ -40,6 +40,7 @@ import { TakeActionDetailComponent } from './components/take-action-detail/take-
 import { ExploreNextComponent } from './components/explore-next/explore-next.component';
 import { FirstStepsComponent } from './components/first-steps/first-steps.component';
 import { TodayOnWiofComponent } from './components/today-on-wiof/today-on-wiof.component';
+import { NextForYouComponent } from './components/next-for-you/next-for-you.component';
 import { RelatedContentEditorComponent } from './components/related-content-editor/related-content-editor.component';
 import { ContinueJourneyBannerComponent } from './components/continue-journey-banner/continue-journey-banner.component';
 import { BlogReadTrackerDirective } from './directives/blog-read-tracker.directive';
@@ -86,6 +87,7 @@ const COMPONENTS = [
   ExploreNextComponent,
   FirstStepsComponent,
   TodayOnWiofComponent,
+  NextForYouComponent,
   RelatedContentEditorComponent,
   ContinueJourneyBannerComponent,
   SearchBoxComponent,

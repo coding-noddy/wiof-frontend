@@ -1,6 +1,6 @@
 # Phase 2 Plan: Journey & Engagement Foundations
 
-**Status:** approved 2026-11-04 with the recommended defaults (section 6). Step 1 shipped in 8.1.0, step 2 in 8.2.0 (prod metrics recomputed 2026-11-04), step 3 in 8.3.0, step 4 (connected content) in 8.4.0 and 8.4.1, step 5 (journey experience) in 8.5.0, step 6 (Today on WIOF) in 8.6.0. Steps 1–3 are the Planet Passport foundation; next is step 7 (rule-based "Next for you").
+**Status:** approved 2026-11-04 with the recommended defaults (section 6). Step 1 shipped in 8.1.0, step 2 in 8.2.0 (prod metrics recomputed 2026-11-04), step 3 in 8.3.0, step 4 (connected content) in 8.4.0 and 8.4.1, step 5 (journey experience) in 8.5.0, step 6 (Today on WIOF) in 8.6.0, step 7 (rule-based "Next for you") in 8.7.0. Steps 1–3 are the Planet Passport foundation; with step 7 all seven Phase 2 steps are built.
 **Sources:** `WIOF_Plan_v4/WIOF_Future_Enhancements_and_Product_Roadmap_v4.md` (sections 0, 5–10, 14), `WIOF_Plan_v4/WIOF_Foundation_Hardening_Plan_v4.md` (sections 16–18), and the current code on `master` (8.0.2).
 
 ## 1. What Phase 2 is for
@@ -146,3 +146,17 @@ Decisions (recommended defaults, 2026-11-05):
 - **Matching occasions** (`functions/related-content.js`): occasions join the corpus as queries only. Document frequency is computed over stories and actions only, so story and action matches are unchanged (tested). Because occasion texts are a sentence or two, chance overlaps score higher, so occasions use a stricter bar: boilerplate words are removed, the score must reach 0.10, and at least two terms must be shared. On staging this keeps e.g. Vegetarian Day → the Veganism story, Food Day → the surplus-food actions, Yoga Day → gentle yoga, Bee Day → the honey bee story, and drops e.g. Run Day → "Stop Unnecessary Running Water". Weaker keyword matches remain possible; an admin's links on the occasion always win.
 - **Kept current** by the new `onEnvcalWritten` trigger, and by `scripts/rebuild-related-content.js`.
 - **Tests**: function tests (occasions matched, never suggested, no effect on other matches, stricter bar, two shared terms); unit tests for the card and its helpers; staging E2E `npm run e2e:today` (fact and source, the trigger, admin links first, the action link, See the full calendar, Hide for today, phone).
+
+## 11. Step 7 as built
+
+Decisions (recommended defaults, 2026-11-05):
+
+- **Where** (`components/next-for-you`): in the home journey panel, under the tiles, for signed-in users. Up to four picks: two stories and two actions, and if one kind runs short the other fills in. Nothing shows until there's something to suggest. The actions tile dropped its own "Next:" action, so the panel never suggests two different next actions.
+- **Rules** (`models/NextForYou.ts`, no ML), in order, each pick showing its reason:
+  - Stories: similar to the last three stories read to the end (the server's matches, `related_auto/blog_{id}`), "Because you read …"; then the newest in each of the user's elements, round-robin, "New in Water".
+  - Actions: started but not done, "You started this"; then ones that go with a recent read, "Goes with …"; then each element's actions in the Take Action order, "Try in Earth".
+  - Never a story read to the end (by ID or slug) or a completed action; only items in the user's elements; an item picked twice keeps its first reason.
+- **Which elements**: the ones the user chose (`preferredElements`), else the ones they've explored (`elementsExplored`). The panel says which ("From your elements: Water and Earth" / "From what you've explored: …") with a Change link to Settings, so the picks are never a mystery.
+- **Cost** (`services/next-for-you.service.ts`): builds on what the panel already loads (reads, active actions, action history), so actions cost no extra reads. Stories: the related_auto doc and a few summaries for each of the last three reads, and the newest stories per element (6 each, the existing category + publishDate index) only when those don't fill the list.
+- **Guests** (the plan's second bullet): no profile, so nothing persistent; the element-based suggestions from the current page are Explore next's element fallback (step 4).
+- **Tests**: unit tests for the rules (order, reasons, read/done exclusions by ID and slug, element filter, limits and fill-in, de-dup, title trimming) and the component; staging E2E `npm run e2e:next` (chosen and explored elements, a real quality read driving "Because you read", a started action first, completed actions excluded, the action link, phone).

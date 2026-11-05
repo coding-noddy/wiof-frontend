@@ -229,7 +229,8 @@ export class RelatedContentService {
       );
   }
 
-  private blogItem(blog: any, reason: ExploreItem['reason']): ExploreItem {
+  /** A story summary as an Explore item (also used by "Next for you"). */
+  blogItem(blog: any, reason: ExploreItem['reason']): ExploreItem {
     const element = String(blog.category || '').toLowerCase();
     return {
       type: 'blog',
@@ -247,7 +248,8 @@ export class RelatedContentService {
     };
   }
 
-  private actionItem(action: ActionItem, reason: ExploreItem['reason'], element?: string): ExploreItem {
+  /** An action as an Explore item (also used by "Next for you"). */
+  actionItem(action: ActionItem, reason: ExploreItem['reason'], element?: string): ExploreItem {
     const actionElement = (action.elementIds || []).includes(element) ? element : action.elementIds?.[0] || element;
     return {
       type: 'action',

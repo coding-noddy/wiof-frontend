@@ -7,6 +7,17 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.7.0] - 2026-11-05
+
+Phase 2 step 7: rule-based "Next for you" (see `docs/PHASE2_PLAN.md` section F). Hosting only: no rules, index or function changes.
+
+### Added
+- **Next for you** in the home journey panel for signed-in users: up to four picks (two stories, two actions; one kind fills in if the other runs short), each with the reason it was picked. Stories: similar to the last three stories read to the end ("Because you read …"), then the newest in each of the user's elements ("New in Water"). Actions: ones started but not done ("You started this"), then ones that go with a recent read ("Goes with …"), then the element's actions in the Take Action order ("Try in Earth"). Stories read to the end and completed actions never show. Suggestions come from the elements the user chose, else the ones they've explored, and the panel says which, with a link to change them. Shows nothing until there's something to suggest.
+- Browser test `npm run e2e:next` (staging only).
+
+### Changed
+- The journey panel's actions tile no longer names its own "Next:" action (Next for you suggests it now, with a reason).
+
 ## [8.6.0] - 2026-11-05
 
 Phase 2 step 6: "Today on WIOF" (see `docs/PHASE2_PLAN.md` section E). **Deploy with `-Backend`** (new `onEnvcalWritten` trigger), then run `node scripts/rebuild-related-content.js --project prod` (dry run) and `--apply` to match the calendar occasions.

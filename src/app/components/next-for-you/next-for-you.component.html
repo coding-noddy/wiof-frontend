@@ -1,0 +1,25 @@
+@if (items.length) {
+  <section class="next" aria-labelledby="next-for-you-title">
+    <div class="next-head">
+      <h3 class="next-title" id="next-for-you-title">Next for you</h3>
+      <p class="next-basis">
+        {{ picks?.basis === 'explored' ? "From what you've explored" : 'From your elements' }}: {{ basisLabel }} ·
+        <a routerLink="/settings">Change</a>
+      </p>
+    </div>
+    <ul class="next-list">
+      @for (pick of items; track trackPick($index, pick)) {
+        <li>
+          <a class="next-card" [attr.data-kind]="pick.item.type" [routerLink]="pick.item.link" [queryParams]="pick.item.queryParams">
+            <span class="next-why">
+              <ion-icon aria-hidden="true" [name]="pick.item.type === 'action' ? (pick.item.icon || 'leaf-outline') : pick.item.type === 'video' ? 'play-circle-outline' : 'book-outline'"></ion-icon>
+              {{ pick.why }}
+            </span>
+            <span class="next-card-title">{{ pick.item.title }}</span>
+            <span class="next-meta">{{ kindLabel(pick) }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </section>
+}

@@ -5,6 +5,7 @@ These drive the real staging site (`https://wiof-staging.web.app`) in Chrome. Th
 | Command | What it checks | Writes data? |
 |---|---|---|
 | `npm run e2e:smoke` | Public pages on a phone and a desktop viewport: no console errors, no sideways scroll, key content present. | No |
+| `npm run e2e:next` | "Next for you" on home: picks from the chosen elements, then the explored ones; "Because you read" from a real read; a started action first; completed actions and the read story excluded; the action link; phone. | Yes, the non-admin test user's elements and one started action, restored at the end. On the first run it reads one short Water story to the end, which is kept (reads count once). |
 | `npm run e2e:journey` | The welcome after sign-in (desktop and phone), the saved profile, "Your first steps" on home and My Journey, Hide and Skip. | Yes, the non-admin test user's elements and welcome state, restored at the end |
 | `npm run e2e:today` | "Today on WIOF" for today's real occasion: fact and source, the matcher re-running on an edit, admin links first, the action link, "See the full calendar" (desktop and phone), "Hide for today", phone. Skips on a day with no occasion. | Yes, today's occasion's text and links, restored at the end (admin account) |
 | `npm run e2e:explore` | Explore next: the admin Related Content picker, Explore next on a blog, a video and the calendar popup, similar content on an unlinked story, and "The story behind this" in an action's details. | Yes, a few staging links, restored at the end |
@@ -20,7 +21,7 @@ These drive the real staging site (`https://wiof-staging.web.app`) in Chrome. Th
    $env:WIOF_E2E_ADMIN_PASSWORD = "<its password>"
    ```
 
-   For `e2e:journey`, the staging **non-admin test account** (`WIOF_E2E_USER_EMAIL`, `WIOF_E2E_USER_PASSWORD`) and the staging service account key at `scripts/service-account.json` (git-ignored; the test refuses any other project).
+   For `e2e:journey` and `e2e:next`, the staging **non-admin test account** (`WIOF_E2E_USER_EMAIL`, `WIOF_E2E_USER_PASSWORD`) and the staging service account key at `scripts/service-account.json` (git-ignored; the test refuses any other project).
 
 Screenshots go to `tests/e2e/output/` (git-ignored; override with `E2E_OUT`).
 

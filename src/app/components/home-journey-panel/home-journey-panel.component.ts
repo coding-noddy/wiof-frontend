@@ -9,6 +9,9 @@ import { UserActionService } from 'src/app/services/user-action.service';
 import { UserProfile, UserProfileService } from 'src/app/services/user-profile.service';
 import { BlogService } from 'src/app/services/blog.service';
 import { EngagementMetrics } from 'src/app/services/activity.service';
+import { NextForYou, nextForYouElements } from 'src/app/models/NextForYou';
+import { preferredElements } from 'src/app/models/Journey';
+import { NextForYouService } from 'src/app/services/next-for-you.service';
 
 interface LastActivity {
   type: 'blog' | 'video';
@@ -40,9 +43,12 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
   lastEqScore: number | null = null;
   savedContentCount = 0;
 
-  // Protect Through Action tile (Section 14 of the architecture doc).
+  // Protect Through Action tile (Section 14 of the architecture doc). The
+  // next action to try is suggested by "Next for you" below the tiles.
   actionsCompletedCount = 0;
-  nextActionTitle: string | null = null;
+
+  // "Next for you" (Phase 2 step 7): loaded after the tiles, from the same data.
+  nextForYou: NextForYou | null = null;
 
   // Personalizes "Welcome back" — null while loading/unavailable, in which
   // case the template falls back to the plain unpersonalized greeting.
@@ -62,7 +68,8 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
     private actionService: ActionService,
     private userActionService: UserActionService,
     private userProfileService: UserProfileService,
-    private blogService: BlogService
+    private blogService: BlogService,
+    private nextForYouService: NextForYouService
   ) {}
 
   ngOnInit(): void {
@@ -155,17 +162,14 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
         this.savedContentCount = savedIds.size;
         this.actionsCompletedCount = metrics.totalActionsCompleted || 0;
 
-        // Suggest a featured action the user hasn't tried before; fall back
-        // to any not-yet-tried action, then to the first active one if
-        // they've engaged with everything already.
-        const completedIds = new Set(actionHistory.map((h) => h.actionId));
-        const next =
-          actions.find((a) => a.isFeatured && !completedIds.has(a.id)) ||
-          actions.find((a) => !completedIds.has(a.id)) ||
-          actions[0];
-        this.nextActionTitle = next?.title || null;
-
         this.isLoading = false;
+
+        const elements = nextForYouElements(profile, metrics);
+        const basis = preferredElements(profile).length ? 'chosen' : 'explored';
+        this.nextForYouService
+          .nextForYou({ elements, reads, activeActions: actions, actionHistory })
+          .pipe(takeUntil(this.destroy$))
+          .subscribe((picks) => (this.nextForYou = { ...picks, basis }));
       });
   }
 
