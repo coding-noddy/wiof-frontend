@@ -207,6 +207,38 @@
   text-align: center;
 }
 
+// The fact's link: a quiet text link under the fact, not a second big button.
+.occasion-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0 0 0.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--wiof-teal-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+
+  ion-icon {
+    font-size: 0.85rem;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+// The related stories and actions: a little air above, after the text.
+.occasion-body app-explore-next {
+  display: block;
+  margin-top: 1rem;
+}
+
 // The day's "Did you know?" (moved here from the home card in 8.11.0).
 .occasion-body p.occasion-fact {
   padding: 0.65rem 0.85rem;

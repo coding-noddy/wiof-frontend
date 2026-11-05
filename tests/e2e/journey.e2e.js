@@ -113,15 +113,27 @@ async function signIn(page) {
       `${JSON.stringify(saved.preferredElements)} ${saved.onboarding?.welcomeDoneAt?.toDate?.().toISOString()}`);
 
     await page.goto(`${BASE}/home`, { waitUntil: 'networkidle2', timeout: 90000 });
-    await page.waitForSelector('app-home-journey-panel .first-steps', { timeout: 30000 }).catch(() => {});
+    // 8.11.0: home shows one line ("Your first steps · N of 5 done"); the checklist opens in a modal.
+    await page.waitForFunction(() => [...document.querySelectorAll('app-home-journey-panel .glance-line')].some((b) => /first steps/i.test(b.textContent)), { timeout: 30000 }).catch(() => {});
     await sleep(1500);
-    const home = await page.evaluate(() => ({
+    const line = await page.evaluate(() => ({
       welcome: !!document.querySelector('.welcome-dialog'),
-      steps: [...document.querySelectorAll('app-home-journey-panel .first-steps li')].map((li) => `${li.classList.contains('done') ? 'x' : ' '} ${li.querySelector('.step-title').textContent.trim()}`),
-      count: document.querySelector('app-home-journey-panel .first-steps-count')?.textContent.trim()
+      text: [...document.querySelectorAll('app-home-journey-panel .glance-line')].find((b) => /first steps/i.test(b.textContent))?.textContent.replace(/\s+/g, ' ').trim() || null,
+      inline: !!document.querySelector('app-home-journey-panel .journey-panel > app-first-steps')
     }));
-    check('the welcome does not come back', !home.welcome);
-    check('home shows "Your first steps" with "Choose your elements" ticked', home.steps.length === 5 && home.steps[0] === 'x Choose your elements', `${home.count}: ${home.steps.join(' / ')}`);
+    await page.evaluate(() => [...document.querySelectorAll('app-home-journey-panel .glance-line')].find((b) => /first steps/i.test(b.textContent))?.click());
+    await page.waitForSelector('ion-modal app-first-steps .first-steps li', { timeout: 20000 }).catch(() => {});
+    await sleep(800);
+    const home = await page.evaluate(() => ({
+      welcome: false,
+      steps: [...document.querySelectorAll('ion-modal app-first-steps .first-steps li')].map((li) => `${li.classList.contains('done') ? 'x' : ' '} ${li.querySelector('.step-title').textContent.trim()}`),
+      count: document.querySelector('ion-modal app-first-steps .first-steps-count')?.textContent.trim()
+    }));
+    check('the welcome does not come back', !line.welcome);
+    check('home shows one "Your first steps" line, not the checklist itself', /Your first steps \d of 5 done/.test(line.text || '') && !line.inline, line.text);
+    check('the line opens the checklist, with "Choose your elements" ticked', home.steps.length === 5 && home.steps[0] === 'x Choose your elements', `${home.count}: ${home.steps.join(' / ')}`);
+    await page.evaluate(() => document.querySelector('ion-modal .sheet-close')?.click());
+    await sleep(800);
     await page.evaluate(() => document.querySelector('app-home-journey-panel').scrollIntoView({ block: 'start' }));
     await sleep(600);
     await page.screenshot({ path: path.join(OUT, 'journey-home.png') });

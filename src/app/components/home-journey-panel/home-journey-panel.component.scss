@@ -283,9 +283,20 @@ h2 {
 
 .journey-sheet {
   position: relative;
-  padding: 1.25rem 1.25rem 1rem;
+  padding: 1.5rem 1.25rem 1rem;
   max-height: 85vh;
   overflow-y: auto;
+}
+
+// In the modal the picks sit two by two (four in a row were squeezed).
+.journey-sheet ::ng-deep .next-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 480px) {
+  .journey-sheet ::ng-deep .next-list {
+    grid-template-columns: 1fr;
+  }
 }
 
 .sheet-close {

@@ -63,12 +63,11 @@
                   <p class="occasion-fact"><strong>Did you know?</strong> {{ occasn.fact }}</p>
                 }
                 @if (occasn.source; as source) {
-                  <div class="occasion-cta">
-                    <a class="wiof-primary-link" target="_blank" rel="noopener noreferrer" [href]="source.url">
-                      {{ source.label }}: {{ source.site }}
-                      <span class="visually-hidden">(opens in a new tab)</span>
-                    </a>
-                  </div>
+                  <a class="occasion-source" target="_blank" rel="noopener noreferrer" [href]="source.url">
+                    {{ source.label }}: {{ source.site }}
+                    <ion-icon aria-hidden="true" name="open-outline"></ion-icon>
+                    <span class="visually-hidden">(opens in a new tab)</span>
+                  </a>
                 } @else if (occasn.link) {
                   <div class="occasion-cta">
                     <a class="wiof-primary-link" target="_blank" rel="noopener noreferrer" [href]="occasn.link">

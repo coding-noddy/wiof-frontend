@@ -96,7 +96,6 @@
         </section>
 
         <app-first-steps class="journey-first-steps" [profile]="profile" [metrics]="metrics"></app-first-steps>
-        <app-next-for-you class="journey-next-for-you" [picks]="nextForYou"></app-next-for-you>
 
         <div class="metrics-section">
           <div class="metrics-grid">
@@ -157,6 +156,8 @@
             </div>
           </div>
         </div>
+
+        <app-next-for-you class="journey-next-for-you" [picks]="nextForYou"></app-next-for-you>
         <!-- Global Retry (all new sections failed) -->
         @if (allSectionsFailed) {
           <div class="global-retry-state">
