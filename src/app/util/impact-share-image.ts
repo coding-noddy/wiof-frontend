@@ -124,7 +124,7 @@ export async function renderShareCard(input: ShareCardInput): Promise<Blob> {
   // Logo.
   try {
     const logo = await loadImage(LOGO);
-    const h = 96;
+    const h = 84;
     ctx.drawImage(logo, pad, pad, (logo.width / logo.height) * h, h);
   } catch {
     // Without the logo, the footer still names WIOF.
@@ -133,26 +133,27 @@ export async function renderShareCard(input: ShareCardInput): Promise<Blob> {
   // Title.
   ctx.fillStyle = TEAL_TEXT;
   ctx.font = '700 28px "Noto Sans", sans-serif';
-  ctx.fillText('ESTIMATED IMPACT', pad, 250);
+  ctx.fillText('ESTIMATED IMPACT', pad, 210);
   ctx.fillStyle = INK;
   ctx.font = '700 72px Aleo, serif';
-  ctx.fillText(fit(ctx, input.title, SHARE_SIZE - pad * 2), pad, 330);
+  ctx.fillText(fit(ctx, input.title, SHARE_SIZE - pad * 2), pad, 282);
   ctx.font = '400 40px Aleo, serif';
   ctx.fillStyle = MUTED;
-  ctx.fillText(input.period, pad, 388);
+  ctx.fillText(input.period, pad, 332);
 
-  // Up to three measures, one row each.
+  // Up to three measures, one row each, with room around the numbers.
   const rows = input.tiles.slice(0, 3);
-  const rowH = 150;
-  let y = 440;
+  const boxH = 142;
+  const gap = 24;
+  let y = 370;
   for (const t of rows) {
-    roundedRect(ctx, pad, y, SHARE_SIZE - pad * 2, rowH - 18, 28);
+    roundedRect(ctx, pad, y, SHARE_SIZE - pad * 2, boxH, 28);
     ctx.fillStyle = tint(t.tint, 0.1);
     ctx.fill();
 
     // Icon in a tinted circle.
     const cx = pad + 70;
-    const cy = y + (rowH - 18) / 2;
+    const cy = y + boxH / 2;
     ctx.beginPath();
     ctx.arc(cx, cy, 44, 0, Math.PI * 2);
     ctx.fillStyle = tint(t.tint, 0.28);
@@ -160,32 +161,33 @@ export async function renderShareCard(input: ShareCardInput): Promise<Blob> {
     const img = await icon(t.icon, t.color);
     if (img) ctx.drawImage(img, cx - 26, cy - 26, 52, 52);
 
-    // Number + unit, label, comparison.
+    // Number + unit, label, comparison; the number alone is centred.
     const tx = pad + 150;
+    const base = t.equivalent ? cy - 2 : cy + 20;
     ctx.fillStyle = INK;
     ctx.font = '700 60px Aleo, serif';
     const num = t.unit ? `${t.number} ${t.unit}` : t.number;
-    ctx.fillText(num, tx, cy + 4);
+    ctx.fillText(num, tx, base);
     const numW = ctx.measureText(num).width;
     ctx.font = '700 30px "Noto Sans", sans-serif';
     ctx.fillStyle = t.color;
-    ctx.fillText(fit(ctx, t.label, SHARE_SIZE - pad * 2 - (tx - pad) - numW - 40), tx + numW + 18, cy + 2);
+    ctx.fillText(fit(ctx, t.label, SHARE_SIZE - pad * 2 - (tx - pad) - numW - 40), tx + numW + 18, base - 2);
     if (t.equivalent) {
       ctx.font = '400 28px "Noto Sans", sans-serif';
       ctx.fillStyle = MUTED;
-      ctx.fillText(fit(ctx, t.equivalent, SHARE_SIZE - pad * 2 - (tx - pad) - 30), tx, cy + 46);
+      ctx.fillText(fit(ctx, t.equivalent, SHARE_SIZE - pad * 2 - (tx - pad) - 30), tx, cy + 42);
     }
-    y += rowH;
+    y += boxH + gap;
   }
 
   // Footer: honest, with the address. "Estimates" always gets a line of its own.
   ctx.font = '400 27px "Noto Sans", sans-serif';
   ctx.fillStyle = MUTED;
   const note = [...wrap(ctx, `${input.footnote}.`, SHARE_SIZE - pad * 2, 1), 'Estimates, on the low side.'];
-  note.forEach((l, i) => ctx.fillText(l, pad, SHARE_SIZE - 128 - (note.length - 1 - i) * 36));
+  note.forEach((l, i) => ctx.fillText(l, pad, SHARE_SIZE - 150 - (note.length - 1 - i) * 36));
   ctx.font = '700 34px "Noto Sans", sans-serif';
   ctx.fillStyle = TEAL_TEXT;
-  ctx.fillText('Join me at worldisonefamily.com', pad, SHARE_SIZE - 80);
+  ctx.fillText('Join me at worldisonefamily.com', pad, SHARE_SIZE - 100);
 
   return new Promise((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Could not draw the image'))), 'image/png'));
 }
