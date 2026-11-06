@@ -1,5 +1,5 @@
 import { pickFollowUp } from './FollowUp';
-import { communitySentence } from '../components/community-impact/community-impact.component';
+import { communitySentence, communityView } from '../components/community-impact/community-impact.component';
 import { showCommunity } from './CommunityImpact';
 
 const action = (id: string, isActive = true): any => ({ id, title: id, isActive });
@@ -33,6 +33,13 @@ describe('"Together this month" (8.15.0)', () => {
     expect(showCommunity(c(20, { water: 100 }))).toBeTrue();
     expect(showCommunity(c(25, {}))).toBeFalse();
     expect(showCommunity(null)).toBeFalse();
+  });
+
+  it('admins always see it, marked as a preview, until there are enough members', () => {
+    expect(communityView(c(3, { water: 100 }), false)).toBeNull();
+    expect(communityView(c(3, { water: 100 }), true)).toEqual({ members: 3, sentence: 'about 100 L of water', preview: true, minMembers: 20 });
+    expect(communityView(c(20, { water: 100 }), false)?.preview).toBeFalse();
+    expect(communityView({ ...c(1, { water: 5 }), minMembers: 1 }, false)?.preview).toBeFalse();
   });
 
   it('says it as one sentence', () => {
