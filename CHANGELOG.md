@@ -25,6 +25,7 @@ Reset, done right. **Deploy with `-Backend`** (`resetEngagementData`; rules for 
 - **Coffee Conversation video on tablets and phones** keeps its 16:9 shape (at about 900px wide the frame was 280px tall but the video only 150px, leaving an empty band).
 - **Hover, one rule** (`--wiof-btn-outline-hover-bg`, `--wiof-btn-fill-hover-bg`): teal outline buttons fill with a light teal tint (border and text stay teal); filled teal buttons go a shade darker. The outline buttons' old Ivory hover barely showed on Warm White.
 - **"Logout" is "Sign out"** (pairs with "Sign In") in the avatar menu, the mobile menu and the admin sidebar, and looks like the other menu items: on hover it showed red text on Ionic's solid red "danger tint", unreadable. Signing out isn't destructive, so no warning colour.
+- Read Full Story: no shadow on hover either. The reset dialog is wider (480px) and never taller than the window (it scrolls inside). The calendar day modal is capped at the modal's height with the text scrolling and space below the last line (a long day ran past the bottom of the screen and was cut off).
 - **Energy widget "Calculate"** is the site's teal action button (was a darkened-Marigold gradient with a shadow, off the palette).
 - Device memories of activity ("Not yet" answers; with actions, the last impact amounts) are cleared with the reset.
 - Privacy policy (6 November 2026): what the reset clears and keeps, polls, and anonymous totals. docs/METRICS.md "Resets" updated.
