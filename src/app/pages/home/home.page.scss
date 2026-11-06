@@ -332,11 +332,11 @@ $page-padding-mobile:  16px;
     display: inline-flex;
     align-items: center;
     gap: 0.5em;
-    // The page's one primary CTA: the large button size on every screen
-    // (it used to shrink to 32px on phones, under a comfortable tap size).
-    min-height: var(--wiof-btn-height-lg);
-    padding: 0 1.5rem;
-    font-size: var(--wiof-btn-font-size-lg);
+    // The page's one primary CTA: the standard button size on every screen
+    // (it used to shrink to 32px on phones); Marigold marks it, not size.
+    min-height: var(--wiof-btn-height);
+    padding: 0 1.4rem;
+    font-size: var(--wiof-btn-font-size);
     font-weight: var(--wiof-btn-font-weight);
     border: none;
     border-radius: 999px;

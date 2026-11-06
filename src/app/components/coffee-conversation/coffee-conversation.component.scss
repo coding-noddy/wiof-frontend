@@ -95,11 +95,7 @@
       .conversation-cta {
         background: var(--wiof-marigold) !important;
         color: var(--wiof-ink) !important;
-        box-shadow: 0 8px 16px rgba(255, 194, 111, 0.28) !important;
-
-        &:hover {
-          box-shadow: 0 10px 18px rgba(255, 194, 111, 0.34) !important;
-        }
+        box-shadow: none !important; // flat, like every button on the page
       }
     }
   }
@@ -387,6 +383,22 @@
         border-radius: 16px 16px 0 0;
       }
     }
+  }
+}
+
+// Stacked (below 992px, home and element pages): the frame takes the video's
+// own 16:9 shape. It had a minimum height the video couldn't stretch to, so
+// the video fell back to the browser's default 150px with an empty band below.
+@media (max-width: 991px) {
+  .coffee-conv-container .coffee-conv-card .media-container {
+    min-height: 0 !important;
+    max-height: none !important;
+  }
+
+  .coffee-conv-container .coffee-conv-card .media-player {
+    display: block;
+    height: auto;
+    aspect-ratio: 16 / 9;
   }
 }
 

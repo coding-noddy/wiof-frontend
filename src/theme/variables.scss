@@ -14,13 +14,13 @@
  */
 :root {
   /* Buttons (8.16.0): one size for every text button (pill) and icon button
-     on the site; the page's one primary CTA (the home hero) uses the large
-     size. Colours keep the brand rule: Marigold only for that primary CTA,
-     teal fill for other actions, teal outline for secondary ones. */
+     on the site, the page's primary CTA included; colour, not size, marks
+     the primary one. Colours keep the brand rule: Marigold only for a page's
+     one primary CTA, teal fill for other actions, teal outline for
+     secondary ones. Buttons on the page are flat; only controls floating
+     over images or overlays (slider arrows, pop-ups) get a soft shadow. */
   --wiof-btn-height: 40px;
-  --wiof-btn-height-lg: 44px;
   --wiof-btn-font-size: 0.875rem;
-  --wiof-btn-font-size-lg: 0.95rem;
   --wiof-btn-font-weight: 700;
   --wiof-btn-padding-x: 1.1rem;
   --wiof-icon-btn-size: 40px;

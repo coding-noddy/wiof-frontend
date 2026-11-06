@@ -170,13 +170,14 @@
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  padding: 0.6rem 1rem;
+  min-height: var(--wiof-btn-height);
+  padding: 0 var(--wiof-btn-padding-x);
   border-radius: 999px;
   border: none;
   background: var(--wiof-teal-fill);
   color: var(--wiof-warm-white);
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: var(--wiof-btn-font-size);
+  font-weight: var(--wiof-btn-font-weight);
   cursor: pointer;
   transition: transform 0.15s ease, background 0.15s ease, opacity 0.15s ease;
 
@@ -330,8 +331,7 @@
   .action-btn {
     width: auto;
     white-space: nowrap;
-    padding: 0.5rem 0.95rem;
-    font-size: 0.8rem;
+    padding: 0 var(--wiof-btn-padding-x);
 
     // "I'll try this": an invitation, so lighter than "Done it".
     &.try {
