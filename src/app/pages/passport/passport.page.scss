@@ -283,11 +283,15 @@
   outline-offset: calc(var(--pw) * -0.035);
 }
 
-// The WIOF logo, white and pressed into the leather.
+// The WIOF logo in the same gold foil as the title: the white logo is the
+// mask, the foil gradient shows through it.
 .cover-logo {
   width: 52%;
-  opacity: 0.9;
-  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.35)) drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.12));
+  aspect-ratio: 2000 / 800;
+  background: linear-gradient(180deg, #FFE7BA, #C99A52 70%, #E9C27D);
+  -webkit-mask: url('/assets/brand/logos/WIOF-full-logo-white.png') center / contain no-repeat;
+  mask: url('/assets/brand/logos/WIOF-full-logo-white.png') center / contain no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.35));
 }
 
 .cover-top {
