@@ -10,11 +10,25 @@ import 'firebase/compat/firestore';
 import { FIREBASE_COLLECTION } from '../app.constants';
 import { AnalyticsService } from './analytics.service';
 
+/** What can be saved: stories, videos and (8.12.0) Coffee Conversations. */
+export type SavedContentType = 'blog' | 'video' | 'conversation';
+
+/** Where a saved item opens. Blogs and videos open under any element; the page finds the right one. */
+export function savedContentLink(item: Pick<SavedContentDocument, 'contentType' | 'contentId'>): string {
+  if (item.contentType === 'conversation') return `/conversation/${item.contentId}`;
+  return `/element/earth/${item.contentType === 'blog' ? 'blog' : 'video'}/${item.contentId}`;
+}
+
+/** The badge on a saved item. */
+export function savedContentLabel(item: Pick<SavedContentDocument, 'contentType'>): string {
+  return item.contentType === 'blog' ? 'Blog' : item.contentType === 'conversation' ? 'Conversation' : 'Video';
+}
+
 export interface SavedContentDocument {
   id?: string;
   userId: string;
   contentId: string;
-  contentType: 'blog' | 'video';
+  contentType: SavedContentType;
   contentTitle: string;
   contentThumbnail: string;
   savedAt: any;
@@ -25,7 +39,7 @@ export interface SavedContentDocument {
 export interface SaveContentInput {
   userId: string;
   contentId: string;
-  contentType: 'blog' | 'video';
+  contentType: SavedContentType;
   contentTitle: string;
   contentThumbnail: string;
 }

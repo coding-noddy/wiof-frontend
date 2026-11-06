@@ -1,0 +1,226 @@
+@use '../../wiof-custom-theming' as *;
+
+// Same frame as a story page (blog-post.page.scss): breadcrumb bar, then a
+// 780px reading column, with Explore next under it.
+.page-breadcrumb-bar {
+  width: 100%;
+  padding: 1.1rem 1.25rem;
+  background: var(--wiof-warm-white);
+  border-top: 1.5px solid var(--wiof-border);
+  border-bottom: 1.5px solid var(--wiof-border);
+
+  @media (min-width: 768px) {
+    padding: 1.1rem 6vw;
+  }
+}
+
+.breadcrumb {
+  font-size: 0.9rem;
+  color: var(--wiof-ink);
+
+  a {
+    color: var(--wiof-ink);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .sep {
+    margin: 0 0.5rem;
+    opacity: 0.5;
+  }
+
+  .current {
+    color: var(--wiof-ink-muted);
+  }
+}
+
+.conversation {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 1.75rem 1.25rem 2rem;
+}
+
+.conversation-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wiof-teal-text);
+
+  ion-icon {
+    font-size: 1rem;
+  }
+}
+
+.conversation-title {
+  margin: 0 0 1rem;
+  font-size: 2.1rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--wiof-ink);
+
+  @media (max-width: 600px) {
+    font-size: 1.5rem;
+  }
+}
+
+.conversation-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.conversation-guest {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  font-weight: 600;
+  color: var(--wiof-ink);
+
+  ion-icon {
+    color: var(--wiof-teal-text);
+  }
+}
+
+.conversation-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--wiof-warm-grey);
+  background: var(--wiof-warm-white);
+  color: var(--wiof-ink);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--wiof-teal-fill);
+  }
+}
+
+.conversation-video {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--wiof-ink);
+
+  iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+}
+
+.conversation-body {
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--wiof-ink);
+}
+
+// Card convention: Warm White, 1.5px border, 18px radius, no shadow.
+.conversation-guest-card {
+  margin-top: 1.75rem;
+  padding: 1.25rem 1.4rem;
+  border-radius: 18px;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  background: var(--wiof-warm-white);
+
+  h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+  }
+
+  p {
+    margin: 0;
+    line-height: 1.65;
+    color: var(--wiof-ink);
+  }
+}
+
+.conversation-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 1.25rem;
+  font-weight: 600;
+  color: var(--wiof-teal-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.conversation-explore-next {
+  display: block;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 1.25rem 3rem;
+}
+
+.conversation-missing,
+.conversation-loading {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 4rem 1.25rem;
+  text-align: center;
+}
+
+.conversation-home-link {
+  font-weight: 700;
+  color: var(--wiof-teal-text);
+}
+
+.skeleton-title {
+  height: 2.2rem;
+  width: 70%;
+  margin: 0 auto 1.5rem;
+  border-radius: 10px;
+}
+
+.skeleton-video {
+  aspect-ratio: 16 / 9;
+  border-radius: 18px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.skeleton {
+  background: var(--wiof-ivory);
+  animation: conversation-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes conversation-pulse {
+  50% { opacity: 0.55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}

@@ -645,7 +645,7 @@
                           <div class="saved-card-info">
                             <h3 class="saved-card-title">{{ item.contentTitle }}</h3>
                             <span class="saved-card-type" [ngClass]="item.contentType">
-                              {{ item.contentType === 'blog' ? 'Blog' : 'Video' }}
+                              {{ typeLabel(item) }}
                             </span>
                           </div>
                           <ion-icon aria-hidden="true" name="chevron-forward-outline" class="saved-card-arrow"></ion-icon>

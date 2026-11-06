@@ -97,44 +97,11 @@ async function getBlog(blogParam) {
   return null;
 }
 
-/**
- * Generate HTML with Open Graph meta tags
- */
-function generateMetaHtml(blog, imageUrl, originalUrl) {
-  const title = blog.title || 'World is One Family';
-  const description = blog.shortDescription || 'Inspire through Creativity, Enlighten through Knowledge, Protect through Action';
-  const author = blog.author || 'WIOF';
-  const siteName = 'World is One Family (WIOF)';
+const { metaHtml, conversationMeta } = require('./social-meta');
 
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>${title} | ${siteName}</title>
-  
-  <!-- Open Graph -->
-  <meta property="og:type" content="article">
-  <meta property="og:title" content="${title}">
-  <meta property="og:description" content="${description}">
-  <meta property="og:image" content="${imageUrl}">
-  <meta property="og:url" content="${originalUrl}">
-  <meta property="og:site_name" content="${siteName}">
-  <meta property="article:author" content="${author}">
-  
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="${title}">
-  <meta name="twitter:description" content="${description}">
-  <meta name="twitter:image" content="${imageUrl}">
-  
-  <!-- Redirect real users to the SPA -->
-  <meta http-equiv="refresh" content="0;url=${originalUrl}">
-  <link rel="canonical" href="${originalUrl}">
-</head>
-<body>
-  <p>Redirecting to <a href="${originalUrl}">${title}</a>...</p>
-</body>
-</html>`;
+/** A story's preview (escaped: see social-meta.js). */
+function generateMetaHtml(blog, imageUrl, originalUrl) {
+  return metaHtml({ title: blog.title, description: blog.shortDescription, author: blog.author, imageUrl, url: originalUrl });
 }
 
 /**
@@ -1078,6 +1045,25 @@ exports.socialMetaTags = functions
       });
     } catch (e) {
       res.status(500).send('Error loading page');
+    }
+    return;
+  }
+
+  // A Coffee Conversation's own page: /conversation/:id (8.12.0).
+  const conversationMatch = req.path.match(/^\/conversation\/([A-Za-z0-9_-]{1,128})\/?$/);
+  if (conversationMatch) {
+    try {
+      const snap = await db.collection('CoffeeConversations').doc(conversationMatch[1]).get();
+      if (!snap.exists) {
+        res.status(404).send('Conversation not found');
+        return;
+      }
+      const html = metaHtml({ ...conversationMeta(snap.data(), FALLBACK_IMAGE_URL), url: originalUrl });
+      res.set('Cache-Control', 'public, max-age=3600');
+      res.status(200).send(html);
+    } catch (error) {
+      console.error('Error serving conversation meta tags:', error);
+      res.redirect(originalUrl);
     }
     return;
   }

@@ -4,7 +4,7 @@
   display: block;
 }
 
-// On a page: its own calm white section (8.11.0: no tinted background), so
+// On a page: its own calm Warm White section (8.11.0: no tinted background), so
 // it reads as "what now?" rather than more of the article. The element's
 // colour is only in the small text: the eyebrow and each card's reason.
 .explore-next {
@@ -13,8 +13,8 @@
   margin: 2.5rem 0 0;
   padding: 1.75rem;
   border-radius: 20px;
-  background: #fff;
-  border: 1px solid var(--wiof-brown-tint-40);
+  background: var(--wiof-warm-white);
+  border: 1.5px solid var(--wiof-brown-tint-40);
   animation: explore-in 0.35s ease-out both;
 
   &[data-accent='earth'] {

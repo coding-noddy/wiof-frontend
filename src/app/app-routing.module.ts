@@ -146,6 +146,12 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
+    // A Coffee Conversation's own page (8.12.0): save and share it.
+    path: 'conversation',
+    loadChildren: () =>
+      import('./pages/conversation/conversation.module').then((m) => m.ConversationPageModule)
+  },
+  {
     path: 'privacy-policy',
     loadChildren: () =>
       import('./pages/privacy-policy/privacy-policy.module').then(

@@ -18,7 +18,7 @@ Google Analytics is **opt-in**. A banner asks on the first visit, on any page. A
 **One `page_view` per page**, sent by `PageTrackingService`. It carries:
 - **`page_title`**: the page's real title, e.g. "Rainwater Harvesting & it's Benefits · Water · World Is One Family". Story and video pages wait (up to 2.5 s) for their own title.
 - **`page_path`** and **`page_location`**: the address, without the query string.
-- **`content_group`**: the kind of page. One of `home`, `element`, `stories`, `story`, `videos`, `video`, `take_action`, `my_journey`, `my_library`, `my_feedback`, `settings`, `about`, `legal`, `login`, `admin`, `not_found`.
+- **`content_group`**: the kind of page. One of `home`, `element`, `stories`, `story`, `videos`, `video`, `conversation`, `take_action`, `my_journey`, `my_library`, `my_feedback`, `settings`, `about`, `legal`, `login`, `admin`, `not_found`.
 - **`element`**: air, water, earth, energy or spirit, where the page belongs to one.
 
 **`select_content`** (GA's recommended event) when someone clicks a suggestion. Parameters:

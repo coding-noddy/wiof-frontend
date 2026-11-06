@@ -1,0 +1,92 @@
+<app-header></app-header>
+<ion-content>
+  @if (view$ | async; as view) {
+    @if (view === 'missing') {
+      <div class="conversation-missing">
+        <h1>This conversation isn't here any more</h1>
+        <p>It may have been moved or removed.</p>
+        <a routerLink="/home" class="conversation-home-link">Back to Home</a>
+      </div>
+    } @else {
+      <div class="page-breadcrumb-bar">
+        <div class="breadcrumb">
+          <a routerLink="/home">Home</a>
+          @if (view.element) {
+            <span class="sep">/</span>
+            <a [routerLink]="['/element', view.element]">{{ view.element | titlecase }}</a>
+          }
+          <span class="sep">/</span>
+          <span class="current">Coffee Conversation</span>
+        </div>
+      </div>
+
+      <article class="conversation">
+        <p class="conversation-eyebrow">
+          <ion-icon aria-hidden="true" name="cafe-outline"></ion-icon>
+          Coffee Conversation
+        </p>
+        <h1 class="conversation-title">{{ view.cc.topic }}</h1>
+
+        <div class="conversation-meta-row">
+          @if (view.guest) {
+            <p class="conversation-guest">
+              <ion-icon aria-hidden="true" name="person-outline"></ion-icon>
+              With {{ view.guest }}
+            </p>
+          }
+          <div class="conversation-actions">
+            <button type="button" class="share-btn" (click)="share(view)">
+              <ion-icon aria-hidden="true" name="share-social-outline"></ion-icon>
+              Share
+            </button>
+            <app-bookmark-icon
+              [contentId]="view.cc.ccId"
+              contentType="conversation"
+              [contentTitle]="view.cc.topic"
+              [contentThumbnail]="view.thumbnail">
+            </app-bookmark-icon>
+          </div>
+        </div>
+
+        <div class="conversation-video">
+          <iframe
+            loading="lazy"
+            [title]="view.cc.topic"
+            [src]="view.cc.sanitizedLink"
+            [appYoutubeLite]="view.cc.videoLink"
+            allowfullscreen
+            appYoutubeWatchTracker
+            [contentId]="view.cc.videoLink"
+            [videoTitle]="view.cc.topic"
+            (watchComplete)="onWatchComplete($event)"
+          ></iframe>
+        </div>
+
+        <div class="conversation-body" [innerHTML]="view.cc.topicDesc || view.cc.topicShortDesc"></div>
+
+        @if (view.guest && view.cc.intervieweeDesc) {
+          <section class="conversation-guest-card" aria-labelledby="conversation-guest-title">
+            <h2 id="conversation-guest-title">About {{ view.guest }}</h2>
+            <p>{{ view.cc.intervieweeDesc }}</p>
+          </section>
+        }
+
+        @if (view.cc.knowMoreLink) {
+          <a class="conversation-more" [href]="view.cc.knowMoreLink" target="_blank" rel="noopener noreferrer">
+            More about this conversation
+            <ion-icon aria-hidden="true" name="open-outline"></ion-icon>
+            <span class="visually-hidden">(opens in a new tab)</span>
+          </a>
+        }
+      </article>
+
+      <app-explore-next class="conversation-explore-next" [source]="view.explore" [sourceTitle]="view.cc.topic"></app-explore-next>
+    }
+  } @else {
+    <div class="conversation-loading" aria-hidden="true">
+      <div class="skeleton skeleton-title"></div>
+      <div class="skeleton skeleton-video"></div>
+    </div>
+  }
+  <app-wiof-footer></app-wiof-footer>
+</ion-content>

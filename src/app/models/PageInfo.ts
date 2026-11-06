@@ -9,7 +9,7 @@ export const SITE_NAME = 'World Is One Family';
 const ELEMENT_NAMES: Record<string, string> = { air: 'Air', water: 'Water', earth: 'Earth', energy: 'Energy', spirit: 'Spirit' };
 
 export type PageGroup =
-  | 'home' | 'element' | 'stories' | 'story' | 'videos' | 'video' | 'take_action'
+  | 'home' | 'element' | 'stories' | 'story' | 'videos' | 'video' | 'conversation' | 'take_action'
   | 'my_journey' | 'my_library' | 'my_feedback' | 'settings' | 'about' | 'legal'
   | 'login' | 'admin' | 'not_found';
 
@@ -79,6 +79,8 @@ export function pageInfo(url: string): PageInfo {
     // The element pages' own sections (EQ, widgets…) count as the element page.
     return info('element', name, second);
   }
+  // A Coffee Conversation's own page (8.12.0); its topic arrives with the data.
+  if (first === 'conversation' && second) return info('conversation', 'Coffee Conversation', null, true);
   return info('not_found', 'Page not found');
 }
 

@@ -68,6 +68,24 @@ export class CoffeeConversationService {
     );
   }
 
+  /** One conversation for its own page (8.12.0); null if it doesn't exist. */
+  getCoffeeConversation(ccId: string): Observable<CoffeeConversation | null> {
+    return this.ccCollection
+      .doc(ccId)
+      .get()
+      .pipe(
+        map((snap) => {
+          if (!snap.exists) return null;
+          const data = snap.data() as CoffeeConversation;
+          data.ccId = snap.id;
+          data.sanitizedLink = this.sanitizer.bypassSecurityTrustResourceUrl(
+            YOUTUBE_EMBED_VIDEO_LINK.replace('VIDEO_ID', data.videoLink)
+          );
+          return data;
+        })
+      );
+  }
+
   deleteCoffeeConversation(ccId: string) {
     return from(
       this.adminWriteGuard.assertAdmin().then(() =>

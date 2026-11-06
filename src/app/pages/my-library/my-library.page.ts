@@ -7,7 +7,9 @@ import { ViewWillEnter } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
 import {
   SavedContentService,
-  SavedContentDocument
+  SavedContentDocument,
+  savedContentLabel,
+  savedContentLink
 } from 'src/app/services/saved-content.service';
 
 @Component({
@@ -123,11 +125,10 @@ export class MyLibraryPage implements OnInit, OnDestroy, ViewWillEnter {
   }
 
   getContentRoute(item: SavedContentDocument): string[] {
-    if (item.contentType === 'blog') {
-      return ['/element', 'earth', 'blog', item.contentId];
-    }
-    return ['/element', 'earth', 'video', item.contentId];
+    return savedContentLink(item).split('/').filter(Boolean).map((part, i) => (i === 0 ? `/${part}` : part));
   }
+
+  readonly typeLabel = savedContentLabel;
 
   retry(): void {
     this.loadSavedContent();

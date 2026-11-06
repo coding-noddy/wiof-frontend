@@ -7,6 +7,20 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.12.0] - 2026-11-06
+
+Coffee Conversations can be saved and shared. **Deploy with `-Backend`** (socialMetaTags previews `/conversation/**`, and `firebase.json` routes it there).
+
+### Added
+- **Each Coffee Conversation has its own page**, `/conversation/{id}`: the video, the topic, the guest, the full description, "About {guest}", "More about this conversation" (the old outside link), with **Share** and **♡ save**, and Explore next underneath. The cards in the home and element sliders link their title and "Explore conversation" to it and have share and ♡ buttons too.
+- **Saved conversations** show in My Library and My Journey with a "Conversation" badge (`savedContentLink`, `savedContentLabel`).
+- **Link previews** for shared conversations (topic, short description, guest, the video's thumbnail), from `functions/social-meta.js`. GA reports the page as its own group, `conversation`.
+
+### Fixed
+- **Watching a conversation now counts.** The watch was recorded under the conversation's topic instead of its YouTube ID, which the server's check rejects.
+- **Link previews escape their text**, so a title with a quote mark or `<` can no longer break the preview.
+- **Brand rules on the 8.11.0 design**: the Today title is in Aleo (it fell back to Noto Sans: a `<span>` needs `!important` against the sitewide reset); the Today card, Explore next, the home panel's lines and its modal use Warm White and 1.5px borders (the card convention), not pure white and 1px.
+
 ## [8.11.0] - 2026-11-06
 
 A calmer home page: each section shows one thing and hints at the next; more opens in a modal when the reader is curious. Hosting only.

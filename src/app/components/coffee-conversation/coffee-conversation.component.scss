@@ -470,3 +470,74 @@
 .video-title {
   text-decoration: none;
 }
+
+// ── Title row: the title opens the conversation's own page; share and save
+// sit beside it (8.12.0). ────────────────────────────────────────────────
+.conversation-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+
+  h2 {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+// An <a> inside the h2: the sitewide Noto Sans reset sets the link's own
+// font, so it needs Aleo with !important to match the heading.
+.conversation-title-link {
+  font-family: 'Aleo', serif !important;
+  color: inherit;
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+.conversation-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.conversation-share {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--wiof-warm-grey);
+  background: var(--wiof-warm-white);
+  color: var(--wiof-ink);
+  font-size: 1rem;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--wiof-teal-fill);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--wiof-teal-text);
+    outline-offset: 2px;
+  }
+}
+
+// The ♡ matches the share button here (flat and bordered, not the floating
+// over-an-image style it has on blog and video cards).
+.conversation-actions ::ng-deep .bookmark-btn {
+  border: 1.5px solid var(--wiof-warm-grey);
+  background: var(--wiof-warm-white);
+  box-shadow: none;
+
+  &:hover {
+    box-shadow: none;
+    border-color: var(--wiof-teal-fill);
+  }
+}

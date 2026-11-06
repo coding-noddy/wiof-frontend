@@ -6,6 +6,8 @@ import { ActivityService } from 'src/app/services/activity.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { VideoWatchCompleteEvent } from 'src/app/directives/youtube-watch-tracker.directive';
 import { first } from 'rxjs/operators';
+import { UiUtilService } from 'src/app/util/UiUtilService';
+import { shareLink } from 'src/app/util/share-link';
 
 @Component({
     selector: 'app-coffee-conversation',
@@ -26,8 +28,16 @@ export class CoffeeConversationComponent
   constructor(
     private appUtilService: AppUtilService,
     private activityService: ActivityService,
-    private authService: AuthService
+    private authService: AuthService,
+    private uiUtil: UiUtilService
   ) {}
+
+  /** Shares the conversation's own page (8.12.0), which has a proper link preview. */
+  async share(cc: CoffeeConversation): Promise<void> {
+    const guest = (cc.intervieweeName || '').trim();
+    const by = guest && guest.toUpperCase() !== 'NA' ? ` — a conversation with ${guest}` : '';
+    await shareLink({ title: cc.topic, text: `${cc.topic}${by} | World is One Family`, url: `${window.location.origin}/conversation/${cc.ccId}` }, this.uiUtil);
+  }
 
   ngOnChanges() {
     if (this.coffeeConvList) {
