@@ -44,6 +44,7 @@
         <ng-container *ngTemplateOutlet="signInPrompt"></ng-container>
       }
     </div>
+    <ng-container *ngTemplateOutlet="impactPromptTpl"></ng-container>
   </div>
 } @else {
   <div class="take-action-card">
@@ -104,9 +105,29 @@
       @if (showSignInPrompt) {
         <ng-container *ngTemplateOutlet="signInPrompt"></ng-container>
       }
+      <ng-container *ngTemplateOutlet="impactPromptTpl"></ng-container>
     </div>
   </div>
 }
+
+<ng-template #impactPromptTpl>
+    @if (impactPrompt; as p) {
+      <div class="impact-prompt" role="group" aria-label="How much did you save?">
+        <label class="impact-prompt-field">
+          <span>{{ p.impact.inputLabel }}?</span>
+          <span class="impact-prompt-input">
+            <input type="number" inputmode="decimal" min="0" [max]="p.impact.inputMax" [value]="p.amount" (input)="setImpactAmount($any($event.target).value)" />
+            {{ p.impact.inputUnit }}
+          </span>
+        </label>
+        <p class="impact-prompt-preview" aria-live="polite">{{ impactPreview }}</p>
+        <div class="impact-prompt-actions">
+          <button type="button" class="impact-save" (click)="saveImpact()" [disabled]="savingImpact">Save</button>
+          <button type="button" class="impact-skip" (click)="skipImpact()">Skip</button>
+        </div>
+      </div>
+    }
+</ng-template>
 
 <ng-template #signInPrompt>
   <div class="sign-in-prompt" role="tooltip" aria-label="Sign in to save your progress">

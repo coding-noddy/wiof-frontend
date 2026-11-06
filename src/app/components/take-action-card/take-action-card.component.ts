@@ -7,7 +7,8 @@ import { AuthService } from 'src/app/services/auth.service';
 import { UserActionService } from 'src/app/services/user-action.service';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 import { REPEAT_TYPE, USER_ACTION_STATUS } from 'src/app/app.constants';
-import { toCalendarDay } from 'src/app/services/activity.service';
+import { ActivityService, toCalendarDay } from 'src/app/services/activity.service';
+import { ActionImpact, clampAmount, formatImpact, impactValue, validImpact } from 'src/app/models/Impact';
 import { TakeActionDetailComponent } from '../take-action-detail/take-action-detail.component';
 import { buildModalZoomAnimation } from 'src/app/util/modal-zoom-animation';
 
@@ -58,8 +59,70 @@ export class TakeActionCardComponent implements OnInit, OnChanges, OnDestroy {
     private authService: AuthService,
     private userActionService: UserActionService,
     private uiUtil: UiUtilService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private activityService: ActivityService
   ) {}
+
+  /**
+   * "About how much?" after completing an action with an impact recipe
+   * (8.14.0): one optional line, prefilled with the last amount used on this
+   * device (or the recipe's modest default). The completion already counts
+   * the default, so Skip needs nothing; Save sends the amount, which the
+   * server checks and caps (functions/impact.js).
+   */
+  impactPrompt: { impact: ActionImpact; completionNumber: number; amount: number } | null = null;
+  savingImpact = false;
+
+  private lastAmountKey(): string {
+    return `wiof_impact_amount_${this.action.id}`;
+  }
+
+  private openImpactPrompt(completionNumber: number): void {
+    const impact = validImpact(this.action?.impact);
+    if (!impact) return;
+    let last: number | null = null;
+    try {
+      const stored = localStorage.getItem(this.lastAmountKey());
+      last = stored !== null ? Number(stored) : null;
+    } catch {
+      // Storage unavailable: use the default.
+    }
+    const amount = last !== null && Number.isFinite(last) && last > 0 ? clampAmount(impact, last) : impact.inputDefault;
+    this.impactPrompt = { impact, completionNumber, amount };
+  }
+
+  setImpactAmount(value: string): void {
+    if (this.impactPrompt) this.impactPrompt.amount = clampAmount(this.impactPrompt.impact, Number(value));
+  }
+
+  get impactPreview(): string {
+    const p = this.impactPrompt;
+    return p ? formatImpact(p.impact, impactValue(p.impact, p.amount)) : '';
+  }
+
+  async saveImpact(): Promise<void> {
+    const p = this.impactPrompt;
+    if (!p || !this.userId || this.savingImpact) return;
+    this.savingImpact = true;
+    try {
+      await this.activityService.logImpactReported(this.userId, this.action.id, p.completionNumber, p.amount);
+      try {
+        localStorage.setItem(this.lastAmountKey(), String(p.amount));
+      } catch {
+        // Storage unavailable: next time starts from the default.
+      }
+      void this.uiUtil.presentToast(`Saved: ${this.impactPreview}`, 'success', 2500);
+      this.impactPrompt = null;
+    } catch (error) {
+      await this.uiUtil.presentToast('Could not save that. It still counts at the usual amount.', 'error');
+    } finally {
+      this.savingImpact = false;
+    }
+  }
+
+  skipImpact(): void {
+    this.impactPrompt = null;
+  }
 
   ngOnInit(): void {
     const authSub = this.authService.currentUser$.subscribe((user) => {
@@ -229,6 +292,7 @@ export class TakeActionCardComponent implements OnInit, OnChanges, OnDestroy {
       // (Not loading any more first, or the status read would be ignored.)
       this.isLoading = false;
       this.subscribeToStatus();
+      this.openImpactPrompt(doneBefore + 1);
       this.subscribeToStreak();
     } catch (error) {
       await this.uiUtil.presentToast('Could not record this action. Please try again.', 'error');

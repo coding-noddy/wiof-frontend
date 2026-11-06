@@ -1,0 +1,134 @@
+@use '../../wiof-custom-theming' as *;
+
+:host {
+  display: block;
+}
+
+// Inside the action's details modal: a calm inner panel (Ivory on the
+// modal's Warm White, 14px radius for a nested element), no shadow.
+.impact {
+  margin: 0 0 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  background: var(--wiof-ivory);
+
+  h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0 0 0.7rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--wiof-teal-shade-20);
+
+    ion-icon {
+      color: var(--wiof-marigold-text);
+    }
+  }
+}
+
+.impact-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.impact-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.impact-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--wiof-ink);
+}
+
+.impact-input-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+
+  input {
+    width: 5.5rem;
+    padding: 0.4rem 0.55rem;
+    border: 1.5px solid var(--wiof-brown-tint-40);
+    border-radius: 10px;
+    background: var(--wiof-warm-white);
+    color: var(--wiof-ink);
+    font: inherit;
+    font-size: 0.95rem;
+
+    &:focus-visible {
+      outline: 2px solid var(--wiof-teal-text);
+      outline-offset: 1px;
+    }
+  }
+}
+
+.impact-unit {
+  font-size: 0.82rem;
+  color: var(--wiof-ink-muted);
+}
+
+.impact-results {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.impact-result {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.5rem;
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--wiof-ink);
+
+  strong {
+    color: var(--wiof-teal-text);
+  }
+
+  &.is-year strong {
+    font-size: 1rem;
+  }
+}
+
+.impact-when {
+  min-width: 4.5rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--wiof-ink-muted);
+}
+
+.impact-equivalent {
+  font-size: 0.8rem;
+  color: var(--wiof-ink-muted);
+}
+
+.impact-assumption {
+  margin: 0.7rem 0 0;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--wiof-ink-muted);
+
+  a {
+    margin-left: 0.25rem;
+    color: var(--wiof-teal-text);
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

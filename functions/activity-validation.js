@@ -23,7 +23,8 @@ const CONTENT_DEDUPED_TYPES = new Set([
 ]);
 
 const KNOWN_TYPES = new Set([
-  ...CONTENT_DEDUPED_TYPES, 'eq_completion', 'daily_visit', 'widget_usage', 'action_completed', 'suggestion_click'
+  ...CONTENT_DEDUPED_TYPES, 'eq_completion', 'daily_visit', 'widget_usage', 'action_completed', 'suggestion_click',
+  'impact_reported'
 ]);
 
 const KNOWN_WIDGETS = new Set(['AQI', 'Energy Calculator', 'Food pH', 'Water Rainfall']);
@@ -71,6 +72,9 @@ function expectedDocId(entry) {
   }
   if (entry.activityType === 'suggestion_click') {
     return `${entry.userId}_suggestion_click_${entry.via}_${entry.contentType}_${entry.contentId}_${entry.calendarDay}`;
+  }
+  if (entry.activityType === 'impact_reported') {
+    return `${entry.userId}_impact_reported_${entry.contentId}_${entry.completionNumber}`;
   }
   return null;
 }
@@ -186,6 +190,18 @@ async function validateActivityEvent(docId, entry, lookups, options = {}) {
       if (entry.contentType === 'action') return (await lookups.actionExists(entry.contentId)) ? accept() : reject('content_not_found');
       if (entry.contentType === 'video') return YOUTUBE_VIDEO_ID.test(entry.contentId || '') ? accept() : reject('invalid_video_id');
       return reject('unknown_content_type');
+    }
+    case 'impact_reported': {
+      // "About how much?" (8.14.0): only for one of the member's own accepted
+      // completions that has an impact snapshot. The value is worked out
+      // from the snapshot, never taken from the browser (functions/impact.js).
+      if (!(typeof entry.amount === 'number' && Number.isFinite(entry.amount) && entry.amount >= 0)) return reject('invalid_amount');
+      const completion = lookups.getActivity
+        ? await lookups.getActivity(`${entry.userId}_action_completed_${entry.contentId}_${entry.completionNumber}`)
+        : null;
+      if (!completion || completion.userId !== entry.userId || completion.activityType !== 'action_completed') return reject('no_completion');
+      if (completion.validation && completion.validation.status !== 'accepted') return reject('no_completion');
+      return completion.impact ? accept() : reject('no_impact');
     }
     case 'widget_usage':
       return KNOWN_WIDGETS.has(entry.widgetName) ? accept() : reject('unknown_widget');

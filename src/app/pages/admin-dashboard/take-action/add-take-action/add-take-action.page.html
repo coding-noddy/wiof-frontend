@@ -206,6 +206,64 @@
         </div>
       </div>
       <div class="form-card">
+        <div class="form-card-title"><ion-icon aria-hidden="true" name="sparkles-outline"></ion-icon> Impact ("What could I save?")</div>
+        <ion-note class="impact-note">
+          What one time saves, from what the person enters. Use the low end of typical values and say the assumption.
+          Leave "Measures" on None for actions with no honest number (most Spirit actions). Drafts show on the site too; tick Reviewed once checked.
+        </ion-note>
+        <div class="form-row">
+          <ion-item>
+            <ion-select label="Measures" labelPlacement="floating" formControlName="impactMeasure">
+              <ion-select-option value="">None</ion-select-option>
+              @for (m of impactMeasures; track m.value) {
+                <ion-select-option [value]="m.value">{{ m.label }} ({{ m.unit }})</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-input label="Saved per input unit" labelPlacement="floating" type="number" formControlName="impactPerUnit" placeholder="e.g. 6 (litres a minute)"></ion-input>
+          </ion-item>
+        </div>
+        @if (addActionForm.value.impactMeasure) {
+          <div class="form-row">
+            <ion-item>
+              <ion-input label="Person enters (label)" labelPlacement="floating" formControlName="impactInputLabel" placeholder="Minutes the tap would have run"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Input unit" labelPlacement="floating" formControlName="impactInputUnit" placeholder="min"></ion-input>
+            </ion-item>
+          </div>
+          <div class="form-row">
+            <ion-item>
+              <ion-input label="Default amount" labelPlacement="floating" type="number" formControlName="impactInputDefault"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Most one time can count" labelPlacement="floating" type="number" formControlName="impactInputMax"></ion-input>
+            </ion-item>
+          </div>
+          @if (addActionForm.value.impactMeasure === 'plastic') {
+            <div class="form-row full-width">
+              <ion-item>
+                <ion-input label="Items, plural" labelPlacement="floating" formControlName="impactResultLabel" placeholder="plastic bottles"></ion-input>
+              </ion-item>
+            </div>
+          }
+          <div class="form-row full-width">
+            <ion-item>
+              <ion-textarea label="Assumption (shown to people)" labelPlacement="floating" formControlName="impactAssumption" rows="2" auto-grow="true" placeholder="A tap runs at about 6 litres a minute."></ion-textarea>
+            </ion-item>
+          </div>
+          <div class="form-row">
+            <ion-item>
+              <ion-input label="Source URL" labelPlacement="floating" formControlName="impactSource" placeholder="https://..."></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-checkbox formControlName="impactReviewed" labelPlacement="end">Reviewed</ion-checkbox>
+            </ion-item>
+          </div>
+        }
+      </div>
+      <div class="form-card">
         <div class="form-card-title"><ion-icon aria-hidden="true" name="compass-outline"></ion-icon> Related Content (Explore next)</div>
         <app-related-content-editor formControlName="relatedContent" selfType="action" [selfId]="action?.id" [defaultElement]="addActionForm.value.elementIds?.[0] || ''"></app-related-content-editor>
       </div>

@@ -14,9 +14,46 @@ import {
   ITEMS
 } from 'src/app/app.constants';
 import { ActionItem } from 'src/app/models/ActionItem';
+import { ActionImpact, IMPACT_MEASURES, validImpact } from 'src/app/models/Impact';
 import { relatedFields } from 'src/app/models/RelatedContent';
 import { ActionService } from 'src/app/services/action.service';
 import { UiUtilService } from 'src/app/util/UiUtilService';
+
+/** The impact recipe's form fields (8.13.0; models/Impact.ts). */
+function impactControls(impact: ActionImpact | null | undefined): Record<string, FormControl> {
+  return {
+    impactMeasure: new FormControl(impact?.measure || ''),
+    impactPerUnit: new FormControl(impact?.perUnit ?? null),
+    impactInputLabel: new FormControl(impact?.inputLabel || ''),
+    impactInputUnit: new FormControl(impact?.inputUnit || ''),
+    impactInputDefault: new FormControl(impact?.inputDefault ?? null),
+    impactInputMax: new FormControl(impact?.inputMax ?? null),
+    impactResultLabel: new FormControl(impact?.resultLabel || ''),
+    impactAssumption: new FormControl(impact?.assumption || ''),
+    impactSource: new FormControl(impact?.source || ''),
+    impactReviewed: new FormControl(impact?.status === 'reviewed')
+  };
+}
+
+/** The recipe to save: null when no measure is chosen or it isn't complete. */
+export function impactFromForm(v: any): ActionImpact | null {
+  if (!v.impactMeasure) return null;
+  const impact: ActionImpact = {
+    measure: v.impactMeasure,
+    perUnit: Number(v.impactPerUnit),
+    inputLabel: String(v.impactInputLabel || '').trim(),
+    inputUnit: String(v.impactInputUnit || '').trim(),
+    inputDefault: Number(v.impactInputDefault),
+    inputMax: Number(v.impactInputMax),
+    assumption: String(v.impactAssumption || '').trim(),
+    status: v.impactReviewed ? 'reviewed' : 'draft'
+  };
+  const resultLabel = String(v.impactResultLabel || '').trim();
+  const source = String(v.impactSource || '').trim();
+  if (resultLabel) impact.resultLabel = resultLabel;
+  if (source) impact.source = source;
+  return validImpact(impact) && impact.inputLabel && impact.inputUnit ? impact : null;
+}
 
 @Component({
     selector: 'app-add-take-action',
@@ -31,6 +68,7 @@ export class AddTakeActionPage implements OnInit, OnDestroy {
   repeatTypes = Object.values(REPEAT_TYPE);
   difficulties = Object.values(ACTION_DIFFICULTY);
   evidenceLevels = Object.values(EVIDENCE_LEVEL);
+  impactMeasures = IMPACT_MEASURES;
 
   addActionForm: FormGroup;
   destroy$: Subject<boolean> = new Subject();
@@ -109,6 +147,7 @@ export class AddTakeActionPage implements OnInit, OnDestroy {
       evidenceSourceUrl: new FormControl(''),
       evidenceRationale: new FormControl(''),
       evidenceReviewedAt: new FormControl(''),
+      ...impactControls(null),
       displayOrder: new FormControl(0),
       isActive: new FormControl(true),
       isFeatured: new FormControl(false),
@@ -140,6 +179,7 @@ export class AddTakeActionPage implements OnInit, OnDestroy {
       evidenceSourceUrl: new FormControl(action.evidence?.sourceUrl || ''),
       evidenceRationale: new FormControl(action.evidence?.rationale || ''),
       evidenceReviewedAt: new FormControl(action.evidence?.reviewedAt || ''),
+      ...impactControls(action.impact),
       displayOrder: new FormControl(action.displayOrder || 0),
       isActive: new FormControl(action.isActive),
       isFeatured: new FormControl(action.isFeatured),
@@ -194,6 +234,7 @@ export class AddTakeActionPage implements OnInit, OnDestroy {
             reviewedAt: (form.value.evidenceReviewedAt || '').trim()
           }
         : null,
+      impact: impactFromForm(form.value),
       displayOrder: form.value.displayOrder || 0,
       ...relatedFields(form.value.relatedContent, { type: 'action', id: isEditMode ? existing.id : null })
     } as ActionItem;

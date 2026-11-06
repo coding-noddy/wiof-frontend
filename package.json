@@ -1,6 +1,6 @@
 {
   "name": "wiof_frontend",
-  "version": "8.12.0",
+  "version": "8.14.0",
   "author": "Ionic Framework",
   "homepage": "https://ionicframework.com/",
   "scripts": {
@@ -10,7 +10,7 @@
     "build:prod": "ng build --configuration production",
     "test": "ng test",
     "test:rules": "node scripts/run-rules-tests.js",
-    "test:functions": "node --test functions/activity-validation.test.js functions/user-metrics.test.js functions/blog-summary.test.js functions/related-content.test.js functions/daily-stats.test.js functions/social-meta.test.js",
+    "test:functions": "node --test functions/activity-validation.test.js functions/user-metrics.test.js functions/blog-summary.test.js functions/related-content.test.js functions/daily-stats.test.js functions/social-meta.test.js functions/impact.test.js",
     "e2e:smoke": "node tests/e2e/public-smoke.e2e.js",
     "e2e:explore": "node tests/e2e/explore-next.e2e.js",
     "e2e:journey": "node tests/e2e/journey.e2e.js",

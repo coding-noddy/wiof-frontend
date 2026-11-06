@@ -3,6 +3,7 @@ import { first } from 'rxjs/operators';
 import { ActivityService } from 'src/app/services/activity.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { expandCollapseAnimation } from 'src/app/util/expand-collapse-animation';
+import { IMPACT_FACTORS } from 'src/app/models/Impact';
 
 interface EnergyResult {
   kgsOfCO2: number;
@@ -18,19 +19,8 @@ interface EnergyFact {
   url: string;
 }
 
-/**
- * Emission factors used:
- * - Grid CO2 factor: 0.82 kg CO2/kWh — CEA CO2 Baseline Database for Indian Power Sector
- * - Petrol CO2: 2.31 kg CO2/litre — IPCC 2019 Refinement to 2006 Guidelines
- * - Diesel CO2: 2.68 kg CO2/litre — IPCC 2019 Refinement to 2006 Guidelines
- * - Car mileage: 15 km/litre (India average petrol car)
- * - SUV mileage: 12 km/litre (India average diesel SUV)
- */
-const CO2_PER_KWH    = 0.82;
-const CO2_PER_PETROL = 2.31;
-const CO2_PER_DIESEL = 2.68;
-const KM_PER_L_CAR   = 15;
-const KM_PER_L_SUV   = 12;
+// Emission factors (sources in models/Impact.ts), shared with action impact.
+const { CO2_PER_KWH, CO2_PER_PETROL, CO2_PER_DIESEL, KM_PER_L_CAR, KM_PER_L_SUV } = IMPACT_FACTORS;
 
 @Component({
     selector: 'app-energy-widget',

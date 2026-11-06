@@ -217,6 +217,16 @@ service cloud.firestore {
             && isActivityText(data.contentId, 200)
             && data.position is int && data.position >= 1 && data.position <= 20
             && docId == request.auth.uid + '_suggestion_click_' + data.via + '_' + data.contentType + '_' + data.contentId + '_' + data.calendarDay)
+          // "About how much?" (8.14.0): the amount for the member's latest
+          // completion of an action, once (fixed ID). The server checks the
+          // completion and works out the saving itself (functions/impact.js).
+          || (type == 'impact_reported'
+            && data.keys().hasOnly(base.concat(['contentId', 'completionNumber', 'amount']))
+            && isActivityText(data.contentId, 200)
+            && data.completionNumber is int && data.completionNumber >= 1
+            && data.amount is number && data.amount >= 0 && data.amount <= 100000
+            && docId == request.auth.uid + '_impact_reported_' + data.contentId + '_' + string(data.completionNumber)
+            && get(/databases/$(database)/documents/user_actions/$(request.auth.uid + '_' + data.contentId)).data.completionCount == data.completionNumber)
         );
     }
 

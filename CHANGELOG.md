@@ -7,6 +7,32 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.14.0] - 2026-11-06
+
+Impact, step 2: personal impact. **Deploy with `-Backend`** (rules for `impact_reported`; the completion and event triggers), then `node scripts/recompute-user-metrics.js --project prod` (dry run, then `--apply`) to count earlier completions.
+
+### Added
+- **"About how much?" after completing an action** with an impact recipe: one optional line under the button, prefilled with the last amount used on this device or the recipe's default, showing the estimate as you type ("about 30 L of water"). **Save** or **Skip**; Skip still counts the default.
+- **Server-side impact** (`functions/impact.js`): each `action_completed` event stores the recipe snapshot (rate, cap, default amount, value) and adds it to `user_metrics.impactTotals` and `impactByMonth` (India-time months). An `impact_reported` event (rules: own latest completion only, once, a plausible amount; server: the completion exists and has a recipe) adjusts the totals by the difference, capped at the recipe's maximum. The browser never sends a saving, only an amount.
+- **"Your impact" on My Journey**, after the summary tiles: this month and since you started, per measure, in everyday terms (buckets of water; km by car).
+- The recompute (`scripts/recompute-user-metrics.js`) rebuilds the impact totals; completions from before this release count at the current recipe's default.
+
+### Changed
+- "Delete my data" keeps the impact amounts along with Take Action progress (as it already kept completions), so totals and the recompute agree.
+- docs/METRICS.md: the impact metric (self-reported estimate).
+
+## [8.13.0] - 2026-11-06
+
+Impact, step 1: "What could I save?". Hosting only, then `node scripts/apply-action-impacts.js --project prod` (dry run, then `--apply`).
+
+### Added
+- **Impact recipes on actions** (`actions/{id}.impact`, `models/Impact.ts`): what one time saves from what the person enters (e.g. tap off while brushing: minutes × about 6 L), measured as water (L), electricity (kWh), CO₂ (kg), plastic items or food (kg), with the assumption, a source, a default amount and a maximum. Conservative on purpose (the low end of typical values) and always shown as "about". Admins set it in Admin → Take Action → Impact, with a Reviewed tick like the occasion facts.
+- **22 draft recipes** (`scripts/data/action-impacts.json`, applied by `scripts/apply-action-impacts.js`, which never overwrites a reviewed one). Actions with no honest number (Spirit actions, sorting waste, repairing, borrowing, seasonal food, planting) have none on purpose.
+- **"What could I save?"** in each action's details: how much and how often, prefilled, giving each time, a month and a year, in everyday terms (buckets of water; electricity as CO₂ and km by car; CO₂ as km by car), with the assumption and its source. Nothing is saved.
+
+### Changed
+- The energy widget's sourced emission factors (CEA grid 0.82 kg CO₂/kWh, IPCC petrol and diesel, Indian car mileage) moved to `models/Impact.ts`, shared with action impact. Same results.
+
 ## [8.12.0] - 2026-11-06
 
 Coffee Conversations can be saved and shared. **Deploy with `-Backend`** (socialMetaTags previews `/conversation/**`, and `firebase.json` routes it there).

@@ -16,6 +16,7 @@ const admin = require('firebase-admin');
 const { BLOG_SUMMARIES, buildBlogSummary } = require('./blog-summary');
 const { EQ_DAILY_LIMIT, VALIDATOR_VERSION, eqCalendarDay, eqSlotIds, scoreEqResponses, validateActivityEvent } = require('./activity-validation');
 const { elementOfBlog, makeContentLookups, recomputeUserMetrics } = require('./user-metrics');
+const { completionEventId, impactIncrement, impactSnapshot, monthKey, reportedValue } = require('./impact');
 const { rebuildRelatedContent } = require('./related-content');
 
 admin.initializeApp();
@@ -377,7 +378,9 @@ async function deleteAllOwnedBy(collectionName, uid) {
  */
 async function deleteActivityExceptActions(uid) {
   const snapshot = await db.collection('activity_log').where('userId', '==', uid).get();
-  const toDelete = snapshot.docs.filter((doc) => doc.get('activityType') !== 'action_completed');
+  // Take Action progress stays (docs/METRICS.md), with its impact amounts.
+  const kept = new Set(['action_completed', 'impact_reported']);
+  const toDelete = snapshot.docs.filter((doc) => !kept.has(doc.get('activityType')));
   for (let i = 0; i < toDelete.length; i += 400) {
     const batch = db.batch();
     toDelete.slice(i, i + 400).forEach((doc) => batch.delete(doc.ref));
@@ -537,6 +540,15 @@ async function metricsUpdateFor(entry) {
       update.lastEqScore = entry.score !== undefined ? entry.score : null;
       update.lastEqDate = entry.timestamp;
       break;
+    case 'impact_reported': {
+      // The difference from the default the completion already counted.
+      const completion = await activityLookups.getActivity(completionEventId(entry));
+      const snapshot = completion && completion.impact;
+      if (!snapshot) return null;
+      const delta = reportedValue(snapshot, entry.amount) - snapshot.value;
+      const increment = impactIncrement(snapshot.measure, delta, monthKey(completion.timestamp), admin.firestore.FieldValue);
+      return increment ? { ...update, ...increment } : null;
+    }
     default:
       return null; // daily_visit, widget_usage, action_completed don't feed a dashboard tally
   }
@@ -677,6 +689,14 @@ exports.onUserActionWritten = functions
       update.actionsByElement = byElement;
     }
 
+    // Personal impact (8.14.0): the recipe at this moment, at its default
+    // amount; "About how much?" may replace the amount (impact_reported).
+    const snapshot = impactSnapshot(await activityLookups.getAction(after.actionId));
+    const impactUpdate = snapshot
+      ? impactIncrement(snapshot.measure, snapshot.value, monthKey(after.lastCompletedAt), admin.firestore.FieldValue)
+      : null;
+    if (impactUpdate) Object.assign(update, impactUpdate);
+
     const event = {
       userId: uid,
       activityType: 'action_completed',
@@ -689,6 +709,7 @@ exports.onUserActionWritten = functions
       // Nothing confirms a self-reported completion; a future verified
       // method (photo, partner check) would set VERIFIED here.
       verificationStatus: 'SELF_REPORTED',
+      ...(snapshot ? { impact: snapshot } : {}),
       timestamp: after.lastCompletedAt || admin.firestore.FieldValue.serverTimestamp(),
       validation: {
         status: 'accepted',

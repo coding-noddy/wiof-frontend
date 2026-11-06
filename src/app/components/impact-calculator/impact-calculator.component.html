@@ -1,0 +1,53 @@
+@if (impact) {
+  <section class="impact" [attr.aria-labelledby]="id + '-title'">
+    <h4 [id]="id + '-title'">
+      <ion-icon aria-hidden="true" name="sparkles-outline"></ion-icon>
+      What could I save?
+    </h4>
+    <div class="impact-inputs">
+      <label class="impact-field">
+        <span class="impact-label">{{ impact.inputLabel }}</span>
+        <span class="impact-input-wrap">
+          <input type="number" inputmode="decimal" min="0" [max]="impact.inputMax" [value]="amount" (input)="setAmount($any($event.target).value)" />
+          <span class="impact-unit">{{ impact.inputUnit }}</span>
+        </span>
+      </label>
+      @if (per) {
+        <label class="impact-field">
+          <span class="impact-label">Times a {{ per }}</span>
+          <span class="impact-input-wrap">
+            <input type="number" inputmode="numeric" min="0" max="50" [value]="times" (input)="setTimes($any($event.target).value)" />
+          </span>
+        </label>
+      }
+    </div>
+    <div class="impact-results" aria-live="polite">
+      <p class="impact-result">
+        <span class="impact-when">Each time</span>
+        <strong>{{ eachTime }}</strong>
+        @if (eachTimeEquivalent) {
+          <span class="impact-equivalent">{{ eachTimeEquivalent }}</span>
+        }
+      </p>
+      @if (projection; as p) {
+        <p class="impact-result">
+          <span class="impact-when">A month</span>
+          <strong>{{ p.month }}</strong>
+        </p>
+        <p class="impact-result is-year">
+          <span class="impact-when">A year</span>
+          <strong>{{ p.year }}</strong>
+          @if (p.yearEquivalent) {
+            <span class="impact-equivalent">{{ p.yearEquivalent }}</span>
+          }
+        </p>
+      }
+    </div>
+    <p class="impact-assumption">
+      An estimate, on the low side. {{ impact.assumption }}
+      @if (impact.source && sourceSite) {
+        <a [href]="impact.source" target="_blank" rel="noopener noreferrer">Source: {{ sourceSite }}<span class="visually-hidden"> (opens in a new tab)</span></a>
+      }
+    </p>
+  </section>
+}

@@ -1056,3 +1056,80 @@ ion-content {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+// "Your impact" (8.14.0): the card convention (Warm White, 1.5px border,
+// 18px radius, no shadow), two quiet columns.
+.impact-section {
+  margin: 0 0 1.25rem;
+  padding: 1.25rem 1.4rem;
+  border-radius: 18px;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  background: var(--wiof-warm-white);
+}
+
+.impact-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 0.9rem;
+  font-size: 1.2rem;
+
+  ion-icon {
+    color: var(--wiof-marigold-text);
+  }
+}
+
+.impact-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 1rem 2rem;
+}
+
+.impact-column {
+  h3 {
+    margin: 0 0 0.45rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--wiof-teal-text);
+  }
+
+  ul {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.15rem 0.5rem;
+    color: var(--wiof-ink);
+
+    span {
+      font-size: 0.82rem;
+      color: var(--wiof-ink-muted);
+    }
+  }
+}
+
+.impact-empty {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--wiof-ink-muted);
+
+  a {
+    color: var(--wiof-teal-text);
+    font-weight: 600;
+  }
+}
+
+.impact-note {
+  margin: 0.9rem 0 0;
+  font-size: 0.76rem;
+  color: var(--wiof-ink-muted);
+}

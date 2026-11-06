@@ -430,6 +430,24 @@ describe('activity_log/{docId}', () => {
     await assertFails(log(alice()).doc(id('today', 'action', 'leak')).set(click({})));
   });
 
+  it('lets a member say how much for their latest completion only, once (impact_reported)', async () => {
+    await seed((db) => db.collection('user_actions').doc('alice_leak').set({ userId: 'alice', actionId: 'leak', status: 'COMPLETE', completionCount: 2 }));
+    const report = (fields) => activityEvent('impact_reported', { contentId: 'leak', completionNumber: 2, amount: 5, ...fields });
+    await assertSucceeds(log(alice()).doc('alice_impact_reported_leak_2').set(report({})));
+    // Once per completion: a second create is an update, which is denied.
+    await assertFails(log(alice()).doc('alice_impact_reported_leak_2').set(report({ amount: 9 })));
+    // Not an older completion, nor one that hasn't happened.
+    await assertFails(log(alice()).doc('alice_impact_reported_leak_1').set(report({ completionNumber: 1 })));
+    await assertFails(log(alice()).doc('alice_impact_reported_leak_3').set(report({ completionNumber: 3 })));
+    // Not for an action the member never completed, nor at another ID or with a silly amount.
+    await assertFails(log(alice()).doc('alice_impact_reported_tree_1').set(report({ contentId: 'tree', completionNumber: 1 })));
+    await assertFails(log(alice()).doc('random-id').set(report({})));
+    await seed((db) => db.collection('user_actions').doc('alice_tap').set({ userId: 'alice', actionId: 'tap', status: 'COMPLETE', completionCount: 1 }));
+    await assertFails(log(alice()).doc('alice_impact_reported_tap_1').set(report({ contentId: 'tap', completionNumber: 1, amount: -1 })));
+    await assertFails(log(alice()).doc('alice_impact_reported_tap_1').set(report({ contentId: 'tap', completionNumber: 1, amount: 1e9 })));
+    await assertFails(log(alice()).doc('alice_impact_reported_tap_1').set(report({ contentId: 'tap', completionNumber: 1, value: 999 })));
+  });
+
   it('denies an unknown widget name', async () => {
     await assertFails(log(alice()).add(activityEvent('widget_usage', { widgetName: 'Free Points' })));
   });
