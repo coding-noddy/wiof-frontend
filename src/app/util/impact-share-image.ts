@@ -178,9 +178,15 @@ export async function renderShareCard(input: ShareCardInput): Promise<Blob> {
     const base = cy + (withEq ? L.eqBase : L.soloBase);
     ctx.fillStyle = INK;
     ctx.font = `700 ${L.num}px Aleo, serif`;
-    const num = t.unit ? `${t.number} ${t.unit}` : t.number;
-    ctx.fillText(num, tx, base);
-    const numW = ctx.measureText(num).width;
+    // The unit smaller than the number, as on the My Journey card.
+    ctx.fillText(t.number, tx, base);
+    let numW = ctx.measureText(t.number).width;
+    if (t.unit) {
+      ctx.font = `700 ${Math.round(L.num * 0.6)}px Aleo, serif`;
+      const gapW = L.num * 0.14;
+      ctx.fillText(t.unit, tx + numW + gapW, base);
+      numW += gapW + ctx.measureText(t.unit).width;
+    }
     ctx.font = `700 ${L.label}px "Noto Sans", sans-serif`;
     ctx.fillStyle = t.color;
     ctx.fillText(fit(ctx, t.label, SHARE_SIZE - pad * 2 - (tx - pad) - numW - 40), tx + numW + 18, base - 2);

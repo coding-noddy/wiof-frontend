@@ -7,6 +7,13 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.17.2] - 2026-11-06
+
+Hosting only.
+
+### Changed
+- **Share image: the unit is smaller than the number** ("36 L", "4.4 kWh"), as on the My Journey card, so the number stands out.
+
 ## [8.17.1] - 2026-11-06
 
 Hosting only.
