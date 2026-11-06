@@ -36,6 +36,14 @@ const DEMO_METRICS: EngagementMetrics = {
   impactTotals: { water: 420, energy: 4.4, co2: 6.2, plastic: 18, food: 1.5 }, impactByMonth: {}
 };
 
+/** Loose stamps on the desk around the book (wide screens): decoration, not anything earned. */
+const DESK_STAMPS: Stamp[] = [
+  { title: ['Planet', 'Earth'], caption: 'ONE FAMILY', shape: 'circle', rotation: -14 },
+  { title: ['Drop by', 'drop'], caption: 'WATER', shape: 'oval', rotation: 9 },
+  { title: ['Small', 'actions'], caption: 'EVERY DAY', shape: 'rect', rotation: 12 },
+  { title: ['Five', 'elements'], caption: 'JOURNEY', shape: 'hex', rotation: -8 }
+].map((d, i) => ({ id: `desk-${i}`, element: null, ink: '#A6875D', earned: true, progress: 1, target: 1, hint: '', unit: '', ...d } as Stamp));
+
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 const stampDate = (d: Date) => `${String(d.getDate()).padStart(2, '0')} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
 
@@ -59,6 +67,10 @@ export class PassportPage implements OnInit, OnDestroy {
   uid = '';
   demo = false;
   loading = true;
+
+  readonly deskStamps = DESK_STAMPS;
+  /** Hero illustrations already shown, so each loads only when first needed. */
+  heroes: string[] = ['home'];
 
   stamps: Stamp[] = [];
   journey: Stamp[] = [];
@@ -184,6 +196,17 @@ export class PassportPage implements OnInit, OnDestroy {
     return this.elementStamps(slug).filter((s) => s.earned).length;
   }
 
+  /** The scene behind the book follows the page: an element's illustration on its page, the home one elsewhere. */
+  get hero(): string {
+    const el = this.openPages.map((i) => this.pages[i]).find((p) => p.kind === 'element');
+    return el?.element?.slug || 'home';
+  }
+
+  /** Adds the scene for the pages now open, so its image starts loading. */
+  private noteHero(): void {
+    if (!this.heroes.includes(this.hero)) this.heroes = [...this.heroes, this.hero];
+  }
+
   // ---- The booklet ----
 
   private buildPages(): BookPage[] {
@@ -252,6 +275,7 @@ export class PassportPage implements OnInit, OnDestroy {
     if (t === this.turned) return;
     this.turning = t > this.turned ? this.turned : t;
     this.turned = t;
+    this.noteHero();
     clearTimeout(this.turnTimer);
     this.turnTimer = setTimeout(() => (this.turning = null), 900);
   }

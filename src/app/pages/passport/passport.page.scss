@@ -11,7 +11,77 @@
   height: 0;
 }
 
+// ---- The scene around the book ----
+
+.scene {
+  position: relative;
+  min-height: 100%;
+  overflow: hidden;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center bottom;
+    opacity: 0;
+    transition: opacity 0.9s ease;
+
+    &.on {
+      opacity: 1;
+    }
+  }
+
+  // Faded into the Ivory page so the book and text stay the focus.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, var(--wiof-ivory) 0%, rgba(250, 245, 236, 0.82) 30%, rgba(250, 245, 236, 0.6) 100%);
+  }
+}
+
+// Loose stamps on the "desk", either side of the open book.
+.desk {
+  position: absolute;
+  top: 12rem;
+  width: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+  opacity: 0.45;
+  pointer-events: none;
+
+  &.left {
+    left: max(16px, calc(50% - var(--desk-gap, 660px)));
+  }
+
+  &.right {
+    right: max(16px, calc(50% - var(--desk-gap, 660px)));
+
+    app-passport-stamp:last-child {
+      margin-left: 1.5rem;
+    }
+  }
+
+  app-passport-stamp:first-child {
+    margin-left: 0.5rem;
+  }
+
+  @media (max-width: 1240px) {
+    display: none;
+  }
+}
+
 .passport-wrap {
+  position: relative;
   max-width: 1000px;
   margin: 0 auto;
   padding: 1.5rem 16px 3rem;
@@ -213,6 +283,13 @@
   outline-offset: calc(var(--pw) * -0.035);
 }
 
+// The WIOF logo, white and pressed into the leather.
+.cover-logo {
+  width: 52%;
+  opacity: 0.9;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.35)) drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.12));
+}
+
 .cover-top {
   margin: 0;
   font-size: 0.85em;
@@ -236,7 +313,7 @@
 
 .emblem {
   position: relative;
-  width: calc(var(--pw) * 0.46);
+  width: calc(var(--pw) * 0.4);
   aspect-ratio: 1;
 
   svg {
@@ -255,7 +332,7 @@
     font-size: calc(var(--pw) * 0.055);
     margin: calc(var(--pw) * -0.0275);
     color: #E9C27D;
-    transform: rotate(calc(var(--k) * 72deg - 90deg)) translate(calc(var(--pw) * 0.3)) rotate(calc(var(--k) * -72deg + 90deg));
+    transform: rotate(calc(var(--k) * 72deg - 90deg)) translate(calc(var(--pw) * 0.26)) rotate(calc(var(--k) * -72deg + 90deg));
   }
 }
 
@@ -594,11 +671,16 @@
 
 // ---- Controls under the book ----
 
+// On a Warm White pill, so they read over the illustration.
 .controls {
   margin-top: 1.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
+  padding: 0.35rem;
+  border-radius: 999px;
+  background: var(--wiof-warm-white);
+  border: 1.5px solid var(--wiof-brown-tint-40);
 }
 
 .turn-btn {
@@ -640,6 +722,9 @@
 
 .hint {
   margin: 0.6rem 0 0;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(255, 252, 246, 0.85);
   font-size: 0.78rem;
   color: var(--wiof-ink-muted);
   text-align: center;

@@ -9,6 +9,23 @@
     </filter>
   </svg>
 
+  <div class="scene">
+  <!-- Behind the book: the illustration of the element you're on, faded into the page. -->
+  <div class="backdrop" aria-hidden="true">
+    @for (h of heroes; track h) {
+      <img [src]="'assets/banners/' + h + '-hero.webp'" alt="" [class.on]="h === hero" />
+    }
+  </div>
+  @if (spread) {
+    <div class="desk left" aria-hidden="true">
+      <app-passport-stamp [stamp]="deskStamps[0]" date="★ ★ ★"></app-passport-stamp>
+      <app-passport-stamp [stamp]="deskStamps[1]" date="★ ★ ★"></app-passport-stamp>
+    </div>
+    <div class="desk right" aria-hidden="true">
+      <app-passport-stamp [stamp]="deskStamps[2]" date="★ ★ ★"></app-passport-stamp>
+      <app-passport-stamp [stamp]="deskStamps[3]" date="★ ★ ★"></app-passport-stamp>
+    </div>
+  }
   <div class="passport-wrap">
     <header class="passport-intro">
       <p class="eyebrow">Design preview{{ demo ? ' · sample stamps' : '' }}</p>
@@ -48,13 +65,14 @@
       @if (!demo) { <a href="/passport?demo=1">See it with sample stamps</a> } @else { <a href="/passport">See my own stamps</a> }
     </p>
   </div>
+  </div>
 </ion-content>
 
 <ng-template #pageTpl let-page let-index="index">
   @switch (page.kind) {
     @case ('cover') {
       <div class="page cover" [class.is-open]="isOpen(index)">
-        <p class="cover-top">World Is One Family</p>
+        <img class="cover-logo" src="assets/brand/logos/WIOF-full-logo-white.png" alt="World Is One Family" />
         <div class="emblem" aria-hidden="true">
           <svg viewBox="0 0 120 120">
             <circle cx="60" cy="60" r="54" />

@@ -30,6 +30,8 @@ Two pages side by side on screens 900px and wider, one page at a time on phones.
 | 11. Travel notes | "Drop by drop, the ocean fills." (later: the member's own notes or reflections) |
 | Back cover | Teal leather, small emblem, worldisonefamily.com |
 
+**The scene around the book:** the book lies on the site's own illustration, faded into the Ivory page. It follows where you are: the home illustration on the covers and journey pages, each element's hero illustration (`assets/banners/{element}-hero.webp`) on its page, cross-fading as you turn. Each image loads only when first needed. On wide screens (1240px+) a few loose, faded "desk" stamps sit either side ("Planet Earth", "Drop by drop", "Small actions", "Five elements"): decoration only, never a stamp anyone earned. The cover carries the WIOF logo in white, pressed into the leather.
+
 **Stamps** are SVG: four shapes (circle, rectangle, oval, hexagon), a double frame, the caption in small caps (on an arc for round stamps), the title in Aleo, and a date. Earned stamps are inked: a slight tilt (fixed per stamp), an ink-grain filter, multiply blending, and a short "thunk" as they land when the page opens. Inks vary like real passport stamps but stay near the brand: water teal, air sky blue, energy amber, earth olive brown, spirit muted violet.
 
 ## 3. The stamps (v1 catalogue, 23)
