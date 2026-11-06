@@ -110,6 +110,7 @@ export function everydayEquivalent(impact: ActionImpact, value: number): string 
     }
     case 'energy': {
       const co2 = value * IMPACT_FACTORS.CO2_PER_KWH;
+      if (co2 < 0.01) return null; // too small to compare with anything
       const d = km(co2);
       return d >= 0.1 ? `≈ ${roundForPeople(co2)} kg CO₂, like ${roundForPeople(d)} km by car` : `≈ ${roundForPeople(co2)} kg CO₂`;
     }

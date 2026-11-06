@@ -41,6 +41,7 @@ describe('Impact (8.13.0)', () => {
     expect(everydayEquivalent(tap, 3)).toBeNull();
     expect(everydayEquivalent(walk, 1.54)).toBe('like 10 km by car');
     expect(everydayEquivalent(fan, 10)).toBe('≈ 8.2 kg CO₂, like 53 km by car');
+    expect(everydayEquivalent(fan, 0.004)).toBeNull();
   });
 
   it('projects a month and a year from how often', () => {
