@@ -134,7 +134,7 @@ $mobile-breakpoint: 768px;
   }
 
   &:hover:not(:disabled) {
-    background: var(--wiof-teal-shade-40);
+    background: var(--wiof-btn-fill-hover-bg);
     transform: translateY(-1px);
   }
 
@@ -268,7 +268,7 @@ $mobile-breakpoint: 768px;
 }
 
 .mobile-logout {
-  color: var(--ion-color-danger);
+  color: var(--wiof-ink);
 }
 
 // ── Avatar dropdown alignment ─────────────────────────────────────────────────

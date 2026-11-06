@@ -21,6 +21,11 @@
      over images or overlays (slider arrows, pop-ups) get a soft shadow. */
   --wiof-btn-height: 40px;
   --wiof-btn-font-size: 0.875rem;
+  /* Hover: a teal outline button fills with a light teal tint (border and
+     text stay teal); a filled teal button goes a shade darker. Never a red
+     fill, and never a hover you can't see (Ivory on Warm White barely shows). */
+  --wiof-btn-outline-hover-bg: rgba(33, 153, 159, 0.08);
+  --wiof-btn-fill-hover-bg: var(--wiof-teal-shade-40);
   --wiof-btn-font-weight: 700;
   --wiof-btn-padding-x: 1.1rem;
   --wiof-icon-btn-size: 40px;

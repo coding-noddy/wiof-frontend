@@ -402,7 +402,7 @@ p {
 .wiof-primary-link:hover,
 .wiof-primary-btn:hover {
   transform: translateY(-1px);
-  opacity: 0.98;
+  background: var(--wiof-btn-fill-hover-bg);
 }
 
 .wiof-primary-link:active,

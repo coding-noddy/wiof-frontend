@@ -541,6 +541,7 @@
   cursor: pointer;
 
   &:hover {
+    background: var(--wiof-btn-outline-hover-bg);
     border-color: var(--wiof-teal-fill);
   }
 
@@ -562,6 +563,7 @@
 
   &:hover {
     box-shadow: none;
+    background: var(--wiof-btn-outline-hover-bg);
     border-color: var(--wiof-teal-fill);
   }
 }

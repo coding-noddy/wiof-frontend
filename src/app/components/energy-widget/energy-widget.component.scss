@@ -228,7 +228,7 @@ $radius-item: 14px;
 
   &:hover {
     transform: none !important;   // kill global translateY so it doesn't jump
-    background: var(--wiof-teal-shade-40) !important;
+    background: var(--wiof-btn-fill-hover-bg) !important;
   }
 }
 
