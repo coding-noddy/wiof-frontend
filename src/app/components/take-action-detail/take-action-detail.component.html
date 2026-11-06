@@ -43,6 +43,8 @@
       </div>
     }
 
+    <app-impact-calculator [action]="action"></app-impact-calculator>
+
     @if (action.safetyNotes?.length) {
       <div class="detail-notes safety">
         <ion-icon aria-hidden="true" name="warning-outline"></ion-icon>

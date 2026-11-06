@@ -1,3 +1,4 @@
+import { ActionImpact } from './Impact';
 import { RelatedRef } from './RelatedContent';
 
 /**
@@ -58,6 +59,10 @@ export interface ActionItem {
   accessibilityNotes?: string[];
 
   displayOrder: number;
+
+  // What it saves, for "What could I save?" and (later) personal and
+  // community impact (models/Impact.ts). None for actions with no honest number.
+  impact?: ActionImpact | null;
 
   // Explore next links (see RelatedContent.ts).
   relatedContent?: RelatedRef[];
