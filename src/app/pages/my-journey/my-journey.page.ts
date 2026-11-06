@@ -9,7 +9,6 @@ import { SavedContentService, SavedContentDocument, savedContentLabel, savedCont
 import { UserProfile, UserProfileService } from 'src/app/services/user-profile.service';
 import { elementsExplored, JOURNEY_ELEMENTS, journeyStory, preferredElements } from 'src/app/models/Journey';
 import { NextForYou, nextForYouElements } from 'src/app/models/NextForYou';
-import { ImpactLine, impactLines, impactMonth } from 'src/app/models/Impact';
 import { NextForYouService } from 'src/app/services/next-for-you.service';
 import { QualityReadEntry, EqHistoryEntry, PollHistoryEntry, VideoWatchHistoryEntry } from 'src/app/models/engagement-history';
 import { UserActionService } from 'src/app/services/user-action.service';
@@ -110,11 +109,9 @@ export class MyJourneyPage implements OnInit, OnDestroy {
 
   nextForYou: NextForYou | null = null;
 
-  /** "Your impact" (8.14.0): this month's and all-time estimated savings, from the server's totals. */
-  get impact(): { month: ImpactLine[]; total: ImpactLine[] } | null {
-    const total = impactLines(this.metrics?.impactTotals);
-    if (!total.length) return null;
-    return { month: impactLines(this.metrics?.impactByMonth?.[impactMonth()]), total };
+  /** For "Share my impact" (only used if the member ticks "Show my first name"). */
+  get firstName(): string | null {
+    return this.profile ? this.userProfileService.resolveFirstName(this.profile) || null : null;
   }
 
   ngOnInit(): void {
@@ -560,7 +557,10 @@ export class MyJourneyPage implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (history) => {
-          this.recentActions = history.filter((a) => a.status === 'COMPLETE').slice(0, 10);
+          // All completed actions (the list collapses to the first few, with
+          // "Show all"): it used to stop at 10, so it didn't add up to the
+          // Unique Actions and Total Completions above it.
+          this.recentActions = history.filter((a) => a.status === 'COMPLETE');
           this.actionsTakenLoading = false;
           this.scrollToPendingFragment();
         },

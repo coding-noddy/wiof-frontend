@@ -100,7 +100,13 @@ One `analytics_daily/{YYYY-MM-DD}` summary per India-time day, by each event's s
 
 "Clear My Engagement Data" (`resetEngagementData`) deletes the user's reading, watching, poll, EQ, visit and widget events and their saved content. It also zeroes the visit counters and those fields of `user_metrics` (and removes `qualityReadsByElement`).
 
-**Take Action progress is kept** (decided 2026-11-04, 8.3.0): `user_actions`, the `action_completed` events and the action counters stay. A reset therefore never makes "Actions Taken" disagree with the action cards, and a recompute can't undo a reset. The Settings page says so before the user confirms.
+**Take Action progress is kept by default** (decided 2026-11-04, 8.3.0): `user_actions`, the `action_completed` and `impact_reported` events, and the action and impact counters stay. A reset therefore never makes "Actions Taken" disagree with the action cards, and a recompute can't undo a reset. The Settings page says so before the user confirms.
+
+**8.16.0:**
+- A checkbox, *Also clear my Take Action progress* (off by default), clears those too: `user_actions`, `user_action_completions`, the completion and impact events, and zeroes the action counters and impact totals.
+- **Polls:** for each poll voted in, the reset leaves `poll_vote_guards/{uid}_{pollId}` (no option, no email), so the poll still knows and a second vote can't be added to the public results. The member's raw `Polls` votes lose their email and IP address; the vote stays counted.
+- The member stays signed in. The device forgets "Not yet" answers (and, with actions, the last "About how much?" amounts).
+- Not changed: totals that include the member anonymously (poll results, `community_impact` for past months; this month's is rebuilt within 3 hours).
 
 ## Coming back and together (8.15.0)
 

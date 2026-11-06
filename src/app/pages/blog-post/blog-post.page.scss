@@ -233,7 +233,8 @@ ion-content {
   ion-icon { font-size: 1rem; }
 
   &:hover {
-    background: var(--wiof-ivory);
+    background: var(--wiof-btn-outline-hover-bg);
+    border-color: var(--wiof-teal-fill);
   }
 }
 

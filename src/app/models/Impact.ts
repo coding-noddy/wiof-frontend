@@ -85,6 +85,12 @@ export function roundForPeople(value: number): string {
   return rounded.toLocaleString('en-IN', { maximumFractionDigits: digits });
 }
 
+/** The value as shown (roundForPeople), as a number; tiny values stay as they are. */
+export function shownValue(value: number): number {
+  const shown = roundForPeople(value);
+  return shown.startsWith('<') ? value : Number(shown.replace(/,/g, ''));
+}
+
 /** "about 18 L of water", "about 0.03 kWh", "3 plastic bottles". */
 export function formatImpact(impact: ActionImpact, value: number): string {
   const v = roundForPeople(value);
@@ -100,7 +106,8 @@ export function formatImpact(impact: ActionImpact, value: number): string {
 }
 
 /** The same in everyday terms, when there's a good one: "≈ 1 bucket", "≈ 2 km by car". */
-export function everydayEquivalent(impact: ActionImpact, value: number): string | null {
+export function everydayEquivalent(impact: ActionImpact, rawValue: number): string | null {
+  const value = shownValue(rawValue);
   const km = (kgCo2: number) => kgCo2 / CAR_CO2_PER_KM;
   const plural = (n: string, one: string, many: string) => `≈ ${n} ${n === '1' ? one : many}`;
   switch (impact.measure) {
@@ -159,4 +166,48 @@ export function impactLines(totals: { [measure: string]: number } | null | undef
       const value = totals![m.value];
       return { measure: m.value, text: formatImpact(recipe, value), equivalent: everydayEquivalent(recipe, value) };
     });
+}
+
+/**
+ * How each measure looks as a tile and on the share image (8.17.0): `tint`
+ * is the brand colour behind it (teal, marigold, brown), `color` its
+ * text-safe shade for the label and icon.
+ */
+export const MEASURE_LOOK: Record<ImpactMeasure, { unit: string; label: string; icon: string; color: string; tint: string }> = {
+  water: { unit: 'L', label: 'water saved', icon: 'water', color: '#1A7A7F', tint: '#21999F' },
+  energy: { unit: 'kWh', label: 'electricity saved', icon: 'flash', color: '#805E2C', tint: '#FFC26F' },
+  co2: { unit: 'kg', label: 'CO₂ avoided', icon: 'leaf', color: '#856C4A', tint: '#A6875D' },
+  plastic: { unit: '', label: 'plastic items avoided', icon: 'bag-handle', color: '#145C5F', tint: '#21999F' },
+  food: { unit: 'kg', label: 'food not wasted', icon: 'restaurant', color: '#645138', tint: '#A6875D' }
+};
+
+export interface ImpactTile {
+  measure: ImpactMeasure;
+  /** "36", "4.4", "1,200". */
+  number: string;
+  unit: string;
+  label: string;
+  icon: string;
+  color: string;
+  tint: string;
+  /** "≈ 2 buckets", "like 23 km by car", or null. */
+  equivalent: string | null;
+}
+
+/** Totals by measure as tiles, in a fixed order, leaving out zeros. */
+export function impactTiles(totals: { [measure: string]: number } | null | undefined): ImpactTile[] {
+  return IMPACT_MEASURES
+    .filter((m) => (totals?.[m.value] || 0) > 0)
+    .map((m) => {
+      const value = totals![m.value];
+      const look = MEASURE_LOOK[m.value];
+      const number = roundForPeople(value);
+      return { measure: m.value, number, ...look, equivalent: everydayEquivalent({ measure: m.value } as ActionImpact, value) };
+    });
+}
+
+/** "November 2026" for an India-time month key "2026-11". */
+export function monthName(month: string): string {
+  const [y, m] = month.split('-').map(Number);
+  return new Date(Date.UTC(y, (m || 1) - 1, 15)).toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 }

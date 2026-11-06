@@ -166,8 +166,7 @@
   transition: background 0.15s ease, color 0.15s ease;
 
   &:hover {
-    background: var(--wiof-teal-fill);
-    color: var(--wiof-warm-white);
+    background: var(--wiof-btn-outline-hover-bg);
   }
 }
 

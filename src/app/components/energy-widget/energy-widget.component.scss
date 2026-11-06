@@ -213,20 +213,22 @@ $radius-item: 14px;
   margin: 0 !important;
   min-height: unset !important;
   min-width: unset !important;
-  height: 40px !important;
+  height: var(--wiof-btn-height) !important;
   // Continue the combined input border seamlessly
   border-radius: 0 10px 10px 0 !important;
   white-space: nowrap;
-  padding: 0 1.1rem !important;
-  font-size: 0.86rem !important;
-  // Energy theme — dark amber on light amber
-  background: linear-gradient(135deg, color.adjust($e, $lightness: -15%) 0%, color.adjust($e, $lightness: -28%) 100%) !important;
-  color: $dark-color !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+  padding: 0 var(--wiof-btn-padding-x) !important;
+  font-size: var(--wiof-btn-font-size) !important;
+  // The site's action button (8.16.0): teal fill, warm-white text, flat —
+  // was a darkened-Marigold gradient with a shadow, off the brand palette.
+  background: var(--wiof-teal-fill) !important;
+  border: 1px solid var(--wiof-teal-fill) !important;
+  color: var(--wiof-warm-white) !important;
+  box-shadow: none !important;
 
   &:hover {
     transform: none !important;   // kill global translateY so it doesn't jump
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18) !important;
+    background: var(--wiof-btn-fill-hover-bg) !important;
   }
 }
 

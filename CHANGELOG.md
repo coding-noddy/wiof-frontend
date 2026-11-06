@@ -7,6 +7,42 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.17.0] - 2026-11-06
+
+Your impact, worth sharing. Hosting only.
+
+### Added
+- **"Your impact" on My Journey, redesigned** (`components/impact-summary`): one tile per measure with its icon and element colour (water teal, electricity Marigold, CO₂ brown…), a big Aleo number, the label and the everyday comparison; one *This month / Since you started* switch instead of two columns.
+- **"Share my impact"**: a square 1080×1080 image (`util/impact-share-image.ts`) made on the member's device, nothing uploaded: the WIOF logo, "My impact this November" (or "Naved's…" if they tick *Show my first name*, off by default), the top three measures with icons, and "From the small actions I took with World Is One Family · estimates, on the low side · Join me at worldisonefamily.com". On phones the share sheet opens with the image (WhatsApp, LinkedIn, Instagram…); on desktop the image downloads and a caption is copied. GA event `impact_shared` (period, share or download).
+
+### Fixed
+- The everyday comparison follows the number shown: the same "4.4 kWh" said "like 23 km" in one place and "like 24 km" in another.
+
+## [8.16.0] - 2026-11-06
+
+Reset, done right. **Deploy with `-Backend`** (`resetEngagementData`; rules for `poll_vote_guards`).
+
+### Added
+- **"Also clear my Take Action progress"** in the reset dialog (off by default): clears completed and started actions, streaks and impact too. The dialog says exactly what goes either way.
+
+### Fixed
+- **A reset let a member vote in a poll again**, adding a second vote to the public results. The reset now leaves a guard per poll (`poll_vote_guards`, no option or email) and the poll checks it.
+- **Raw poll votes kept the member's email and IP address** after a reset; they're removed now (the vote stays counted).
+- **The reset signed the member out** although "your account remains active". They stay signed in and land on My Journey.
+- Today on WIOF: "See the full calendar" is a teal outline button inside the card (right side; under the text on phones), not a footer strip.
+- Coffee Conversation cards on phones and tablets: the video's bottom corners are square against the text (rounded corners left gaps showing the band).
+- **One button standard** (`--wiof-btn-*` tokens in `src/theme/variables.scss`): every text button is 40px, 14px, weight 700, the home hero included (it was 32px on phones); icon buttons 40px (the conversation card's share and ♡ now match). Repeated teal buttons are flat (Read Full Story, Submit Vote, Explore conversation lost their coloured shadows). Measured before: five heights (32–40px), four font sizes, three weights.
+- **Shadows, one rule:** buttons on the page are flat; only controls floating over images or overlays (slider arrows, pop-ups) keep a soft shadow. The header **Sign In** is the flat teal action button (it was a second Marigold button on every page, next to each page's primary CTA); element pages' Marigold "Explore conversation" is flat. "Mark as Done" and the header Sign In are the standard 40px (were 31px).
+- **Coffee Conversation video on tablets and phones** keeps its 16:9 shape (at about 900px wide the frame was 280px tall but the video only 150px, leaving an empty band).
+- **Hover, one rule** (`--wiof-btn-outline-hover-bg`, `--wiof-btn-fill-hover-bg`): teal outline buttons fill with a light teal tint (border and text stay teal); filled teal buttons go a shade darker. The outline buttons' old Ivory hover barely showed on Warm White.
+- **Hover changes colour only, the same everywhere** (`--wiof-btn-primary-hover-bg` added): filled teal buttons a shade darker, the Marigold primary a shade darker Marigold, outline buttons the light teal tint. No lifting or sliding: Explore conversation slid, Read Full Story, Submit Vote, Mark as Done and the shared button lifted, some without changing colour. The footer's "Share feedback" (outline) no longer fills solid teal.
+- **My Journey → Actions Taken lists every completed action** (it stopped at the 10 most recent, so it didn't add up to Unique Actions and Total Completions above it); "See more" still collapses it.
+- **"Logout" is "Sign out"** (pairs with "Sign In") in the avatar menu, the mobile menu and the admin sidebar, and looks like the other menu items: on hover it showed red text on Ionic's solid red "danger tint", unreadable. Signing out isn't destructive, so no warning colour.
+- Read Full Story: no shadow on hover either. The reset dialog is wider (480px) and never taller than the window (it scrolls inside). The calendar day modal is capped at the modal's height with the text scrolling and space below the last line (a long day ran past the bottom of the screen and was cut off).
+- **Energy widget "Calculate"** is the site's teal action button (was a darkened-Marigold gradient with a shadow, off the palette).
+- Device memories of activity ("Not yet" answers; with actions, the last impact amounts) are cleared with the reset.
+- Privacy policy (6 November 2026): what the reset clears and keeps, polls, and anonymous totals. docs/METRICS.md "Resets" updated.
+
 ## [8.15.1] - 2026-11-06
 
 Follow-ups to 8.15.0. **Deploy with `-Backend`** (rules for `site_settings/community_impact`; the community summary reads the minimum).

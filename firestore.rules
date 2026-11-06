@@ -232,6 +232,14 @@ service cloud.firestore {
 
     // "Together this month" (8.15.0, functions/community-impact.js): totals
     // only, nothing about any one person. Written by the server.
+    // "This account voted on this poll" (8.16.0), left by resetEngagementData
+    // so a reset can't open a second vote. No option, no email.
+    match /poll_vote_guards/{guardId} {
+      allow read: if isAuthenticated()
+        && (resource == null || resource.data.userId == request.auth.uid);
+      allow write: if false;
+    }
+
     match /community_impact/{month} {
       allow read: if true;
       allow write: if false;

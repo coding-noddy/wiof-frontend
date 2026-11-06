@@ -476,8 +476,13 @@ ion-content {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 9998;
-  width: 380px;
+  // Wider so the text wraps less; never taller than the window: with the
+  // Take Action option it grew past the top of the screen (8.16.0).
+  width: 480px;
   max-width: calc(100vw - 2rem);
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
   padding: 1.75rem;
   border-radius: 18px;
   background: var(--wiof-warm-white);
@@ -556,3 +561,33 @@ ion-content {
 .reset-cancel { background: var(--wiof-ivory); color: var(--wiof-ink); }
 .reset-delete { background: var(--ion-color-danger); color: var(--ion-color-danger-contrast); }
 .reset-delete:disabled { background: rgba(var(--ion-color-danger-rgb), 0.35); color: var(--ion-color-danger-shade); cursor: not-allowed; }
+
+// "Also clear my Take Action progress" (8.16.0).
+.reset-option {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.55rem;
+  margin: 0.25rem 0 0.75rem;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--wiof-ink);
+  cursor: pointer;
+
+  input {
+    margin-top: 0.2rem;
+    width: 1.05rem;
+    height: 1.05rem;
+    accent-color: var(--ion-color-danger);
+    flex-shrink: 0;
+  }
+}
+
+// .reset-modal p sets the muted colour, so this needs the same specificity.
+// A deep red (#B42318, 6.2:1 on Warm White) reads clearly; Ionic's danger
+// red is under 4.5:1 for normal text.
+.reset-modal p.reset-warning {
+  font-weight: 600;
+  color: #b42318;
+}

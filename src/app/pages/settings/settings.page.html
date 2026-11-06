@@ -243,7 +243,16 @@
           <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
         </div>
         <h3 id="reset-modal-title">Reset all engagement data?</h3>
-        <p>This permanently removes your saved content, reading history, activity history, poll history, quality reads, and engagement counters. Your account and your Take Action progress (completed actions and streaks) are kept.</p>
+        <p>This permanently removes your saved content, reading and video history, poll and EQ history, quality reads, and engagement counters. Polls still remember that you voted, without your choice or email.</p>
+        <label class="reset-option">
+          <input type="checkbox" [(ngModel)]="resetIncludeActions" />
+          <span>Also clear my Take Action progress</span>
+        </label>
+        @if (resetIncludeActions) {
+          <p class="reset-warning">Your completed actions, streaks and "Your impact" will be gone too. This can't be undone.</p>
+        } @else {
+          <p>Your account and your Take Action progress (completed actions, streaks and impact) are kept.</p>
+        }
         <p>Type <strong>RESET</strong> below when you are ready to permanently clear your engagement data.</p>
         <input
           class="reset-input"

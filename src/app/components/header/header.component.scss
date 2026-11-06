@@ -111,34 +111,30 @@ $mobile-breakpoint: 768px;
 }
 
 // ── Sign In Button ────────────────────────────────────────────────────────────
+// Teal, flat (8.16.0): Marigold is kept for each page's one primary CTA
+// (the home hero's "Explore WIOF"), so a Marigold Sign In on every page made
+// two. The same teal action button as everywhere else, the standard size.
 .sign-in-btn {
-  padding: 9px 20px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--wiof-ink);
-  background: var(--wiof-marigold);
+  min-height: var(--wiof-btn-height);
+  padding: 0 1.2rem;
+  font-size: var(--wiof-btn-font-size);
+  font-weight: var(--wiof-btn-font-weight);
+  color: var(--wiof-warm-white);
+  background: var(--wiof-teal-fill);
   border: none;
   border-radius: 999px;
   cursor: pointer;
   margin-left: 12px;
   white-space: nowrap;
-  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
-  box-shadow: 0 2px 8px rgba(166, 135, 93, 0.25);
+  transition: background 0.15s ease;
 
   @media (min-width: $mobile-breakpoint) and (max-width: 899px) {
-    padding: 8px 14px;
+    padding: 0 0.9rem;
     margin-left: 6px;
   }
 
   &:hover:not(:disabled) {
-    background: var(--wiof-marigold-shade-20);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(166, 135, 93, 0.35);
-  }
-
-  &:active:not(:disabled) {
-    transform: translateY(0);
-    box-shadow: 0 1px 4px rgba(166, 135, 93, 0.2);
+    background: var(--wiof-btn-fill-hover-bg);
   }
 
   &:disabled {
@@ -159,7 +155,7 @@ $mobile-breakpoint: 768px;
   width: 13px;
   height: 13px;
   border: 2px solid rgba(43, 36, 32, 0.3);
-  border-top-color: var(--wiof-ink);
+  border-top-color: var(--wiof-warm-white);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
@@ -267,7 +263,7 @@ $mobile-breakpoint: 768px;
 }
 
 .mobile-logout {
-  color: var(--ion-color-danger);
+  color: var(--wiof-ink);
 }
 
 // ── Avatar dropdown alignment ─────────────────────────────────────────────────

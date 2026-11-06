@@ -332,22 +332,18 @@ ion-card-content.wiof-polls-widget-card-background {
   justify-content: center;
   border: none;
   border-radius: 999px;
-  padding: 0.6rem 1.3rem;
+  min-height: var(--wiof-btn-height);
+  padding: 0 1.3rem;
   background: var(--wiof-teal-fill);
   color: var(--wiof-warm-white);
-  font-weight: 700;
-  font-size: 0.9rem;
+  font-weight: var(--wiof-btn-font-weight);
+  font-size: var(--wiof-btn-font-size);
   cursor: pointer;
-  box-shadow: 0 8px 18px rgba(33, 153, 159, 0.22);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  // Flat: a repeated action, not the page's primary CTA (brand rule).
+  transition: background 0.15s ease;
 
   &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 22px rgba(33, 153, 159, 0.3);
-  }
-
-  &:active {
-    transform: translateY(0);
+    background: var(--wiof-btn-fill-hover-bg);
   }
 }
 

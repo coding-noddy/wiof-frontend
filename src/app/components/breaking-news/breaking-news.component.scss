@@ -173,15 +173,16 @@
     gap: 0.4rem;
     margin-top: auto;
     align-self: flex-start;
-    padding: 0.5rem 1rem;
+    min-height: var(--wiof-btn-height);
+    padding: 0 var(--wiof-btn-padding-x);
     border-radius: 999px;
     background: var(--wiof-teal-fill);
     color: var(--wiof-warm-white);
-    font-weight: 700;
-    font-size: 0.85rem;
+    font-weight: var(--wiof-btn-font-weight);
+    font-size: var(--wiof-btn-font-size);
     text-decoration: none;
-    box-shadow: 0 8px 18px rgba(33, 153, 159, 0.22);
-    transition: transform 0.18s ease, box-shadow 0.18s ease, gap 0.18s ease;
+    // Flat: a repeated action, not the page's primary CTA (brand rule).
+    transition: background 0.15s ease;
 
     ion-icon {
       font-size: 1rem;
@@ -189,10 +190,7 @@
     }
 
     &:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 22px rgba(33, 153, 159, 0.3);
-
-      ion-icon { transform: translateX(2px); }
+      background: var(--wiof-btn-fill-hover-bg);
     }
   }
 

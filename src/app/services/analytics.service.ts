@@ -118,4 +118,9 @@ export class AnalyticsService {
   logBookmarkRemoved(contentType: string, contentId: string): void {
     this.log('bookmark_removed', { content_type: contentType, content_id: contentId });
   }
+
+  /** "Share my impact" (8.17.0): which period, and whether the share sheet or a download was used. */
+  logImpactShared(period: 'month' | 'total', method: 'share' | 'download'): void {
+    this.log('impact_shared', { period, method });
+  }
 }

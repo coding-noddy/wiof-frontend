@@ -122,16 +122,11 @@
     color: var(--wiof-brown-text);
   }
 
+  // Sign out isn't destructive, so it looks like the other items (it was
+  // red text on Ionic's solid red "danger tint" on hover: unreadable). The
+  // divider above already sets it apart.
   &--logout {
-    color: var(--ion-color-danger);
-
-    ion-icon {
-      color: var(--ion-color-danger);
-    }
-
-    &:hover {
-      background: var(--ion-color-danger-tint, rgba(235, 68, 90, 0.08));
-    }
+    color: var(--wiof-ink);
   }
 }
 

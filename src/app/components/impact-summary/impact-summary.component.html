@@ -1,0 +1,47 @@
+@if (hasAny) {
+  <section class="impact" aria-labelledby="impact-title">
+    <div class="impact-head">
+      <h2 class="impact-title" id="impact-title">
+        <ion-icon aria-hidden="true" name="sparkles-outline"></ion-icon>
+        Your impact
+      </h2>
+      <div class="impact-switch" role="tablist" aria-label="Period">
+        <button type="button" role="tab" [attr.aria-selected]="period === 'month'" [class.is-on]="period === 'month'" (click)="setPeriod('month')">This month</button>
+        <button type="button" role="tab" [attr.aria-selected]="period === 'total'" [class.is-on]="period === 'total'" (click)="setPeriod('total')">Since you started</button>
+      </div>
+    </div>
+
+    @if (tiles.length) {
+      <ul class="impact-tiles">
+        @for (t of tiles; track t.measure) {
+          <li class="impact-tile" [style.--measure]="t.color" [style.--tint]="t.tint">
+            <span class="impact-icon" aria-hidden="true"><ion-icon [name]="t.icon"></ion-icon></span>
+            <span class="impact-number">{{ t.number }}@if (t.unit) {<span class="impact-unit"> {{ t.unit }}</span>}</span>
+            <span class="impact-label">{{ t.label }}</span>
+            @if (t.equivalent) {
+              <span class="impact-equivalent">{{ t.equivalent }}</span>
+            }
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="impact-empty">Nothing yet in {{ monthLabel }}. <a routerLink="/take-action">Find an action</a></p>
+    }
+
+    <div class="impact-foot">
+      <p class="impact-note">Estimates on the low side, from the actions you marked done and what you told us.</p>
+      @if (tiles.length) {
+        <div class="impact-share">
+          <label class="impact-name">
+            <input type="checkbox" [checked]="showName" (change)="showName = $any($event.target).checked" />
+            Show my first name
+          </label>
+          <button type="button" class="impact-share-btn" (click)="share()" [disabled]="sharing">
+            <ion-icon aria-hidden="true" name="share-social-outline"></ion-icon>
+            {{ sharing ? 'Making the image…' : 'Share my impact' }}
+          </button>
+        </div>
+      }
+    </div>
+  </section>
+}

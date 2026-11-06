@@ -21,6 +21,11 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  // As tall as the modal allows (global .env-cal-modal: 90vh), no taller:
+  // the header and image stay, the text below scrolls. Without this, a long
+  // day ran past the bottom of the screen and was cut off.
+  max-height: 90vh;
+  max-height: 90dvh;
 }
 
 // ── Header ────────────────────────────────────────────────────────────────────
@@ -185,8 +190,9 @@
 
 // ── Body ─────────────────────────────────────────────────────────────────────
 .occasion-body {
-  padding: 1rem !important;
+  padding: 1rem 1rem 1.5rem !important;
   overflow-y: auto;
+  min-height: 0; // lets it shrink and scroll inside the capped card
   // No fixed cap — flex:1 lets it fill whatever space the card has (so
   // short descriptions don't leave a blank gap below); the outer modal's
   // --max-height: 90vh is still the real ceiling for very long text.

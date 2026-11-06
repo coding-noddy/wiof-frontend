@@ -390,24 +390,19 @@ p {
   background: var(--wiof-teal-fill);
   color: $light-color;
   margin: 0 auto;
-  font-weight: 700;
-  padding: 0.55rem 1rem;
+  font-weight: var(--wiof-btn-font-weight);
+  padding: 0 var(--wiof-btn-padding-x);
   text-decoration: none;
-  font-size: 0.94rem;
-  min-height: 36px;
+  font-size: var(--wiof-btn-font-size);
+  min-height: var(--wiof-btn-height);
   min-width: 120px;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .wiof-primary-link:hover,
 .wiof-primary-btn:hover {
-  transform: translateY(-1px);
-  opacity: 0.98;
-}
-
-.wiof-primary-link:active,
-.wiof-primary-btn:active {
-  transform: translateY(0);
+  background: var(--wiof-btn-fill-hover-bg);
+  border-color: var(--wiof-btn-fill-hover-bg);
 }
 
 .no-margin {

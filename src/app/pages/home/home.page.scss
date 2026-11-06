@@ -332,11 +332,12 @@ $page-padding-mobile:  16px;
     display: inline-flex;
     align-items: center;
     gap: 0.5em;
-    // Smaller on mobile — the tablet/desktop size (restored below) read as
-    // oversized next to the now phone-sized motto above it.
-    padding: 9px 22px;
-    font-size: 0.82rem;
-    font-weight: 700;
+    // The page's one primary CTA: the standard button size on every screen
+    // (it used to shrink to 32px on phones); Marigold marks it, not size.
+    min-height: var(--wiof-btn-height);
+    padding: 0 1.4rem;
+    font-size: var(--wiof-btn-font-size);
+    font-weight: var(--wiof-btn-font-weight);
     border: none;
     border-radius: 999px;
     background-color: var(--wiof-marigold);
@@ -348,10 +349,6 @@ $page-padding-mobile:  16px;
       font-size: 1.1em;
     }
 
-    @media (min-width: 768px) {
-      padding: 12px 30px;
-      font-size: 0.96rem;
-    }
     opacity: 0;
     // Not the same fade-up as the text lines — this one grows out of the
     // last line above it (smaller + higher + invisible, scaling/sliding
@@ -367,7 +364,7 @@ $page-padding-mobile:  16px;
     animation-delay: 3s;
 
     &:hover {
-      transform: translateY(-1px);
+      background-color: var(--wiof-btn-primary-hover-bg);
     }
   }
 

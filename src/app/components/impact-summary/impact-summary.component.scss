@@ -1,0 +1,233 @@
+@use '../../wiof-custom-theming' as *;
+
+:host {
+  display: block;
+}
+
+// Card convention: Warm White, 1.5px border, 18px radius, no shadow.
+.impact {
+  margin: 0 0 1.25rem;
+  padding: 1.25rem 1.4rem 1.1rem;
+  border-radius: 18px;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  background: var(--wiof-warm-white);
+}
+
+.impact-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.impact-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  font-size: 1.2rem;
+
+  ion-icon {
+    color: var(--wiof-marigold-text);
+  }
+}
+
+// This month / Since you started: one segmented control.
+.impact-switch {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--wiof-ivory);
+  border: 1.5px solid var(--wiof-brown-tint-40);
+
+  button {
+    min-height: 34px;
+    padding: 0 0.95rem;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--wiof-ink-muted);
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+
+    &:hover:not(.is-on) {
+      background: var(--wiof-btn-outline-hover-bg);
+    }
+
+    &.is-on {
+      background: var(--wiof-teal-fill);
+      color: var(--wiof-warm-white);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--wiof-teal-text);
+      outline-offset: 2px;
+    }
+  }
+}
+
+// One tile per measure, its colour from the measure (MEASURE_LOOK).
+.impact-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// A compact row on every screen: icon on the left, the numbers beside it.
+.impact-tile {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.85rem;
+  row-gap: 0.1rem;
+  align-items: center;
+  padding: 0.8rem 0.95rem;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--tint) 10%, var(--wiof-warm-white));
+  border: 1.5px solid color-mix(in srgb, var(--tint) 35%, var(--wiof-warm-white));
+}
+
+.impact-icon {
+  grid-row: span 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--tint) 28%, var(--wiof-warm-white));
+  color: var(--measure);
+  font-size: 1.3rem;
+}
+
+.impact-number {
+  font-family: 'Aleo', serif !important;
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--wiof-ink);
+}
+
+.impact-unit {
+  font-family: 'Aleo', serif !important;
+  font-size: 1.1rem;
+}
+
+.impact-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--measure);
+}
+
+.impact-equivalent {
+  margin-top: 0.2rem;
+  font-size: 0.8rem;
+  color: var(--wiof-ink-muted);
+}
+
+.impact-empty {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--wiof-ink-muted);
+
+  a {
+    color: var(--wiof-teal-text);
+    font-weight: 600;
+  }
+}
+
+.impact-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-top: 1rem;
+}
+
+.impact-note {
+  margin: 0;
+  font-size: 0.76rem;
+  color: var(--wiof-ink-muted);
+}
+
+.impact-share {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+}
+
+.impact-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--wiof-ink);
+  cursor: pointer;
+
+  // Our own checkbox: the browser default drew a dark filled square.
+  input {
+    appearance: none;
+    -webkit-appearance: none;
+    flex-shrink: 0;
+    width: 1.1rem;
+    height: 1.1rem;
+    margin: 0;
+    border: 1.5px solid var(--wiof-brown-tint-40);
+    border-radius: 5px;
+    background: var(--wiof-warm-white) center / 0.8rem no-repeat;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+
+    &:checked {
+      border-color: var(--wiof-teal-fill);
+      background-color: var(--wiof-teal-fill);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23FFFCF6' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round' d='M3.5 8.5l3 3 6-7'/%3E%3C/svg%3E");
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--wiof-teal-text);
+      outline-offset: 2px;
+    }
+  }
+}
+
+// The standard button (variables.scss): an outline, as a secondary action.
+.impact-share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: var(--wiof-btn-height);
+  padding: 0 var(--wiof-btn-padding-x);
+  border-radius: 999px;
+  border: 1.5px solid var(--wiof-teal-fill);
+  background: transparent;
+  color: var(--wiof-teal-text);
+  font: inherit;
+  font-size: var(--wiof-btn-font-size);
+  font-weight: var(--wiof-btn-font-weight);
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--wiof-btn-outline-hover-bg);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--wiof-teal-text);
+    outline-offset: 2px;
+  }
+}
