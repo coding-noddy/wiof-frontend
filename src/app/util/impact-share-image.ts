@@ -178,10 +178,10 @@ export async function renderShareCard(input: ShareCardInput): Promise<Blob> {
     y += rowH;
   }
 
-  // Footer: honest, with the address (the note wraps onto two lines if needed).
+  // Footer: honest, with the address. "Estimates" always gets a line of its own.
   ctx.font = '400 27px "Noto Sans", sans-serif';
   ctx.fillStyle = MUTED;
-  const note = wrap(ctx, `${input.footnote}. Estimates, on the low side.`, SHARE_SIZE - pad * 2);
+  const note = [...wrap(ctx, `${input.footnote}.`, SHARE_SIZE - pad * 2, 1), 'Estimates, on the low side.'];
   note.forEach((l, i) => ctx.fillText(l, pad, SHARE_SIZE - 128 - (note.length - 1 - i) * 36));
   ctx.font = '700 34px "Noto Sans", sans-serif';
   ctx.fillStyle = TEAL_TEXT;
