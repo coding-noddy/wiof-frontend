@@ -69,6 +69,26 @@ function tint(hex: string, alpha: number): string {
   return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
 }
 
+/** Splits text into at most `max` lines that fit a width (the last one shortened with "…"). */
+function wrap(ctx: CanvasRenderingContext2D, text: string, width: number, max = 2): string[] {
+  const lines: string[] = [];
+  let line = '';
+  for (const word of text.split(' ')) {
+    const next = line ? `${line} ${word}` : word;
+    if (ctx.measureText(next).width <= width || !line) {
+      line = next;
+    } else {
+      lines.push(line);
+      line = word;
+    }
+  }
+  if (line) lines.push(line);
+  if (lines.length <= max) return lines;
+  const kept = lines.slice(0, max);
+  kept[max - 1] = fit(ctx, `${kept[max - 1]} ${lines.slice(max).join(' ')}`, width);
+  return kept;
+}
+
 /** Shortens text with "…" to fit a width. */
 function fit(ctx: CanvasRenderingContext2D, text: string, width: number): string {
   if (ctx.measureText(text).width <= width) return text;
@@ -158,10 +178,11 @@ export async function renderShareCard(input: ShareCardInput): Promise<Blob> {
     y += rowH;
   }
 
-  // Footer: honest, with the address.
+  // Footer: honest, with the address (the note wraps onto two lines if needed).
   ctx.font = '400 27px "Noto Sans", sans-serif';
   ctx.fillStyle = MUTED;
-  ctx.fillText(fit(ctx, `${input.footnote} · estimates, on the low side`, SHARE_SIZE - pad * 2), pad, SHARE_SIZE - 128);
+  const note = wrap(ctx, `${input.footnote}. Estimates, on the low side.`, SHARE_SIZE - pad * 2);
+  note.forEach((l, i) => ctx.fillText(l, pad, SHARE_SIZE - 128 - (note.length - 1 - i) * 36));
   ctx.font = '700 34px "Noto Sans", sans-serif';
   ctx.fillStyle = TEAL_TEXT;
   ctx.fillText('Join me at worldisonefamily.com', pad, SHARE_SIZE - 80);
