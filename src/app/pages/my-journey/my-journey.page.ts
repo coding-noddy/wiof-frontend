@@ -370,7 +370,9 @@ export class MyJourneyPage implements OnInit, OnDestroy {
             totalActionsCompleted: 0,
             uniqueActionsCompleted: 0,
             actionsByElement: {},
-            lastActionAt: null
+            lastActionAt: null,
+            impactTotals: {},
+            impactByMonth: {}
           };
           this.checkLoadingComplete();
         }
