@@ -144,7 +144,7 @@ export async function renderShareCard(input: ShareCardInput): Promise<Blob> {
   // Up to three measures, one row each, with room around the numbers.
   const rows = input.tiles.slice(0, 3);
   const boxH = 142;
-  const gap = 24;
+  const gap = 20;
   let y = 370;
   for (const t of rows) {
     roundedRect(ctx, pad, y, SHARE_SIZE - pad * 2, boxH, 28);
@@ -184,10 +184,10 @@ export async function renderShareCard(input: ShareCardInput): Promise<Blob> {
   ctx.font = '400 27px "Noto Sans", sans-serif';
   ctx.fillStyle = MUTED;
   const note = [...wrap(ctx, `${input.footnote}.`, SHARE_SIZE - pad * 2, 1), 'Estimates, on the low side.'];
-  note.forEach((l, i) => ctx.fillText(l, pad, SHARE_SIZE - 150 - (note.length - 1 - i) * 36));
+  note.forEach((l, i) => ctx.fillText(l, pad, SHARE_SIZE - 146 - (note.length - 1 - i) * 34));
   ctx.font = '700 34px "Noto Sans", sans-serif';
   ctx.fillStyle = TEAL_TEXT;
-  ctx.fillText('Join me at worldisonefamily.com', pad, SHARE_SIZE - 100);
+  ctx.fillText('Join me at worldisonefamily.com', pad, SHARE_SIZE - 90);
 
   return new Promise((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Could not draw the image'))), 'image/png'));
 }
