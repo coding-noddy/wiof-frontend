@@ -36,6 +36,7 @@ import { HomeJourneyPanelComponent } from './components/home-journey-panel/home-
 import { ElementTakeActionTeaserComponent } from './components/element-take-action-teaser/element-take-action-teaser.component';
 import { TakeActionCardComponent } from './components/take-action-card/take-action-card.component';
 import { ImpactCalculatorComponent } from './components/impact-calculator/impact-calculator.component';
+import { CommunityImpactComponent } from './components/community-impact/community-impact.component';
 import { TakeActionDetailComponent } from './components/take-action-detail/take-action-detail.component';
 import { ExploreNextComponent } from './components/explore-next/explore-next.component';
 import { FirstStepsComponent } from './components/first-steps/first-steps.component';
@@ -84,6 +85,7 @@ const COMPONENTS = [
   ElementTakeActionTeaserComponent,
   TakeActionCardComponent,
   ImpactCalculatorComponent,
+  CommunityImpactComponent,
   TakeActionDetailComponent,
   ExploreNextComponent,
   FirstStepsComponent,

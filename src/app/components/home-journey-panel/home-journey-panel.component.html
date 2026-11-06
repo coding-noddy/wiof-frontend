@@ -7,6 +7,18 @@
       </div>
       <a routerLink="/my-journey" class="journey-link">View My Journey →</a>
     </div>
+    <!-- "Did you try it?" (8.15.0): an action they started on an earlier day. -->
+    @if (followUp; as action) {
+      <div class="follow-up" role="group" aria-label="Did you try it?">
+        <ion-icon class="glance-icon" aria-hidden="true" [name]="action.iconName || 'leaf-outline'"></ion-icon>
+        <p class="follow-up-text">Did you try <strong>{{ action.title }}</strong>?</p>
+        <div class="follow-up-actions">
+          <button type="button" class="follow-up-yes" (click)="triedIt()" [disabled]="followUpBusy">Yes, I did</button>
+          <button type="button" class="follow-up-later" (click)="notYet()">Not yet</button>
+        </div>
+      </div>
+    }
+
     <!-- One quiet line each; the checklist and the picks open in a modal. -->
     @if ((stepsGlance$ | async) || pickCount) {
       <div class="journey-glance">

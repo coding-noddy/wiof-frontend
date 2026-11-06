@@ -1136,6 +1136,13 @@ exports.socialMetaTags = functions
 // traffic when GA4_PROPERTY_ID is set (functions/ga-traffic.js).
 
 const { buildDailyStatsDoc, addDays, istDay } = require('./daily-stats');
+const { buildCommunityImpact } = require('./community-impact');
+
+/** "Together this month" on Take Action (community-impact.js): this month, and last month while its days settle. */
+const buildCommunity = async (today) => {
+  const months = new Set([today.slice(0, 7), addDays(today, -1).slice(0, 7)]);
+  for (const month of months) await buildCommunityImpact(db, month, { FieldValue: admin.firestore.FieldValue });
+};
 const { fetchTraffic } = require('./ga-traffic');
 
 const buildDay = (day) => buildDailyStatsDoc(db, day, {
@@ -1157,6 +1164,7 @@ exports.buildDailyStats = functions
     const today = istDay();
     await buildDay(addDays(today, -1));
     await buildDay(today);
+    await buildCommunity(today);
     return null;
   }));
 
@@ -1183,5 +1191,6 @@ exports.refreshDailyStats = functions
       await buildDay(day);
       built.push(day);
     }
+    await buildCommunity(istDay());
     return { built };
   }));

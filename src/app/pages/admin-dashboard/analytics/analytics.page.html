@@ -108,6 +108,56 @@
       </section>
 
       <div class="grid-2">
+        <!-- Coming back (8.15.0) -->
+        <section class="chart-card" aria-labelledby="return-title">
+          <h2 class="card-title" id="return-title">Coming back</h2>
+          <p class="card-hint">Of the members active in one week (or month), how many were active again in the next. As of today, whatever the range above.</p>
+          <table class="admin-table compact">
+            <thead><tr><th scope="col"></th><th scope="col" class="num">Members</th><th scope="col" class="num">Came back</th><th scope="col" class="num">Rate</th></tr></thead>
+            <tbody>
+              @for (r of comingBack; track r.label) {
+                <tr>
+                  <th scope="row">{{ r.label }}</th>
+                  <td class="num">{{ r.base | number }}</td>
+                  <td class="num">{{ r.returned | number }}</td>
+                  <td class="num">{{ r.rate === null ? '—' : r.rate + '%' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+          @if (comingBack.length && !comingBack[0].complete) {
+            <p class="card-hint">Some days don't have a member list yet: rebuild past days (node scripts/daily-stats.js --project … --days 60 --apply), or wait for new days.</p>
+          }
+        </section>
+
+        <!-- Together this month (8.15.0) -->
+        <section class="chart-card" aria-labelledby="community-title">
+          <h2 class="card-title" id="community-title">Together this month (estimated impact)</h2>
+          @if (community; as c) {
+            <p class="card-hint">
+              {{ c.members | number }} member{{ c.members === 1 ? '' : 's' }} contributed (team left out).
+              @if (c.members < c.minMembers) {
+                Shown on Take Action from {{ c.minMembers }} members; until then only here.
+              } @else {
+                Shown on Take Action.
+              }
+            </p>
+            @if (c.lines.length) {
+              <ul class="community-lines">
+                @for (line of c.lines; track line.measure) {
+                  <li><strong>{{ line.text }}</strong>@if (line.equivalent) { <span>{{ line.equivalent }}</span>}</li>
+                }
+              </ul>
+            } @else {
+              <p class="notice">Nothing yet this month.</p>
+            }
+          } @else {
+            <p class="notice">Not built yet. Press Refresh above.</p>
+          }
+        </section>
+      </div>
+
+      <div class="grid-2">
         <!-- Elements -->
         <section class="chart-card" aria-labelledby="elements-title">
           <h2 class="card-title" id="elements-title">By element</h2>

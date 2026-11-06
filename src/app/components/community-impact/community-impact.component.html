@@ -1,0 +1,6 @@
+@if (view$ | async; as v) {
+  <p class="community">
+    <ion-icon aria-hidden="true" name="earth-outline"></ion-icon>
+    <span><strong>Together this month</strong>, {{ v.members | number }} WIOF members saved {{ v.sentence }}.</span>
+  </p>
+}

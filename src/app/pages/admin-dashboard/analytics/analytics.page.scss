@@ -177,3 +177,18 @@
     min-height: 220px;
   }
 }
+
+// Together this month (8.15.0).
+.community-lines {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  span {
+    margin-left: 0.4rem;
+    font-size: 0.85rem;
+    opacity: 0.75;
+  }
+}

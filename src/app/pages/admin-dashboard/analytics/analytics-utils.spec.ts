@@ -1,4 +1,4 @@
-import { DailyStats, dayLabels, istToday, percent, summarise } from './analytics-utils';
+import { returnRates, DailyStats, dayLabels, istToday, percent, summarise } from './analytics-utils';
 
 const day = (d: string, o: Partial<DailyStats> = {}): DailyStats => ({
   day: d,
@@ -60,5 +60,25 @@ describe('Admin analytics summary', () => {
     expect(s.pageGroups).toEqual([{ group: 'home', views: 240 }]);
     expect(summarise([day('2026-11-05')], '2026-11-05', 1).ga).toBe('off');
     expect(summarise([day('2026-11-05', { traffic: { error: 'unavailable' } })], '2026-11-05', 1).ga).toBe('error');
+  });
+});
+
+describe('returnRates ("Coming back", 8.15.0)', () => {
+  const day = (d: string, ids?: string[]) => ({ day: d, activeMemberIds: ids } as any);
+
+  it('counts members active 8–14 days ago who were back in the last 7 days', () => {
+    const stats = [day('2026-10-24', ['a', 'b', 'c']), day('2026-10-30', ['d']), day('2026-11-03', ['a']), day('2026-11-06', ['d', 'e'])];
+    const [week] = returnRates(stats, '2026-11-06');
+    expect([week.base, week.returned, week.rate]).toEqual([4, 2, 50]);
+    expect(week.complete).toBeFalse(); // most days have no summary in this sample
+  });
+
+  it('is complete only when every day has its member list', () => {
+    const all = Array.from({ length: 14 }, (_, i) => {
+      const d = new Date(Date.UTC(2026, 10, 1 + i)).toISOString().slice(0, 10);
+      return day(d, i < 7 ? ['a', 'b'] : i === 10 ? ['a'] : []);
+    });
+    const [week] = returnRates(all, '2026-11-14');
+    expect([week.base, week.returned, week.rate, week.complete]).toEqual([2, 1, 50, true]);
   });
 });

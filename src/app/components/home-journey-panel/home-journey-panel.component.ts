@@ -12,6 +12,10 @@ import { EngagementMetrics } from 'src/app/services/activity.service';
 import { NextForYou, nextForYouElements } from 'src/app/models/NextForYou';
 import { firstSteps, preferredElements, showFirstSteps } from 'src/app/models/Journey';
 import { NextForYouService } from 'src/app/services/next-for-you.service';
+import { ActionItem } from 'src/app/models/ActionItem';
+import { FOLLOW_UP_LATER_KEY, pickFollowUp } from 'src/app/models/FollowUp';
+import { toCalendarDay } from 'src/app/services/activity.service';
+import { UiUtilService } from 'src/app/util/UiUtilService';
 
 interface LastActivity {
   type: 'blog' | 'video';
@@ -86,8 +90,51 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
     private userActionService: UserActionService,
     private userProfileService: UserProfileService,
     private blogService: BlogService,
-    private nextForYouService: NextForYouService
+    private nextForYouService: NextForYouService,
+    private uiUtil: UiUtilService
   ) {}
+
+  /** "Did you try it?" (8.15.0, models/FollowUp.ts): an action started on an earlier day. */
+  followUp: ActionItem | null = null;
+  followUpBusy = false;
+
+  private readLater(): Record<string, string> {
+    try {
+      return JSON.parse(localStorage.getItem(FOLLOW_UP_LATER_KEY) || '{}') || {};
+    } catch {
+      return {};
+    }
+  }
+
+  /** "Yes, I did": marks it done (the impact counts at its usual amount). */
+  async triedIt(): Promise<void> {
+    const action = this.followUp;
+    if (!action || !this.userId || this.followUpBusy) return;
+    this.followUpBusy = true;
+    try {
+      await this.userActionService.completeAction(this.userId, action);
+      this.followUp = null;
+      void this.uiUtil.presentToast(`Nice work! "${action.title}" is marked as done.`, 'success', 3000);
+      this.refresh();
+    } catch {
+      await this.uiUtil.presentToast('Could not record this action. Please try again.', 'error');
+    } finally {
+      this.followUpBusy = false;
+    }
+  }
+
+  /** "Not yet": no reminder again today, on this device. */
+  notYet(): void {
+    const action = this.followUp;
+    if (!action) return;
+    const later = { ...this.readLater(), [action.id]: toCalendarDay(new Date()) };
+    try {
+      localStorage.setItem(FOLLOW_UP_LATER_KEY, JSON.stringify(later));
+    } catch {
+      // Storage unavailable: hidden for this visit only.
+    }
+    this.followUp = null;
+  }
 
   ngOnInit(): void {
     this.authService.currentUser$
@@ -187,6 +234,7 @@ export class HomeJourneyPanelComponent implements OnInit, OnDestroy {
         this.actionsCompletedCount = metrics.totalActionsCompleted || 0;
 
         this.isLoading = false;
+        this.followUp = pickFollowUp(actionHistory, actions, new Date(), this.readLater(), toCalendarDay(new Date()));
 
         const elements = nextForYouElements(profile, metrics);
         const basis = preferredElements(profile).length ? 'chosen' : 'explored';

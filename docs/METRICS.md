@@ -102,6 +102,14 @@ One `analytics_daily/{YYYY-MM-DD}` summary per India-time day, by each event's s
 
 **Take Action progress is kept** (decided 2026-11-04, 8.3.0): `user_actions`, the `action_completed` events and the action counters stay. A reset therefore never makes "Actions Taken" disagree with the action cards, and a recompute can't undo a reset. The Settings page says so before the user confirms.
 
+## Coming back and together (8.15.0)
+
+| Metric | Where | Formula | Trust |
+|---|---|---|---|
+| **Came back within a week** | Admin → Analytics | Of the members active (any accepted event) on any of the days 8–14 days ago, the share who were active again in the last 7 days. From `analytics_daily/{day}.activeMemberIds` (team left out). | Server-recorded activity |
+| **Came back within a month** | Admin → Analytics | The same with 30-day windows: active 31–60 days ago, back in the last 30. | Server-recorded activity |
+| **Together this month** | Take Action (from 20 members); Admin → Analytics (always) | Sum of every member's `impactByMonth[month]` (India time), team left out; `members` = members with any saving that month. One public doc per month, `community_impact/{YYYY-MM}`, rebuilt every 3 hours. Totals only. | Self-reported estimate (as personal impact) |
+
 ## Changing a definition
 
 1. Update this document.

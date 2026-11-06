@@ -37,6 +37,8 @@ describe('daily stats', () => {
       ]
     });
     assert.deepEqual([s.users.active, s.users.engaged], [2, 1]);
+    // Who was active, for "Coming back" (8.15.0): the team and rejected events left out.
+    assert.deepEqual(s.activeMemberIds, ['u1', 'u2']);
     assert.equal(s.totals.qualityReads, 0);
     assert.equal(s.totals.storiesOpened, 1);
   });

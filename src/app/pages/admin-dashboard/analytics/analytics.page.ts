@@ -4,7 +4,9 @@ import { ChartConfiguration } from 'chart.js';
 import { httpsCallable } from 'firebase/functions';
 import { first } from 'rxjs/operators';
 import { getWiofFunctions } from 'src/app/util/cloud-functions.util';
-import { AnalyticsSummary, DailyStats, istToday, summarise } from './analytics-utils';
+import { AnalyticsSummary, DailyStats, istToday, ReturnRate, returnRates, summarise } from './analytics-utils';
+import { ImpactLine, impactLines, impactMonth } from 'src/app/models/Impact';
+import { CommunityImpact, COMMUNITY_IMPACT_COLLECTION } from 'src/app/models/CommunityImpact';
 
 const STATS_COLLECTION = 'analytics_daily';
 
@@ -36,6 +38,10 @@ export class AnalyticsPage implements OnInit {
   refreshError: string | null = null;
   lastComputed: Date | null = null;
   summary: AnalyticsSummary | null = null;
+  /** "Coming back" (8.15.0), always as of today, whatever the range. */
+  comingBack: ReturnRate[] = [];
+  /** "Together this month" (8.15.0): shown to admins whatever the member count. */
+  community: (CommunityImpact & { lines: ImpactLine[] }) | null = null;
   private stats: DailyStats[] = [];
 
   membersChart: ChartConfiguration<'line'>['data'] = { labels: [], datasets: [] };
@@ -68,8 +74,23 @@ export class AnalyticsPage implements OnInit {
     }
   }
 
+  private loadCommunity(): void {
+    this.firestore
+      .doc<CommunityImpact>(`${COMMUNITY_IMPACT_COLLECTION}/${impactMonth()}`)
+      .get()
+      .pipe(first())
+      .subscribe({
+        next: (snap) => {
+          const c = snap.data();
+          this.community = c ? { ...c, lines: impactLines(c.totals) } : null;
+        },
+        error: () => (this.community = null)
+      });
+  }
+
   private load(): void {
     this.loading = true;
+    this.loadCommunity();
     this.firestore
       .collection<DailyStats>(STATS_COLLECTION, (ref) => ref.orderBy('day', 'desc').limit(Math.max(...this.ranges)))
       .get()
@@ -93,6 +114,7 @@ export class AnalyticsPage implements OnInit {
   private render(): void {
     const s = summarise(this.stats, istToday(), this.range);
     this.summary = s;
+    this.comingBack = returnRates(this.stats, istToday());
     const c = document.body.classList.contains('admin-dark-theme') ? SERIES.dark : SERIES.light;
     const labels = s.labels.map((d) => d.slice(5));
     const line = (label: string, data: (number | null)[], color: string) => ({
