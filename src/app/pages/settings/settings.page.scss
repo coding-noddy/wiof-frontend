@@ -583,7 +583,10 @@ ion-content {
   }
 }
 
-.reset-warning {
+// .reset-modal p sets the muted colour, so this needs the same specificity.
+// A deep red (#B42318, 6.2:1 on Warm White) reads clearly; Ionic's danger
+// red is under 4.5:1 for normal text.
+.reset-modal p.reset-warning {
   font-weight: 600;
-  color: var(--ion-color-danger);
+  color: #b42318;
 }
