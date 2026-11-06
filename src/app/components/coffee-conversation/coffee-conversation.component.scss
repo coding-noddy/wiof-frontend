@@ -96,6 +96,10 @@
         background: var(--wiof-marigold) !important;
         color: var(--wiof-ink) !important;
         box-shadow: none !important; // flat, like every button on the page
+
+        &:hover {
+          background: var(--wiof-btn-primary-hover-bg) !important;
+        }
       }
     }
   }
@@ -244,12 +248,12 @@
         font-weight: var(--wiof-btn-font-weight);
         text-decoration: none;
         // Flat: a repeated action, not the page's primary CTA (brand rule).
-        transition: transform 0.2s ease;
+        transition: background 0.15s ease;
 
         ion-icon { font-size: 0.95rem; }
 
         &:hover {
-          transform: translateX(2px);
+          background: var(--wiof-btn-fill-hover-bg);
         }
       }
 

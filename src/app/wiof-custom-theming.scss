@@ -396,18 +396,13 @@ p {
   font-size: var(--wiof-btn-font-size);
   min-height: var(--wiof-btn-height);
   min-width: 120px;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .wiof-primary-link:hover,
 .wiof-primary-btn:hover {
-  transform: translateY(-1px);
   background: var(--wiof-btn-fill-hover-bg);
-}
-
-.wiof-primary-link:active,
-.wiof-primary-btn:active {
-  transform: translateY(0);
+  border-color: var(--wiof-btn-fill-hover-bg);
 }
 
 .no-margin {

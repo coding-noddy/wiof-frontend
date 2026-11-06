@@ -340,14 +340,10 @@ ion-card-content.wiof-polls-widget-card-background {
   font-size: var(--wiof-btn-font-size);
   cursor: pointer;
   // Flat: a repeated action, not the page's primary CTA (brand rule).
-  transition: transform 0.18s ease;
+  transition: background 0.15s ease;
 
   &:hover {
-    transform: translateY(-1px);
-  }
-
-  &:active {
-    transform: translateY(0);
+    background: var(--wiof-btn-fill-hover-bg);
   }
 }
 

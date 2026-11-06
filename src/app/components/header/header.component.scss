@@ -126,7 +126,7 @@ $mobile-breakpoint: 768px;
   cursor: pointer;
   margin-left: 12px;
   white-space: nowrap;
-  transition: transform 0.15s ease, background 0.2s ease;
+  transition: background 0.15s ease;
 
   @media (min-width: $mobile-breakpoint) and (max-width: 899px) {
     padding: 0 0.9rem;
@@ -135,11 +135,6 @@ $mobile-breakpoint: 768px;
 
   &:hover:not(:disabled) {
     background: var(--wiof-btn-fill-hover-bg);
-    transform: translateY(-1px);
-  }
-
-  &:active:not(:disabled) {
-    transform: translateY(0);
   }
 
   &:disabled {

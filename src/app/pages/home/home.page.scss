@@ -364,7 +364,7 @@ $page-padding-mobile:  16px;
     animation-delay: 3s;
 
     &:hover {
-      transform: translateY(-1px);
+      background-color: var(--wiof-btn-primary-hover-bg);
     }
   }
 

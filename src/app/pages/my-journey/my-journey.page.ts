@@ -560,7 +560,10 @@ export class MyJourneyPage implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (history) => {
-          this.recentActions = history.filter((a) => a.status === 'COMPLETE').slice(0, 10);
+          // All completed actions (the list collapses to the first few, with
+          // "Show all"): it used to stop at 10, so it didn't add up to the
+          // Unique Actions and Total Completions above it.
+          this.recentActions = history.filter((a) => a.status === 'COMPLETE');
           this.actionsTakenLoading = false;
           this.scrollToPendingFragment();
         },

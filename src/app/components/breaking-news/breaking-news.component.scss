@@ -182,7 +182,7 @@
     font-size: var(--wiof-btn-font-size);
     text-decoration: none;
     // Flat: a repeated action, not the page's primary CTA (brand rule).
-    transition: transform 0.18s ease, gap 0.18s ease;
+    transition: background 0.15s ease;
 
     ion-icon {
       font-size: 1rem;
@@ -190,9 +190,7 @@
     }
 
     &:hover {
-      transform: translateY(-1px);
-
-      ion-icon { transform: translateX(2px); }
+      background: var(--wiof-btn-fill-hover-bg);
     }
   }
 

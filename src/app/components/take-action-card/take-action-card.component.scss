@@ -182,7 +182,7 @@
   transition: transform 0.15s ease, background 0.15s ease, opacity 0.15s ease;
 
   &:hover:not(:disabled) {
-    transform: translateY(-1px);
+    background: var(--wiof-btn-fill-hover-bg);
   }
 
   &.done {
