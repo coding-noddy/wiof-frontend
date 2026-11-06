@@ -20,6 +20,8 @@ Reset, done right. **Deploy with `-Backend`** (`resetEngagementData`; rules for 
 - **The reset signed the member out** although "your account remains active". They stay signed in and land on My Journey.
 - Today on WIOF: "See the full calendar" is a teal outline button inside the card (right side; under the text on phones), not a footer strip.
 - Coffee Conversation cards on phones and tablets: the video's bottom corners are square against the text (rounded corners left gaps showing the band).
+- **One button standard** (`--wiof-btn-*` tokens in `src/theme/variables.scss`): every text button is 40px, 14px, weight 700 (the home hero, the page's one primary CTA, the large 44px size on every screen, no longer 32px on phones); icon buttons 40px (the conversation card's share and ♡ now match). Repeated teal buttons are flat (Read Full Story, Submit Vote, Explore conversation lost their coloured shadows). Measured before: five heights (32–40px), four font sizes, three weights.
+- **Energy widget "Calculate"** is the site's teal action button (was a darkened-Marigold gradient with a shadow, off the palette).
 - Device memories of activity ("Not yet" answers; with actions, the last impact amounts) are cleared with the reset.
 - Privacy policy (6 November 2026): what the reset clears and keeps, polls, and anonymous totals. docs/METRICS.md "Resets" updated.
 

@@ -239,21 +239,21 @@
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
-        padding: 0.6rem 0.9rem;
+        min-height: var(--wiof-btn-height);
+        padding: 0 var(--wiof-btn-padding-x);
         border-radius: 999px;
         background: var(--wiof-teal-fill);
         color: $light-color;
-        font-size: 0.82rem;
-        font-weight: 800;
+        font-size: var(--wiof-btn-font-size);
+        font-weight: var(--wiof-btn-font-weight);
         text-decoration: none;
-        box-shadow: 0 8px 16px rgba(33, 153, 159, 0.22);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        // Flat: a repeated action, not the page's primary CTA (brand rule).
+        transition: transform 0.2s ease;
 
         ion-icon { font-size: 0.95rem; }
 
         &:hover {
           transform: translateX(2px);
-          box-shadow: 0 10px 18px rgba(33, 153, 159, 0.28);
         }
       }
 
@@ -519,8 +519,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: var(--wiof-icon-btn-size);
+  height: var(--wiof-icon-btn-size);
   border-radius: 50%;
   border: 1.5px solid var(--wiof-warm-grey);
   background: var(--wiof-warm-white);
@@ -541,6 +541,9 @@
 // The ♡ matches the share button here (flat and bordered, not the floating
 // over-an-image style it has on blog and video cards).
 .conversation-actions ::ng-deep .bookmark-btn {
+  // The same size as the share button beside it, phones included.
+  width: var(--wiof-icon-btn-size);
+  height: var(--wiof-icon-btn-size);
   border: 1.5px solid var(--wiof-warm-grey);
   background: var(--wiof-warm-white);
   box-shadow: none;

@@ -156,12 +156,12 @@
   flex-shrink: 0;
   align-items: center;
   gap: 0.35rem;
-  min-height: 40px;
-  padding: 0.45rem 1rem;
+  min-height: var(--wiof-btn-height);
+  padding: 0 var(--wiof-btn-padding-x);
   border: 1.5px solid var(--wiof-teal-fill);
   border-radius: 999px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: var(--wiof-btn-font-size);
+  font-weight: var(--wiof-btn-font-weight);
   white-space: nowrap;
   color: var(--wiof-teal-text);
   text-decoration: none;
