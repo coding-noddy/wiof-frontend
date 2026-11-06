@@ -142,6 +142,18 @@
                 Shown on Take Action.
               }
             </p>
+            <form class="community-min" (ngSubmit)="saveMinMembers()">
+              <label>
+                Show on Take Action from
+                <input type="number" name="minMembers" min="1" max="1000" [(ngModel)]="minMembersInput" />
+                members
+              </label>
+              <button type="submit" class="btn-secondary" [disabled]="savingMinMembers">{{ savingMinMembers ? 'Saving…' : 'Save' }}</button>
+            </form>
+            <p class="card-hint">With very few members, someone could guess who did what. 20 is the default; signed in as an admin you always see a preview on Take Action anyway.</p>
+            @if (minMembersMessage) {
+              <p class="card-hint" role="status">{{ minMembersMessage }}</p>
+            }
             @if (c.lines.length) {
               <ul class="community-lines">
                 @for (line of c.lines; track line.measure) {

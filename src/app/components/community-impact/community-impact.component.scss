@@ -31,3 +31,15 @@
     color: var(--wiof-teal-text);
   }
 }
+
+// Admin preview: dashed, so it's clearly not what everyone sees yet.
+.community.is-preview {
+  border-style: dashed;
+}
+
+.community-preview {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.78rem;
+  color: var(--wiof-ink-muted);
+}

@@ -1,6 +1,15 @@
 @if (view$ | async; as v) {
-  <p class="community">
+  <p class="community" [class.is-preview]="v.preview">
     <ion-icon aria-hidden="true" name="earth-outline"></ion-icon>
-    <span><strong>Together this month</strong>, {{ v.members | number }} WIOF members saved {{ v.sentence }}.</span>
+    <span>
+      @if (v.sentence) {
+        <strong>Together this month</strong>, {{ v.members | number }} WIOF member{{ v.members === 1 ? '' : 's' }} saved {{ v.sentence }}.
+      } @else {
+        <strong>Together this month</strong>: nothing saved yet.
+      }
+      @if (v.preview) {
+        <span class="community-preview">Preview for admins: everyone sees this from {{ v.minMembers | number }} members (now {{ v.members | number }}). Change it in Admin → Analytics.</span>
+      }
+    </span>
   </p>
 }

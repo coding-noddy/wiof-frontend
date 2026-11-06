@@ -1505,3 +1505,17 @@ describe('community_impact/{month} (8.15.0)', () => {
     await assertFails(testEnv.authenticatedContext('alice').firestore().collection('community_impact').doc('2026-12').set({ month: '2026-12' }));
   });
 });
+
+describe('site_settings/community_impact (8.15.0)', () => {
+  const settings = (db) => db.collection('site_settings').doc('community_impact');
+  it('only an admin sets the minimum, a whole number from 1 to 1000', async () => {
+    await seed((db) => db.collection('admins').doc('boss').set({ email: 'boss@test.com' }));
+    const boss = testEnv.authenticatedContext('boss').firestore();
+    await assertSucceeds(settings(boss).set({ minMembers: 1 }));
+    await assertFails(settings(boss).set({ minMembers: 0 }));
+    await assertFails(settings(boss).set({ minMembers: 2.5 }));
+    await assertFails(settings(boss).set({ minMembers: 5, extra: true }));
+    await assertFails(settings(testEnv.authenticatedContext('alice').firestore()).set({ minMembers: 1 }));
+    await assertSucceeds(settings(testEnv.unauthenticatedContext().firestore()).get());
+  });
+});

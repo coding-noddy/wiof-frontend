@@ -4,7 +4,7 @@
  */
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
-const { MIN_MEMBERS, computeCommunityImpact } = require('./community-impact');
+const { MIN_MEMBERS, computeCommunityImpact, minMembersFrom } = require('./community-impact');
 
 describe('community impact', () => {
   const metrics = [
@@ -26,7 +26,13 @@ describe('community impact', () => {
     assert.deepEqual(computeCommunityImpact(metrics, new Set(['team']), '2026-10').totals, { water: 106 });
   });
 
-  it('shows numbers only from 20 members', () => {
+  it('shows numbers from 20 members by default, or from the admin\'s minimum', () => {
     assert.equal(MIN_MEMBERS, 20);
+    assert.equal(minMembersFrom(null), 20);
+    assert.equal(minMembersFrom({ minMembers: 1 }), 1);
+    assert.equal(minMembersFrom({ minMembers: 0 }), 20);
+    assert.equal(minMembersFrom({ minMembers: 2.5 }), 20);
+    assert.equal(minMembersFrom({ minMembers: '5' }), 20);
+    assert.equal(computeCommunityImpact(metrics, new Set(), '2026-11', 1).minMembers, 1);
   });
 });

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
@@ -11,6 +12,7 @@ import { AnalyticsPage } from './analytics.page';
 @NgModule({
   imports: [
     CommonModule,
+    FormsModule,
     IonicModule,
     BaseChartDirective,
     AnalyticsPageRoutingModule
