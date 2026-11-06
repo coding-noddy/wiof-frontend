@@ -28,6 +28,7 @@ describe('Impact (8.13.0)', () => {
   it('says it the way people read it', () => {
     expect(formatImpact(tap, 12)).toBe('about 12 L of water');
     expect(formatImpact(fan, 0.0249)).toBe('about 0.02 kWh of electricity');
+    expect(formatImpact(fan, 0.004)).toBe('under 0.01 kWh of electricity');
     expect(formatImpact({ ...tap, measure: 'plastic', resultLabel: 'plastic bottles' }, 3)).toBe('3 plastic bottles');
     expect(roundForPeople(4.36)).toBe('4.4');
     expect(roundForPeople(12345)).toBe('12,345');

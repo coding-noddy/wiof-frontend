@@ -88,11 +88,13 @@ export function roundForPeople(value: number): string {
 /** "about 18 L of water", "about 0.03 kWh", "3 plastic bottles". */
 export function formatImpact(impact: ActionImpact, value: number): string {
   const v = roundForPeople(value);
+  // "under 0.01 kWh", not "about < 0.01 kWh".
+  const about = v.startsWith('<') ? `under ${v.slice(2)}` : `about ${v}`;
   switch (impact.measure) {
-    case 'water': return `about ${v} L of water`;
-    case 'energy': return `about ${v} kWh of electricity`;
-    case 'co2': return `about ${v} kg of CO₂`;
-    case 'food': return `about ${v} kg of food`;
+    case 'water': return `${about} L of water`;
+    case 'energy': return `${about} kWh of electricity`;
+    case 'co2': return `${about} kg of CO₂`;
+    case 'food': return `${about} kg of food`;
     case 'plastic': return `${v} ${impact.resultLabel || 'plastic items'}`;
   }
 }
