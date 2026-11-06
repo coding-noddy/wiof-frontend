@@ -349,3 +349,54 @@ h2 {
     display: none;
   }
 }
+
+// "Did you try it?" (8.15.0): one gentle line, above the glance lines.
+.follow-up {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.6rem;
+  padding: 0.75rem 0.95rem;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  border-radius: 14px;
+  background: var(--wiof-warm-white);
+}
+
+.follow-up-text {
+  flex: 1;
+  min-width: 12rem;
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--wiof-ink);
+}
+
+.follow-up-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.follow-up-yes,
+.follow-up-later {
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.follow-up-yes {
+  border: none;
+  background: var(--wiof-teal-fill);
+  color: var(--wiof-warm-white);
+
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
+.follow-up-later {
+  border: 1.5px solid var(--wiof-warm-grey);
+  background: transparent;
+  color: var(--wiof-ink);
+}

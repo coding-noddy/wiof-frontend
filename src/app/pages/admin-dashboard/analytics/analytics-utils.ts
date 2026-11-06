@@ -18,6 +18,8 @@ export interface DailyStats {
   topStories: { id: string; title: string; element: string | null; reads: number }[];
   topActions: { id: string; title: string; completions: number }[];
   firstSteps: { members: number; choseElements: number; readStory: number; watchedVideo: number; checkedEq: number; didAction: number; allFive: number };
+  /** Members active that day (8.15.0), for "Coming back". Missing on older summaries until rebuilt. */
+  activeMemberIds?: string[];
   traffic: null | { error?: string; users?: number; newUsers?: number; sessions?: number; pageViews?: number;
     topPages?: { path: string; title: string; views: number; users: number }[]; groups?: { group: string; views: number }[] };
   computedAt?: any;
@@ -152,4 +154,46 @@ export function summarise(stats: DailyStats[], last: string, count: number): Ana
       .map(({ total: completions, item }) => ({ title: item.title, completions })),
     ga: withTraffic.length ? 'connected' : days.some((s) => s.traffic?.error) ? 'error' : 'off'
   };
+}
+
+export interface ReturnRate {
+  label: string;
+  /** Members active in the earlier window. */
+  base: number;
+  /** Of those, how many were active again in the later window. */
+  returned: number;
+  rate: number | null;
+  /** False when a day in either window has no member list yet (summaries from before 8.15.0). */
+  complete: boolean;
+}
+
+/**
+ * "Coming back" (8.15.0): of the members active in one window, how many
+ * were active again in the window after it, ending on `last`.
+ * Week: active 8–14 days ago, back in the last 7 days.
+ * Month: active 31–60 days ago, back in the last 30 days.
+ */
+export function returnRates(stats: DailyStats[], last: string): ReturnRate[] {
+  const byDay = new Map(stats.map((s) => [s.day, s]));
+  const windows: [string, number][] = [['Came back within a week', 7], ['Came back within a month', 30]];
+  return windows.map(([label, size]) => {
+    const days = dayLabels(last, size * 2);
+    let complete = true;
+    const members = (window: string[]) => {
+      const ids = new Set<string>();
+      for (const d of window) {
+        const list = byDay.get(d)?.activeMemberIds;
+        if (!list) {
+          complete = false;
+          continue;
+        }
+        list.forEach((id) => ids.add(id));
+      }
+      return ids;
+    };
+    const base = members(days.slice(0, size));
+    const recent = members(days.slice(size));
+    const returned = [...base].filter((id) => recent.has(id)).length;
+    return { label, base: base.size, returned, rate: percent(returned, base.size), complete };
+  });
 }

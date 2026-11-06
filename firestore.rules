@@ -230,6 +230,13 @@ service cloud.firestore {
         );
     }
 
+    // "Together this month" (8.15.0, functions/community-impact.js): totals
+    // only, nothing about any one person. Written by the server.
+    match /community_impact/{month} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     match /activity_log/{docId} {
       // Users can read their own history; admins can read aggregate analytics.
       allow read: if isAdmin()

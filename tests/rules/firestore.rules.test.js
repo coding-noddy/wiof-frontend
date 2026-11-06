@@ -1496,3 +1496,12 @@ describe('Poll/{id} (question configuration)', () => {
     await assertSucceeds(db.collection('Poll').add({ question: 'Save water?', options: ['Yes', 'No'] }));
   });
 });
+
+describe('community_impact/{month} (8.15.0)', () => {
+  it('anyone can read the monthly totals; no client can write them', async () => {
+    await seed((db) => db.collection('community_impact').doc('2026-11').set({ month: '2026-11', totals: { water: 100 }, members: 3, minMembers: 20 }));
+    await assertSucceeds(testEnv.unauthenticatedContext().firestore().collection('community_impact').doc('2026-11').get());
+    await assertFails(testEnv.authenticatedContext('alice').firestore().collection('community_impact').doc('2026-11').set({ totals: { water: 1e9 } }));
+    await assertFails(testEnv.authenticatedContext('alice').firestore().collection('community_impact').doc('2026-12').set({ month: '2026-12' }));
+  });
+});

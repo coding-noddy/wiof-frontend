@@ -7,6 +7,16 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.15.0] - 2026-11-06
+
+Coming back, together. **Deploy with `-Backend`** (the daily schedule builds the community summary; rules for `community_impact`), then rebuild past days so "Coming back" has history: `node scripts/daily-stats.js --project prod --days 60` (dry run, then `--apply`).
+
+### Added
+- **"Did you try it?"** on the home panel: for an action a member started ("I'll try this") on an earlier day, one gentle line with **Yes, I did** (marks it done) and **Not yet** (asks again tomorrow; per device). `models/FollowUp.ts`.
+- **"Together this month"** on Take Action: "Together this month, 24 WIOF members saved about 1,200 L of water, about 30 kg of CO₂ and 40 plastic items avoided." From a public monthly summary, `community_impact/{YYYY-MM}` (`functions/community-impact.js`), built every 3 hours from members' own monthly totals, team left out, totals only. Shown only from 20 members; admins see it always in Admin → Analytics.
+- **"Coming back"** in Admin → Analytics: of the members active 8–14 days ago, how many came back in the last 7 days; and the same for 30-day windows. Each daily summary now records who was active (`activeMemberIds`, admin-only), and the page works the rates out from the days it already loads.
+- docs/METRICS.md: the three definitions.
+
 ## [8.14.0] - 2026-11-06
 
 Impact, step 2: personal impact. **Deploy with `-Backend`** (rules for `impact_reported`; the completion and event triggers), then `node scripts/recompute-user-metrics.js --project prod` (dry run, then `--apply`) to count earlier completions.

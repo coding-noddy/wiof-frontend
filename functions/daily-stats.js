@@ -147,9 +147,13 @@ function computeDailyStats({ day, events, adminIds, users, metrics, story, actio
     topStories: top(storyCounts).map(({ key, count }) => ({ id: key, title: story(key)?.title || key, element: story(key)?.element || null, reads: count })),
     topActions: top(actionCounts).map(({ key, count }) => ({ id: key, title: action(key)?.title || key, completions: count })),
     firstSteps: steps,
+    // Who was active (8.15.0): Admin → Analytics works out how many came
+    // back from these, over the days it already loads. Account IDs only,
+    // in an admin-only doc; never shown.
+    activeMemberIds: [...new Set(counted.map((e) => e.userId))].sort(),
     traffic,
     excludes: 'admins',
-    version: 1
+    version: 2
   };
 }
 
