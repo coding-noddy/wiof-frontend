@@ -13,7 +13,7 @@ import { QualityReadEntry, EqHistoryEntry, PollHistoryEntry, VideoWatchHistoryEn
 
 export interface ActivityLogInput {
   userId: string;
-  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage' | 'daily_visit' | 'action_completed' | 'suggestion_click';
+  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage' | 'daily_visit' | 'action_completed' | 'suggestion_click' | 'impact_reported';
   contentId?: string;
   widgetName?: string;
   score?: number;
@@ -31,7 +31,7 @@ export interface ActivityLogInput {
 export interface ActivityLogEntry {
   id?: string;
   userId: string;
-  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage' | 'daily_visit' | 'action_completed' | 'suggestion_click';
+  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage' | 'daily_visit' | 'action_completed' | 'suggestion_click' | 'impact_reported';
   /** Schema version of this entry's shape — see ActivityService.SCHEMA_VERSION.
    *  Lets a future change to the event shape tell old and new entries apart
    *  instead of guessing from which optional fields happen to be present. */
@@ -55,6 +55,9 @@ export interface ActivityLogEntry {
   via?: string;
   contentType?: 'blog' | 'video' | 'action';
   position?: number;
+  // impact_reported (8.14.0): which completion, and how much the member says they did.
+  completionNumber?: number;
+  amount?: number;
   /** Set by onActivityLogCreated (Cloud Function) after its server checks;
    *  only accepted events count toward user_metrics. Absent on events from
    *  before validation existed, and briefly on brand-new ones. */
@@ -98,6 +101,9 @@ export interface EngagementMetrics {
   uniqueActionsCompleted: number;
   actionsByElement: { [element: string]: number };
   lastActionAt: Date | null;
+  /** Personal impact (8.14.0, functions/impact.js): estimated savings by measure, all time and per month. */
+  impactTotals: { [measure: string]: number };
+  impactByMonth: { [month: string]: { [measure: string]: number } };
 }
 
 /**
@@ -366,6 +372,26 @@ export class ActivityService {
   }
 
   /**
+   * "About how much?" after completing an action (8.14.0): the amount for
+   * that completion, once (fixed ID). The server checks it and works out the
+   * saving from the action's recipe; the completion already counted the
+   * default, so skipping needs no write.
+   */
+  async logImpactReported(userId: string, actionId: string, completionNumber: number, amount: number): Promise<void> {
+    const entry: Omit<ActivityLogEntry, 'id'> = {
+      userId,
+      activityType: 'impact_reported',
+      schemaVersion: ActivityService.SCHEMA_VERSION,
+      contentId: actionId,
+      completionNumber,
+      amount,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      calendarDay: toCalendarDay(new Date())
+    };
+    await this.writeDedupedEntry(`${userId}_impact_reported_${actionId}_${completionNumber}`, entry);
+  }
+
+  /**
    * Logs a poll_vote activity for an authenticated user. Deduplicated at the
    * deterministic doc ID (max one per userId+contentId, lifetime) — the poll
    * UI's own hasUserVoted check already tries to prevent double-voting, but
@@ -467,7 +493,9 @@ export class ActivityService {
           totalActionsCompleted: doc?.totalActionsCompleted || 0,
           uniqueActionsCompleted: doc?.uniqueActionsCompleted || 0,
           actionsByElement: doc?.actionsByElement || {},
-          lastActionAt: doc?.lastActionAt?.toDate ? doc.lastActionAt.toDate() : null
+          lastActionAt: doc?.lastActionAt?.toDate ? doc.lastActionAt.toDate() : null,
+          impactTotals: doc?.impactTotals || {},
+          impactByMonth: doc?.impactByMonth || {}
         } as EngagementMetrics))
       );
   }

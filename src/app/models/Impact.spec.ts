@@ -4,6 +4,8 @@ import {
   defaultFrequency,
   everydayEquivalent,
   formatImpact,
+  impactLines,
+  impactMonth,
   impactValue,
   projectImpact,
   roundForPeople,
@@ -58,5 +60,20 @@ describe('Impact (8.13.0)', () => {
     expect(validImpact({ ...tap, perUnit: 0 })).toBeNull();
     expect(validImpact({ ...tap, measure: 'gold' as any })).toBeNull();
     expect(validImpact(null)).toBeNull();
+  });
+});
+
+describe('Impact totals for My Journey (8.14.0)', () => {
+  it('lists the measures with a total, in a fixed order, in everyday terms', () => {
+    const lines = impactLines({ co2: 1.54, water: 30, energy: 0 });
+    expect(lines.map((l) => l.measure)).toEqual(['water', 'co2']);
+    expect(lines[0]).toEqual({ measure: 'water', text: 'about 30 L of water', equivalent: '≈ 2 buckets' });
+    expect(lines[1].equivalent).toBe('like 10 km by car');
+    expect(impactLines(null)).toEqual([]);
+  });
+
+  it('files months in India time, as the server does', () => {
+    expect(impactMonth(new Date('2026-10-31T19:00:00Z'))).toBe('2026-11');
+    expect(impactMonth(new Date('2026-10-31T18:00:00Z'))).toBe('2026-10');
   });
 });

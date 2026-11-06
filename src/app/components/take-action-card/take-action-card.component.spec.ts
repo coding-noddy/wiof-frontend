@@ -5,6 +5,7 @@ import { TakeActionCardComponent } from './take-action-card.component';
 describe('TakeActionCardComponent: "I\'ll try this" under a story (offerTry)', () => {
   const action: any = { id: 'leak', title: 'Fix a Water Leak', elementIds: ['water'], repeatType: REPEAT_TYPE.ONCE };
   let status: any;
+  let activity: { logImpactReported: jasmine.Spy };
   let users: { startAction: jasmine.Spy; completeAction: jasmine.Spy; getUserActionStatus: jasmine.Spy; getActionStreak: jasmine.Spy };
 
   function make(offerTry = true, signedIn = true) {
@@ -16,7 +17,8 @@ describe('TakeActionCardComponent: "I\'ll try this" under a story (offerTry)', (
     };
     const auth = { currentUser$: new BehaviorSubject(signedIn ? { uid: 'u1' } : null) };
     const ui = { presentToast: jasmine.createSpy('presentToast').and.resolveTo() };
-    const card = new TakeActionCardComponent(auth as any, users as any, ui as any, {} as any);
+    activity = { logImpactReported: jasmine.createSpy('logImpactReported').and.resolveTo() };
+    const card = new TakeActionCardComponent(auth as any, users as any, ui as any, {} as any, activity as any);
     card.action = action;
     card.offerTry = offerTry;
     card.ngOnInit();
@@ -44,6 +46,44 @@ describe('TakeActionCardComponent: "I\'ll try this" under a story (offerTry)', (
     await card.onActionClick();
     expect(users.startAction).not.toHaveBeenCalled();
     expect(users.completeAction).toHaveBeenCalled();
+  });
+
+  it('after "Done it", asks "about how much?" for an action with an impact recipe, and saves it for that completion', async () => {
+    action.impact = { measure: 'water', perUnit: 6, inputLabel: 'Minutes the tap would have run', inputUnit: 'min', inputDefault: 2, inputMax: 30, assumption: 'x', status: 'draft' };
+    try {
+      localStorage.removeItem('wiof_impact_amount_leak');
+      const card = make(false);
+      await card.onActionClick();
+      expect(card.impactPrompt?.completionNumber).toBe(1);
+      expect(card.impactPrompt?.amount).toBe(2);
+      expect(card.impactPreview).toBe('about 12 L of water');
+      card.setImpactAmount('5');
+      expect(card.impactPreview).toBe('about 30 L of water');
+      await card.saveImpact();
+      expect(activity.logImpactReported).toHaveBeenCalledOnceWith('u1', 'leak', 1, 5);
+      expect(card.impactPrompt).toBeNull();
+      expect(localStorage.getItem('wiof_impact_amount_leak')).toBe('5');
+    } finally {
+      delete action.impact;
+      localStorage.removeItem('wiof_impact_amount_leak');
+    }
+  });
+
+  it('Skip sends nothing (the completion already counts the default), and actions without a recipe never ask', async () => {
+    action.impact = { measure: 'water', perUnit: 6, inputLabel: 'Minutes', inputUnit: 'min', inputDefault: 2, inputMax: 30, assumption: 'x', status: 'draft' };
+    try {
+      const card = make(false);
+      await card.onActionClick();
+      card.skipImpact();
+      expect(card.impactPrompt).toBeNull();
+      expect(activity.logImpactReported).not.toHaveBeenCalled();
+    } finally {
+      delete action.impact;
+    }
+    status = null;
+    const plain = make(false);
+    await plain.onActionClick();
+    expect(plain.impactPrompt).toBeNull();
   });
 
   it('asks a guest to sign in instead of saving', async () => {

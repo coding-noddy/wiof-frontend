@@ -59,6 +59,7 @@ A Passport milestone must state the trust level of the metric it uses. Self-repo
 | `uniqueActionsCompleted` | home panel | Number of distinct actions completed at least once. | actions · lifetime | Self-reported |
 | `actionsByElement` | element progress | Completions per element (air, water, earth, energy, spirit), from each action's elements when it was completed. An action with two elements counts toward both. | completions per element | Self-reported |
 | `lastActionAt` | — | Latest completion time. | timestamp | Self-reported |
+| `impactTotals`, `impactByMonth` | "Your impact" (My Journey) | Estimated savings per measure (water L, electricity kWh, CO₂ kg, plastic items, food kg). Each completion counts its action's recipe (`actions/{id}.impact`, snapshot on the `action_completed` event) at the default amount; an accepted `impact_reported` ("About how much?", one per completion, capped at the recipe's maximum) replaces that amount. Worked out on the server only (`functions/impact.js`). Completions before 8.14.0 count at the current recipe's default (recompute). Conservative estimates, always shown as "about". | estimate · lifetime, and per India-time month | **Self-reported estimate**. A Passport milestone using it must say so. |
 
 ### Journey (derived on the page, not stored; `src/app/models/Journey.ts`)
 

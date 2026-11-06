@@ -13,14 +13,15 @@
  * Pure apart from the lookups passed in (user-metrics.test.js).
  */
 const { VALIDATOR_VERSION, validateActivityEvent } = require('./activity-validation');
+const { completionEventId, computeImpact, impactSnapshot } = require('./impact');
 
 /** The user_metrics fields this module owns, in report order. */
 const METRIC_FIELDS = [
   'blogsRead', 'qualityReads', 'videosWatched', 'videosCompleted', 'pollsVoted', 'lastEqScore',
   'totalActionsCompleted', 'uniqueActionsCompleted'
 ];
-/** Per-element count maps, compared key by key in the report. */
-const MAP_FIELDS = ['qualityReadsByElement'];
+/** Maps replaced whole by the recompute, compared key by key in the report. */
+const MAP_FIELDS = ['qualityReadsByElement', 'impactTotals', 'impactByMonth'];
 
 const ELEMENTS = new Set(['air', 'water', 'earth', 'energy', 'spirit']);
 
@@ -55,7 +56,16 @@ function makeContentLookups(db, { cache = false } = {}) {
       return byId.exists ? { ...byId.data(), id: byId.id } : null;
     }),
     pollExists: (id) => remember(`poll:${id}`, async () => (await db.collection('Poll').doc(String(id)).get()).exists),
-    actionExists: (id) => remember(`action:${id}`, async () => (await db.collection('actions').doc(String(id)).get()).exists)
+    actionExists: (id) => remember(`action:${id}`, async () => (await db.collection('actions').doc(String(id)).get()).exists),
+    getAction: (id) => remember(`actionDoc:${id}`, async () => {
+      const snap = await db.collection('actions').doc(String(id)).get();
+      return snap.exists ? { ...snap.data(), id: snap.id } : null;
+    }),
+    // Never cached: an impact report reads the completion it belongs to, which may be seconds old.
+    getActivity: async (id) => {
+      const snap = await db.collection('activity_log').doc(String(id)).get();
+      return snap.exists ? snap.data() : null;
+    }
   };
 }
 
@@ -76,7 +86,10 @@ function emptyUser() {
     totalActionsCompleted: 0,
     uniqueActionsCompleted: 0,
     actionsByElement: {},
-    lastActionAt: null
+    lastActionAt: null,
+    // Personal impact (8.14.0): accepted completions, and reported amounts by completion.
+    completions: [],
+    reported: new Map()
   };
 }
 
@@ -138,6 +151,12 @@ async function computeUserMetrics(activityDocs, actionDocs, lookups) {
       case 'poll_vote':
         u.pollsVoted.add(data.contentId);
         break;
+      case 'action_completed':
+        u.completions.push({ id, data });
+        break;
+      case 'impact_reported':
+        u.reported.set(completionEventId(data), data.amount);
+        break;
       case 'eq_completion':
         if (isNewer(data.timestamp, u.lastEqDate)) {
           u.lastEqScore = data.score !== undefined ? data.score : null;
@@ -166,9 +185,18 @@ async function computeUserMetrics(activityDocs, actionDocs, lookups) {
     });
   }
 
+  // Completions made before 8.14.0 have no snapshot: count them at the
+  // action's current recipe and default amount.
+  const snapshotFor = async (actionId) => (lookups.getAction ? impactSnapshot(await lookups.getAction(actionId)) : null);
+  const impactByUser = new Map();
+  for (const [uid, u] of perUser) {
+    impactByUser.set(uid, await computeImpact(u.completions, u.reported, snapshotFor));
+  }
+
   const metrics = new Map();
   perUser.forEach((u, uid) => {
     metrics.set(uid, {
+      ...impactByUser.get(uid),
       blogsRead: u.blogsRead.size,
       qualityReads: u.qualityReads.size,
       qualityReadsByElement: u.qualityReadsByElement,
@@ -205,7 +233,9 @@ function diffMetrics(storedByUid, computedByUid) {
       if (!same) changes[field] = [before, after];
     }
     for (const field of MAP_FIELDS) {
-      const nonZero = (m) => JSON.stringify(Object.entries(m || {}).filter(([, n]) => n).sort());
+      // Values rounded (sums of decimals differ in the last digits) and nested maps flattened, sorted.
+      const flat = (m, prefix = '') => Object.entries(m || {}).flatMap(([k, v]) => (v && typeof v === 'object' ? flat(v, `${prefix}${k}.`) : [[`${prefix}${k}`, Math.round(Number(v) * 1000) / 1000]]));
+      const nonZero = (m) => JSON.stringify(flat(m).filter(([, n]) => n).sort());
       if (nonZero(stored[field]) !== nonZero(computed[field])) changes[field] = [stored[field] || null, computed[field]];
     }
     if (Object.keys(changes).length > 0) diffs.push({ uid, changes });

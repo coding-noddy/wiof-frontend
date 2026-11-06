@@ -138,3 +138,25 @@ export function projectImpact(perTime: number, frequency: { times: number; per: 
   const perMonth = frequency.per === 'week' ? perTime * frequency.times * (52 / 12) : perTime * frequency.times;
   return { month: perMonth, year: perMonth * 12 };
 }
+
+/** India-time month, "YYYY-MM", as the server files totals (functions/impact.js). */
+export function impactMonth(date = new Date()): string {
+  return new Date(date.getTime() + 5.5 * 60 * 60 * 1000).toISOString().slice(0, 7);
+}
+
+export interface ImpactLine {
+  measure: ImpactMeasure;
+  text: string;
+  equivalent: string | null;
+}
+
+/** Totals by measure as lines to show, in a fixed order, leaving out zeros. */
+export function impactLines(totals: { [measure: string]: number } | null | undefined): ImpactLine[] {
+  return IMPACT_MEASURES
+    .filter((m) => (totals?.[m.value] || 0) > 0)
+    .map((m) => {
+      const recipe = { measure: m.value, resultLabel: 'plastic items avoided' } as ActionImpact;
+      const value = totals![m.value];
+      return { measure: m.value, text: formatImpact(recipe, value), equivalent: everydayEquivalent(recipe, value) };
+    });
+}

@@ -23,7 +23,12 @@ const BLOG = { content: '<p>' + 'word '.repeat(400) + '</p>' };
 const lookups = {
   getBlog: async (id) => (id === 'kalpasar' ? BLOG : null),
   pollExists: async (id) => id === 'poll-1',
-  actionExists: async (id) => id === 'reuse-container'
+  actionExists: async (id) => id === 'reuse-container',
+  // Completions for impact_reported: one with an impact snapshot, one without.
+  getActivity: async (id) => ({
+    alice_action_completed_tap_2: { userId: 'alice', activityType: 'action_completed', impact: { measure: 'water', perUnit: 6, inputMax: 30, amount: 2, value: 12 }, validation: { status: 'accepted' } },
+    alice_action_completed_calm_1: { userId: 'alice', activityType: 'action_completed', validation: { status: 'accepted' } }
+  })[id] || null
 };
 
 function event(activityType, fields = {}) {
@@ -57,6 +62,16 @@ describe('validateActivityEvent', () => {
     assert.equal((await verdict(click({ contentType: 'video', contentId: 'not a video' }))).reason, 'invalid_video_id');
     assert.equal((await verdict(click({ via: 'popup' }))).reason, 'unknown_via');
     assert.equal((await verdict(click({}), 'random')).reason, 'wrong_doc_id');
+  });
+
+  it('accepts an impact amount only for an own completion with an impact recipe', async () => {
+    const report = (fields) => event('impact_reported', { contentId: 'tap', completionNumber: 2, amount: 5, ...fields });
+    assert.equal(expectedDocId(report({})), 'alice_impact_reported_tap_2');
+    assert.equal((await verdict(report({}))).status, 'accepted');
+    assert.equal((await verdict(report({ completionNumber: 3 }))).reason, 'no_completion');
+    assert.equal((await verdict(report({ contentId: 'calm', completionNumber: 1 }))).reason, 'no_impact');
+    assert.equal((await verdict(report({ amount: -2 }))).reason, 'invalid_amount');
+    assert.equal((await verdict(report({}), 'random')).reason, 'wrong_doc_id');
   });
 
   it('rejects an unknown event type', async () => {
