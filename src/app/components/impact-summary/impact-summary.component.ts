@@ -81,7 +81,10 @@ export class ImpactSummaryComponent {
       const caption = shareCaption(tiles, this.period, this.monthLabel, url);
       const file = new File([blob], 'wiof-my-impact.png', { type: 'image/png' });
       const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean };
-      if (nav.share && nav.canShare?.({ files: [file] })) {
+      // The share sheet on phones and tablets (touch); on a computer, where it
+      // opens the system share panel, saving the image is more natural.
+      const touch = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
+      if (touch && nav.share && nav.canShare?.({ files: [file] })) {
         try {
           await nav.share({ files: [file], title: 'My impact with WIOF', text: caption });
           this.analytics?.logImpactShared(this.period, 'share');
