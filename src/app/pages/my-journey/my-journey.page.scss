@@ -283,6 +283,7 @@ $streak-color: var(--wiof-marigold);
     display: inline-block;
 
     &.blog,
+    &.conversation,
     &.video {
       background: rgba(33, 153, 159, 0.1);
       color: $accent-color;
