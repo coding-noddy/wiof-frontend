@@ -376,17 +376,52 @@ async function deleteAllOwnedBy(collectionName, uid) {
  * progress survives a reset). Reads the user's events once and deletes in
  * batches of 400; safe to retry, like deleteAllOwnedBy.
  */
-async function deleteActivityExceptActions(uid) {
-  const snapshot = await db.collection('activity_log').where('userId', '==', uid).get();
-  // Take Action progress stays (docs/METRICS.md), with its impact amounts.
-  const kept = new Set(['action_completed', 'impact_reported']);
-  const toDelete = snapshot.docs.filter((doc) => !kept.has(doc.get('activityType')));
-  for (let i = 0; i < toDelete.length; i += 400) {
+/** Deletes the given docs, 400 to a batch. */
+async function deleteDocs(docs) {
+  for (let i = 0; i < docs.length; i += 400) {
     const batch = db.batch();
-    toDelete.slice(i, i + 400).forEach((doc) => batch.delete(doc.ref));
+    docs.slice(i, i + 400).forEach((doc) => batch.delete(doc.ref));
     await batch.commit();
   }
-  return toDelete.length;
+  return docs.length;
+}
+
+/**
+ * The member's own activity: deletes it, except Take Action progress
+ * (completions and their impact amounts) unless `includeActions`. For each
+ * poll they voted in, first leaves a small guard (poll_vote_guards, "this
+ * account voted on this poll", no option or email), so the poll still knows
+ * after the reset and a second vote can't be added to the public results.
+ */
+async function resetActivity(uid, includeActions) {
+  const snapshot = await db.collection('activity_log').where('userId', '==', uid).get();
+  const kept = includeActions ? new Set() : new Set(['action_completed', 'impact_reported']);
+  const pollIds = [...new Set(snapshot.docs
+    .filter((doc) => doc.get('activityType') === 'poll_vote')
+    .map((doc) => String(doc.get('contentId') || ''))
+    .filter(Boolean))];
+  for (let i = 0; i < pollIds.length; i += 400) {
+    const batch = db.batch();
+    pollIds.slice(i, i + 400).forEach((pollId) => batch.set(db.collection(POLL_VOTE_GUARDS).doc(`${uid}_${pollId}`), {
+      userId: uid, pollId, createdAt: admin.firestore.FieldValue.serverTimestamp()
+    }));
+    await batch.commit();
+  }
+  return deleteDocs(snapshot.docs.filter((doc) => !kept.has(doc.get('activityType'))));
+}
+
+/** Removes the email and IP address from the member's raw poll votes; the vote itself stays counted. */
+async function anonymiseVotes(email) {
+  const address = String(email || '').trim().toLowerCase();
+  if (!address) return 0;
+  const snapshot = await db.collection('Polls').where('email', '==', address).get();
+  const del = admin.firestore.FieldValue.delete();
+  for (let i = 0; i < snapshot.docs.length; i += 400) {
+    const batch = db.batch();
+    snapshot.docs.slice(i, i + 400).forEach((doc) => batch.update(doc.ref, { email: del, ip4: del, ip6: del }));
+    await batch.commit();
+  }
+  return snapshot.size;
 }
 
 /**
@@ -409,10 +444,13 @@ async function deleteActivityExceptActions(uid) {
  * delete, so without this the dashboard summary would keep showing
  * pre-reset counts after the raw activity_log entries behind them are gone.
  *
- * Take Action progress is kept (docs/METRICS.md "Resets"): user_actions, its
- * action_completed events and the action counters are not touched, so the
- * counters always agree with the action cards and a recompute can't undo
- * the reset.
+ * Take Action progress is kept by default (docs/METRICS.md "Resets"):
+ * user_actions, its action_completed and impact_reported events and the
+ * action and impact counters are not touched, so the counters always agree
+ * with the action cards and a recompute can't undo the reset. With
+ * { includeActions: true } (8.16.0, a checkbox in Settings) they are cleared
+ * too. Either way, poll votes leave a guard so the member can't vote twice,
+ * and their raw votes lose the email and IP address (8.16.0).
  */
 exports.resetEngagementData = functions
   .region(REGION)
@@ -423,9 +461,17 @@ exports.resetEngagementData = functions
     }
 
     const uid = context.auth.uid;
+    // "Also clear my Take Action progress" (8.16.0): off unless the member ticks it.
+    const includeActions = !!(data && data.includeActions === true);
 
-    const deletedActivityCount = await deleteActivityExceptActions(uid);
+    const deletedActivityCount = await resetActivity(uid, includeActions);
     const deletedSavedContentCount = await deleteAllOwnedBy('user_saved_content', uid);
+    const anonymisedVoteCount = await anonymiseVotes(context.auth.token && context.auth.token.email);
+    let deletedActionCount = 0;
+    if (includeActions) {
+      deletedActionCount = await deleteAllOwnedBy('user_actions', uid);
+      await deleteAllOwnedBy('user_action_completions', uid);
+    }
 
     await db.collection('users').doc(uid).update({
       loginCount: 0,
@@ -448,10 +494,19 @@ exports.resetEngagementData = functions
       lastBlogReadDate: null,
       // delete(), not {}: a merge set would keep the old per-element keys.
       qualityReadsByElement: admin.firestore.FieldValue.delete(),
+      // Take Action progress and impact, only when the member chose to clear it.
+      ...(includeActions ? {
+        totalActionsCompleted: 0,
+        uniqueActionsCompleted: 0,
+        actionsByElement: admin.firestore.FieldValue.delete(),
+        lastActionAt: null,
+        impactTotals: admin.firestore.FieldValue.delete(),
+        impactByMonth: admin.firestore.FieldValue.delete()
+      } : {}),
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
 
-    return { ok: true, deletedActivityCount, deletedSavedContentCount };
+    return { ok: true, includeActions, deletedActivityCount, deletedSavedContentCount, deletedActionCount, anonymisedVoteCount };
   }));
 
 /**
@@ -616,6 +671,8 @@ exports.onActivityLogCreated = functions
   }));
 
 const KNOWN_ELEMENTS = new Set(['air', 'water', 'earth', 'energy', 'spirit']);
+/** "This account voted on this poll", kept through a reset (8.16.0). */
+const POLL_VOTE_GUARDS = 'poll_vote_guards';
 
 /**
  * Maintains the Take Action counters on `user_metrics/{uid}`

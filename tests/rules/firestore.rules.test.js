@@ -1519,3 +1519,15 @@ describe('site_settings/community_impact (8.15.0)', () => {
     await assertSucceeds(settings(testEnv.unauthenticatedContext().firestore()).get());
   });
 });
+
+describe('poll_vote_guards/{guardId} (8.16.0)', () => {
+  it('a member reads their own guard; nobody writes one from the browser', async () => {
+    await seed((db) => db.collection('poll_vote_guards').doc('alice_poll-1').set({ userId: 'alice', pollId: 'poll-1' }));
+    const alice = testEnv.authenticatedContext('alice').firestore();
+    await assertSucceeds(alice.collection('poll_vote_guards').doc('alice_poll-1').get());
+    await assertSucceeds(alice.collection('poll_vote_guards').doc('alice_poll-2').get()); // not there: still a clean "no"
+    await assertFails(testEnv.authenticatedContext('mallory').firestore().collection('poll_vote_guards').doc('alice_poll-1').get());
+    await assertFails(alice.collection('poll_vote_guards').doc('alice_poll-3').set({ userId: 'alice', pollId: 'poll-3' }));
+    await assertFails(alice.collection('poll_vote_guards').doc('alice_poll-1').delete());
+  });
+});

@@ -7,6 +7,20 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.16.0] - 2026-11-06
+
+Reset, done right. **Deploy with `-Backend`** (`resetEngagementData`; rules for `poll_vote_guards`).
+
+### Added
+- **"Also clear my Take Action progress"** in the reset dialog (off by default): clears completed and started actions, streaks and impact too. The dialog says exactly what goes either way.
+
+### Fixed
+- **A reset let a member vote in a poll again**, adding a second vote to the public results. The reset now leaves a guard per poll (`poll_vote_guards`, no option or email) and the poll checks it.
+- **Raw poll votes kept the member's email and IP address** after a reset; they're removed now (the vote stays counted).
+- **The reset signed the member out** although "your account remains active". They stay signed in and land on My Journey.
+- Device memories of activity ("Not yet" answers; with actions, the last impact amounts) are cleared with the reset.
+- Privacy policy (6 November 2026): what the reset clears and keeps, polls, and anonymous totals. docs/METRICS.md "Resets" updated.
+
 ## [8.15.1] - 2026-11-06
 
 Follow-ups to 8.15.0. **Deploy with `-Backend`** (rules for `site_settings/community_impact`; the community summary reads the minimum).

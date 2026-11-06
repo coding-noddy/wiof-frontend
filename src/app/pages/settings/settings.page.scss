@@ -556,3 +556,29 @@ ion-content {
 .reset-cancel { background: var(--wiof-ivory); color: var(--wiof-ink); }
 .reset-delete { background: var(--ion-color-danger); color: var(--ion-color-danger-contrast); }
 .reset-delete:disabled { background: rgba(var(--ion-color-danger-rgb), 0.35); color: var(--ion-color-danger-shade); cursor: not-allowed; }
+
+// "Also clear my Take Action progress" (8.16.0).
+.reset-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  margin: 0.25rem 0 0.75rem;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--wiof-ink);
+  cursor: pointer;
+
+  input {
+    margin-top: 0.2rem;
+    width: 1.05rem;
+    height: 1.05rem;
+    accent-color: var(--ion-color-danger);
+    flex-shrink: 0;
+  }
+}
+
+.reset-warning {
+  font-weight: 600;
+  color: var(--ion-color-danger);
+}

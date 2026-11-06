@@ -459,7 +459,9 @@ export class ActivityService {
         return { voted: true, selectedOption: data.selectedOption };
       }
 
-      return { voted: false };
+      // Voted before a reset (8.16.0): the reset leaves a guard, not the pick.
+      const guard = await this.firestore.firestore.collection('poll_vote_guards').doc(`${userId}_${contentId}`).get();
+      return guard.exists ? { voted: true } : { voted: false };
     } catch (error) {
       console.warn('hasUserVoted check failed:', error);
       return { voted: false };

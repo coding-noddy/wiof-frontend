@@ -86,8 +86,13 @@ export interface UserProfile {
 /** Result of the resetEngagementData Cloud Function — see UserProfileService.resetEngagementData(). */
 export interface ResetEngagementDataResult {
   ok: boolean;
+  /** Whether Take Action progress and impact were cleared too (8.16.0). */
+  includeActions?: boolean;
   deletedActivityCount: number;
   deletedSavedContentCount: number;
+  deletedActionCount?: number;
+  /** Raw poll votes that lost their email and IP address. */
+  anonymisedVoteCount?: number;
 }
 
 @Injectable({
@@ -360,12 +365,12 @@ export class UserProfileService {
    * identity. The `uid` param is unused server-side (identity comes from the
    * caller's auth token) but kept so call sites don't need to change.
    */
-  async resetEngagementData(uid: string): Promise<ResetEngagementDataResult> {
-    const resetEngagementData = httpsCallable<void, ResetEngagementDataResult>(
+  async resetEngagementData(uid: string, includeActions = false): Promise<ResetEngagementDataResult> {
+    const resetEngagementData = httpsCallable<{ includeActions: boolean }, ResetEngagementDataResult>(
       getWiofFunctions(),
       'resetEngagementData'
     );
-    const result = await resetEngagementData();
+    const result = await resetEngagementData({ includeActions });
     return result.data;
   }
 }

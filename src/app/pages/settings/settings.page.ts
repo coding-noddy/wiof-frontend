@@ -4,12 +4,32 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
 import firebase from 'firebase/compat/app';
+import { FOLLOW_UP_LATER_KEY } from 'src/app/models/FollowUp';
 
 import { AuthService } from 'src/app/services/auth.service';
 import { UserProfileService, validateAvatarFile } from 'src/app/services/user-profile.service';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 import { noWhitespaceOnlyValidator, minArrayLength, maxArrayLength } from './settings.validators';
 import { ELEMENTS } from 'src/app/app.constants';
+
+/**
+ * What this device remembers about the member's activity, cleared with a
+ * reset (8.16.0): the last "About how much?" amounts and the "Not yet"
+ * answers to "Did you try it?". Settings-like memories (consent, the
+ * welcome, "Hide for today") stay.
+ */
+export function clearDeviceEngagement(includeActions: boolean): void {
+  try {
+    const keys: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && (k === FOLLOW_UP_LATER_KEY || (includeActions && k.startsWith('wiof_impact_amount_')))) keys.push(k);
+    }
+    keys.forEach((k) => localStorage.removeItem(k));
+  } catch {
+    // Storage unavailable: nothing to clear.
+  }
+}
 
 @Component({
     selector: 'app-settings',
@@ -265,11 +285,15 @@ export class SettingsPage implements OnDestroy {
     }
   }
 
+  /** "Also clear my Take Action progress" (8.16.0): off unless ticked. */
+  resetIncludeActions = false;
+
   openResetModal(): void {
     if (!this.lastUid || this.isResettingData) {
       return;
     }
     this.resetConfirmation = '';
+    this.resetIncludeActions = false;
     this.showResetModal = true;
   }
 
@@ -290,14 +314,15 @@ export class SettingsPage implements OnDestroy {
 
     this.isResettingData = true;
     try {
-      const result = await this.userProfileService.resetEngagementData(this.lastUid);
-      const clearedCount = result.deletedActivityCount + result.deletedSavedContentCount;
+      const result = await this.userProfileService.resetEngagementData(this.lastUid, this.resetIncludeActions);
+      clearDeviceEngagement(this.resetIncludeActions);
+      const clearedCount = result.deletedActivityCount + result.deletedSavedContentCount + (result.deletedActionCount || 0);
       const message = clearedCount > 0
-        ? 'Your engagement data was cleared. Your account remains active.'
-        : 'You had no engagement data to clear. Your account remains active.';
+        ? (result.includeActions ? 'Your engagement data and Take Action progress were cleared.' : 'Your engagement data was cleared. Your Take Action progress is kept.')
+        : 'You had no engagement data to clear.';
+      // Stays signed in (8.16.0): the account is still theirs. Pages reload their data when opened.
       await this.uiUtil.presentToast(message, 'success', 5000);
-      await this.authService.logout();
-      await this.router.navigate(['/home']);
+      await this.router.navigate(['/my-journey']);
     } catch (error) {
       // resetEngagementData is idempotent — safe to retry, and a retry will
       // only touch whatever's actually left, never double-clear or error on
