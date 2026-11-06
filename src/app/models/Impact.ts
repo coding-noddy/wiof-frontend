@@ -168,13 +168,17 @@ export function impactLines(totals: { [measure: string]: number } | null | undef
     });
 }
 
-/** How each measure looks as a tile and on the share image (8.17.0). */
-export const MEASURE_LOOK: Record<ImpactMeasure, { unit: string; label: string; icon: string; color: string }> = {
-  water: { unit: 'L', label: 'water saved', icon: 'water', color: '#1A7A7F' },
-  energy: { unit: 'kWh', label: 'electricity saved', icon: 'flash', color: '#805E2C' },
-  co2: { unit: 'kg', label: 'CO₂ avoided', icon: 'leaf', color: '#856C4A' },
-  plastic: { unit: '', label: 'plastic items avoided', icon: 'bag-handle', color: '#145C5F' },
-  food: { unit: 'kg', label: 'food not wasted', icon: 'restaurant', color: '#645138' }
+/**
+ * How each measure looks as a tile and on the share image (8.17.0): `tint`
+ * is the brand colour behind it (teal, marigold, brown), `color` its
+ * text-safe shade for the label and icon.
+ */
+export const MEASURE_LOOK: Record<ImpactMeasure, { unit: string; label: string; icon: string; color: string; tint: string }> = {
+  water: { unit: 'L', label: 'water saved', icon: 'water', color: '#1A7A7F', tint: '#21999F' },
+  energy: { unit: 'kWh', label: 'electricity saved', icon: 'flash', color: '#805E2C', tint: '#FFC26F' },
+  co2: { unit: 'kg', label: 'CO₂ avoided', icon: 'leaf', color: '#856C4A', tint: '#A6875D' },
+  plastic: { unit: '', label: 'plastic items avoided', icon: 'bag-handle', color: '#145C5F', tint: '#21999F' },
+  food: { unit: 'kg', label: 'food not wasted', icon: 'restaurant', color: '#645138', tint: '#A6875D' }
 };
 
 export interface ImpactTile {
@@ -185,6 +189,7 @@ export interface ImpactTile {
   label: string;
   icon: string;
   color: string;
+  tint: string;
   /** "≈ 2 buckets", "like 23 km by car", or null. */
   equivalent: string | null;
 }

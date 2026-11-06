@@ -14,7 +14,7 @@
     @if (tiles.length) {
       <ul class="impact-tiles">
         @for (t of tiles; track t.measure) {
-          <li class="impact-tile" [style.--measure]="t.color">
+          <li class="impact-tile" [style.--measure]="t.color" [style.--tint]="t.tint">
             <span class="impact-icon" aria-hidden="true"><ion-icon [name]="t.icon"></ion-icon></span>
             <span class="impact-number">{{ t.number }}@if (t.unit) {<span class="impact-unit"> {{ t.unit }}</span>}</span>
             <span class="impact-label">{{ t.label }}</span>

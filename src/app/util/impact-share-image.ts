@@ -147,7 +147,7 @@ export async function renderShareCard(input: ShareCardInput): Promise<Blob> {
   let y = 440;
   for (const t of rows) {
     roundedRect(ctx, pad, y, SHARE_SIZE - pad * 2, rowH - 18, 28);
-    ctx.fillStyle = tint(t.color, 0.07);
+    ctx.fillStyle = tint(t.tint, 0.1);
     ctx.fill();
 
     // Icon in a tinted circle.
@@ -155,7 +155,7 @@ export async function renderShareCard(input: ShareCardInput): Promise<Blob> {
     const cy = y + (rowH - 18) / 2;
     ctx.beginPath();
     ctx.arc(cx, cy, 44, 0, Math.PI * 2);
-    ctx.fillStyle = tint(t.color, 0.16);
+    ctx.fillStyle = tint(t.tint, 0.28);
     ctx.fill();
     const img = await icon(t.icon, t.color);
     if (img) ctx.drawImage(img, cx - 26, cy - 26, 52, 52);
