@@ -25,15 +25,28 @@
                         [appYoutubeLite]="coffeeConv.videoLink"
                         allowfullscreen
                         appYoutubeWatchTracker
-                        [contentId]="coffeeConv.topic"
+                        [contentId]="coffeeConv.videoLink"
                         [videoTitle]="coffeeConv.topic"
                         (watchComplete)="onVideoWatchComplete($event)"
                       ></iframe>
                     </div>
                     <div class="coffee-conv-content">
-                      <h2>
-                        <strong>{{ coffeeConv.topic }}</strong>
-                      </h2>
+                      <div class="conversation-title-row">
+                        <h2>
+                          <a class="conversation-title-link" [routerLink]="['/conversation', coffeeConv.ccId]">{{ coffeeConv.topic }}</a>
+                        </h2>
+                        <div class="conversation-actions">
+                          <button type="button" class="conversation-share" (click)="share(coffeeConv)" aria-label="Share this conversation" title="Share this conversation">
+                            <ion-icon aria-hidden="true" name="share-social-outline"></ion-icon>
+                          </button>
+                          <app-bookmark-icon
+                            [contentId]="coffeeConv.ccId"
+                            contentType="conversation"
+                            [contentTitle]="coffeeConv.topic"
+                            [contentThumbnail]="'https://img.youtube.com/vi/' + coffeeConv.videoLink + '/hqdefault.jpg'">
+                          </app-bookmark-icon>
+                        </div>
+                      </div>
                       @if (coffeeConv.intervieweeName.toUpperCase() !== 'NA') {
                         <p
                           class="conversation-byline"
@@ -56,8 +69,7 @@
                           </button>
                         }
                         <a
-                          [href]="coffeeConv.knowMoreLink"
-                          target="_blank"
+                          [routerLink]="['/conversation', coffeeConv.ccId]"
                           class="conversation-cta"
                           >Explore conversation <ion-icon aria-hidden="true" name="arrow-forward-outline"></ion-icon></a
                           >

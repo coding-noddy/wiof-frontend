@@ -5,7 +5,7 @@ import { takeUntil, first, catchError, distinctUntilChanged, map, shareReplay, s
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { AuthService } from 'src/app/services/auth.service';
 import { ActivityService, EngagementMetrics } from 'src/app/services/activity.service';
-import { SavedContentService, SavedContentDocument } from 'src/app/services/saved-content.service';
+import { SavedContentService, SavedContentDocument, savedContentLabel, savedContentLink } from 'src/app/services/saved-content.service';
 import { UserProfile, UserProfileService } from 'src/app/services/user-profile.service';
 import { elementsExplored, JOURNEY_ELEMENTS, journeyStory, preferredElements } from 'src/app/models/Journey';
 import { NextForYou, nextForYouElements } from 'src/app/models/NextForYou';
@@ -608,11 +608,10 @@ export class MyJourneyPage implements OnInit, OnDestroy {
    * Returns the route link for a saved content item based on type.
    */
   getContentLink(item: SavedContentDocument): string {
-    if (item.contentType === 'blog') {
-      return `/element/earth/blog/${item.contentId}`;
-    }
-    return `/element/earth/video/${item.contentId}`;
+    return savedContentLink(item);
   }
+
+  readonly typeLabel = savedContentLabel;
 
   /**
    * Link for a Quality Reads / Videos Watched history-list item. Same

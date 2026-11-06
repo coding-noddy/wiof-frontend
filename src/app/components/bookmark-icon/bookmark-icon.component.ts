@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
-import { SavedContentService, SaveContentInput } from 'src/app/services/saved-content.service';
+import { SavedContentService, SaveContentInput, SavedContentType } from 'src/app/services/saved-content.service';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 
 @Component({
@@ -12,7 +12,7 @@ import { UiUtilService } from 'src/app/util/UiUtilService';
 })
 export class BookmarkIconComponent implements OnInit, OnDestroy {
   @Input() contentId: string;
-  @Input() contentType: 'blog' | 'video';
+  @Input() contentType: SavedContentType;
   @Input() contentTitle: string;
   @Input() contentThumbnail: string;
 

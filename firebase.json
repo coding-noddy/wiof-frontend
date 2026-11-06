@@ -73,6 +73,13 @@
         }
       },
       {
+        "source": "/conversation/**",
+        "function": {
+          "functionId": "socialMetaTags",
+          "region": "us-central1"
+        }
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

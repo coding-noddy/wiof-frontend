@@ -87,7 +87,7 @@
                           />
                       }
                       <span class="content-type-badge" [ngClass]="item.contentType">
-                        {{ item.contentType === 'blog' ? 'Blog' : 'Video' }}
+                        {{ typeLabel(item) }}
                       </span>
                     </div>
                     <div class="card-body">

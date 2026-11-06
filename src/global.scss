@@ -177,7 +177,7 @@ ion-content::part(scroll) {
   --height: auto;
   --max-height: 85vh;
   --border-radius: 18px;
-  --background: #fff;
+  --background: var(--wiof-warm-white);
 }
 
 /* NGO in Focus detail dialog - presented via ModalController (viewport-centered) */
