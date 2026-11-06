@@ -74,6 +74,32 @@ export class AnalyticsPage implements OnInit {
     }
   }
 
+  /** From how many members "Together this month" shows on Take Action (site_settings/community_impact). */
+  minMembersInput: number | null = null;
+  savingMinMembers = false;
+  minMembersMessage: string | null = null;
+
+  async saveMinMembers(): Promise<void> {
+    const n = Math.round(Number(this.minMembersInput));
+    if (!Number.isInteger(n) || n < 1 || n > 1000) {
+      this.minMembersMessage = 'Enter a whole number from 1 to 1000.';
+      return;
+    }
+    this.savingMinMembers = true;
+    this.minMembersMessage = null;
+    try {
+      await this.firestore.doc('site_settings/community_impact').set({ minMembers: n });
+      // Rebuild today's summary, which also rebuilds this month's community numbers with the new minimum.
+      await httpsCallable(getWiofFunctions(), 'refreshDailyStats')({ days: 1 });
+      this.minMembersMessage = `Saved: Take Action shows it from ${n} member${n === 1 ? '' : 's'}.`;
+      this.load();
+    } catch (err: any) {
+      this.minMembersMessage = err?.message || 'Could not save.';
+    } finally {
+      this.savingMinMembers = false;
+    }
+  }
+
   private loadCommunity(): void {
     this.firestore
       .doc<CommunityImpact>(`${COMMUNITY_IMPACT_COLLECTION}/${impactMonth()}`)
@@ -83,6 +109,7 @@ export class AnalyticsPage implements OnInit {
         next: (snap) => {
           const c = snap.data();
           this.community = c ? { ...c, lines: impactLines(c.totals) } : null;
+          if (c && this.minMembersInput === null) this.minMembersInput = c.minMembers;
         },
         error: () => (this.community = null)
       });

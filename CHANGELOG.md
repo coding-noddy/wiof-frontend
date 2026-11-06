@@ -13,7 +13,7 @@ Coming back, together. **Deploy with `-Backend`** (the daily schedule builds the
 
 ### Added
 - **"Did you try it?"** on the home panel: for an action a member started ("I'll try this") on an earlier day, one gentle line with **Yes, I did** (marks it done) and **Not yet** (asks again tomorrow; per device). `models/FollowUp.ts`.
-- **"Together this month"** on Take Action: "Together this month, 24 WIOF members saved about 1,200 L of water, about 30 kg of CO₂ and 40 plastic items avoided." From a public monthly summary, `community_impact/{YYYY-MM}` (`functions/community-impact.js`), built every 3 hours from members' own monthly totals, team left out, totals only. Shown only from 20 members; admins see it always in Admin → Analytics.
+- **"Together this month"** on Take Action: "Together this month, 24 WIOF members saved about 1,200 L of water, about 30 kg of CO₂ and 40 plastic items avoided." From a public monthly summary, `community_impact/{YYYY-MM}` (`functions/community-impact.js`), built every 3 hours from members' own monthly totals, team left out, totals only. Shown from 20 members by default; **admins can change the minimum** in Admin → Analytics (`site_settings/community_impact.minMembers`, 1–1000), and **signed in as an admin you always see it on Take Action**, marked as a preview.
 - **"Coming back"** in Admin → Analytics: of the members active 8–14 days ago, how many came back in the last 7 days; and the same for 30-day windows. Each daily summary now records who was active (`activeMemberIds`, admin-only), and the page works the rates out from the days it already loads.
 - docs/METRICS.md: the three definitions.
 
