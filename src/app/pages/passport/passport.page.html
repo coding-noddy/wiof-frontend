@@ -1,0 +1,210 @@
+<ion-content class="passport-content">
+  <!-- The ink texture every earned stamp uses. -->
+  <svg class="defs" aria-hidden="true" focusable="false">
+    <filter id="wiof-ink" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" result="noise" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.6" result="rough" />
+      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.9 1.78" result="speckle" />
+      <feComposite in="rough" in2="speckle" operator="in" />
+    </filter>
+  </svg>
+
+  <div class="passport-wrap">
+    <header class="passport-intro">
+      <p class="eyebrow">Design preview{{ demo ? ' · sample stamps' : '' }}</p>
+      <h1>Planet Passport</h1>
+      <p class="sub">Every stamp is earned by something you really did on WIOF. Turn the pages to see yours.</p>
+    </header>
+
+    <div class="stage" [style.--pw]="pageWidth + 'px'" [class.is-spread]="spread" [class.is-single]="!spread">
+      <div class="book" [style.--shift]="shift" (pointerdown)="pointerDown($event)" (pointerup)="pointerUp($event)">
+        @for (leaf of leaves; track leaf.front; let i = $index) {
+          <div class="leaf" [class.turned]="i < turned" [style.z-index]="zIndex(i)" (click)="tapLeaf(i, $event)">
+            <div class="face front">
+              <ng-container *ngTemplateOutlet="pageTpl; context: { $implicit: pages[leaf.front], index: leaf.front }"></ng-container>
+            </div>
+            <div class="face back">
+              @if (leaf.back !== null) {
+                <ng-container *ngTemplateOutlet="pageTpl; context: { $implicit: pages[leaf.back], index: leaf.back }"></ng-container>
+              } @else {
+                <div class="page paper"></div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <nav class="controls" aria-label="Turn the pages">
+      <button type="button" class="turn-btn" (click)="backward()" [disabled]="turned === 0" aria-label="Previous page">
+        <ion-icon name="chevron-back" aria-hidden="true"></ion-icon>
+      </button>
+      <span class="where" aria-live="polite">{{ position }}</span>
+      <button type="button" class="turn-btn" (click)="forward()" [disabled]="turned >= maxTurned" aria-label="Next page">
+        <ion-icon name="chevron-forward" aria-hidden="true"></ion-icon>
+      </button>
+    </nav>
+    <p class="hint">Tap a page, swipe, or use the ← → keys.
+      @if (!demo) { <a href="/passport?demo=1">See it with sample stamps</a> } @else { <a href="/passport">See my own stamps</a> }
+    </p>
+  </div>
+</ion-content>
+
+<ng-template #pageTpl let-page let-index="index">
+  @switch (page.kind) {
+    @case ('cover') {
+      <div class="page cover" [class.is-open]="isOpen(index)">
+        <p class="cover-top">World Is One Family</p>
+        <div class="emblem" aria-hidden="true">
+          <svg viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="54" />
+            <circle cx="60" cy="60" r="34" />
+            <ellipse cx="60" cy="60" rx="14" ry="34" />
+            <line x1="26" y1="60" x2="94" y2="60" />
+            <path d="M30 46 Q60 54 90 46 M30 74 Q60 66 90 74" />
+          </svg>
+          @for (e of ['cloud', 'flash', 'water', 'leaf', 'sparkles']; track e; let k = $index) {
+            <ion-icon [name]="e" [style.--k]="k"></ion-icon>
+          }
+        </div>
+        <h2 class="cover-title">Planet<br />Passport</h2>
+        <!-- The e-passport chip mark, for realism. -->
+        <svg class="chip" viewBox="0 0 40 26" aria-hidden="true">
+          <rect x="1" y="1" width="38" height="24" rx="3" />
+          <circle cx="20" cy="13" r="6" />
+          <line x1="1" y1="13" x2="14" y2="13" />
+          <line x1="26" y1="13" x2="39" y2="13" />
+        </svg>
+        <p class="cover-open">Tap to open</p>
+      </div>
+    }
+    @case ('inside') {
+      <div class="page paper inside" [class.is-open]="isOpen(index)">
+        <p class="request">
+          World Is One Family requests all whom it may concern to let the bearer pass freely through every forest, river and
+          city, and to give the bearer such help as one member of a family gives another.
+        </p>
+        <hr />
+        <p class="small">
+          This passport records small actions. Every stamp is earned from what you really did on WIOF, worked out on our
+          side, never bought, traded or guessed.
+        </p>
+        <p class="tree-mark" aria-hidden="true"><img src="assets/brand/logos/WIOF-full-logo.png" alt="" /></p>
+      </div>
+    }
+    @case ('identity') {
+      <div class="page paper identity" [class.is-open]="isOpen(index)">
+        <div class="page-head"><span>Planet Passport</span><span>Type P · Code EARTH</span></div>
+        <div class="id-grid">
+          <div class="photo" aria-hidden="true">
+            @if (profile?.photoURL) {
+              <img [src]="profile!.photoURL" alt="" referrerpolicy="no-referrer" />
+            } @else {
+              <span>{{ initial }}</span>
+            }
+          </div>
+          <dl class="fields">
+            <div><dt>Name</dt><dd>{{ fullName || 'Member' }}</dd></div>
+            <div><dt>Nationality</dt><dd>Planet Earth</dd></div>
+            <div><dt>Member since</dt><dd>{{ joinedText }}</dd></div>
+            <div><dt>Home elements</dt><dd>{{ homeElements }}</dd></div>
+            <div><dt>Passport no.</dt><dd class="mono">{{ memberNo }}</dd></div>
+          </dl>
+        </div>
+        <div class="tally">
+          <strong>{{ earnedCount }}</strong> of {{ stamps.length }} stamps
+        </div>
+        <div class="signature"><span>{{ fullName || 'Member' }}</span><small>Signature of bearer</small></div>
+        <div class="mrz" aria-hidden="true"><div>{{ mrz[0] }}</div><div>{{ mrz[1] }}</div></div>
+        <span class="page-num">{{ page.number }}</span>
+      </div>
+    }
+    @case ('visas') {
+      <div class="page paper visas" [class.is-open]="isOpen(index)">
+        <div class="page-head"><span>Visas</span><span>Journey {{ page.part === 1 ? 'II' : 'I' }}</span></div>
+        <div class="stamp-grid">
+          @for (s of visas(page.part); track s.id; let k = $index) {
+            <app-passport-stamp [stamp]="s" [index]="k" [date]="previewDate"></app-passport-stamp>
+          }
+        </div>
+        <span class="page-num">{{ page.number }}</span>
+      </div>
+    }
+    @case ('element') {
+      <div class="page paper element" [class.is-open]="isOpen(index)" [style.--ink]="page.element.ink">
+        <ion-icon class="watermark" [name]="page.element.icon" aria-hidden="true"></ion-icon>
+        <div class="page-head">
+          <span><ion-icon [name]="page.element.icon" aria-hidden="true"></ion-icon> {{ page.element.name }}</span>
+          <span>{{ earnedIn(page.element.slug) }} / 3</span>
+        </div>
+        <div class="stamp-grid three">
+          @for (s of elementStamps(page.element.slug); track s.id; let k = $index) {
+            <app-passport-stamp [stamp]="s" [index]="k" [date]="previewDate"></app-passport-stamp>
+          }
+        </div>
+        <a class="go" [href]="'/element/' + page.element.slug">Explore {{ page.element.name }} →</a>
+        <span class="page-num">{{ page.number }}</span>
+      </div>
+    }
+    @case ('impact') {
+      <div class="page paper impact" [class.is-open]="isOpen(index)">
+        <div class="page-head"><span>Declaration</span><span>Goods carried</span></div>
+        <p class="declare">The bearer declares the following saved, avoided or not wasted, from the actions they marked done:</p>
+        @if (impact.length) {
+          <ul class="declared">
+            @for (t of impact; track t.measure) {
+              <li [style.--c]="t.color">
+                <ion-icon [name]="t.icon" aria-hidden="true"></ion-icon>
+                <span class="amount">{{ t.number }}<small>{{ t.unit }}</small></span>
+                <span class="what">{{ t.label }}</span>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="empty">Nothing declared yet. Your first action's savings will appear here.</p>
+        }
+        <p class="small">Estimates, on the low side.</p>
+        <span class="page-num">{{ page.number }}</span>
+      </div>
+    }
+    @case ('next') {
+      <div class="page paper next" [class.is-open]="isOpen(index)">
+        <div class="page-head"><span>Next stamps</span><span>Closest to you</span></div>
+        @if (next.length) {
+          <ul class="next-list">
+            @for (s of next; track s.id) {
+              <li [style.--ink]="s.ink">
+                <app-passport-stamp class="next-stamp" [stamp]="s"></app-passport-stamp>
+                <span class="next-title">{{ s.title.join(' ') }}</span>
+                <span class="next-hint">{{ s.hint }}</span>
+                <span class="bar" role="progressbar" [attr.aria-valuenow]="s.progress" aria-valuemin="0" [attr.aria-valuemax]="s.target"><span [style.width.%]="(s.progress / s.target) * 100"></span></span>
+                <span class="next-count">{{ s.progress }} of {{ s.target }} {{ s.unit }}</span>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="empty">Every stamp earned. New ones are coming.</p>
+        }
+        <span class="page-num">{{ page.number }}</span>
+      </div>
+    }
+    @case ('notes') {
+      <div class="page paper notes" [class.is-open]="isOpen(index)">
+        <div class="page-head"><span>Travel notes</span><span></span></div>
+        <blockquote>“Drop by drop, the ocean fills.”</blockquote>
+        <div class="lines" aria-hidden="true"></div>
+        <span class="page-num">{{ page.number }}</span>
+      </div>
+    }
+    @case ('back') {
+      <div class="page cover back-cover" [class.is-open]="isOpen(index)">
+        <svg class="chip small-emblem" viewBox="0 0 120 120" aria-hidden="true">
+          <circle cx="60" cy="60" r="54" />
+          <ellipse cx="60" cy="60" rx="20" ry="54" />
+          <line x1="6" y1="60" x2="114" y2="60" />
+        </svg>
+        <p class="cover-top">worldisonefamily.com</p>
+      </div>
+    }
+  }
+</ng-template>

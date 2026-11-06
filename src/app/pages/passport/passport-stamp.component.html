@@ -1,0 +1,46 @@
+<figure class="stamp" [class.earned]="stamp.earned" [style.--ink]="stamp.ink" [style.--rot]="stamp.rotation + 'deg'" [style.--i]="index" role="img" [attr.aria-label]="label">
+  <svg viewBox="0 0 160 160" aria-hidden="true">
+    <defs>
+      <path [attr.id]="uid + '-top'" d="M 26,80 A 54,54 0 0,1 134,80" />
+      <path [attr.id]="uid + '-bottom'" d="M 18,80 A 62,62 0 0,0 142,80" />
+    </defs>
+    <g class="ink" [attr.filter]="stamp.earned ? 'url(#wiof-ink)' : null">
+      @switch (stamp.shape) {
+        @case ('circle') {
+          <circle cx="80" cy="80" r="74" class="frame" />
+          <circle cx="80" cy="80" r="67" class="frame thin" />
+          <text class="arc"><textPath [attr.href]="'#' + uid + '-top'" startOffset="50%" text-anchor="middle">{{ stamp.caption }}</textPath></text>
+          <text class="arc"><textPath [attr.href]="'#' + uid + '-bottom'" startOffset="50%" text-anchor="middle">WORLD IS ONE FAMILY</textPath></text>
+          <text class="star" x="17" y="85">★</text>
+          <text class="star" x="143" y="85">★</text>
+        }
+        @case ('rect') {
+          <rect x="8" y="24" width="144" height="112" rx="10" class="frame" />
+          <rect x="16" y="32" width="128" height="96" rx="6" class="frame thin" />
+          <text class="cap" x="80" y="50">{{ stamp.caption }}</text>
+        }
+        @case ('oval') {
+          <ellipse cx="80" cy="80" rx="74" ry="58" class="frame" />
+          <ellipse cx="80" cy="80" rx="66" ry="50" class="frame thin" />
+          <text class="cap" x="80" y="46">{{ stamp.caption }}</text>
+        }
+        @case ('hex') {
+          <polygon [attr.points]="hexPoints(74)" class="frame" />
+          <polygon [attr.points]="hexPoints(64)" class="frame thin" />
+          <text class="cap" x="80" y="46">{{ stamp.caption }}</text>
+        }
+      }
+      @for (line of stamp.title; track $index) {
+        <text class="title" x="80" [attr.y]="lineY($index) + 6" [class.single]="stamp.title.length === 1">{{ line }}</text>
+      }
+      @if (stamp.earned) {
+        <text class="date" x="80" [attr.y]="lineY(stamp.title.length) + 10">{{ date || 'EARNED' }}</text>
+      } @else {
+        <text class="progress" x="80" [attr.y]="lineY(stamp.title.length) + 10">{{ stamp.progress }} / {{ stamp.target }}</text>
+      }
+    </g>
+  </svg>
+  @if (!stamp.earned) {
+    <figcaption>{{ stamp.hint }}</figcaption>
+  }
+</figure>

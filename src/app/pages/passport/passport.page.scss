@@ -1,0 +1,659 @@
+// Planet Passport booklet (design experiment). Sizes follow the page width
+// (--pw), so the book scales from phones to desktops as one object.
+
+.passport-content {
+  --background: var(--wiof-ivory);
+}
+
+.defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.passport-wrap {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1.5rem 16px 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.passport-intro {
+  text-align: center;
+  margin-bottom: 1.5rem;
+
+  .eyebrow {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--wiof-teal-text);
+  }
+
+  h1 {
+    margin: 0.2rem 0 0.35rem;
+    font-size: 1.9rem;
+  }
+
+  .sub {
+    margin: 0;
+    max-width: 32rem;
+    color: var(--wiof-ink-muted);
+    font-size: 0.92rem;
+  }
+}
+
+// ---- The book and its page turns ----
+
+.stage {
+  --ph: calc(var(--pw) * 1.42);
+  position: relative;
+  width: calc(var(--pw) * 2);
+  height: var(--ph);
+  margin: 0 auto;
+
+  &.is-single {
+    width: var(--pw);
+  }
+}
+
+.book {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  perspective: 2400px;
+  transform: translateX(var(--shift));
+  transition: transform 0.9s cubic-bezier(0.645, 0.045, 0.355, 1);
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.leaf {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: var(--pw);
+  height: 100%;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transition: transform 0.9s cubic-bezier(0.645, 0.045, 0.355, 1);
+  cursor: pointer;
+
+  &.turned {
+    transform: rotateY(-180deg);
+  }
+}
+
+.is-single .leaf {
+  left: 0;
+  transition: transform 0.9s cubic-bezier(0.645, 0.045, 0.355, 1), opacity 0.25s ease 0.65s;
+
+  &.turned {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
+  border-radius: 4px 14px 14px 4px;
+  box-shadow: 0 12px 28px rgba(43, 36, 32, 0.16), 0 1px 2px rgba(43, 36, 32, 0.12);
+
+  &.back {
+    transform: rotateY(180deg);
+    border-radius: 14px 4px 4px 14px;
+  }
+}
+
+// ---- Pages ----
+
+.page {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: calc(var(--pw) * 0.08) calc(var(--pw) * 0.08) calc(var(--pw) * 0.1);
+  display: flex;
+  flex-direction: column;
+  font-size: calc(var(--pw) * 0.034);
+  color: var(--wiof-ink);
+}
+
+// Security paper: faint guilloché rings in teal and marigold.
+.paper {
+  background-color: var(--wiof-warm-white);
+  background-image:
+    repeating-radial-gradient(circle at 0% 0%, transparent 0 13px, rgba(33, 153, 159, 0.06) 13px 14px),
+    repeating-radial-gradient(circle at 100% 100%, transparent 0 17px, rgba(204, 155, 89, 0.07) 17px 18px);
+}
+
+// The spine's shadow, on the inner edge of each page.
+.face.front .paper::before,
+.face.back .paper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: calc(var(--pw) * 0.07);
+  pointer-events: none;
+}
+
+.face.front .paper::before {
+  left: 0;
+  background: linear-gradient(90deg, rgba(43, 36, 32, 0.13), transparent);
+}
+
+.face.back .paper::before {
+  right: 0;
+  background: linear-gradient(-90deg, rgba(43, 36, 32, 0.13), transparent);
+}
+
+.page-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.5em;
+  margin-bottom: 1em;
+  border-bottom: 1.5px solid var(--wiof-brown-tint-40);
+  font-size: 0.78em;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink, var(--wiof-teal-text));
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+  }
+}
+
+.page-num {
+  position: absolute;
+  bottom: calc(var(--pw) * 0.035);
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.75em;
+  color: var(--wiof-ink-muted);
+}
+
+.small {
+  font-size: 0.82em;
+  color: var(--wiof-ink-muted);
+  line-height: 1.45;
+}
+
+.empty {
+  color: var(--wiof-ink-muted);
+  font-style: italic;
+}
+
+// ---- Covers: teal leather, gold foil ----
+
+.cover {
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  color: #E9C27D;
+  background-color: #145C5F;
+  background-image:
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.08), transparent 55%),
+    repeating-radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.05) 0 1px, transparent 1px 3px),
+    linear-gradient(160deg, #1A7A7F, #0F4A4D);
+  // A stitched edge.
+  outline: 1.5px dashed rgba(233, 194, 125, 0.35);
+  outline-offset: calc(var(--pw) * -0.035);
+}
+
+.cover-top {
+  margin: 0;
+  font-size: 0.85em;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.cover-title {
+  margin: 0;
+  font-family: 'Aleo', serif !important;
+  font-size: 2.6em;
+  line-height: 1.05;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, #FFE7BA, #C99A52 70%, #E9C27D);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.emblem {
+  position: relative;
+  width: calc(var(--pw) * 0.46);
+  aspect-ratio: 1;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: #E9C27D;
+    stroke-width: 2;
+  }
+
+  // The five elements around the globe.
+  ion-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: calc(var(--pw) * 0.055);
+    margin: calc(var(--pw) * -0.0275);
+    color: #E9C27D;
+    transform: rotate(calc(var(--k) * 72deg - 90deg)) translate(calc(var(--pw) * 0.3)) rotate(calc(var(--k) * -72deg + 90deg));
+  }
+}
+
+.chip {
+  width: calc(var(--pw) * 0.12);
+  fill: none;
+  stroke: #E9C27D;
+  stroke-width: 1.5;
+}
+
+.cover-open {
+  margin: 0;
+  font-size: 0.75em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.back-cover {
+  justify-content: center;
+  gap: 1.2em;
+
+  .small-emblem {
+    width: calc(var(--pw) * 0.22);
+  }
+}
+
+// ---- Inside cover ----
+
+.inside {
+  justify-content: center;
+  text-align: center;
+
+  .request {
+    font-family: 'Aleo', serif !important;
+    font-style: italic;
+    font-size: 1.15em;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  hr {
+    width: 30%;
+    margin: 1.6em auto;
+    border: none;
+    border-top: 1.5px solid var(--wiof-brown-tint-40);
+  }
+
+  .tree-mark img {
+    width: 42%;
+    margin-top: 1.2em;
+    opacity: 0.85;
+  }
+}
+
+// ---- Identity page ----
+
+.id-grid {
+  display: grid;
+  grid-template-columns: 34% 1fr;
+  gap: 1.1em;
+}
+
+.photo {
+  aspect-ratio: 3 / 4;
+  border-radius: 6px;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  background: color-mix(in srgb, var(--wiof-teal) 12%, var(--wiof-warm-white));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(0.35) contrast(1.05);
+  }
+
+  span {
+    font-family: 'Aleo', serif !important;
+    font-size: 3.2em;
+    color: var(--wiof-teal-text);
+  }
+}
+
+.fields {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55em;
+
+  dt {
+    font-size: 0.68em;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--wiof-ink-muted);
+  }
+
+  dd {
+    margin: 0;
+    font-family: 'Aleo', serif !important;
+    font-size: 1.02em;
+    line-height: 1.25;
+  }
+
+  .mono {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+}
+
+.tally {
+  margin-top: 1.2em;
+  font-size: 0.9em;
+  color: var(--wiof-ink-muted);
+
+  strong {
+    font-family: 'Aleo', serif !important;
+    font-size: 1.6em;
+    color: var(--wiof-teal-text);
+  }
+}
+
+.signature {
+  margin-top: auto;
+  margin-bottom: 1em;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid var(--wiof-brown-tint-40);
+
+  span {
+    font-family: 'Aleo', serif !important;
+    font-style: italic;
+    font-size: 1.35em;
+    color: #2B3A67;
+    transform: rotate(-2deg);
+    transform-origin: left;
+  }
+
+  small {
+    order: 2;
+    font-size: 0.65em;
+    color: var(--wiof-ink-muted);
+    margin-bottom: -1.6em;
+    transform: translateY(1.7em);
+  }
+}
+
+// Machine-readable zone: 44 characters per line, as on a real passport.
+.mrz {
+  margin: 1.4em calc(var(--pw) * -0.04) 0;
+  padding: 0.5em calc(var(--pw) * 0.04);
+  background: rgba(166, 135, 93, 0.08);
+  font-family: 'Courier New', monospace;
+  font-size: calc(var(--pw) * 0.0295);
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0;
+  white-space: pre;
+  overflow: hidden;
+  color: #3A332E;
+}
+
+// ---- Stamp pages ----
+
+.stamp-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-content: space-evenly;
+  justify-items: center;
+  gap: 0.6em 0.4em;
+
+  app-passport-stamp {
+    width: calc(var(--pw) * 0.37);
+  }
+
+  &.three app-passport-stamp:nth-child(3) {
+    grid-column: 1 / -1;
+  }
+}
+
+.element {
+  .watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: calc(var(--pw) * 0.75);
+    transform: translate(-50%, -45%);
+    color: var(--ink);
+    opacity: 0.05;
+    pointer-events: none;
+  }
+
+  .go {
+    align-self: center;
+    margin-bottom: 0.8em;
+    font-size: 0.85em;
+    font-weight: 700;
+    color: var(--ink);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// ---- Declaration (impact) ----
+
+.declare {
+  margin: 0 0 1em;
+  font-size: 0.9em;
+  color: var(--wiof-ink-muted);
+}
+
+.declared {
+  margin: 0 0 1em;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: grid;
+    grid-template-columns: 1.8em auto 1fr;
+    align-items: baseline;
+    gap: 0.6em;
+    padding: 0.55em 0;
+    border-bottom: 1px dotted var(--wiof-brown-tint-40);
+  }
+
+  ion-icon {
+    align-self: center;
+    font-size: 1.3em;
+    color: var(--c);
+  }
+
+  .amount {
+    font-family: 'Aleo', serif !important;
+    font-size: 1.45em;
+    font-weight: 700;
+
+    small {
+      font-size: 0.6em;
+      margin-left: 0.15em;
+    }
+  }
+
+  .what {
+    font-size: 0.9em;
+    font-weight: 700;
+    color: var(--c);
+  }
+}
+
+// ---- Next stamps ----
+
+.next-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6em;
+
+  li {
+    display: grid;
+    grid-template-columns: calc(var(--pw) * 0.22) 1fr;
+    column-gap: 1em;
+    row-gap: 0.25em;
+    align-items: center;
+  }
+
+  li > :not(.next-stamp) {
+    grid-column: 2;
+  }
+
+  .next-stamp {
+    grid-row: 1 / span 4;
+  }
+}
+
+// Only the outline beside each next stamp: its hint is already in the text.
+:host ::ng-deep .next-stamp figcaption {
+  display: none;
+}
+
+.next-title {
+  font-family: 'Aleo', serif !important;
+  font-weight: 700;
+  font-size: 1.15em;
+  color: var(--ink);
+}
+
+.next-hint,
+.next-count {
+  font-size: 0.85em;
+  color: var(--wiof-ink-muted);
+}
+
+.bar {
+  height: 0.45em;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 14%, var(--wiof-warm-white));
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    background: var(--ink);
+    border-radius: inherit;
+  }
+}
+
+// ---- Travel notes ----
+
+.notes {
+  blockquote {
+    margin: 0.5em 0 1em;
+    font-family: 'Aleo', serif !important;
+    font-style: italic;
+    font-size: 1.2em;
+    color: var(--wiof-teal-text);
+  }
+
+  .lines {
+    flex: 1;
+    margin-bottom: 1.5em;
+    background: repeating-linear-gradient(transparent 0 calc(var(--pw) * 0.075 - 1px), var(--wiof-brown-tint-40) calc(var(--pw) * 0.075 - 1px) calc(var(--pw) * 0.075));
+    opacity: 0.6;
+  }
+}
+
+// ---- Controls under the book ----
+
+.controls {
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.turn-btn {
+  width: var(--wiof-icon-btn-size, 40px);
+  height: var(--wiof-icon-btn-size, 40px);
+  border-radius: 50%;
+  border: 1.5px solid var(--wiof-teal-fill);
+  background: transparent;
+  color: var(--wiof-teal-text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--wiof-btn-outline-hover-bg);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--wiof-teal-text);
+    outline-offset: 2px;
+  }
+}
+
+.where {
+  min-width: 12rem;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--wiof-ink);
+}
+
+.hint {
+  margin: 0.6rem 0 0;
+  font-size: 0.78rem;
+  color: var(--wiof-ink-muted);
+  text-align: center;
+
+  a {
+    margin-left: 0.4rem;
+    color: var(--wiof-teal-text);
+    font-weight: 700;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leaf,
+  .book {
+    transition-duration: 0.01s;
+  }
+}

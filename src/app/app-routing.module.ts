@@ -196,6 +196,15 @@ const routes: Routes = [
       ),
     canActivate: [PublicUserGuard]
   },
+  // Planet Passport: design experiment, not linked from the menus yet.
+  {
+    path: 'passport',
+    loadChildren: () =>
+      import('./pages/passport/passport.module').then(
+        (m) => m.PassportPageModule
+      ),
+    canActivate: [PublicUserGuard]
+  },
   {
     path: 'my-library',
     loadChildren: () =>
