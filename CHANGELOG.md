@@ -18,6 +18,8 @@ Reset, done right. **Deploy with `-Backend`** (`resetEngagementData`; rules for 
 - **A reset let a member vote in a poll again**, adding a second vote to the public results. The reset now leaves a guard per poll (`poll_vote_guards`, no option or email) and the poll checks it.
 - **Raw poll votes kept the member's email and IP address** after a reset; they're removed now (the vote stays counted).
 - **The reset signed the member out** although "your account remains active". They stay signed in and land on My Journey.
+- Today on WIOF: "See the full calendar" is a teal outline button inside the card (right side; under the text on phones), not a footer strip.
+- Coffee Conversation cards on phones and tablets: the video's bottom corners are square against the text (rounded corners left gaps showing the band).
 - Device memories of activity ("Not yet" answers; with actions, the last impact amounts) are cleared with the reset.
 - Privacy policy (6 November 2026): what the reset clears and keeps, polls, and anonymous totals. docs/METRICS.md "Resets" updated.
 

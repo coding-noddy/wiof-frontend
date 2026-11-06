@@ -28,13 +28,22 @@
   }
 }
 
-// The whole card opens the day's story.
+// One row: the invitation, then the calendar button (8.16.0: was a footer strip).
+.today-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  padding-right: 3.25rem; // room for the ×
+}
+
+// The invitation opens the day's story.
 .today-open {
   display: flex;
   align-items: center;
   gap: 1rem;
-  width: 100%;
-  padding: 1rem 3rem 1rem var(--today-pad-x);
+  flex: 1;
+  min-width: 0;
+  padding: 1rem 0 1rem var(--today-pad-x);
   border: none;
   background: none;
   font: inherit;
@@ -140,17 +149,20 @@
   }
 }
 
-// A quiet footer link to the calendar further down the page.
+// "See the full calendar": a secondary CTA, so a teal outline pill (the
+// brand rule: Marigold only for a page's one primary CTA).
 .today-calendar {
-  display: flex;
+  display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
-  justify-content: center;
   gap: 0.35rem;
-  min-height: 42px;
+  min-height: 40px;
   padding: 0.45rem 1rem;
-  border-top: 1.5px solid var(--wiof-brown-tint-40);
+  border: 1.5px solid var(--wiof-teal-fill);
+  border-radius: 999px;
   font-size: 0.85rem;
   font-weight: 600;
+  white-space: nowrap;
   color: var(--wiof-teal-text);
   text-decoration: none;
   transition: background-color 0.15s ease;
@@ -162,13 +174,28 @@
 
   &:focus-visible {
     outline: 2px solid var(--wiof-teal-text);
-    outline-offset: -4px;
+    outline-offset: 2px;
   }
 }
 
 @media (max-width: 600px) {
   .today {
     --today-pad-x: 0.95rem;
+  }
+
+  // Phones: the calendar button goes under the text, lined up with it.
+  .today-row {
+    flex-wrap: wrap;
+    padding-right: 0;
+  }
+
+  .today-open {
+    flex-basis: 100%;
+    padding: 1rem 3rem 0 var(--today-pad-x);
+  }
+
+  .today-calendar {
+    margin: 0 0 1rem calc(var(--today-pad-x) + 56px + 1rem);
   }
 
   .today-image {

@@ -3,6 +3,7 @@
     <!-- A small invitation: the date and the day's name. The story, the fact and
     what to read or do open in the calendar's own modal, when the reader wants them. -->
     <section class="today" aria-labelledby="today-on-wiof-title">
+      <div class="today-row">
       <button type="button" class="today-open" (click)="openStory(occasion, $event)" aria-describedby="today-on-wiof-cta">
         @if (occasion.image | async; as image) {
           <img class="today-image" [src]="image" alt="" loading="lazy" />
@@ -18,14 +19,15 @@
           </span>
         </span>
       </button>
-      <button type="button" class="today-hide" (click)="hideForToday()" aria-label="Hide for today" title="Hide for today">
-        <ion-icon aria-hidden="true" name="close"></ion-icon>
-      </button>
-
+      <!-- Secondary action: an outline button beside the invitation (under it on phones). -->
       <a class="today-calendar" href="#environment-calendar" (click)="seeCalendar($event)">
         See the full calendar
         <ion-icon aria-hidden="true" name="arrow-down"></ion-icon>
       </a>
+      </div>
+      <button type="button" class="today-hide" (click)="hideForToday()" aria-label="Hide for today" title="Hide for today">
+        <ion-icon aria-hidden="true" name="close"></ion-icon>
+      </button>
     </section>
   }
 }

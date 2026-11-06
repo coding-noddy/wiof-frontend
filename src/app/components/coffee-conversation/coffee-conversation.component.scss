@@ -378,6 +378,15 @@
         border-radius: 12px 0 0 12px;
       }
     }
+
+    // Stacked (phones, tablets): the video sits flush at the top of the card,
+    // so only its top corners round, with the card; square at the bottom,
+    // against the text (all-round corners left gaps showing the band).
+    @media (max-width: 991px) {
+      .coffee-conv-card .media-container .media-player {
+        border-radius: 16px 16px 0 0;
+      }
+    }
   }
 }
 
