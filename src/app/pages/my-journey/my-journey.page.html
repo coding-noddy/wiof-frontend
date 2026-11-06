@@ -157,37 +157,7 @@
           </div>
         </div>
 
-        @if (impact; as i) {
-          <section class="impact-section" aria-labelledby="impact-title">
-            <h2 class="impact-title" id="impact-title">
-              <ion-icon aria-hidden="true" name="sparkles-outline"></ion-icon>
-              Your impact
-            </h2>
-            <div class="impact-columns">
-              <div class="impact-column">
-                <h3>This month</h3>
-                @if (i.month.length) {
-                  <ul>
-                    @for (line of i.month; track line.measure) {
-                      <li><strong>{{ line.text }}</strong>@if (line.equivalent) {<span>{{ line.equivalent }}</span>}</li>
-                    }
-                  </ul>
-                } @else {
-                  <p class="impact-empty">Nothing yet this month. <a routerLink="/take-action">Find an action</a></p>
-                }
-              </div>
-              <div class="impact-column">
-                <h3>Since you started</h3>
-                <ul>
-                  @for (line of i.total; track line.measure) {
-                    <li><strong>{{ line.text }}</strong>@if (line.equivalent) {<span>{{ line.equivalent }}</span>}</li>
-                  }
-                </ul>
-              </div>
-            </div>
-            <p class="impact-note">Estimates on the low side, from the actions you marked done and what you told us.</p>
-          </section>
-        }
+        <app-impact-summary [metrics]="metrics" [firstName]="firstName"></app-impact-summary>
 
         <app-next-for-you class="journey-next-for-you" [picks]="nextForYou"></app-next-for-you>
         <!-- Global Retry (all new sections failed) -->

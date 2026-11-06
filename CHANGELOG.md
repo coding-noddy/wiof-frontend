@@ -7,6 +7,17 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.17.0] - 2026-11-06
+
+Your impact, worth sharing. Hosting only.
+
+### Added
+- **"Your impact" on My Journey, redesigned** (`components/impact-summary`): one tile per measure with its icon and element colour (water teal, electricity Marigold, CO₂ brown…), a big Aleo number, the label and the everyday comparison; one *This month / Since you started* switch instead of two columns.
+- **"Share my impact"**: a square 1080×1080 image (`util/impact-share-image.ts`) made on the member's device, nothing uploaded: the WIOF logo, "My impact this November" (or "Naved's…" if they tick *Show my first name*, off by default), the top three measures with icons, and "From the small actions I took with World Is One Family · estimates, on the low side · Join me at worldisonefamily.com". On phones the share sheet opens with the image (WhatsApp, LinkedIn, Instagram…); on desktop the image downloads and a caption is copied. GA event `impact_shared` (period, share or download).
+
+### Fixed
+- The everyday comparison follows the number shown: the same "4.4 kWh" said "like 23 km" in one place and "like 24 km" in another.
+
 ## [8.16.0] - 2026-11-06
 
 Reset, done right. **Deploy with `-Backend`** (`resetEngagementData`; rules for `poll_vote_guards`).

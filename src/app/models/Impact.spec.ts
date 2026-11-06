@@ -41,7 +41,7 @@ describe('Impact (8.13.0)', () => {
     expect(everydayEquivalent(tap, 30)).toBe('≈ 2 buckets');
     expect(everydayEquivalent(tap, 15)).toBe('≈ 1 bucket');
     expect(everydayEquivalent(tap, 3)).toBeNull();
-    expect(everydayEquivalent(walk, 1.54)).toBe('like 10 km by car');
+    expect(everydayEquivalent(walk, 1.54)).toBe('like 9.7 km by car'); // from the shown 1.5 kg
     expect(everydayEquivalent(fan, 10)).toBe('≈ 8.2 kg CO₂, like 53 km by car');
     expect(everydayEquivalent(fan, 0.004)).toBeNull();
   });
@@ -68,7 +68,7 @@ describe('Impact totals for My Journey (8.14.0)', () => {
     const lines = impactLines({ co2: 1.54, water: 30, energy: 0 });
     expect(lines.map((l) => l.measure)).toEqual(['water', 'co2']);
     expect(lines[0]).toEqual({ measure: 'water', text: 'about 30 L of water', equivalent: '≈ 2 buckets' });
-    expect(lines[1].equivalent).toBe('like 10 km by car');
+    expect(lines[1].equivalent).toBe('like 9.7 km by car');
     expect(impactLines(null)).toEqual([]);
   });
 
