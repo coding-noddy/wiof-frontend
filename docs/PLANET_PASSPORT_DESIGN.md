@@ -72,7 +72,18 @@ The rules are pure functions in `src/app/models/Passport.ts`, unit-tested, so th
 7. **Accessibility:** every stamp has a text label (earned / not yet, hint, progress); the page buttons and keys work without a mouse. To check: a screen-reader pass of the whole booklet.
 8. **Where it lives:** a "Planet Passport" link on My Journey and in the avatar menu; maybe the holder page as the share image.
 
-## 5. Ideas to try next
+## 5. Stamps managed from the admin panel (planned)
+
+Agreed direction (2026-11-06): admins add and change stamps without a release. In the experiment the 23 stamps are code (`models/Passport.ts`); for the real Passport they move to data.
+
+- **Catalogue collection** `passport_stamp_defs/{stampId}`: title (1–2 lines), caption, element (or none), shape, ink, rule, target, optional date window, status `draft | active | retired`, order. Public read, admin write (firestore.rules).
+- **Admin → Passport page:** list, add, edit, retire; a live preview of the stamp (reuse `app-passport-stamp`) while editing.
+- **"Earned when" is a pick-list of trusted counts**, each a named rule the server knows: stories read, stories read in an element, actions done, actions done in an element, videos finished, polls voted, EQ reflection taken, longest visit streak, elements explored. Plus a target. That covers "Read 20 Water stories" with no code.
+- **Seasonal stamps:** an optional date window (for example World Water Day from the Environment Calendar): only activity inside the window counts.
+- **A new kind of rule** ("joined a workshop", "completed this one action") needs one small code change; after that it's in the pick-list.
+- **Guard rails:** stamps already earned stay earned when a stamp is edited (the earned record keeps its title and date); stamps are retired, never deleted; the server decides who earns what (`passport_stamps/{uid}_{stampId}`, written once with `earnedAt`).
+
+## 6. Ideas to try next
 
 - **Share a page:** a stamped page as a 1080×1080 image (reuse `util/impact-share-image.ts`).
 - **A new-stamp moment:** the next time the member opens the Passport after earning one, it opens on that page and the stamp lands.
