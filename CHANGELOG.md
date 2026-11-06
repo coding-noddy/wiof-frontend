@@ -7,6 +7,13 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > Releases between 1.0.11 and 5.0.3 were not recorded in this file. See the git history and the `v*-staging` / `v*-prod` tags.
 
+## [8.17.1] - 2026-11-06
+
+Hosting only.
+
+### Fixed
+- **The share image showed only three measures** (a member with food or plastic as a fourth or fifth lost it). It now shows every measure: three in roomy rows, four in tighter rows, five in compact rows without the comparison line. The caption lists them all too.
+
 ## [8.17.0] - 2026-11-06
 
 Your impact, worth sharing. Hosting only.

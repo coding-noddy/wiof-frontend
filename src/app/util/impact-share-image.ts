@@ -16,6 +16,17 @@ const IVORY = '#FAF5EC';
 const BORDER = '#CAB79E';
 const LOGO = 'assets/brand/logos/WIOF-full-logo.png';
 
+/**
+ * Row sizes by how many measures there are: three fit roomy rows, four and
+ * five get tighter ones (five drop the comparison line). All rows sit
+ * between y 370 and about 842, above the footer.
+ */
+const ROW_LAYOUTS = {
+  roomy: { box: 142, gap: 20, num: 60, label: 30, eq: 28, eqBase: -2, eqLine: 42, soloBase: 20, r: 44, img: 52, tx: 150 },
+  four: { box: 104, gap: 16, num: 50, label: 28, eq: 25, eqBase: -4, eqLine: 32, soloBase: 17, r: 36, img: 42, tx: 130 },
+  five: { box: 84, gap: 13, num: 46, label: 27, eq: 0, eqBase: 0, eqLine: 0, soloBase: 16, r: 30, img: 36, tx: 115 }
+};
+
 export interface ShareCardInput {
   /** "Naved's impact" or "My impact". */
   title: string;
@@ -141,43 +152,44 @@ export async function renderShareCard(input: ShareCardInput): Promise<Blob> {
   ctx.fillStyle = MUTED;
   ctx.fillText(input.period, pad, 332);
 
-  // Up to three measures, one row each, with room around the numbers.
-  const rows = input.tiles.slice(0, 3);
-  const boxH = 142;
-  const gap = 20;
+  // Every measure (at most five), one row each.
+  const rows = input.tiles.slice(0, 5);
+  const L = rows.length <= 3 ? ROW_LAYOUTS.roomy : rows.length === 4 ? ROW_LAYOUTS.four : ROW_LAYOUTS.five;
+  const boxH = L.box;
   let y = 370;
   for (const t of rows) {
-    roundedRect(ctx, pad, y, SHARE_SIZE - pad * 2, boxH, 28);
+    roundedRect(ctx, pad, y, SHARE_SIZE - pad * 2, boxH, Math.min(28, boxH / 3));
     ctx.fillStyle = tint(t.tint, 0.1);
     ctx.fill();
 
     // Icon in a tinted circle.
-    const cx = pad + 70;
+    const cx = pad + L.r + 26;
     const cy = y + boxH / 2;
     ctx.beginPath();
-    ctx.arc(cx, cy, 44, 0, Math.PI * 2);
+    ctx.arc(cx, cy, L.r, 0, Math.PI * 2);
     ctx.fillStyle = tint(t.tint, 0.28);
     ctx.fill();
     const img = await icon(t.icon, t.color);
-    if (img) ctx.drawImage(img, cx - 26, cy - 26, 52, 52);
+    if (img) ctx.drawImage(img, cx - L.img / 2, cy - L.img / 2, L.img, L.img);
 
     // Number + unit, label, comparison; the number alone is centred.
-    const tx = pad + 150;
-    const base = t.equivalent ? cy - 2 : cy + 20;
+    const tx = pad + L.tx;
+    const withEq = !!t.equivalent && L.eq > 0;
+    const base = cy + (withEq ? L.eqBase : L.soloBase);
     ctx.fillStyle = INK;
-    ctx.font = '700 60px Aleo, serif';
+    ctx.font = `700 ${L.num}px Aleo, serif`;
     const num = t.unit ? `${t.number} ${t.unit}` : t.number;
     ctx.fillText(num, tx, base);
     const numW = ctx.measureText(num).width;
-    ctx.font = '700 30px "Noto Sans", sans-serif';
+    ctx.font = `700 ${L.label}px "Noto Sans", sans-serif`;
     ctx.fillStyle = t.color;
     ctx.fillText(fit(ctx, t.label, SHARE_SIZE - pad * 2 - (tx - pad) - numW - 40), tx + numW + 18, base - 2);
-    if (t.equivalent) {
-      ctx.font = '400 28px "Noto Sans", sans-serif';
+    if (withEq) {
+      ctx.font = `400 ${L.eq}px "Noto Sans", sans-serif`;
       ctx.fillStyle = MUTED;
-      ctx.fillText(fit(ctx, t.equivalent, SHARE_SIZE - pad * 2 - (tx - pad) - 30), tx, cy + 42);
+      ctx.fillText(fit(ctx, t.equivalent!, SHARE_SIZE - pad * 2 - (tx - pad) - 30), tx, cy + L.eqLine);
     }
-    y += boxH + gap;
+    y += boxH + L.gap;
   }
 
   // Footer: honest, with the address. "Estimates" always gets a line of its own.

@@ -10,7 +10,7 @@ export type ImpactPeriod = 'month' | 'total';
 /** The caption that goes with the image: what, honestly, and where. */
 export function shareCaption(tiles: ImpactTile[], period: ImpactPeriod, monthLabel: string, url: string): string {
   const when = period === 'month' ? `in ${monthLabel}` : 'so far';
-  const what = tiles.slice(0, 3).map((t) => `${t.unit ? `${t.number} ${t.unit}` : t.number} ${t.label.replace(/ (saved|avoided)$/, '')}`).join(', ');
+  const what = tiles.map((t) => `${t.unit ? `${t.number} ${t.unit}` : t.number} ${t.label.replace(/ (saved|avoided)$/, '')}`).join(', ');
   return `My estimated impact ${when} with World Is One Family: ${what}. Small actions add up. Join me: ${url}`;
 }
 
