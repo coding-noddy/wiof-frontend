@@ -14,14 +14,18 @@
  */
 const { VALIDATOR_VERSION, validateActivityEvent } = require('./activity-validation');
 const { completionEventId, computeImpact, impactSnapshot } = require('./impact');
+const { emptyLadder, ladderAfter } = require('./passport');
 
 /** The user_metrics fields this module owns, in report order. */
 const METRIC_FIELDS = [
   'blogsRead', 'qualityReads', 'videosWatched', 'videosCompleted', 'pollsVoted', 'lastEqScore',
   'totalActionsCompleted', 'uniqueActionsCompleted'
 ];
-/** Maps replaced whole by the recompute, compared key by key in the report. */
-const MAP_FIELDS = ['qualityReadsByElement', 'impactTotals', 'impactByMonth'];
+/**
+ * Maps replaced whole by the recompute, compared key by key in the report
+ * (numbers only: the ladder's day and week keys aren't compared, its counts are).
+ */
+const MAP_FIELDS = ['qualityReadsByElement', 'impactTotals', 'impactByMonth', 'elementVisits', 'ladder'];
 
 const ELEMENTS = new Set(['air', 'water', 'earth', 'energy', 'spirit']);
 
@@ -89,7 +93,9 @@ function emptyUser() {
     lastActionAt: null,
     // Personal impact (8.14.0): accepted completions, and reported amounts by completion.
     completions: [],
-    reported: new Map()
+    reported: new Map(),
+    // Planet Passport: elements visited (Arrival stamps).
+    elementVisits: {}
   };
 }
 
@@ -157,6 +163,9 @@ async function computeUserMetrics(activityDocs, actionDocs, lookups) {
       case 'impact_reported':
         u.reported.set(completionEventId(data), data.amount);
         break;
+      case 'element_visit':
+        if (ELEMENTS.has(data.element)) u.elementVisits[data.element] = 1;
+        break;
       case 'eq_completion':
         if (isNewer(data.timestamp, u.lastEqDate)) {
           u.lastEqScore = data.score !== undefined ? data.score : null;
@@ -193,10 +202,18 @@ async function computeUserMetrics(activityDocs, actionDocs, lookups) {
     impactByUser.set(uid, await computeImpact(u.completions, u.reported, snapshotFor));
   }
 
+  // The Passport ladder, replayed in time order through the same code the
+  // onUserActionWritten trigger uses (passport.js ladderAfter).
+  const ladderOf = (completions) => [...completions]
+    .sort((a, b) => toMillis(a.data.timestamp) - toMillis(b.data.timestamp))
+    .reduce((ladder, { data }) => ladderAfter(ladder, { actionId: data.contentId, elements: data.elementIds, timestamp: data.timestamp }), emptyLadder());
+
   const metrics = new Map();
   perUser.forEach((u, uid) => {
     metrics.set(uid, {
       ...impactByUser.get(uid),
+      elementVisits: u.elementVisits,
+      ladder: ladderOf(u.completions),
       blogsRead: u.blogsRead.size,
       qualityReads: u.qualityReads.size,
       qualityReadsByElement: u.qualityReadsByElement,

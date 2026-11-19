@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Meta, MetaDefinition } from '@angular/platform-browser';
-import { distinctUntilChanged, filter } from 'rxjs/operators';
+import { NavigationEnd, Router } from '@angular/router';
+import { combineLatest } from 'rxjs';
+import { distinctUntilChanged, filter, map, startWith } from 'rxjs/operators';
 import { ActivityService } from './services/activity.service';
 import { AuthService } from './services/auth.service';
 import { UserProfileService } from './services/user-profile.service';
@@ -9,6 +11,7 @@ import { SingleVideoPlaybackService } from './services/single-video-playback.ser
 import { ChunkLoadRecoveryService } from './services/chunk-load-recovery.service';
 import { PageTrackingService } from './services/page-tracking.service';
 import { AnalyticsService } from './services/analytics.service';
+import { elementOfUrl } from './models/Journey';
 
 @Component({
     selector: 'app-root',
@@ -26,7 +29,8 @@ export class AppComponent implements OnInit {
     private singleVideoPlayback: SingleVideoPlaybackService,
     private chunkLoadRecovery: ChunkLoadRecoveryService,
     private pageTracking: PageTrackingService,
-    private analyticsService: AnalyticsService
+    private analyticsService: AnalyticsService,
+    private router: Router
   ) {
     // this.addMetaTags();
   }
@@ -69,6 +73,22 @@ export class AppComponent implements OnInit {
       this.activityService.logDailyVisit(user!.uid).catch(err => {
         console.warn('Daily visit logging failed:', err);
       });
+    });
+
+    // Planet Passport Arrival stamps: a signed-in member's first visit to
+    // each element (any page under /element/{slug}), once per element.
+    combineLatest([
+      this.router.events.pipe(
+        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+        map((e) => e.urlAfterRedirects),
+        startWith(this.router.url)
+      ),
+      this.authService.currentUser$
+    ]).subscribe(([url, user]) => {
+      const element = elementOfUrl(url);
+      if (user && element) {
+        this.activityService.logElementVisit(user.uid, element);
+      }
     });
   }
 

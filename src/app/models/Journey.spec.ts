@@ -1,4 +1,4 @@
-import { elementsExplored, firstSteps, journeyStory, needsWelcome, preferredElements, showFirstSteps } from './Journey';
+import { elementOfUrl, elementsExplored, firstSteps, journeyStory, needsWelcome, preferredElements, showFirstSteps } from './Journey';
 
 const metrics = (m: any = {}): any => ({
   blogsRead: 0, qualityReads: 0, qualityReadsByElement: {}, videosWatched: 0, videosCompleted: 0, pollsVoted: 0,
@@ -8,6 +8,17 @@ const metrics = (m: any = {}): any => ({
 const profile = (p: any = {}): any => ({ uid: 'u1', preferredElements: [], ...p });
 
 describe('Journey', () => {
+  it('elementOfUrl finds the element of any page under /element/{slug}', () => {
+    expect(elementOfUrl('/element/water')).toBe('water');
+    expect(elementOfUrl('/element/air/blogs')).toBe('air');
+    expect(elementOfUrl('/element/spirit#eq-assessment')).toBe('spirit');
+    expect(elementOfUrl('/element/earth?x=1')).toBe('earth');
+    expect(elementOfUrl('/element/waterfall')).toBeNull();
+    expect(elementOfUrl('/element/fire')).toBeNull();
+    expect(elementOfUrl('/take-action')).toBeNull();
+    expect(elementOfUrl(null)).toBeNull();
+  });
+
   it('preferredElements keeps known elements in the site order', () => {
     expect(preferredElements(profile({ preferredElements: ['Water', 'fire', 'air'] }))).toEqual(['air', 'water']);
     expect(preferredElements(null)).toEqual([]);

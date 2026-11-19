@@ -84,7 +84,9 @@ function ladderAfter(ladder, completion) {
 /** The five first steps (src/app/models/Journey.ts firstSteps), counted from trusted state. */
 function firstStepsDone(metrics, profile) {
   const m = metrics || {};
-  const chosen = Array.isArray(profile && profile.preferredElements) && profile.preferredElements.length > 0;
+  // As preferredElements() in Journey.ts: only known elements count, in any case.
+  const chosen = Array.isArray(profile && profile.preferredElements)
+    && profile.preferredElements.some((e) => ELEMENT_SLUGS.has(String(e).toLowerCase()));
   return [chosen, num(m.qualityReads) > 0, num(m.videosCompleted) > 0, m.lastEqScore != null, num(m.totalActionsCompleted) > 0]
     .filter(Boolean).length;
 }

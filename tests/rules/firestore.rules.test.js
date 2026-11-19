@@ -343,6 +343,7 @@ describe('activity_log/{docId}', () => {
     poll_vote: ['alice_poll_vote_poll-1', { contentId: 'poll-1', contentTitle: 'Poll?', selectedOption: 'Yes', userEmail: 'alice@test.com' }],
     daily_visit: ['alice_daily_visit_2026-11-04', {}],
     widget_usage: [null, { widgetName: 'AQI' }],
+    element_visit: ['alice_element_visit_water', { element: 'water' }],
     suggestion_click: ['alice_suggestion_click_explore_next_blog_blog-1_2026-11-04', { via: 'explore_next', contentType: 'blog', contentId: 'blog-1', position: 2 }]
   };
 
@@ -368,6 +369,14 @@ describe('activity_log/{docId}', () => {
 
   it('denies a count-once event at the ID of different content', async () => {
     await assertFails(log(alice()).doc('alice_blog_read_blog-2').set(activityEvent('blog_read', { contentId: 'blog-1' })));
+  });
+
+  it('denies an element visit at another element\'s ID, for an unknown element, or a second time', async () => {
+    await assertFails(log(alice()).doc('alice_element_visit_air').set(activityEvent('element_visit', { element: 'water' })));
+    await assertFails(log(alice()).doc('alice_element_visit_fire').set(activityEvent('element_visit', { element: 'fire' })));
+    await assertFails(log(alice()).add(activityEvent('element_visit', { element: 'water' })));
+    await assertSucceeds(log(alice()).doc('alice_element_visit_earth').set(activityEvent('element_visit', { element: 'earth' })));
+    await assertFails(log(alice()).doc('alice_element_visit_earth').set(activityEvent('element_visit', { element: 'earth' })));
   });
 
   it('denies a daily visit at the ID of a different day', async () => {

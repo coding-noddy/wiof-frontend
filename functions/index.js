@@ -18,6 +18,7 @@ const { EQ_DAILY_LIMIT, VALIDATOR_VERSION, eqCalendarDay, eqSlotIds, scoreEqResp
 const { elementOfBlog, makeContentLookups, recomputeUserMetrics } = require('./user-metrics');
 const { completionEventId, impactIncrement, impactSnapshot, monthKey, reportedValue } = require('./impact');
 const { rebuildRelatedContent } = require('./related-content');
+const { ladderAfter } = require('./passport');
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -494,11 +495,15 @@ exports.resetEngagementData = functions
       lastBlogReadDate: null,
       // delete(), not {}: a merge set would keep the old per-element keys.
       qualityReadsByElement: admin.firestore.FieldValue.delete(),
+      // Element visits (Passport Arrival stamps): their events are deleted above.
+      elementVisits: admin.firestore.FieldValue.delete(),
       // Take Action progress and impact, only when the member chose to clear it.
       ...(includeActions ? {
         totalActionsCompleted: 0,
         uniqueActionsCompleted: 0,
         actionsByElement: admin.firestore.FieldValue.delete(),
+        // The Passport ladder is derived from the completion events cleared here.
+        ladder: admin.firestore.FieldValue.delete(),
         lastActionAt: null,
         impactTotals: admin.firestore.FieldValue.delete(),
         impactByMonth: admin.firestore.FieldValue.delete()
@@ -590,6 +595,10 @@ async function metricsUpdateFor(entry) {
       break;
     case 'poll_vote':
       update.pollsVoted = admin.firestore.FieldValue.increment(1);
+      break;
+    case 'element_visit':
+      // Planet Passport Arrival stamps: set, not incremented (one event per element).
+      update.elementVisits = { [entry.element]: 1 };
       break;
     case 'eq_completion':
       update.lastEqScore = entry.score !== undefined ? entry.score : null;
@@ -783,12 +792,22 @@ exports.onUserActionWritten = functions
     }
 
     const eventRef = db.collection('activity_log').doc(`${uid}_action_completed_${after.actionId}_${afterCount}`);
+    const metricsRef = db.collection('user_metrics').doc(uid);
     await db.runTransaction(async (tx) => {
       if ((await tx.get(eventRef)).exists) {
         return; // trigger redelivered: this completion is already recorded and counted
       }
+      // Planet Passport ladder (functions/passport.js): days with an action,
+      // days per element and weeks per action, from this completion's server
+      // time. Read in the same transaction, so two completions can't lose a day.
+      const metricsSnap = await tx.get(metricsRef);
+      update.ladder = ladderAfter(metricsSnap.exists ? metricsSnap.get('ladder') : null, {
+        actionId: after.actionId,
+        elements: event.elementIds,
+        timestamp: after.lastCompletedAt || admin.firestore.Timestamp.now()
+      });
       tx.create(eventRef, event);
-      tx.set(db.collection('user_metrics').doc(uid), update, { merge: true });
+      tx.set(metricsRef, update, { merge: true });
     });
     return null;
   }));

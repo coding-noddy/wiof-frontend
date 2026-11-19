@@ -24,8 +24,11 @@ const CONTENT_DEDUPED_TYPES = new Set([
 
 const KNOWN_TYPES = new Set([
   ...CONTENT_DEDUPED_TYPES, 'eq_completion', 'daily_visit', 'widget_usage', 'action_completed', 'suggestion_click',
-  'impact_reported'
+  'impact_reported', 'element_visit'
 ]);
+
+/** The five elements (element_visit, Planet Passport Arrival stamps). */
+const ELEMENT_SLUGS = new Set(['air', 'energy', 'water', 'earth', 'spirit']);
 
 const KNOWN_WIDGETS = new Set(['AQI', 'Energy Calculator', 'Food pH', 'Water Rainfall']);
 
@@ -75,6 +78,9 @@ function expectedDocId(entry) {
   }
   if (entry.activityType === 'impact_reported') {
     return `${entry.userId}_impact_reported_${entry.contentId}_${entry.completionNumber}`;
+  }
+  if (entry.activityType === 'element_visit') {
+    return `${entry.userId}_element_visit_${entry.element}`;
   }
   return null;
 }
@@ -214,6 +220,8 @@ async function validateActivityEvent(docId, entry, lookups, options = {}) {
     }
     case 'daily_visit':
       return accept();
+    case 'element_visit':
+      return ELEMENT_SLUGS.has(entry.element) ? accept() : reject('unknown_element');
   }
   return reject('unknown_type');
 }

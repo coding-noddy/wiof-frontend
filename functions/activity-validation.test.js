@@ -152,6 +152,13 @@ describe('validateActivityEvent', () => {
     assert.equal((await verdict(event('daily_visit'), 'alice_daily_visit_2026-11-05')).reason, 'wrong_doc_id');
   });
 
+  it('accepts an element visit once per element, at its fixed ID (Passport Arrival stamps)', async () => {
+    const visit = event('element_visit', { element: 'water' });
+    assert.equal((await verdict(visit, 'alice_element_visit_water')).status, 'accepted');
+    assert.equal((await verdict(visit, 'alice_element_visit_air')).reason, 'wrong_doc_id');
+    assert.equal((await verdict(event('element_visit', { element: 'fire' }))).reason, 'unknown_element');
+  });
+
   it('rejects a calendar day more than a day away from the server time', async () => {
     assert.equal((await verdict(event('daily_visit', { calendarDay: '2026-11-07' }))).reason, 'implausible_calendar_day');
   });

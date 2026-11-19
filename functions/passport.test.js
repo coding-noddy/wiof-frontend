@@ -159,6 +159,9 @@ describe('Earthrise and the other rules', () => {
     assert.equal(firstStepsDone(allSteps, { preferredElements: [] }), 4);
     assert.ok(!earnedIds({ metrics: allSteps, profile: { preferredElements: [] } }).includes('earthrise'));
     assert.ok(earnedIds({ metrics: allSteps, profile: { preferredElements: ['water'] } }).includes('earthrise'));
+    // The same clean-up as the checklist (Journey.ts preferredElements): known elements, any case.
+    assert.equal(firstStepsDone(allSteps, { preferredElements: ['Water'] }), 5);
+    assert.equal(firstStepsDone(allSteps, { preferredElements: ['fire'] }), 4);
   });
 
   it('an EQ score of 0 still counts as taken', () => {

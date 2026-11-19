@@ -13,7 +13,7 @@ import { QualityReadEntry, EqHistoryEntry, PollHistoryEntry, VideoWatchHistoryEn
 
 export interface ActivityLogInput {
   userId: string;
-  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage' | 'daily_visit' | 'action_completed' | 'suggestion_click' | 'impact_reported';
+  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage' | 'daily_visit' | 'action_completed' | 'suggestion_click' | 'impact_reported' | 'element_visit';
   contentId?: string;
   widgetName?: string;
   score?: number;
@@ -31,7 +31,7 @@ export interface ActivityLogInput {
 export interface ActivityLogEntry {
   id?: string;
   userId: string;
-  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage' | 'daily_visit' | 'action_completed' | 'suggestion_click' | 'impact_reported';
+  activityType: 'blog_read' | 'blog_read_complete' | 'video_view' | 'video_watch_complete' | 'poll_vote' | 'eq_completion' | 'widget_usage' | 'daily_visit' | 'action_completed' | 'suggestion_click' | 'impact_reported' | 'element_visit';
   /** Schema version of this entry's shape — see ActivityService.SCHEMA_VERSION.
    *  Lets a future change to the event shape tell old and new entries apart
    *  instead of guessing from which optional fields happen to be present. */
@@ -104,6 +104,19 @@ export interface EngagementMetrics {
   /** Personal impact (8.14.0, functions/impact.js): estimated savings by measure, all time and per month. */
   impactTotals: { [measure: string]: number };
   impactByMonth: { [month: string]: { [measure: string]: number } };
+  /** Planet Passport (functions/passport.js): elements visited, and the ladder state the stamps read. */
+  elementVisits?: { [element: string]: number };
+  ladder?: PassportLadder;
+}
+
+/** user_metrics.ladder, kept by onUserActionWritten (functions/passport.js ladderAfter). */
+export interface PassportLadder {
+  actionDays: number;
+  lastActionDay: string | null;
+  elementDays: { [element: string]: number };
+  elementLastDay: { [element: string]: string };
+  actionWeeks: { [actionId: string]: number };
+  actionLastWeek: { [actionId: string]: string };
 }
 
 /**
@@ -243,6 +256,33 @@ export class ActivityService {
       await this.writeDedupedEntry(`${userId}_daily_visit_${calendarDay}`, logEntry);
     } catch (error) {
       console.warn('Daily visit logging failed:', error);
+    }
+  }
+
+  /** Elements already recorded in this session, so a revisit doesn't write again. */
+  private visitedElements = new Set<string>();
+
+  /**
+   * Logs the member's first visit to an element (Planet Passport Arrival
+   * stamps): one event per element, ever, at its fixed doc ID. A repeat is
+   * denied by the rules and swallowed, like the daily visit.
+   */
+  async logElementVisit(userId: string, element: string): Promise<void> {
+    const key = `${userId}:${element}`;
+    if (this.visitedElements.has(key)) return;
+    this.visitedElements.add(key);
+    try {
+      const logEntry = {
+        userId,
+        activityType: 'element_visit',
+        schemaVersion: ActivityService.SCHEMA_VERSION,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        calendarDay: toCalendarDay(new Date()),
+        element
+      } as Omit<ActivityLogEntry, 'id'>;
+      await this.writeDedupedEntry(`${userId}_element_visit_${element}`, logEntry);
+    } catch (error) {
+      console.warn('Element visit logging failed:', error);
     }
   }
 
@@ -497,7 +537,9 @@ export class ActivityService {
           actionsByElement: doc?.actionsByElement || {},
           lastActionAt: doc?.lastActionAt?.toDate ? doc.lastActionAt.toDate() : null,
           impactTotals: doc?.impactTotals || {},
-          impactByMonth: doc?.impactByMonth || {}
+          impactByMonth: doc?.impactByMonth || {},
+          elementVisits: doc?.elementVisits || {},
+          ladder: doc?.ladder || undefined
         } as EngagementMetrics))
       );
   }

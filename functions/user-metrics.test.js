@@ -106,6 +106,39 @@ describe('computeUserMetrics', () => {
   });
 });
 
+describe('computeUserMetrics: Planet Passport', () => {
+  it('records the elements visited, ignoring unknown ones', async () => {
+    const { metrics } = await computeUserMetrics([
+      ev('a', 'element_visit', { element: 'water', calendarDay: '2026-11-04' }),
+      ev('b', 'element_visit', { element: 'air', calendarDay: '2026-11-04' })
+    ], [], lookups);
+    assert.deepEqual(metrics.get('alice').elementVisits, { water: 1, air: 1 });
+  });
+
+  it('replays the ladder from completion events in time order, whatever order they are read in', async () => {
+    const done = (id, actionId, element, iso) => ev(id, 'action_completed', {
+      contentId: actionId, elementIds: [element], timestamp: at(iso),
+      validation: { status: 'accepted', reason: null, validatorVersion: VALIDATOR_VERSION }
+    });
+    const { metrics } = await computeUserMetrics([
+      done('c', 'leak', 'water', '2026-11-12T06:00:00Z'),
+      done('a', 'leak', 'water', '2026-11-03T06:00:00Z'),
+      done('b', 'bike', 'air', '2026-11-03T07:00:00Z'),
+      done('d', 'leak', 'water', '2026-11-12T08:00:00Z')
+    ], [], lookups);
+    const ladder = metrics.get('alice').ladder;
+    assert.equal(ladder.actionDays, 2);
+    assert.deepEqual(ladder.elementDays, { water: 2, air: 1 });
+    assert.deepEqual(ladder.actionWeeks, { leak: 2, bike: 1 });
+    assert.equal(ladder.lastActionDay, '2026-11-12');
+  });
+
+  it('a member with no completions gets an empty ladder', async () => {
+    const { metrics } = await computeUserMetrics([ev('a', 'poll_vote', { contentId: 'poll-1' })], [], lookups);
+    assert.equal(metrics.get('alice').ladder.actionDays, 0);
+  });
+});
+
 describe('diffMetrics', () => {
   it('lists only the fields that change, treating missing counters as 0', () => {
     const stored = new Map([['alice', { blogsRead: 5, pollsVoted: 1, lastEqScore: 75 }]]);

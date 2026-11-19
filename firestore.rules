@@ -206,6 +206,11 @@ service cloud.firestore {
           || (type == 'daily_visit'
             && data.keys().hasOnly(base)
             && docId == request.auth.uid + '_daily_visit_' + data.calendarDay)
+          // Planet Passport Arrival stamps (v1): the first visit to an element, once per element.
+          || (type == 'element_visit'
+            && data.keys().hasOnly(base.concat(['element']))
+            && data.element in ['air', 'energy', 'water', 'earth', 'spirit']
+            && docId == request.auth.uid + '_element_visit_' + data.element)
           || (type == 'widget_usage'
             && data.keys().hasOnly(base.concat(['widgetName']))
             && data.widgetName in ['AQI', 'Energy Calculator', 'Food pH', 'Water Rainfall'])

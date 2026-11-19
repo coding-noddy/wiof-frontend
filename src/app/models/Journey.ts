@@ -23,6 +23,15 @@ const SLUGS = new Set<string>(JOURNEY_ELEMENTS.map((e) => e.slug));
 export const EQ_ASSESSMENT_LINK = '/element/spirit';
 export const EQ_ASSESSMENT_FRAGMENT = 'eq-assessment';
 
+/**
+ * The element a URL is in, for the Planet Passport Arrival stamps: any page
+ * under /element/{slug} (the element page, its stories, videos or actions).
+ */
+export function elementOfUrl(url: string | null | undefined): ElementSlug | null {
+  const match = /^\/element\/([a-z]+)(?:[/?#]|$)/.exec(String(url || '').toLowerCase());
+  return match && SLUGS.has(match[1]) ? (match[1] as ElementSlug) : null;
+}
+
 /** The user's chosen elements, cleaned up (known ones, in the site's order). */
 export function preferredElements(profile: Pick<UserProfile, 'preferredElements'> | null | undefined): ElementSlug[] {
   const chosen = new Set((profile?.preferredElements || []).map((e) => String(e).toLowerCase()));
