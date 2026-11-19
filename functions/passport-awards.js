@@ -67,7 +67,7 @@ async function awardStamps(db, uid, { FieldValue, source = 'trigger' }) {
   let issued = false;
   if (existing.includes(ISSUING_STAMP) || awarded.includes(ISSUING_STAMP)) {
     issued = await createOnce(db.collection('passport_holders').doc(uid), {
-      userId: uid, issuedAt: FieldValue.serverTimestamp(), catalogueVersion: CATALOGUE_VERSION, source
+      userId: uid, issuedAt: FieldValue.serverTimestamp(), dateKnown: true, catalogueVersion: CATALOGUE_VERSION, source
     });
   }
   return { awarded, issued };
