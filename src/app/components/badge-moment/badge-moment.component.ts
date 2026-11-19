@@ -2,7 +2,7 @@ import { Component, ElementRef, HostListener, NgZone, OnDestroy, OnInit, ViewChi
 import { NavigationEnd, Router } from '@angular/router';
 import { combineLatest, of, Subject } from 'rxjs';
 import { filter, switchMap, takeUntil } from 'rxjs/operators';
-import { buildStamps, momentWaitsOn, newBadges, Stamp } from 'src/app/models/Passport';
+import { momentStamps, momentWaitsOn, Stamp } from 'src/app/models/Passport';
 import { AnalyticsService } from 'src/app/services/analytics.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { PassportService } from 'src/app/services/passport.service';
@@ -82,10 +82,8 @@ export class BadgeMomentComponent implements OnInit, OnDestroy {
         }
         const [defs, records, holder, profile] = data;
         const seen: any = profile?.passportSeenAt;
-        const fresh = newBadges(records, seen?.toDate ? seen.toDate() : null, !!holder);
-        const ids = new Set(fresh.map((r) => r.stampId));
-        // A badge already shown this session waits for nothing (its seen marker may still be on its way).
-        this.pending = buildStamps(defs, records.filter((r) => ids.has(r.stampId) && !this.shown.has(r.stampId)), { metrics: null, profile });
+        // A badge already shown this session is skipped (its seen marker may still be on its way).
+        this.pending = momentStamps(defs, records, { metrics: null, profile }, seen?.toDate ? seen.toDate() : null, !!holder, this.shown);
         this.tryShow();
       });
 

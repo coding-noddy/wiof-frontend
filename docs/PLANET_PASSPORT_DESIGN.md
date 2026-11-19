@@ -284,7 +284,14 @@ The roadmap's rule is **private by default; public only by the member's choice**
 - Once the public page exists, a shared badge card can carry its link, and the link gets a preview (`functions/social-meta.js`).
 - Before building: a privacy review, rules tests (other members can read only `public_profiles`), a handle policy (reserved words, changes), and an update to the privacy policy.
 
-## 6a. The new-badge moment (proposed 2026-11-19)
+## 6a. The new-badge moment (built 2026-11-19, `components/badge-moment`)
+
+Built as described below, with three differences:
+- There's no Share button yet (it comes with §6).
+- There's no Settings switch yet (it was optional).
+- The issuing moment opens on Earthrise, then shows what was kept, oldest first.
+
+Stamps from the launch backfill never pop up.
 
 When a member earns a badge (say they mark their 3rd different action done), they get a short celebration, a look at the badge, and a way to it.
 

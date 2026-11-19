@@ -13,7 +13,8 @@ How to release, operate and roll back the server-awarded Passport. Design: docs/
 | Catalogue display copy | `scripts/sync-passport-catalogue.js` → `passport_stamp_defs` |
 | On/off switch | `site_settings/passport` `{ awardsEnabled: true \| false }`. Missing means **off** |
 | Records | `passport_stamps/{uid}_{stampId}`, `passport_holders/{uid}`: server-only (firestore.rules) |
-| Booklet | `/passport` (sign-in only, not in the menus yet); `?demo=1` for admins |
+| Booklet | `/passport` (sign-in only, not in the menus yet); `?demo=1` for admins; `?stamp={id}` opens on that stamp's page |
+| New-badge moment | `components/badge-moment` in the app shell. "Seen" = `users.passportSeenAt` (owner-writable, server clock only). Backfilled stamps never pop up. |
 
 ## Release order (staging first; prod only with explicit approval)
 

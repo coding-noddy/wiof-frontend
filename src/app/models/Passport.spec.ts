@@ -1,6 +1,6 @@
 import { EngagementMetrics } from '../services/activity.service';
 import {
-  buildStamps, elementStamps, firstStepsDone, journeyStamps, machineLines, memberNumber, milestoneStamps, momentWaitsOn,
+  buildStamps, elementStamps, firstStepsDone, journeyStamps, machineLines, memberNumber, milestoneStamps, momentStamps, momentWaitsOn,
   newBadges, nextStamps, progressFor, StampDef, stampDateText
 } from './Passport';
 
@@ -106,6 +106,18 @@ describe('Planet Passport new-badge moment', () => {
     expect(newBadges(records, null, true).map((r) => r.stampId)).toEqual(['good-watch', 'your-voice']);
     expect(newBadges(records, at('2026-11-19T11:00:00Z'), true).map((r) => r.stampId)).toEqual(['your-voice']);
     expect(newBadges(records, at('2026-11-19T13:00:00Z'), true)).toEqual([]);
+  });
+
+  it('a moment shows only the new earned stamps, never the rest of the catalogue', () => {
+    const recs = [
+      { stampId: 'earthrise', earnedAt: at('2026-11-19T10:00:00Z'), dateKnown: true, source: 'trigger' },
+      { stampId: 'good-watch', earnedAt: at('2026-11-19T09:00:00Z'), dateKnown: true, source: 'trigger' }
+    ];
+    // The issuing moment opens on Earthrise, then the rest oldest first.
+    expect(momentStamps(DEFS, recs, none, null, true).map((s) => s.id)).toEqual(['earthrise', 'good-watch']);
+    expect(momentStamps(DEFS, recs, none, null, true, new Set(['good-watch'])).map((s) => s.id)).toEqual(['earthrise']);
+    expect(momentStamps(DEFS, recs, none, at('2026-11-19T11:00:00Z'), true)).toEqual([]);
+    expect(momentStamps(DEFS, recs, none, null, false)).toEqual([]);
   });
 
   it('waits on the Passport page, sign-in, admin and the EQ check', () => {

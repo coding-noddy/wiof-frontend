@@ -57,6 +57,15 @@ export function newBadges(records: StampRecord[], seenAt: Date | null, issued: b
     .sort((a, b) => a.earnedAt!.getTime() - b.earnedAt!.getTime());
 }
 
+/** The stamps a new-badge moment shows: earned, new (newBadges), not already shown; oldest first. */
+export function momentStamps(defs: StampDef[], records: StampRecord[], input: PassportInput, seenAt: Date | null, issued: boolean, alreadyShown: Set<string> = new Set()): Stamp[] {
+  const fresh = newBadges(records, seenAt, issued).filter((r) => !alreadyShown.has(r.stampId));
+  const built = new Map(buildStamps(defs, records, input).filter((s) => s.earned).map((s) => [s.id, s]));
+  const stamps = fresh.map((r) => built.get(r.stampId)).filter((s): s is Stamp => !!s);
+  // The issuing moment opens on Earthrise, then what was kept meanwhile.
+  return [...stamps.filter((s) => s.id === 'earthrise'), ...stamps.filter((s) => s.id !== 'earthrise')];
+}
+
 /** Where the moment waits for the next page: the Passport itself (it lands in the booklet), sign-in, admin, the EQ check. */
 export function momentWaitsOn(url: string): boolean {
   const [path, fragment = ''] = String(url || '').split('#');

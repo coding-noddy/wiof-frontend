@@ -163,11 +163,10 @@ async function cleanup(uid) {
     await sleep(6000);
     check('a retried or unrelated write adds nothing', (await stampsOf()).length === stamps.length);
 
-    // 3b. The new-badge moment on an ordinary page: the issuing moment, once.
-    await page.goto(`${BASE}/take-action`, { waitUntil: 'load', timeout: 90000 });
+    // 3b. The new-badge moment: the browser is still on the Water page, and the issuing moment arrives there, live.
     const moment = await page.waitForSelector('app-badge-moment .moment', { timeout: 30000 }).then(() => true, () => false);
     const momentTitle = moment ? await page.$eval('#badge-moment-title', (el) => el.textContent.trim()) : '';
-    check('the issuing moment shows on another page', moment && /issued/i.test(momentTitle), momentTitle);
+    check('the issuing moment arrives live on the page the member is on', moment && /issued/i.test(momentTitle) && page.url().includes('/element/water'), momentTitle);
     const momentCount = moment ? await page.$eval('.moment-pager span', (el) => el.textContent.trim()).catch(() => '1 of 1') : '';
     check('several badges come in one moment', /of [2-9]/.test(momentCount), momentCount);
     await sleep(1800);
