@@ -19,7 +19,7 @@ Make every Passport stamp a **permanent record that the server decides**, with i
 | D5 | **The Passport is issued with Earthrise** (all 5 first steps). Before that, a "waiting" cover shows the steps |
 | D6 | Contributors without an account claim through a one-time link (later workstream) |
 
-Open, not needed for v1: should a contributor claim issue the Passport straight away (recommended: yes)?
+D7 (2026-11-19): **a contributor claim link issues the Passport straight away**: the one exception to D5. It is built with contributor badges, not in v1.
 
 ## 3. Scope
 
