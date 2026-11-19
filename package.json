@@ -18,6 +18,7 @@
     "e2e:next": "node tests/e2e/next-for-you.e2e.js",
     "e2e:eq": "node tests/e2e/eq-limit.e2e.js",
     "e2e:analytics": "node tests/e2e/analytics.e2e.js",
+    "e2e:passport": "node tests/e2e/passport.e2e.js",
     "predeploy:staging": "npm run test:functions && npm run test:rules",
     "deploy:staging": "powershell -ExecutionPolicy Bypass -File ./deploy.ps1 -Target staging",
     "predeploy:prod": "npm run test:functions && npm run test:rules",

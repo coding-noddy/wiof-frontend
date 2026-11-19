@@ -58,7 +58,8 @@ export class PassportStampComponent {
   lineY(i: number): number {
     const lines = this.stamp.title.length;
     const lineGap = this.isTriangle ? 16 : 19;
-    const base = this.isTriangle ? 98 : 80;
+    // Lower in a triangle and a pentagon, where those shapes are widest.
+    const base = this.isTriangle ? 98 : this.stamp.shape === 'pentagon' ? 90 : 80;
     return base + (i - (lines - 1) / 2) * lineGap - (this.stamp.earned ? 6 : 8);
   }
 
