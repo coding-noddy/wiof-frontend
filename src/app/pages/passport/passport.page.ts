@@ -111,6 +111,8 @@ export class PassportPage implements OnInit, OnDestroy {
   private pointerX: number | null = null;
   private destroy$ = new Subject<void>();
   private userChange$ = new Subject<void>();
+  /** ?stamp=: the page to open on, once the stamps are in. */
+  private openOnStamp: string | null = null;
 
   constructor(
     private authService: AuthService,
@@ -123,6 +125,8 @@ export class PassportPage implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.measure();
     const wantsDemo = this.route.snapshot.queryParamMap.get('demo') === '1';
+    // From the new-badge moment: open on that stamp's page (and skip the welcome, the moment just showed it).
+    this.openOnStamp = this.route.snapshot.queryParamMap.get('stamp');
     this.authService.currentUser$
       .pipe(distinctUntilChanged((a, b) => a?.uid === b?.uid), takeUntil(this.destroy$))
       .subscribe((user) => {
@@ -182,6 +186,21 @@ export class PassportPage implements OnInit, OnDestroy {
     this.memberNo = this.uid ? memberNumber(this.uid) : '';
     this.mrz = machineLines(this.fullName, this.memberNo, this.joined);
     this.loading = false;
+    if (this.openOnStamp && this.issued && this.stamps.length) {
+      const page = this.pageOfStamp(this.openOnStamp);
+      this.openOnStamp = null;
+      this.welcome = false;
+      if (page >= 0) this.turnTo(this.spread ? Math.ceil(page / 2) : page);
+    }
+  }
+
+  /** The booklet page a stamp sits on, or -1. */
+  pageOfStamp(id: string): number {
+    const s = this.stamps.find((x) => x.id === id);
+    if (!s) return -1;
+    if (s.element) return this.pages.findIndex((p) => p.kind === 'element' && p.element?.slug === s.element);
+    if (s.family === 'milestone') return this.pages.findIndex((p) => p.kind === 'milestones' && this.milestones(p.levels).some((m) => m.id === id));
+    return this.pages.findIndex((p) => p.kind === 'visas');
   }
 
   /** Sample records for the admin preview: dated over the last few weeks. */
@@ -201,7 +220,7 @@ export class PassportPage implements OnInit, OnDestroy {
     } catch {
       // Storage blocked: show the welcome this time.
     }
-    if (!seen) this.welcome = true;
+    if (!seen && !this.openOnStamp) this.welcome = true;
   }
 
   /** "Open my Passport" on the welcome: turn to the first milestone page, where Earthrise lands. */

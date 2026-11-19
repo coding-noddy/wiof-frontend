@@ -1,0 +1,63 @@
+@if (visible && current) {
+  <div class="moment-backdrop" (click)="close()"></div>
+  <div
+    #dialog
+    class="moment"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="badge-moment-title"
+    aria-describedby="badge-moment-meaning"
+    tabindex="-1"
+    [style.--ink]="current.ink"
+  >
+    <!-- The ink texture the stamp uses (the booklet page has its own copy). -->
+    <svg class="defs" aria-hidden="true" focusable="false">
+      <filter id="wiof-ink" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.6" result="rough" />
+        <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.9 1.78" result="speckle" />
+        <feComposite in="rough" in2="speckle" operator="in" />
+      </filter>
+    </svg>
+
+    <button type="button" class="moment-close" (click)="close()" aria-label="Close">
+      <ion-icon name="close" aria-hidden="true"></ion-icon>
+    </button>
+
+    <p class="moment-eyebrow">Planet Passport</p>
+    <h2 id="badge-moment-title">{{ heading }}</h2>
+
+    <!-- A stamp lands, like in the booklet; "is-open" starts its thunk. Re-created per badge so each one lands. -->
+    @for (s of [current]; track s.id) {
+      <div class="stamp-stage page is-open">
+        <div class="burst" aria-hidden="true">
+          @for (b of burst; track $index) {
+            <span [class.leaf]="b.leaf" [style.--a]="b.angle + 'deg'" [style.--d]="b.distance + 'px'" [style.--t]="b.delay + 's'"></span>
+          }
+        </div>
+        <app-passport-stamp [stamp]="s"></app-passport-stamp>
+      </div>
+      <p id="badge-moment-meaning" class="moment-meaning">{{ s.meaning }}</p>
+      @if (extraLine) {
+        <p class="moment-extra">{{ extraLine }}</p>
+      }
+    }
+
+    @if (badges.length > 1) {
+      <div class="moment-pager">
+        <button type="button" (click)="prev()" [disabled]="index === 0" aria-label="Previous badge">
+          <ion-icon name="chevron-back" aria-hidden="true"></ion-icon>
+        </button>
+        <span aria-live="polite">{{ index + 1 }} of {{ badges.length }}</span>
+        <button type="button" (click)="next()" [disabled]="index === badges.length - 1" aria-label="Next badge">
+          <ion-icon name="chevron-forward" aria-hidden="true"></ion-icon>
+        </button>
+      </div>
+    }
+
+    <div class="moment-actions">
+      <button type="button" class="moment-primary" (click)="openPassport()">See it in my Passport</button>
+      <button type="button" class="moment-secondary" (click)="close()">Close</button>
+    </div>
+  </div>
+}

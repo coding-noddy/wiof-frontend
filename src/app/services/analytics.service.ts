@@ -119,6 +119,11 @@ export class AnalyticsService {
     this.log('bookmark_removed', { content_type: contentType, content_id: contentId });
   }
 
+  /** The new-badge moment (Passport §6a): how often it shows and leads to the Passport. Usefulness, not pressure. */
+  logBadgeMoment(action: 'shown' | 'open_passport', count: number, issuing: boolean): void {
+    this.log(`badge_moment_${action}`, { badge_count: count, issuing });
+  }
+
   /** "Share my impact" (8.17.0): which period, and whether the share sheet or a download was used. */
   logImpactShared(period: 'month' | 'total', method: 'share' | 'download'): void {
     this.log('impact_shared', { period, method });

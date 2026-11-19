@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AppCommonModule } from 'src/app/app-common.module';
-import { PassportStampComponent } from './passport-stamp.component';
+import { PassportStampModule } from './passport-stamp.module';
 import { PassportPage } from './passport.page';
 
 @NgModule({
-  imports: [AppCommonModule, RouterModule.forChild([{ path: '', component: PassportPage }])],
-  declarations: [PassportPage, PassportStampComponent]
+  imports: [AppCommonModule, PassportStampModule, RouterModule.forChild([{ path: '', component: PassportPage }])],
+  declarations: [PassportPage]
 })
 export class PassportPageModule {}

@@ -40,6 +40,28 @@ export interface StampRecord {
   earnedAt: Date | null;
   /** false: history couldn't prove the date ("Earned before launch"). */
   dateKnown: boolean;
+  /** "trigger" (earned just now), or "backfill:{runId}" (recorded at launch from history). */
+  source?: string;
+}
+
+/**
+ * The new-badge moment (design §6a): the stamps to celebrate now. None
+ * until the Passport is issued (D5): the issuing moment then shows Earthrise
+ * with whatever was kept meanwhile. Stamps recorded from history at launch
+ * (the backfill) are never "new"; they're simply in the booklet.
+ */
+export function newBadges(records: StampRecord[], seenAt: Date | null, issued: boolean): StampRecord[] {
+  if (!issued) return [];
+  return records
+    .filter((r) => r.earnedAt && !(r.source || '').startsWith('backfill:') && (!seenAt || r.earnedAt > seenAt))
+    .sort((a, b) => a.earnedAt!.getTime() - b.earnedAt!.getTime());
+}
+
+/** Where the moment waits for the next page: the Passport itself (it lands in the booklet), sign-in, admin, the EQ check. */
+export function momentWaitsOn(url: string): boolean {
+  const [path, fragment = ''] = String(url || '').split('#');
+  const p = path.split('?')[0];
+  return p.startsWith('/passport') || p.startsWith('/login') || p.startsWith('/admin-dashboard') || fragment.startsWith('eq-assessment');
 }
 
 export interface Stamp {

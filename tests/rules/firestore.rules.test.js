@@ -196,6 +196,14 @@ describe('users/{userId}', () => {
     await assertFails(db.collection('users').doc('alice').update({ longestStreak: 30 }));
   });
 
+  it('lets the owner mark their new badges seen, with the server clock only (Passport §6a)', async () => {
+    await seed((db) => db.collection('users').doc('alice').set(validProfile('alice')));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertSucceeds(db.collection('users').doc('alice').update({ passportSeenAt: serverTimestamp() }));
+    await assertFails(db.collection('users').doc('alice').update({ passportSeenAt: new Date('2030-01-01') }));
+    await assertFails(testEnv.authenticatedContext('mallory').firestore().collection('users').doc('alice').update({ passportSeenAt: serverTimestamp() }));
+  });
+
   it("denies a user reading another user's profile", async () => {
     await seed((db) => db.collection('users').doc('alice').set(validProfile('alice')));
     const db = testEnv.authenticatedContext('mallory').firestore();

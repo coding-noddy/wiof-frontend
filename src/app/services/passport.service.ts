@@ -45,7 +45,7 @@ export class PassportService {
       .collection(FIREBASE_COLLECTION.PASSPORT_STAMPS, (ref) => ref.where('userId', '==', uid))
       .valueChanges()
       .pipe(
-        map((docs: any[]) => docs.map((d) => ({ stampId: d.stampId, earnedAt: toDate(d.earnedAt), dateKnown: d.dateKnown !== false }))),
+        map((docs: any[]) => docs.map((d) => ({ stampId: d.stampId, earnedAt: toDate(d.earnedAt), dateKnown: d.dateKnown !== false, source: d.source || '' }))),
         catchError(() => of([] as StampRecord[]))
       );
   }

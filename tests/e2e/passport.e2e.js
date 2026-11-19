@@ -83,6 +83,7 @@ async function newPage(browser, viewport, errors) {
     localStorage.setItem('wiof_onboarding_seen', 'true');
     localStorage.setItem('privacyConsentAccepted', 'true');
     localStorage.setItem('wiof_analytics_consent', 'denied');
+    localStorage.setItem('subscribed', 'true'); // no newsletter panel: the badge moment would (rightly) wait for it
   });
   return page;
 }
@@ -162,6 +163,22 @@ async function cleanup(uid) {
     await sleep(6000);
     check('a retried or unrelated write adds nothing', (await stampsOf()).length === stamps.length);
 
+    // 3b. The new-badge moment on an ordinary page: the issuing moment, once.
+    await page.goto(`${BASE}/take-action`, { waitUntil: 'load', timeout: 90000 });
+    const moment = await page.waitForSelector('app-badge-moment .moment', { timeout: 30000 }).then(() => true, () => false);
+    const momentTitle = moment ? await page.$eval('#badge-moment-title', (el) => el.textContent.trim()) : '';
+    check('the issuing moment shows on another page', moment && /issued/i.test(momentTitle), momentTitle);
+    const momentCount = moment ? await page.$eval('.moment-pager span', (el) => el.textContent.trim()).catch(() => '1 of 1') : '';
+    check('several badges come in one moment', /of [2-9]/.test(momentCount), momentCount);
+    await sleep(1800);
+    await page.screenshot({ path: path.join(OUT, 'passport-moment-desktop.png') });
+    if (moment) await page.click('.moment-secondary');
+    const seen = await waitFor(async () => (await db.collection('users').doc(uid).get()).get('passportSeenAt'));
+    check('showing it marks the badges seen (server clock)', !!seen);
+    await page.reload({ waitUntil: 'load' });
+    await sleep(6000);
+    check('it does not show again', !(await page.$('app-badge-moment .moment')));
+
     // 4. The booklet opens with the welcome.
     await page.goto(`${BASE}/passport`, { waitUntil: 'load', timeout: 90000 });
     const welcome = await page.waitForSelector('.welcome', { timeout: 30000 }).then(() => true, () => false);
@@ -185,6 +202,20 @@ async function cleanup(uid) {
     await sleep(1200);
     await phone.screenshot({ path: path.join(OUT, 'passport-phone.png') });
     check('the booklet renders on a phone', !!(await phone.$('.stage.is-single')));
+
+    // 4b. A later badge: its own moment, and "See it in my Passport" opens the booklet on it.
+    await db.collection('user_metrics').doc(uid).set({ pollsVoted: 1 }, { merge: true });
+    await waitFor(async () => (await stampsOf()).find((s) => s.stampId === 'your-voice'));
+    await page.goto(`${BASE}/home`, { waitUntil: 'load', timeout: 90000 });
+    const later = await page.waitForSelector('app-badge-moment .moment', { timeout: 30000 }).then(() => true, () => false);
+    const laterTitle = later ? await page.$eval('#badge-moment-title', (el) => el.textContent.trim()) : '';
+    check('a badge earned later gets its own moment', later && /Your Voice/i.test(laterTitle), laterTitle);
+    if (later) await page.click('.moment-primary');
+    const opened = await page.waitForFunction(() => location.pathname === '/passport' && location.search.includes('stamp=your-voice'), { timeout: 20000 }).then(() => true, () => false);
+    await page.waitForSelector('.stage', { timeout: 30000 }).catch(() => {});
+    await sleep(2000);
+    const onVisas = await page.$$eval('.face:not([inert]) .visas', (els) => els.length).catch(() => 0);
+    check('"See it in my Passport" opens the booklet on that stamp\'s page', opened && onVisas > 0);
 
     // 5. A member can't write a stamp (Firestore REST with the member's own token, as a browser would).
     const res = await fetch(`https://firestore.googleapis.com/v1/projects/wiof-staging/databases/(default)/documents/passport_stamps?documentId=${uid}_snowflake`, {

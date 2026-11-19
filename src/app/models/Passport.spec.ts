@@ -1,7 +1,7 @@
 import { EngagementMetrics } from '../services/activity.service';
 import {
-  buildStamps, elementStamps, firstStepsDone, journeyStamps, machineLines, memberNumber, milestoneStamps, nextStamps,
-  progressFor, StampDef, stampDateText
+  buildStamps, elementStamps, firstStepsDone, journeyStamps, machineLines, memberNumber, milestoneStamps, momentWaitsOn,
+  newBadges, nextStamps, progressFor, StampDef, stampDateText
 } from './Passport';
 
 const metrics = (over: Partial<EngagementMetrics> = {}): EngagementMetrics => ({
@@ -86,6 +86,35 @@ describe('Planet Passport stamps (v1)', () => {
     const b = buildStamps(DEFS, [], none);
     expect(a.map((s) => s.rotation)).toEqual(b.map((s) => s.rotation));
     expect(a.every((s) => s.rotation >= -10 && s.rotation <= 10)).toBeTrue();
+  });
+});
+
+describe('Planet Passport new-badge moment', () => {
+  const at = (iso: string) => new Date(iso);
+  const records = [
+    { stampId: 'good-watch', earnedAt: at('2026-11-19T10:00:00Z'), dateKnown: true, source: 'trigger' },
+    { stampId: 'your-voice', earnedAt: at('2026-11-19T12:00:00Z'), dateKnown: true, source: 'trigger' },
+    { stampId: 'inner-weather', earnedAt: at('2026-11-01T10:00:00Z'), dateKnown: true, source: 'backfill:2026-11-19T13-44-00-053Z' },
+    { stampId: 'pending', earnedAt: null, dateKnown: true, source: 'trigger' }
+  ];
+
+  it('celebrates nothing before the Passport is issued', () => {
+    expect(newBadges(records, null, false)).toEqual([]);
+  });
+
+  it('celebrates stamps earned after the last seen time, oldest first, never the launch backfill or a pending write', () => {
+    expect(newBadges(records, null, true).map((r) => r.stampId)).toEqual(['good-watch', 'your-voice']);
+    expect(newBadges(records, at('2026-11-19T11:00:00Z'), true).map((r) => r.stampId)).toEqual(['your-voice']);
+    expect(newBadges(records, at('2026-11-19T13:00:00Z'), true)).toEqual([]);
+  });
+
+  it('waits on the Passport page, sign-in, admin and the EQ check', () => {
+    expect(momentWaitsOn('/passport?stamp=x')).toBeTrue();
+    expect(momentWaitsOn('/login')).toBeTrue();
+    expect(momentWaitsOn('/admin-dashboard/blogs')).toBeTrue();
+    expect(momentWaitsOn('/element/spirit#eq-assessment')).toBeTrue();
+    expect(momentWaitsOn('/element/water')).toBeFalse();
+    expect(momentWaitsOn('/take-action?action=fix-a-leak')).toBeFalse();
   });
 });
 

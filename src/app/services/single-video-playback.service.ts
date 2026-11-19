@@ -85,6 +85,24 @@ export class SingleVideoPlaybackService {
     if (isPlaying && source) {
       this.pauseAllExcept(source);
     }
+
+    // Which players are playing right now (the badge moment waits for a pause or the end).
+    const state = data.event === 'onStateChange' ? data.info : data.event === 'infoDelivery' ? data.info?.playerState : undefined;
+    if (source && typeof state === 'number') {
+      if (state === PLAYING) this.playing.add(source);
+      else this.playing.delete(source);
+    }
+  }
+
+  private readonly playing = new Set<Window>();
+
+  /** Whether any embedded video is playing now. A player removed from the page no longer counts. */
+  get videoPlaying(): boolean {
+    for (const win of [...this.playing]) {
+      if (win.closed) this.playing.delete(win);
+    }
+    const live = new Set([...document.querySelectorAll<HTMLIFrameElement>(YOUTUBE_IFRAME)].map((f) => f.contentWindow));
+    return [...this.playing].some((win) => live.has(win));
   }
 
   private pauseAllExcept(playing: Window): void {

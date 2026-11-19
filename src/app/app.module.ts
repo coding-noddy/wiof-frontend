@@ -25,12 +25,14 @@ import { OnboardingOverlayComponent } from './components/onboarding-overlay/onbo
 import { JourneyWelcomeComponent } from './components/journey-welcome/journey-welcome.component';
 import { LaunchCurtainComponent } from './components/launch-curtain/launch-curtain.component';
 import { ConcentPopupComponent } from './components/concent-popup/concent-popup.component';
+import { BadgeMomentComponent } from './components/badge-moment/badge-moment.component';
+import { PassportStampModule } from './pages/passport/passport-stamp.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AngularFireAnalyticsModule, UserTrackingService } from '@angular/fire/compat/analytics';
 import { initWiofAnalytics } from './util/analytics-init';
 
 @NgModule({
-  declarations: [AppComponent, OnboardingOverlayComponent, JourneyWelcomeComponent, LaunchCurtainComponent, ConcentPopupComponent],
+  declarations: [AppComponent, OnboardingOverlayComponent, JourneyWelcomeComponent, LaunchCurtainComponent, ConcentPopupComponent, BadgeMomentComponent],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
@@ -42,7 +44,8 @@ import { initWiofAnalytics } from './util/analytics-init';
     AngularFireStorageModule,
     AngularFireAuthModule,
     AngularFireAnalyticsModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    PassportStampModule
   ],
   providers: [
     Meta,

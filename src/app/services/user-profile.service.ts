@@ -81,6 +81,8 @@ export interface UserProfile {
     welcomeDoneAt?: firebase.firestore.Timestamp;
     checklistDismissedAt?: firebase.firestore.Timestamp;
   };
+  /** The new-badge moment (Passport §6a): stamps earned after this are celebrated once. Server clock only. */
+  passportSeenAt?: firebase.firestore.Timestamp;
 }
 
 /** Result of the resetEngagementData Cloud Function — see UserProfileService.resetEngagementData(). */
@@ -288,6 +290,14 @@ export class UserProfileService {
   }
 
   /** Hides the first-steps checklist for good, on every device. */
+  /** The new-badge moment was shown: stamps up to now are seen (server clock, firestore.rules). */
+  async markPassportSeen(uid: string): Promise<void> {
+    await this.firestore
+      .collection(FIREBASE_COLLECTION.USERS)
+      .doc(uid)
+      .update({ passportSeenAt: firebase.firestore.FieldValue.serverTimestamp() });
+  }
+
   async dismissFirstSteps(uid: string): Promise<void> {
     await this.firestore
       .collection(FIREBASE_COLLECTION.USERS)
