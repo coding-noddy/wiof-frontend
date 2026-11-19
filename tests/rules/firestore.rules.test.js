@@ -189,6 +189,13 @@ describe('users/{userId}', () => {
     );
   });
 
+  it('denies the owner setting their own streak time zone or longest streak (recordUserVisit only, Passport streak stamps)', async () => {
+    await seed((db) => db.collection('users').doc('alice').set(validProfile('alice')));
+    const db = testEnv.authenticatedContext('alice').firestore();
+    await assertFails(db.collection('users').doc('alice').update({ visitTimezone: 'Pacific/Kiritimati' }));
+    await assertFails(db.collection('users').doc('alice').update({ longestStreak: 30 }));
+  });
+
   it("denies a user reading another user's profile", async () => {
     await seed((db) => db.collection('users').doc('alice').set(validProfile('alice')));
     const db = testEnv.authenticatedContext('mallory').firestore();

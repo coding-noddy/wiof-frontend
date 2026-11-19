@@ -20,6 +20,7 @@ const { completionEventId, impactIncrement, impactSnapshot, monthKey, reportedVa
 const { rebuildRelatedContent } = require('./related-content');
 const { ladderAfter } = require('./passport');
 const { awardStamps, shouldEvaluateMetricsWrite, shouldEvaluateProfileWrite } = require('./passport-awards');
+const { visitTimezones } = require('./visit-timezone');
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -304,7 +305,7 @@ exports.recordUserVisit = functions
       throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
     }
 
-    const timezone = (data && data.timezone) ? String(data.timezone) : 'UTC';
+    const supplied = (data && data.timezone) ? String(data.timezone) : 'UTC';
     const userRef = db.collection('users').doc(context.auth.uid);
 
     await db.runTransaction(async (tx) => {
@@ -319,10 +320,14 @@ exports.recordUserVisit = functions
         ? profile.lastLogin.toDate()
         : new Date(profile.lastLogin || 0);
 
-      const today = toCalendarDay(now, timezone);
-      const lastDay = toCalendarDay(lastLoginDate, timezone);
+      // The stored zone decides the day; a new zone is adopted only on a new
+      // day, so switching zones can't add a streak day (visit-timezone.js).
+      const zones = visitTimezones(profile.visitTimezone, supplied);
+      const today = toCalendarDay(now, zones.countIn);
+      const lastDay = toCalendarDay(lastLoginDate, zones.countIn);
 
       const update = { lastLogin: admin.firestore.FieldValue.serverTimestamp() };
+      update.visitTimezone = today !== lastDay ? zones.storeIfNewDay : zones.storeIfSameDay;
 
       if (today !== lastDay) {
         const daysDiff = diffCalendarDays(today, lastDay);
