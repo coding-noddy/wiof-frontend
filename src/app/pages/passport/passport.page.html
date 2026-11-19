@@ -28,19 +28,57 @@
   }
   <div class="passport-wrap">
     <header class="passport-intro">
-      <p class="eyebrow">Design preview{{ demo ? ' · sample stamps' : '' }}</p>
+      @if (demo) { <p class="eyebrow">Admin preview · sample stamps</p> }
       <h1>Planet Passport</h1>
-      <p class="sub">Every stamp is earned by something you really did on WIOF. Turn the pages to see yours.</p>
+      @if (issued) {
+        <p class="sub">Every stamp is earned by something you really did on WIOF. Turn the pages to see yours.</p>
+      } @else if (!loading) {
+        <p class="sub">Your Planet Passport is waiting. Complete your first steps to receive it, with your first stamp.</p>
+      }
     </header>
 
+    @if (welcome && issued) {
+      <section class="welcome" role="status">
+        <h2>Welcome to your Planet Passport</h2>
+        <p>Your first steps are done, and your first stamp, <strong>Earthrise</strong>, is in. Every stamp from now on is something you really did.</p>
+        <button type="button" class="welcome-open" (click)="openToEarthrise()">Open my Passport</button>
+      </section>
+    }
+
+    @if (!issued && !loading) {
+      <section class="waiting" aria-label="Your Planet Passport is waiting">
+        <div class="waiting-cover" aria-hidden="true">
+          <ng-container *ngTemplateOutlet="pageTpl; context: { $implicit: pages[0], index: -1 }"></ng-container>
+        </div>
+        <div class="waiting-steps">
+          <h2>Your first steps <span>{{ stepsDone }} of {{ steps.length }}</span></h2>
+          <ol>
+            @for (s of steps; track s.key) {
+              <li [class.done]="s.done">
+                <ion-icon [name]="s.done ? 'checkmark-circle' : 'ellipse-outline'" aria-hidden="true"></ion-icon>
+                @if (s.done) {
+                  <span>{{ s.title }}<span class="sr-only"> (done)</span></span>
+                } @else {
+                  <a [href]="s.link + (s.fragment ? '#' + s.fragment : '')">{{ s.title }}</a>
+                  <small>{{ s.hint }}</small>
+                }
+              </li>
+            }
+          </ol>
+          <p class="waiting-note">When all five are done, your Passport is issued with its first stamp, Earthrise. Anything else you earn meanwhile is kept for you.</p>
+        </div>
+      </section>
+    }
+
+    @if (issued) {
     <div class="stage" [style.--pw]="pageWidth + 'px'" [class.is-spread]="spread" [class.is-single]="!spread">
       <div class="book" [style.--shift]="shift" (pointerdown)="pointerDown($event)" (pointerup)="pointerUp($event)">
         @for (leaf of leaves; track leaf.front; let i = $index) {
           <div class="leaf" [class.turned]="i < turned" [style.z-index]="zIndex(i)" (click)="tapLeaf(i, $event)">
-            <div class="face front">
+            <div class="face front" [attr.inert]="isOpen(leaf.front) ? null : ''" [attr.aria-hidden]="isOpen(leaf.front) ? null : 'true'">
               <ng-container *ngTemplateOutlet="pageTpl; context: { $implicit: pages[leaf.front], index: leaf.front }"></ng-container>
             </div>
-            <div class="face back">
+            <div class="face back" [attr.inert]="isOpen(leaf.back) ? null : ''" [attr.aria-hidden]="isOpen(leaf.back) ? null : 'true'">
               @if (leaf.back !== null) {
                 <ng-container *ngTemplateOutlet="pageTpl; context: { $implicit: pages[leaf.back], index: leaf.back }"></ng-container>
               } @else {
@@ -62,8 +100,9 @@
       </button>
     </nav>
     <p class="hint">Tap a page, swipe, or use the ← → keys.
-      @if (!demo) { <a href="/passport?demo=1">See it with sample stamps</a> } @else { <a href="/passport">See my own stamps</a> }
+      @if (demo) { <a href="/passport">See my own stamps</a> }
     </p>
+    }
   </div>
   </div>
 </ion-content>
@@ -105,7 +144,7 @@
         <hr />
         <p class="small">
           This passport records small actions. Every stamp is earned from what you really did on WIOF, worked out on our
-          side, never bought, traded or guessed.
+          side, never bought, traded or guessed. Actions are the ones you marked done: we trust you.
         </p>
         <p class="tree-mark" aria-hidden="true"><img src="assets/brand/logos/WIOF-full-logo.png" alt="" /></p>
       </div>
@@ -127,6 +166,7 @@
             <div><dt>Member since</dt><dd>{{ joinedText }}</dd></div>
             <div><dt>Home elements</dt><dd>{{ homeElements }}</dd></div>
             <div><dt>Passport no.</dt><dd class="mono">{{ memberNo }}</dd></div>
+            <div><dt>Issued</dt><dd>{{ issuedText }}</dd></div>
           </dl>
         </div>
         <div class="tally">
@@ -137,12 +177,26 @@
         <span class="page-num">{{ page.number }}</span>
       </div>
     }
+    @case ('milestones') {
+      <div class="page paper milestones" [class.is-open]="isOpen(index)">
+        <div class="page-head"><span>Milestones</span><span aria-hidden="true">{{ page.sub }}</span></div>
+        <div class="stamp-grid" [class.six]="milestones(page.levels).length > 4">
+          @for (s of milestones(page.levels); track s.id; let k = $index) {
+            <app-passport-stamp [stamp]="s" [index]="k"></app-passport-stamp>
+          }
+        </div>
+        @if (page.levels?.includes(6)) {
+          <p class="small corners">A milestone has as many corners as the number it counts: three for ▲, four for ■, five for ⬟, six for ⬢.</p>
+        }
+        <span class="page-num">{{ page.number }}</span>
+      </div>
+    }
     @case ('visas') {
       <div class="page paper visas" [class.is-open]="isOpen(index)">
-        <div class="page-head"><span>Visas</span><span>Journey {{ page.part === 1 ? 'II' : 'I' }}</span></div>
-        <div class="stamp-grid">
-          @for (s of visas(page.part); track s.id; let k = $index) {
-            <app-passport-stamp [stamp]="s" [index]="k" [date]="previewDate"></app-passport-stamp>
+        <div class="page-head"><span>Visas</span><span>Journey</span></div>
+        <div class="stamp-grid six">
+          @for (s of journey; track s.id; let k = $index) {
+            <app-passport-stamp [stamp]="s" [index]="k"></app-passport-stamp>
           }
         </div>
         <span class="page-num">{{ page.number }}</span>
@@ -153,11 +207,11 @@
         <ion-icon class="watermark" [name]="page.element.icon" aria-hidden="true"></ion-icon>
         <div class="page-head">
           <span><ion-icon [name]="page.element.icon" aria-hidden="true"></ion-icon> {{ page.element.name }}</span>
-          <span>{{ earnedIn(page.element.slug) }} / 3</span>
+          <span>{{ earnedIn(page.element.slug) }} / {{ elementStamps(page.element.slug).length }}</span>
         </div>
         <div class="stamp-grid three">
           @for (s of elementStamps(page.element.slug); track s.id; let k = $index) {
-            <app-passport-stamp [stamp]="s" [index]="k" [date]="previewDate"></app-passport-stamp>
+            <app-passport-stamp [stamp]="s" [index]="k"></app-passport-stamp>
           }
         </div>
         <a class="go" [href]="'/element/' + page.element.slug">Explore {{ page.element.name }} →</a>

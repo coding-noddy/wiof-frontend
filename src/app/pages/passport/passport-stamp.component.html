@@ -14,6 +14,11 @@
           <text class="star" x="17" y="85">★</text>
           <text class="star" x="143" y="85">★</text>
         }
+        @case ('rosette') {
+          <path [attr.d]="rosettePath(72)" class="frame" />
+          <circle cx="80" cy="80" r="60" class="frame thin" />
+          <text class="arc"><textPath [attr.href]="'#' + uid + '-top'" startOffset="50%" text-anchor="middle">{{ stamp.caption }}</textPath></text>
+        }
         @case ('rect') {
           <rect x="8" y="24" width="144" height="112" rx="10" class="frame" />
           <rect x="16" y="32" width="128" height="96" rx="6" class="frame thin" />
@@ -24,19 +29,33 @@
           <ellipse cx="80" cy="80" rx="66" ry="50" class="frame thin" />
           <text class="cap" x="80" y="46">{{ stamp.caption }}</text>
         }
-        @case ('hex') {
-          <polygon [attr.points]="hexPoints(74)" class="frame" />
-          <polygon [attr.points]="hexPoints(64)" class="frame thin" />
-          <text class="cap" x="80" y="46">{{ stamp.caption }}</text>
+        @case ('triangle') {
+          <polygon [attr.points]="polygonPoints(3, 84, 96)" class="frame" />
+          <polygon [attr.points]="polygonPoints(3, 72, 96)" class="frame thin" />
+        }
+        @case ('square') {
+          <polygon [attr.points]="polygonPoints(4, 98)" class="frame" />
+          <polygon [attr.points]="polygonPoints(4, 88)" class="frame thin" />
+          <text class="cap" x="80" y="40">{{ stamp.caption }}</text>
+        }
+        @case ('pentagon') {
+          <polygon [attr.points]="polygonPoints(5, 76, 84)" class="frame" />
+          <polygon [attr.points]="polygonPoints(5, 67, 84)" class="frame thin" />
+          <text class="cap" x="80" y="50">{{ stamp.caption }}</text>
+        }
+        @case ('hexagon') {
+          <polygon [attr.points]="polygonPoints(6, 76)" class="frame" />
+          <polygon [attr.points]="polygonPoints(6, 67)" class="frame thin" />
+          <text class="cap" x="80" y="40">{{ stamp.caption }}</text>
         }
       }
       @for (line of stamp.title; track $index) {
-        <text class="title" x="80" [attr.y]="lineY($index) + 6" [class.single]="stamp.title.length === 1">{{ line }}</text>
+        <text class="title" x="80" [attr.y]="lineY($index) + 6" [class.single]="stamp.title.length === 1" [class.small]="isTriangle">{{ line }}</text>
       }
       @if (stamp.earned) {
-        <text class="date" x="80" [attr.y]="lineY(stamp.title.length) + 10">{{ date || 'EARNED' }}</text>
+        <text class="date" x="80" [attr.y]="lineY(stamp.title.length) + (isTriangle ? 8 : 10)">{{ dateText }}</text>
       } @else {
-        <text class="progress" x="80" [attr.y]="lineY(stamp.title.length) + 10">{{ stamp.progress }} / {{ stamp.target }}</text>
+        <text class="progress" x="80" [attr.y]="lineY(stamp.title.length) + (isTriangle ? 8 : 10)">{{ stamp.progress }} / {{ stamp.target }}</text>
       }
     </g>
   </svg>

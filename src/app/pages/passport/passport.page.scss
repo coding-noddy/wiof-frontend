@@ -521,6 +521,158 @@
   &.three app-passport-stamp:nth-child(3) {
     grid-column: 1 / -1;
   }
+
+  // Milestone and journey pages: up to six smaller stamps, three to a row.
+  &.six {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.4em 0.2em;
+
+    app-passport-stamp {
+      width: calc(var(--pw) * 0.26);
+    }
+  }
+}
+
+.milestones .corners {
+  margin: 0.4em 0 0;
+  text-align: center;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+// ---- Before the Passport is issued: a closed cover and the first steps ----
+
+.waiting {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem 2rem;
+  align-items: center;
+  justify-content: center;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.waiting-cover {
+  --pw: 240px;
+  width: var(--pw);
+  height: calc(var(--pw) * 1.42);
+  border-radius: 4px 14px 14px 4px;
+  overflow: hidden;
+  box-shadow: 0 18px 40px rgba(43, 36, 32, 0.28);
+  filter: saturate(0.85);
+
+  .cover-open {
+    visibility: hidden;
+  }
+}
+
+.waiting-steps {
+  flex: 1 1 280px;
+  max-width: 420px;
+  padding: 1.25rem 1.4rem;
+  border-radius: 18px;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  background: var(--wiof-warm-white);
+
+  h2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin: 0 0 0.75rem;
+    font-family: 'Aleo', serif !important;
+    font-size: 1.15rem;
+    color: var(--wiof-ink);
+
+    span {
+      font-family: 'Noto Sans', sans-serif;
+      font-size: 0.85rem;
+      color: var(--wiof-ink-muted);
+    }
+  }
+
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: 1.4rem 1fr;
+    column-gap: 0.5rem;
+    align-items: start;
+    color: var(--wiof-ink);
+
+    ion-icon {
+      font-size: 1.2rem;
+      color: var(--wiof-teal-text);
+      margin-top: 0.1rem;
+    }
+
+    small {
+      grid-column: 2;
+      color: var(--wiof-ink-muted);
+      font-size: 0.8rem;
+    }
+
+    a {
+      color: var(--wiof-teal-text);
+      font-weight: 600;
+    }
+
+    &.done {
+      color: var(--wiof-ink-muted);
+    }
+  }
+}
+
+.waiting-note {
+  margin: 1rem 0 0;
+  font-size: 0.82rem;
+  color: var(--wiof-ink-muted);
+}
+
+// ---- The moment the Passport is issued ----
+
+.welcome {
+  max-width: 520px;
+  margin: 0 auto 1.25rem;
+  padding: 1rem 1.25rem;
+  text-align: center;
+  border-radius: 18px;
+  border: 1.5px solid var(--wiof-teal-fill);
+  background: var(--wiof-warm-white);
+
+  h2 {
+    margin: 0 0 0.35rem;
+    font-family: 'Aleo', serif !important;
+    font-size: 1.2rem;
+    color: var(--wiof-teal-text);
+  }
+
+  p {
+    margin: 0 0 0.75rem;
+    color: var(--wiof-ink);
+  }
+}
+
+.welcome-open {
+  padding: 0.55rem 1.2rem;
+  border-radius: 999px;
+  border: none;
+  background: var(--wiof-teal-fill);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .element {

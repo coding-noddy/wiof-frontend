@@ -1,22 +1,28 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Subject } from 'rxjs';
+import { combineLatest, Subject } from 'rxjs';
 import { distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
 import { ImpactTile, impactTiles } from 'src/app/models/Impact';
-import { ElementSlug, JOURNEY_ELEMENTS } from 'src/app/models/Journey';
-import { elementStamps, journeyStamps, machineLines, memberNumber, nextStamps, passportStamps, PASSPORT_INK, Stamp } from 'src/app/models/Passport';
+import { ElementSlug, FirstStep, firstSteps, JOURNEY_ELEMENTS } from 'src/app/models/Journey';
+import {
+  buildStamps, elementStamps, journeyStamps, machineLines, memberNumber, milestoneStamps, nextStamps, PASSPORT_INK,
+  Stamp, StampDef, stampDate, StampRecord
+} from 'src/app/models/Passport';
 import { ActivityService, EngagementMetrics } from 'src/app/services/activity.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { PassportHolder, PassportService } from 'src/app/services/passport.service';
 import { UserProfile, UserProfileService } from 'src/app/services/user-profile.service';
 
-type PageKind = 'cover' | 'inside' | 'identity' | 'visas' | 'element' | 'impact' | 'next' | 'notes' | 'back';
+type PageKind = 'cover' | 'inside' | 'identity' | 'milestones' | 'visas' | 'element' | 'impact' | 'next' | 'notes' | 'back';
 
 interface BookPage {
   kind: PageKind;
   /** For element pages. */
   element?: { slug: ElementSlug; name: string; icon: string; ink: string };
-  /** For the two visa pages: which half of the journey stamps. */
-  part?: 0 | 1;
+  /** For milestone pages: which levels (0 = Earthrise, 3 = triangles … 6 = hexagons). */
+  levels?: number[];
+  /** Page heading on the right, e.g. "● ▲". */
+  sub?: string;
   /** Printed page number (the covers have none). */
   number?: number;
   /** For the page label under the book. */
@@ -28,30 +34,39 @@ interface Leaf {
   back: number | null;
 }
 
-/** A believable member for the design preview (?demo=1): most stamps earned, a few still to go. */
+/** A believable member for the design preview (?demo=1, admins only): most stamps earned, a few still to go. */
 const DEMO_METRICS: EngagementMetrics = {
-  blogsRead: 18, qualityReads: 14, qualityReadsByElement: { water: 6, air: 5, earth: 2, energy: 1 },
+  blogsRead: 18, qualityReads: 9, qualityReadsByElement: { water: 6, air: 5, earth: 2, energy: 1 },
   videosWatched: 6, videosCompleted: 4, pollsVoted: 2, lastEqScore: 72, lastEqDate: new Date(), lastBlogReadDate: new Date(),
-  totalActionsCompleted: 11, uniqueActionsCompleted: 8, actionsByElement: { water: 5, energy: 3, earth: 2, spirit: 1 }, lastActionAt: new Date(),
-  impactTotals: { water: 420, energy: 4.4, co2: 6.2, plastic: 18, food: 1.5 }, impactByMonth: {}
+  totalActionsCompleted: 11, uniqueActionsCompleted: 5, actionsByElement: { water: 5, energy: 3, earth: 2, spirit: 1 }, lastActionAt: new Date(),
+  impactTotals: { water: 420, energy: 4.4, co2: 6.2, plastic: 18, food: 1.5 }, impactByMonth: {},
+  elementVisits: { water: 1, air: 1, energy: 1, earth: 1, spirit: 1 },
+  ladder: { actionDays: 5, lastActionDay: null, elementDays: { water: 4, energy: 3, earth: 2, spirit: 1 }, elementLastDay: {}, actionWeeks: { a: 4 }, actionLastWeek: {} }
 };
+/** In the preview, these stay to be earned. */
+const DEMO_UNEARNED = new Set(['snowflake', 'honeycomb', 'evergreen', 'one-family', 'thirty-dawns', 'knowledge-explorer', 'earth-explorer', 'energy-explorer', 'spirit-explorer', 'water-guardian', 'energy-guardian', 'earth-guardian', 'spirit-guardian', 'air-guardian']);
 
 /** Loose stamps on the desk around the book (wide screens): decoration, not anything earned. */
 const DESK_STAMPS: Stamp[] = [
   { title: ['Planet', 'Earth'], caption: 'ONE FAMILY', shape: 'circle', rotation: -14 },
   { title: ['Drop by', 'drop'], caption: 'WATER', shape: 'oval', rotation: 9 },
   { title: ['Small', 'actions'], caption: 'EVERY DAY', shape: 'rect', rotation: 12 },
-  { title: ['Five', 'elements'], caption: 'JOURNEY', shape: 'hex', rotation: -8 }
-].map((d, i) => ({ id: `desk-${i}`, element: null, ink: '#A6875D', earned: true, progress: 1, target: 1, hint: '', unit: '', ...d } as Stamp));
+  { title: ['Five', 'elements'], caption: 'JOURNEY', shape: 'pentagon', rotation: -8 }
+].map((d, i) => ({
+  id: `desk-${i}`, family: 'travel', meaning: '', element: null, ink: '#A6875D', earned: true, earnedAt: null, dateKnown: true,
+  progress: 1, target: 1, hint: '', unit: '', ...d
+} as Stamp));
 
-const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-const stampDate = (d: Date) => `${String(d.getDate()).padStart(2, '0')} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+/** Per device: the "Welcome to your Planet Passport" moment shows once. */
+const ISSUED_SEEN_KEY = (uid: string) => `wiof_passport_issued_seen_${uid}`;
 
 /**
- * Planet Passport, design experiment (docs/PLANET_PASSPORT_DESIGN.md): a
- * booklet the member pages through. Two pages side by side on wide screens,
- * one page on phones; turn by tapping a page edge, swiping, the arrow keys
- * or the buttons below.
+ * Planet Passport (docs/PLANET_PASSPORT_DESIGN.md, v1 proposal): a booklet
+ * the member pages through. Two pages side by side on wide screens, one page
+ * on phones; turn by tapping a page edge, swiping, the arrow keys or the
+ * buttons below. Stamps and their dates are the server's records.
+ * Before the Passport is issued (Earthrise: all 5 first steps), a closed
+ * cover waits with the steps.
  */
 @Component({
   selector: 'app-passport',
@@ -64,17 +79,23 @@ export class PassportPage implements OnInit, OnDestroy {
 
   metrics: EngagementMetrics | null = null;
   profile: UserProfile | null = null;
+  defs: StampDef[] = [];
+  records: StampRecord[] = [];
+  holder: PassportHolder | null = null;
   uid = '';
+  /** ?demo=1, for admins only: sample stamps for design review. */
   demo = false;
   loading = true;
+  /** The "Welcome to your Planet Passport" moment, once per device. */
+  welcome = false;
 
   readonly deskStamps = DESK_STAMPS;
   /** Hero illustrations already shown, so each loads only when first needed. */
   heroes: string[] = ['home'];
 
   stamps: Stamp[] = [];
-  journey: Stamp[] = [];
   next: Stamp[] = [];
+  steps: FirstStep[] = [];
   impact: ImpactTile[] = [];
   memberNo = '';
   mrz: [string, string] = ['', ''];
@@ -89,42 +110,55 @@ export class PassportPage implements OnInit, OnDestroy {
   private turnTimer: any;
   private pointerX: number | null = null;
   private destroy$ = new Subject<void>();
+  private userChange$ = new Subject<void>();
 
   constructor(
     private authService: AuthService,
     private activityService: ActivityService,
     private userProfileService: UserProfileService,
+    private passportService: PassportService,
     private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     this.measure();
-    this.demo = this.route.snapshot.queryParamMap.get('demo') === '1';
+    const wantsDemo = this.route.snapshot.queryParamMap.get('demo') === '1';
     this.authService.currentUser$
       .pipe(distinctUntilChanged((a, b) => a?.uid === b?.uid), takeUntil(this.destroy$))
       .subscribe((user) => {
+        this.userChange$.next();
         this.uid = user?.uid || '';
+        this.demo = false;
         if (!this.uid) {
           this.loading = false;
           return;
         }
-        this.userProfileService.getProfile(this.uid).pipe(first(), takeUntil(this.destroy$)).subscribe((p) => {
-          this.profile = p;
-          this.refresh();
-        });
-        if (this.demo) {
-          this.metrics = DEMO_METRICS;
-          this.refresh();
-          return;
+        const until = takeUntil<any>(this.userChange$);
+        if (wantsDemo) {
+          this.userProfileService.getRole(this.uid).then((role) => {
+            this.demo = role === 'admin';
+            this.refresh();
+          }).catch(() => undefined);
         }
-        this.activityService.getActivityCounts(this.uid).pipe(first(), takeUntil(this.destroy$)).subscribe({
-          next: (m) => {
-            this.metrics = m;
+        combineLatest([
+          this.passportService.stampDefs(),
+          this.passportService.stamps(this.uid),
+          this.passportService.holder(this.uid),
+          this.activityService.getActivityCounts(this.uid),
+          this.userProfileService.getProfile(this.uid).pipe(first())
+        ]).pipe(until, takeUntil(this.destroy$)).subscribe({
+          next: ([defs, records, holder, metrics, profile]) => {
+            const newlyIssued = !this.holder && !!holder;
+            this.defs = defs;
+            this.records = records;
+            this.holder = holder;
+            this.metrics = metrics;
+            this.profile = profile;
+            if (newlyIssued) this.noteIssued();
             this.refresh();
           },
           error: () => {
-            this.metrics = null;
-            this.refresh();
+            this.loading = false;
           }
         });
       });
@@ -132,22 +166,61 @@ export class PassportPage implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     clearTimeout(this.turnTimer);
+    this.userChange$.next();
     this.destroy$.next();
     this.destroy$.complete();
   }
 
   private refresh(): void {
+    const metrics = this.demo ? DEMO_METRICS : this.metrics;
     const profile = this.demo && this.profile ? { ...this.profile, longestStreak: Math.max(9, this.profile.longestStreak || 0) } : this.profile;
-    this.stamps = passportStamps({ metrics: this.metrics, profile });
-    this.journey = journeyStamps(this.stamps);
+    const records = this.demo ? this.demoRecords() : this.records;
+    this.stamps = buildStamps(this.defs, records, { metrics, profile });
     this.next = nextStamps(this.stamps);
-    this.impact = impactTiles(this.metrics?.impactTotals);
+    this.steps = firstSteps(this.profile, this.metrics);
+    this.impact = impactTiles(metrics?.impactTotals);
     this.memberNo = this.uid ? memberNumber(this.uid) : '';
     this.mrz = machineLines(this.fullName, this.memberNo, this.joined);
-    this.loading = !this.metrics && !this.profile;
+    this.loading = false;
+  }
+
+  /** Sample records for the admin preview: dated over the last few weeks. */
+  private demoRecords(): StampRecord[] {
+    const day = 24 * 60 * 60 * 1000;
+    return this.defs
+      .filter((d) => d.status === 'active' && !DEMO_UNEARNED.has(d.id))
+      .map((d, i) => ({ stampId: d.id, earnedAt: new Date(Date.now() - (40 - i) * day), dateKnown: d.family !== 'streak' }));
+  }
+
+  /** The Passport was just issued (or is opened for the first time since): show the welcome once, on the first stamps. */
+  private noteIssued(): void {
+    let seen = false;
+    try {
+      seen = localStorage.getItem(ISSUED_SEEN_KEY(this.uid)) === '1';
+      localStorage.setItem(ISSUED_SEEN_KEY(this.uid), '1');
+    } catch {
+      // Storage blocked: show the welcome this time.
+    }
+    if (!seen) this.welcome = true;
+  }
+
+  /** "Open my Passport" on the welcome: turn to the first milestone page, where Earthrise lands. */
+  openToEarthrise(): void {
+    this.welcome = false;
+    const index = this.pages.findIndex((p) => p.kind === 'milestones');
+    this.turnTo(this.spread ? Math.ceil(index / 2) : index);
   }
 
   // ---- What the pages show ----
+
+  /** The booklet opens once the Passport is issued (Earthrise). The admin preview is always open. */
+  get issued(): boolean {
+    return this.demo || !!this.holder;
+  }
+
+  get stepsDone(): number {
+    return this.steps.filter((s) => s.done).length;
+  }
 
   get fullName(): string {
     const p = this.profile;
@@ -168,6 +241,12 @@ export class PassportPage implements OnInit, OnDestroy {
     return this.joined ? stampDate(this.joined) : '—';
   }
 
+  get issuedText(): string {
+    if (this.demo) return stampDate(new Date());
+    if (!this.holder) return '—';
+    return this.holder.dateKnown && this.holder.issuedAt ? stampDate(this.holder.issuedAt) : 'Before launch';
+  }
+
   get homeElements(): string {
     const names = (this.profile?.preferredElements || [])
       .map((s) => JOURNEY_ELEMENTS.find((e) => e.slug === s)?.name)
@@ -179,13 +258,12 @@ export class PassportPage implements OnInit, OnDestroy {
     return this.stamps.filter((s) => s.earned).length;
   }
 
-  /** The preview shows a date in each earned stamp; real dates come when the server records them. */
-  get previewDate(): string | null {
-    return this.demo ? stampDate(new Date()) : null;
+  milestones(levels: number[] | undefined): Stamp[] {
+    return milestoneStamps(this.stamps, levels || []);
   }
 
-  visas(part: 0 | 1 | undefined): Stamp[] {
-    return part === 1 ? this.journey.slice(4) : this.journey.slice(0, 4);
+  get journey(): Stamp[] {
+    return journeyStamps(this.stamps);
   }
 
   elementStamps(slug: ElementSlug): Stamp[] {
@@ -215,8 +293,10 @@ export class PassportPage implements OnInit, OnDestroy {
       { kind: 'cover', label: 'Cover' },
       { kind: 'inside', label: 'Inside cover' },
       { kind: 'identity', label: 'Holder' },
-      { kind: 'visas', part: 0, label: 'Journey visas' },
-      { kind: 'visas', part: 1, label: 'Journey visas' },
+      { kind: 'milestones', levels: [0, 3], sub: '● ▲', label: 'Milestones' },
+      { kind: 'milestones', levels: [4, 5], sub: '■ ⬟', label: 'Milestones' },
+      { kind: 'milestones', levels: [6], sub: '⬢', label: 'Milestones' },
+      { kind: 'visas', label: 'Journey visas' },
       ...elements.map((element) => ({ kind: 'element' as const, element, label: element.name })),
       { kind: 'impact', label: 'Declaration' },
       { kind: 'next', label: 'Next stamps' },
@@ -246,8 +326,8 @@ export class PassportPage implements OnInit, OnDestroy {
     return [this.turned * 2 - 1, this.turned * 2].filter((i) => i >= 0 && i < this.pages.length);
   }
 
-  isOpen(i: number): boolean {
-    return this.openPages.includes(i);
+  isOpen(i: number | null): boolean {
+    return i !== null && this.openPages.includes(i);
   }
 
   get position(): string {
@@ -308,7 +388,7 @@ export class PassportPage implements OnInit, OnDestroy {
 
   @HostListener('document:keydown', ['$event'])
   onKey(e: KeyboardEvent): void {
-    if ((e.target as HTMLElement)?.closest?.('input, textarea')) return;
+    if (!this.issued || (e.target as HTMLElement)?.closest?.('input, textarea')) return;
     if (e.key === 'ArrowRight') this.forward();
     if (e.key === 'ArrowLeft') this.backward();
   }

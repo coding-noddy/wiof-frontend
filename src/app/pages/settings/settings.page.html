@@ -253,6 +253,15 @@
         } @else {
           <p>Your account and your Take Action progress (completed actions, streaks and impact) are kept.</p>
         }
+        <label class="reset-option">
+          <input type="checkbox" [(ngModel)]="resetIncludePassport" />
+          <span>Also clear my Planet Passport</span>
+        </label>
+        @if (resetIncludePassport) {
+          <p class="reset-warning">Your earned stamps and their dates will be gone. Progress you keep (such as Take Action) may earn its stamps again, dated today. This can't be undone.</p>
+        } @else {
+          <p>Your Planet Passport stamps are kept.</p>
+        }
         <p>Type <strong>RESET</strong> below when you are ready to permanently clear your engagement data.</p>
         <input
           class="reset-input"

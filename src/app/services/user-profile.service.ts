@@ -91,6 +91,9 @@ export interface ResetEngagementDataResult {
   deletedActivityCount: number;
   deletedSavedContentCount: number;
   deletedActionCount?: number;
+  /** Planet Passport stamps removed ("Also clear my Planet Passport"). */
+  includePassport?: boolean;
+  deletedStampCount?: number;
   /** Raw poll votes that lost their email and IP address. */
   anonymisedVoteCount?: number;
 }
@@ -365,12 +368,12 @@ export class UserProfileService {
    * identity. The `uid` param is unused server-side (identity comes from the
    * caller's auth token) but kept so call sites don't need to change.
    */
-  async resetEngagementData(uid: string, includeActions = false): Promise<ResetEngagementDataResult> {
-    const resetEngagementData = httpsCallable<{ includeActions: boolean }, ResetEngagementDataResult>(
+  async resetEngagementData(uid: string, includeActions = false, includePassport = false): Promise<ResetEngagementDataResult> {
+    const resetEngagementData = httpsCallable<{ includeActions: boolean; includePassport: boolean }, ResetEngagementDataResult>(
       getWiofFunctions(),
       'resetEngagementData'
     );
-    const result = await resetEngagementData({ includeActions });
+    const result = await resetEngagementData({ includeActions, includePassport });
     return result.data;
   }
 }

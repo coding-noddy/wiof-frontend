@@ -287,6 +287,8 @@ export class SettingsPage implements OnDestroy {
 
   /** "Also clear my Take Action progress" (8.16.0): off unless ticked. */
   resetIncludeActions = false;
+  /** "Also clear my Planet Passport" (Passport v1, D2): off unless ticked; stamps are kept otherwise. */
+  resetIncludePassport = false;
 
   openResetModal(): void {
     if (!this.lastUid || this.isResettingData) {
@@ -294,6 +296,7 @@ export class SettingsPage implements OnDestroy {
     }
     this.resetConfirmation = '';
     this.resetIncludeActions = false;
+    this.resetIncludePassport = false;
     this.showResetModal = true;
   }
 
@@ -314,14 +317,15 @@ export class SettingsPage implements OnDestroy {
 
     this.isResettingData = true;
     try {
-      const result = await this.userProfileService.resetEngagementData(this.lastUid, this.resetIncludeActions);
+      const result = await this.userProfileService.resetEngagementData(this.lastUid, this.resetIncludeActions, this.resetIncludePassport);
       clearDeviceEngagement(this.resetIncludeActions);
-      const clearedCount = result.deletedActivityCount + result.deletedSavedContentCount + (result.deletedActionCount || 0);
+      const clearedCount = result.deletedActivityCount + result.deletedSavedContentCount + (result.deletedActionCount || 0) + (result.deletedStampCount || 0);
       const message = clearedCount > 0
         ? (result.includeActions ? 'Your engagement data and Take Action progress were cleared.' : 'Your engagement data was cleared. Your Take Action progress is kept.')
         : 'You had no engagement data to clear.';
+      const fullMessage = result.includePassport && clearedCount > 0 ? `${message} Your Planet Passport was cleared.` : message;
       // Stays signed in (8.16.0): the account is still theirs. Pages reload their data when opened.
-      await this.uiUtil.presentToast(message, 'success', 5000);
+      await this.uiUtil.presentToast(fullMessage, 'success', 5000);
       await this.router.navigate(['/my-journey']);
     } catch (error) {
       // resetEngagementData is idempotent — safe to retry, and a retry will

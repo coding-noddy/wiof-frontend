@@ -196,6 +196,10 @@ export const FIREBASE_COLLECTION = {
   HERO_VIDEOS: 'hero_videos',
   FEEDBACK: 'Feedback',
   SITE_SETTINGS: 'site_settings',
+  // Planet Passport v1: written only by the server (firestore.rules).
+  PASSPORT_STAMPS: 'passport_stamps',
+  PASSPORT_HOLDERS: 'passport_holders',
+  PASSPORT_STAMP_DEFS: 'passport_stamp_defs',
   WORKSHOPS: 'workshops',
   WORKSHOP_POSTER_STORAGE: 'workshop-posters'
 };

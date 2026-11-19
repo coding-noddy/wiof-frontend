@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Stamp } from 'src/app/models/Passport';
+import { Stamp, stampDateText } from 'src/app/models/Passport';
 
 let nextId = 0;
 
@@ -7,6 +7,10 @@ let nextId = 0;
  * One Passport stamp, drawn as SVG: an inked, slightly tilted stamp when
  * earned (the ink texture is the page's #wiof-ink filter), a faint dashed
  * outline with the progress when not.
+ *
+ * Shapes carry meaning (docs/PLANET_PASSPORT_DESIGN.md §3a): milestones are
+ * polygons with as many corners as the number they count (circle for
+ * Earthrise), travel stamps are ovals and rectangles, streak stamps rosettes.
  */
 @Component({
   selector: 'app-passport-stamp',
@@ -16,29 +20,59 @@ let nextId = 0;
 })
 export class PassportStampComponent {
   @Input({ required: true }) stamp!: Stamp;
-  /** Shown in the middle of an earned stamp: "06 NOV 2026", or "EARNED" until the server keeps dates. */
+  /** Overrides the middle line of an earned stamp (the desk decorations use "★ ★ ★"). */
   @Input() date: string | null = null;
   /** Order on the page, so stamps land one after another. */
   @Input() index = 0;
 
   readonly uid = `stamp-${nextId++}`;
 
-  /** The six corners of the hexagon frame. */
-  hexPoints(r: number): string {
-    return Array.from({ length: 6 }, (_, i) => {
-      const a = (Math.PI / 3) * i;
-      return `${80 + r * Math.cos(a)},${80 + r * Math.sin(a) * 0.86}`;
+  /** A regular polygon's corners around (80, cy): a vertex on top, except the square and hexagon, which sit flat. */
+  polygonPoints(sides: number, r: number, cy = 80): string {
+    const offset = sides === 4 ? Math.PI / 4 : sides === 6 ? 0 : -Math.PI / 2;
+    return Array.from({ length: sides }, (_, i) => {
+      const a = offset + (2 * Math.PI * i) / sides;
+      return `${(80 + r * Math.cos(a)).toFixed(1)},${(cy + r * Math.sin(a)).toFixed(1)}`;
     }).join(' ');
   }
 
-  /** y of each title line, centred around the middle. */
+  /** A scalloped rosette edge: 18 small arcs around a circle. */
+  rosettePath(r: number): string {
+    const count = 18;
+    const pt = (i: number) => {
+      const a = (2 * Math.PI * i) / count - Math.PI / 2;
+      return `${(80 + r * Math.cos(a)).toFixed(1)},${(80 + r * Math.sin(a)).toFixed(1)}`;
+    };
+    const bump = (r * Math.PI / count) * 1.05;
+    let d = `M ${pt(0)}`;
+    for (let i = 1; i <= count; i++) d += ` A ${bump.toFixed(1)} ${bump.toFixed(1)} 0 0 1 ${pt(i)}`;
+    return `${d} Z`;
+  }
+
+  /** The triangle's text sits lower, where it's wide enough. */
+  get isTriangle(): boolean {
+    return this.stamp.shape === 'triangle';
+  }
+
+  /** y of each title line, centred around the middle (lower in a triangle). */
   lineY(i: number): number {
     const lines = this.stamp.title.length;
-    return 80 + (i - (lines - 1) / 2) * 19 - (this.stamp.earned ? 6 : 8);
+    const lineGap = this.isTriangle ? 16 : 19;
+    const base = this.isTriangle ? 98 : 80;
+    return base + (i - (lines - 1) / 2) * lineGap - (this.stamp.earned ? 6 : 8);
+  }
+
+  get dateText(): string {
+    return this.date || stampDateText(this.stamp);
   }
 
   get label(): string {
     const s = this.stamp;
-    return s.earned ? `${s.title.join(' ')} stamp, earned` : `${s.title.join(' ')} stamp, not yet earned: ${s.hint} (${s.progress} of ${s.target})`;
+    const name = s.title.join(' ');
+    if (s.earned) {
+      const when = s.dateKnown && s.earnedAt ? `, ${s.earnedAt.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}` : s.dateKnown ? '' : ', before launch';
+      return `${name} stamp, earned${when}. ${s.meaning}`;
+    }
+    return `${name} stamp, not yet earned: ${s.hint} (${s.progress} of ${s.target})`;
   }
 }

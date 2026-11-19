@@ -1,38 +1,73 @@
 /**
- * Planet Passport (design experiment, docs/PLANET_PASSPORT_DESIGN.md): the
- * stamps a member has earned, worked out from their server-trusted
- * `user_metrics` and profile, never from the browser's own counts. Pure
- * functions, so the rules can be tested and later run on the server.
+ * Planet Passport v1 (docs/PLANET_PASSPORT_V1_PROPOSAL.md): the booklet's
+ * stamps, built from the catalogue (passport_stamp_defs, synced from
+ * functions/passport-catalogue.js) and the member's earned records
+ * (passport_stamps, written only by the server).
+ *
+ * Whether a stamp is earned, and when, comes only from the server's
+ * record. The progress shown on a stamp not yet earned ("2 of 5") is a hint
+ * worked out here from the member's trusted user_metrics, with the same
+ * rules as functions/passport.js progressFor; it never awards anything.
  */
 import type { EngagementMetrics } from '../services/activity.service';
 import type { UserProfile } from '../services/user-profile.service';
-import { elementsExplored, ElementSlug, JOURNEY_ELEMENTS } from './Journey';
+import { ElementSlug, JOURNEY_ELEMENTS, preferredElements } from './Journey';
 
-export type StampShape = 'circle' | 'rect' | 'oval' | 'hex';
+export type StampFamily = 'milestone' | 'travel' | 'streak';
+export type StampShape = 'circle' | 'triangle' | 'square' | 'pentagon' | 'hexagon' | 'oval' | 'rect' | 'rosette';
+
+/** passport_stamp_defs/{id}: display data and the rule's type/target for the hint. */
+export interface StampDef {
+  id: string;
+  version: number;
+  status: 'draft' | 'active' | 'retired';
+  family: StampFamily;
+  order: number;
+  title: string[];
+  caption: string;
+  meaning: string;
+  hint: string;
+  unit: string;
+  element: ElementSlug | null;
+  shape: StampShape;
+  ink: string;
+  rule: { type: string; target: number; element?: string };
+}
+
+/** passport_stamps/{uid}_{stampId}, as the app reads it. */
+export interface StampRecord {
+  stampId: string;
+  earnedAt: Date | null;
+  /** false: history couldn't prove the date ("Earned before launch"). */
+  dateKnown: boolean;
+}
 
 export interface Stamp {
   id: string;
+  family: StampFamily;
   /** One or two short lines, e.g. ["River", "Guardian"]. */
   title: string[];
-  /** Small caps line, e.g. "WATER" or "JOURNEY". */
+  /** Small caps line, e.g. "WATER" or "MILESTONE". */
   caption: string;
+  meaning: string;
   element: ElementSlug | null;
   shape: StampShape;
   ink: string;
   /** -10…10 degrees, the same for a stamp every time. */
   rotation: number;
   earned: boolean;
+  earnedAt: Date | null;
+  dateKnown: boolean;
   progress: number;
   target: number;
   /** What to do to earn it: "Read 5 Water stories". */
   hint: string;
-  /** "stories", "actions": the unit of progress. */
   unit: string;
 }
 
 export interface PassportInput {
   metrics: EngagementMetrics | null;
-  profile: Pick<UserProfile, 'longestStreak'> | null;
+  profile: Pick<UserProfile, 'longestStreak' | 'preferredElements'> | null;
 }
 
 /** Ink per element: real passport stamps vary in ink; these stay close to the brand. */
@@ -45,55 +80,41 @@ export const PASSPORT_INK: Record<ElementSlug | 'journey', string> = {
   journey: '#145C5F'
 };
 
-const GUARDIAN: Record<ElementSlug, string[]> = {
-  air: ['Clean Air', 'Guardian'],
-  energy: ['Power', 'Saver'],
-  water: ['River', 'Guardian'],
-  earth: ['Earth', 'Protector'],
-  spirit: ['Mindful', 'Living']
-};
+const SLUGS = new Set<string>(JOURNEY_ELEMENTS.map((e) => e.slug));
+const n = (v: unknown) => (typeof v === 'number' && isFinite(v) && v > 0 ? v : 0);
 
-interface Rule {
-  id: string;
-  /** Ink of a journey stamp (element stamps use their element's ink). */
-  ink?: string;
-  title: string[];
-  caption: string;
-  element: ElementSlug | null;
-  shape: StampShape;
-  target: number;
-  unit: string;
-  hint: string;
-  progress: (input: PassportInput) => number;
-}
-
-const n = (v: number | null | undefined) => (typeof v === 'number' && isFinite(v) ? v : 0);
-
-/** The journey stamps, earned anywhere on WIOF. */
-const JOURNEY_RULES: Rule[] = [
-  { id: 'first-step', ink: PASSPORT_INK.water, title: ['First', 'Step'], caption: 'JOURNEY', element: null, shape: 'circle', target: 1, unit: 'action', hint: 'Complete your first action', progress: (i) => n(i.metrics?.totalActionsCompleted) },
-  { id: 'knowledge-explorer', ink: PASSPORT_INK.air, title: ['Knowledge', 'Explorer'], caption: 'JOURNEY', element: null, shape: 'rect', target: 10, unit: 'stories', hint: 'Read 10 stories to the end', progress: (i) => n(i.metrics?.qualityReads) },
-  { id: 'streak-7', ink: PASSPORT_INK.energy, title: ['7-Day', 'Streak'], caption: 'JOURNEY', element: null, shape: 'oval', target: 7, unit: 'days', hint: 'Visit 7 days in a row', progress: (i) => n(i.profile?.longestStreak) },
-  { id: 'one-family', ink: PASSPORT_INK.earth, title: ['One', 'Family'], caption: 'JOURNEY', element: null, shape: 'hex', target: 5, unit: 'elements', hint: 'Explore all five elements', progress: (i) => elementsExplored(i.metrics).length },
-  { id: 'inner-weather', ink: PASSPORT_INK.spirit, title: ['Inner', 'Weather'], caption: 'EQ', element: null, shape: 'circle', target: 1, unit: 'reflection', hint: 'Take the EQ reflection', progress: (i) => (i.metrics?.lastEqScore != null ? 1 : 0) },
-  { id: 'your-voice', ink: PASSPORT_INK.journey, title: ['Your', 'Voice'], caption: 'POLLS', element: null, shape: 'rect', target: 1, unit: 'vote', hint: 'Vote in a poll', progress: (i) => n(i.metrics?.pollsVoted) },
-  { id: 'good-watch', ink: PASSPORT_INK.air, title: ['Good', 'Watch'], caption: 'VIDEOS', element: null, shape: 'oval', target: 3, unit: 'videos', hint: 'Watch 3 videos to the end', progress: (i) => n(i.metrics?.videosCompleted) },
-  { id: 'streak-30', ink: PASSPORT_INK.spirit, title: ['30-Day', 'Streak'], caption: 'JOURNEY', element: null, shape: 'hex', target: 30, unit: 'days', hint: 'Visit 30 days in a row', progress: (i) => n(i.profile?.longestStreak) }
-];
-
-/** Three stamps per element: arriving, reading, acting. */
-function elementRules(slug: ElementSlug, name: string): Rule[] {
-  const reads = (i: PassportInput) => n(i.metrics?.qualityReadsByElement?.[slug]);
-  const acts = (i: PassportInput) => n(i.metrics?.actionsByElement?.[slug]);
-  const caption = name.toUpperCase();
+/** The five first steps done (Journey.ts firstSteps; the server's firstStepsDone). */
+export function firstStepsDone(input: PassportInput): number {
+  const m: Partial<EngagementMetrics> = input.metrics || {};
   return [
-    { id: `${slug}-arrival`, title: ['Arrived'], caption, element: slug, shape: 'circle', target: 1, unit: 'visit', hint: `Read a ${name} story or take a ${name} action`, progress: (i) => Math.min(1, reads(i) + acts(i)) },
-    { id: `${slug}-explorer`, title: [name, 'Explorer'], caption, element: slug, shape: 'rect', target: 5, unit: 'stories', hint: `Read 5 ${name} stories`, progress: reads },
-    { id: `${slug}-guardian`, title: GUARDIAN[slug], caption, element: slug, shape: 'hex', target: 5, unit: 'actions', hint: `Complete 5 ${name} actions`, progress: acts }
-  ];
+    preferredElements(input.profile).length > 0,
+    n(m.qualityReads) > 0,
+    n(m.videosCompleted) > 0,
+    m.lastEqScore != null,
+    n(m.totalActionsCompleted) > 0
+  ].filter(Boolean).length;
 }
 
-const RULES: Rule[] = [...JOURNEY_RULES, ...JOURNEY_ELEMENTS.flatMap((e) => elementRules(e.slug, e.name))];
+/** A display hint: how far a member is towards a rule (functions/passport.js progressFor). */
+export function progressFor(rule: StampDef['rule'], input: PassportInput): number {
+  const m: Partial<EngagementMetrics> = input.metrics || {};
+  const ladder = m.ladder || { actionDays: 0, elementDays: {}, actionWeeks: {} };
+  const acted = Object.entries(m.actionsByElement || {}).filter(([e, c]) => SLUGS.has(e) && n(c) > 0).length;
+  switch (rule.type) {
+    case 'first_steps': return firstStepsDone(input);
+    case 'element_visit': return n((m.elementVisits || {})[rule.element || '']) > 0 ? 1 : 0;
+    case 'stories_read': return rule.element ? n((m.qualityReadsByElement || {})[rule.element]) : n(m.qualityReads);
+    case 'videos_finished': return n(m.videosCompleted);
+    case 'polls_voted': return n(m.pollsVoted);
+    case 'eq_taken': return m.lastEqScore != null ? 1 : 0;
+    case 'different_actions': return Math.min(n(m.uniqueActionsCompleted), n(ladder.actionDays));
+    case 'elements_acted': return Math.min(acted, n(ladder.actionDays));
+    case 'element_action_days': return n((ladder.elementDays || {})[rule.element || '']);
+    case 'action_weeks': return Object.values<number>(ladder.actionWeeks || {}).reduce((max: number, c) => Math.max(max, n(c)), 0);
+    case 'visit_streak': return n(input.profile?.longestStreak);
+    default: return 0;
+  }
+}
 
 /** A small stable hash, for the stamp's tilt and the member number. */
 export function hash(text: string): number {
@@ -105,32 +126,56 @@ export function hash(text: string): number {
   return h >>> 0;
 }
 
-export function passportStamps(input: PassportInput): Stamp[] {
-  return RULES.map((r) => {
-    const progress = Math.min(r.target, Math.max(0, Math.floor(r.progress(input))));
-    return {
-      id: r.id,
-      title: r.title,
-      caption: r.caption,
-      element: r.element,
-      shape: r.shape,
-      ink: r.ink || PASSPORT_INK[r.element || 'journey'],
-      rotation: (hash(r.id) % 21) - 10,
-      earned: progress >= r.target,
-      progress,
-      target: r.target,
-      hint: r.hint,
-      unit: r.unit
-    };
-  });
+/**
+ * The booklet's stamps: active definitions, plus retired ones the member
+ * earned (history is kept), in catalogue order. Drafts never show.
+ */
+export function buildStamps(defs: StampDef[], records: StampRecord[], input: PassportInput): Stamp[] {
+  const byId = new Map(records.map((r) => [r.stampId, r]));
+  return defs
+    .filter((d) => d.status === 'active' || (d.status === 'retired' && byId.has(d.id)))
+    .sort((a, b) => a.order - b.order)
+    .map((d) => {
+      const record = byId.get(d.id);
+      const target = d.rule.target;
+      const progress = record ? target : Math.min(target, Math.floor(progressFor(d.rule, input)));
+      return {
+        id: d.id,
+        family: d.family,
+        title: d.title,
+        caption: d.caption,
+        meaning: d.meaning,
+        element: d.element,
+        shape: d.shape,
+        ink: d.ink || PASSPORT_INK[d.element || 'journey'],
+        rotation: (hash(d.id) % 21) - 10,
+        earned: !!record,
+        earnedAt: record?.earnedAt || null,
+        dateKnown: record ? record.dateKnown : true,
+        progress,
+        target,
+        hint: d.hint,
+        unit: d.unit
+      };
+    });
 }
 
+const SHAPE_LEVEL: Partial<Record<StampShape, number>> = { circle: 0, triangle: 3, square: 4, pentagon: 5, hexagon: 6 };
+
+/** Milestones of the given levels (0 = Earthrise, 3 = triangles … 6 = hexagons), not the element Guardians. */
+export function milestoneStamps(stamps: Stamp[], levels: number[]): Stamp[] {
+  return stamps.filter((s) => s.family === 'milestone' && !s.element && levels.includes(SHAPE_LEVEL[s.shape] ?? -1));
+}
+
+/** Travel stamps earned anywhere, then the streak stamps. */
 export function journeyStamps(stamps: Stamp[]): Stamp[] {
-  return stamps.filter((s) => !s.element);
+  return [...stamps.filter((s) => s.family === 'travel' && !s.element), ...stamps.filter((s) => s.family === 'streak')];
 }
 
+/** An element's stamps: Arrival, Explorer, then its Guardian. */
 export function elementStamps(stamps: Stamp[], slug: ElementSlug): Stamp[] {
-  return stamps.filter((s) => s.element === slug);
+  const rank = (s: Stamp) => (s.family === 'travel' ? (s.shape === 'oval' ? 0 : 1) : 2);
+  return stamps.filter((s) => s.element === slug).sort((a, b) => rank(a) - rank(b));
 }
 
 /** The unearned stamps closest to being earned (by share done, then fewest steps left). */
@@ -139,6 +184,20 @@ export function nextStamps(stamps: Stamp[], count = 3): Stamp[] {
     .filter((s) => !s.earned)
     .sort((a, b) => b.progress / b.target - a.progress / a.target || (a.target - a.progress) - (b.target - b.progress))
     .slice(0, count);
+}
+
+const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+/** "06 NOV 2026", like a passport stamp. */
+export function stampDate(d: Date): string {
+  return `${String(d.getDate()).padStart(2, '0')} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+/** What an earned stamp says in its middle: its date, or "BEFORE LAUNCH" when history can't prove one. */
+export function stampDateText(s: Pick<Stamp, 'earned' | 'earnedAt' | 'dateKnown'>): string {
+  if (!s.earned) return '';
+  if (!s.dateKnown) return 'BEFORE LAUNCH';
+  return s.earnedAt ? stampDate(s.earnedAt) : 'EARNED';
 }
 
 const B32 = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';

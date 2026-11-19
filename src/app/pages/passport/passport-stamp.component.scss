@@ -79,6 +79,15 @@ text {
   &.single {
     font-size: 22px;
   }
+
+  // Inside a triangle there's less room.
+  &.small {
+    font-size: 14px;
+
+    &.single {
+      font-size: 17px;
+    }
+  }
 }
 
 .date,
