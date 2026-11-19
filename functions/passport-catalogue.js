@@ -13,7 +13,7 @@
 /** Bumped when the meaning of a rule type changes (passport.js). */
 const RULES_VERSION = 1;
 /** Bumped whenever this file changes. */
-const CATALOGUE_VERSION = 1;
+const CATALOGUE_VERSION = 2; // 2: "an Air/Energy/Earth action" in the Guardian hints
 
 const ELEMENTS = [
   { slug: 'air', name: 'Air' },
@@ -119,7 +119,7 @@ function buildCatalogue() {
   for (const { slug, name } of ELEMENTS) {
     add({ id: `${slug}-guardian`, family: 'milestone', shape: 'pentagon', element: slug, title: GUARDIAN[slug],
       caption: name.toUpperCase(), meaning: `${name} actions on five different days.`, unit: 'days',
-      hint: `Take a ${name} action on 5 different days`, rule: { type: 'element_action_days', element: slug, target: 5 } });
+      hint: `Take ${/^[AEIOU]/.test(name) ? 'an' : 'a'} ${name} action on 5 different days`, rule: { type: 'element_action_days', element: slug, target: 5 } });
   }
 
   // Travel.
