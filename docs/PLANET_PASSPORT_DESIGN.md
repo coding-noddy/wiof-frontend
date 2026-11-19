@@ -2,7 +2,9 @@
 
 **Status:** design experiment on `feat/planet-passport-design`, staging only. Not for prod until (1) prod has a few weeks of real use data, (2) the open decisions below are made, and (3) it passes full testing. Prod meanwhile gets only small patches from master.
 
-**Preview:** `/passport` on staging (signed in). `/passport?demo=1` shows the same booklet with sample stamps, for design review.
+**Preview:** `/passport` on staging (signed in). `/passport?demo=1` shows the same booklet with sample stamps, for design review (admins only since v1).
+
+**v1 (2026-11-19):** stamps are now awarded by the server (docs/PLANET_PASSPORT_V1_PROPOSAL.md, runbook docs/PLANET_PASSPORT_V1_RUNBOOK.md). Sections 2–3 describe the experiment; §3a is the catalogue that is built.
 
 ## 1. The idea
 

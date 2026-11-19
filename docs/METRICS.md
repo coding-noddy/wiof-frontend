@@ -80,6 +80,19 @@ A Passport milestone must state the trust level of the metric it uses. Self-repo
 | `longestStreak` | "Best: N-day streak" | Highest `currentStreak` ever reached. | days | **Verified** |
 | `loginCount` | — | Sign-ins (`recordLoginMetrics`). | sign-ins · lifetime | **Verified** |
 | Active day | — | A local day with a `daily_visit` event (at most one per user per day, by its document ID). | day | Checked |
+| `visitTimezone` | — | The time zone the visit day is counted in. Set by `recordUserVisit`; a different browser zone is adopted only on a visit that is a new day anyway, so switching zones can't add a streak day (Passport v1, `functions/visit-timezone.js`). Clients can't write it. | IANA zone | **Verified** |
+
+### Planet Passport (v1, `functions/passport.js`; docs/PLANET_PASSPORT_V1_PROPOSAL.md)
+
+| Metric (field) | Used by | Formula | Unit · time basis | Trust |
+|---|---|---|---|---|
+| `elementVisits` | Arrival stamps | `{element: 1}` once the member has an accepted `element_visit` event (`{uid}_element_visit_{element}`, one per element ever). Any page under `/element/{slug}` counts. | per element · lifetime | Checked (rules + validator) |
+| `ladder.actionDays` | milestone ladder (brake, D4) | Different India-time days with at least one completion. A milestone counting "different actions" or "elements acted in" uses the **smaller** of that count and `actionDays`, so six actions in one minute count as one. | days · lifetime | Self-reported actions, server-dated days |
+| `ladder.elementDays` | Guardians | Different India-time days with a completion in each element. | days per element | As above |
+| `ladder.actionWeeks` | Taking Root … Honeycomb | Different ISO weeks (India time) in which each action was completed; the best action counts. Weeks need not be consecutive. | weeks per action | As above |
+| Passport stamps | the booklet | `passport_stamps/{uid}_{stampId}`, created once by the server (`awardPassportOn*` triggers or `scripts/backfill-passport.js`), with `earnedAt` (server time, or the replayed event time), `dateKnown`, `defVersion`, `ruleVersion`, `evidence` and `source`. Never changed; only "Also clear my Planet Passport" deletes them. | one per stamp | Server-decided |
+
+The ladder is kept by `onUserActionWritten` in the same transaction as the action counters, and rebuilt from the `action_completed` events by the recompute (same code, `ladderAfter`). The recompute marks its writes (`recomputeRun`), so they never award stamps.
 
 ## Resets
 
@@ -103,7 +116,8 @@ One `analytics_daily/{YYYY-MM-DD}` summary per India-time day, by each event's s
 **Take Action progress is kept by default** (decided 2026-11-04, 8.3.0): `user_actions`, the `action_completed` and `impact_reported` events, and the action and impact counters stay. A reset therefore never makes "Actions Taken" disagree with the action cards, and a recompute can't undo a reset. The Settings page says so before the user confirms.
 
 **8.16.0:**
-- A checkbox, *Also clear my Take Action progress* (off by default), clears those too: `user_actions`, `user_action_completions`, the completion and impact events, and zeroes the action counters and impact totals.
+- A checkbox, *Also clear my Take Action progress* (off by default), clears those too: `user_actions`, `user_action_completions`, the completion and impact events, and zeroes the action counters and impact totals. It also clears the Passport `ladder`, which is derived from those events.
+- **Planet Passport (v1):** element visits (`elementVisits` and their events) are always cleared. Earned stamps (`passport_stamps`, `passport_holders`) are **kept** unless the member ticks *Also clear my Planet Passport* (off by default, decision D2). Progress they keep (for example Take Action) can earn its stamps again, dated the day they're re-earned.
 - **Polls:** for each poll voted in, the reset leaves `poll_vote_guards/{uid}_{pollId}` (no option, no email), so the poll still knows and a second vote can't be added to the public results. The member's raw `Polls` votes lose their email and IP address; the vote stays counted.
 - The member stays signed in. The device forgets "Not yet" answers (and, with actions, the last "About how much?" amounts).
 - Not changed: totals that include the member anonymously (poll results, `community_impact` for past months; this month's is rebuilt within 3 hours).
