@@ -203,7 +203,12 @@ In the admin catalogue (§5), **a milestone's shape follows from its target**: p
 ## 4. Before it ships (Phase 3 work)
 
 1. **Stamps written by the server, with a date.** In this experiment stamps are worked out in the browser from trusted counts, and the date shows "EARNED" (the preview shows today). For real: a function evaluates the rules when `user_metrics` changes and writes `passport_stamps/{uid}_{stampId}` once, with `earnedAt` (rules: read own, no client writes). That gives each stamp its real date and makes it permanent.
-2. **Resets.** Recommended: a reset clears stamps along with engagement data (so a stamp always means the counts behind it), but never lets a member earn the same stamp twice for free. Same idea as the poll vote guards (8.16.0).
+2. **Resets (decided 2026-11-19):**
+   - **Resets keep stamps by default**; an optional "Also clear my Passport" checkbox clears them.
+   - **Existing members** get their real earned dates, rebuilt from history; where a date can't be proved, the stamp says "Earned before launch".
+   - **Only one new different action per day** counts towards milestone badges.
+   - **The Passport is issued with Earthrise.**
+   See docs/PLANET_PASSPORT_V1_PROPOSAL.md.
 3. **Self-reported actions.** Action stamps come from "Mark as Done" (self-reported, docs/PHASE2_PLAN.md G5). That's fine for everyday actions; the Passport should say so on the inside cover or holder page.
 4. **Impact stamps** (for example "1,000 L of water saved") only after the admins review the impact recipes. Until then, impact stays in the Declaration page.
 5. **Topic stamps** ("5 ocean stories") depend on the topics decision (docs/TOPICS_AND_TAGS.md).
