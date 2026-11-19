@@ -527,6 +527,76 @@ describe('user_metrics/{uid} (materialized dashboard summary)', () => {
   });
 });
 
+describe('Planet Passport (passport_stamps, passport_holders, passport_stamp_defs)', () => {
+  const stamp = (uid = 'alice', stampId = 'good-watch') => ({
+    userId: uid, stampId, defVersion: 1, ruleVersion: 1, evidence: { rule: 'videos_finished', target: 3, value: 3 },
+    earnedAt: new Date(), dateKnown: true, source: 'trigger'
+  });
+  const seedPassport = () => seed(async (db) => {
+    await db.collection('passport_stamps').doc('alice_good-watch').set(stamp());
+    await db.collection('passport_holders').doc('alice').set({ userId: 'alice', issuedAt: new Date(), catalogueVersion: 1 });
+    await db.collection('passport_stamp_defs').doc('good-watch').set({ title: ['Good', 'Watch'], status: 'active' });
+  });
+  const as = (uid) => testEnv.authenticatedContext(uid).firestore();
+
+  it('lets a member read their own stamps (one by one, and as a query on their userId) and holder record', async () => {
+    await seedPassport();
+    await assertSucceeds(as('alice').collection('passport_stamps').doc('alice_good-watch').get());
+    await assertSucceeds(as('alice').collection('passport_stamps').where('userId', '==', 'alice').get());
+    await assertSucceeds(as('alice').collection('passport_holders').doc('alice').get());
+  });
+
+  it('reading a stamp not yet earned is allowed (it is simply missing)', async () => {
+    await assertSucceeds(as('alice').collection('passport_stamps').doc('alice_snowflake').get());
+  });
+
+  it("denies reading another member's stamps or holder record, and guests", async () => {
+    await seedPassport();
+    await assertFails(as('mallory').collection('passport_stamps').doc('alice_good-watch').get());
+    await assertFails(as('mallory').collection('passport_stamps').where('userId', '==', 'alice').get());
+    await assertFails(as('mallory').collection('passport_stamps').get());
+    await assertFails(as('mallory').collection('passport_holders').doc('alice').get());
+    await assertFails(testEnv.unauthenticatedContext().firestore().collection('passport_stamps').doc('alice_good-watch').get());
+  });
+
+  it('lets an admin read any member\'s stamps', async () => {
+    await seedPassport();
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    await assertSucceeds(as('root').collection('passport_stamps').doc('alice_good-watch').get());
+  });
+
+  it('denies every client write to stamps and holder records, the owner and admins included', async () => {
+    await seedPassport();
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    for (const uid of ['alice', 'root']) {
+      await assertFails(as(uid).collection('passport_stamps').doc('alice_snowflake').set(stamp('alice', 'snowflake')));
+      await assertFails(as(uid).collection('passport_stamps').doc('alice_good-watch').update({ earnedAt: new Date(0) }));
+      await assertFails(as(uid).collection('passport_stamps').doc('alice_good-watch').delete());
+      await assertFails(as(uid).collection('passport_holders').doc('alice').set({ userId: 'alice', issuedAt: new Date() }));
+      await assertFails(as(uid).collection('passport_holders').doc('alice').delete());
+    }
+    await assertFails(as('mallory').collection('passport_stamps').doc('alice_snowflake').set(stamp('alice', 'snowflake')));
+  });
+
+  it('the catalogue is public to read and closed to every client write in v1', async () => {
+    await seedPassport();
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    await assertSucceeds(testEnv.unauthenticatedContext().firestore().collection('passport_stamp_defs').get());
+    await assertFails(as('root').collection('passport_stamp_defs').doc('good-watch').set({ title: ['Forged'] }));
+    await assertFails(as('alice').collection('passport_stamp_defs').doc('new').set({ title: ['Mine'] }));
+  });
+
+  it('only an admin can switch awards on or off, with exactly { awardsEnabled: bool }', async () => {
+    await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
+    const settings = (uid) => as(uid).collection('site_settings').doc('passport');
+    await assertSucceeds(settings('root').set({ awardsEnabled: true }));
+    await assertFails(settings('root').set({ awardsEnabled: 'yes' }));
+    await assertFails(settings('root').set({ awardsEnabled: true, extra: 1 }));
+    await assertFails(settings('alice').set({ awardsEnabled: true }));
+    await assertSucceeds(testEnv.unauthenticatedContext().firestore().collection('site_settings').doc('passport').get());
+  });
+});
+
 describe('Admin content collections (Blogs representative — same isAdmin() gate on all)', () => {
   it('lets anyone read published content', async () => {
     await seed((db) => db.collection('Blogs').doc('post-1').set({ title: 'Hello' }));

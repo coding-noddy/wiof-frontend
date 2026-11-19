@@ -313,14 +313,19 @@ async function recomputeUserMetrics(db, { apply = false, FieldValue }) {
       ops = 0;
     }
   };
+  // Each write carries a new recomputeRun value, so the Passport award
+  // trigger skips it (passport-awards.js shouldEvaluateMetricsWrite): stamps
+  // for recomputed history come from scripts/backfill-passport.js, with
+  // their real dates, not from a recompute dated today.
+  const runId = new Date().toISOString();
   for (const [uid, fields] of metrics) {
     // merge: onActivityLogCreated / onUserActionWritten also write this doc.
     // A merge set merges nested maps key by key, so the per-element maps are
     // replaced whole first: a stale key must not survive the recompute.
     const ref = db.collection('user_metrics').doc(uid);
-    batch.set(ref, { ...fields, ...Object.fromEntries(MAP_FIELDS.map((f) => [f, FieldValue.delete()])), updatedAt: FieldValue.serverTimestamp() }, { merge: true });
+    batch.set(ref, { ...fields, ...Object.fromEntries(MAP_FIELDS.map((f) => [f, FieldValue.delete()])), recomputeRun: `${runId}:1`, updatedAt: FieldValue.serverTimestamp() }, { merge: true });
     await flushIfFull();
-    batch.set(ref, Object.fromEntries(MAP_FIELDS.map((f) => [f, fields[f] || {}])), { merge: true });
+    batch.set(ref, { ...Object.fromEntries(MAP_FIELDS.map((f) => [f, fields[f] || {}])), recomputeRun: `${runId}:2` }, { merge: true });
     await flushIfFull();
   }
   for (const verdict of newVerdicts) {

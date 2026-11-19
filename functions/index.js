@@ -19,6 +19,7 @@ const { elementOfBlog, makeContentLookups, recomputeUserMetrics } = require('./u
 const { completionEventId, impactIncrement, impactSnapshot, monthKey, reportedValue } = require('./impact');
 const { rebuildRelatedContent } = require('./related-content');
 const { ladderAfter } = require('./passport');
+const { awardStamps, shouldEvaluateMetricsWrite, shouldEvaluateProfileWrite } = require('./passport-awards');
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -464,8 +465,15 @@ exports.resetEngagementData = functions
     const uid = context.auth.uid;
     // "Also clear my Take Action progress" (8.16.0): off unless the member ticks it.
     const includeActions = !!(data && data.includeActions === true);
+    // "Also clear my Passport" (Passport v1, D2): off unless ticked; earned stamps are kept otherwise.
+    const includePassport = !!(data && data.includePassport === true);
 
     const deletedActivityCount = await resetActivity(uid, includeActions);
+    let deletedStampCount = 0;
+    if (includePassport) {
+      deletedStampCount = await deleteAllOwnedBy('passport_stamps', uid);
+      await db.collection('passport_holders').doc(uid).delete();
+    }
     const deletedSavedContentCount = await deleteAllOwnedBy('user_saved_content', uid);
     const anonymisedVoteCount = await anonymiseVotes(context.auth.token && context.auth.token.email);
     let deletedActionCount = 0;
@@ -511,7 +519,7 @@ exports.resetEngagementData = functions
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
 
-    return { ok: true, includeActions, deletedActivityCount, deletedSavedContentCount, deletedActionCount, anonymisedVoteCount };
+    return { ok: true, includeActions, includePassport, deletedActivityCount, deletedSavedContentCount, deletedActionCount, deletedStampCount, anonymisedVoteCount };
   }));
 
 /**
@@ -810,6 +818,52 @@ exports.onUserActionWritten = functions
       tx.set(metricsRef, update, { merge: true });
     });
     return null;
+  }));
+
+/**
+ * Planet Passport v1 (docs/PLANET_PASSPORT_V1_PROPOSAL.md): the server
+ * awards stamps when a member's trusted state changes. Off until an admin
+ * sets site_settings/passport.awardsEnabled (rollout: deploy, recompute,
+ * backfill, then switch on). Read at most once a minute per instance.
+ */
+let passportFlag = { value: false, readAt: 0 };
+async function passportAwardsEnabled() {
+  if (Date.now() - passportFlag.readAt > 60 * 1000) {
+    const snap = await db.collection('site_settings').doc('passport').get();
+    passportFlag = { value: snap.exists && snap.get('awardsEnabled') === true, readAt: Date.now() };
+  }
+  return passportFlag.value;
+}
+
+async function awardPassport(fn, uid) {
+  if (!(await passportAwardsEnabled())) return null;
+  const result = await awardStamps(db, uid, { FieldValue: admin.firestore.FieldValue });
+  if (result.awarded.length || result.issued) {
+    console.log(JSON.stringify({ fn, uid, awarded: result.awarded, issued: result.issued }));
+  }
+  return null;
+}
+
+/** user_metrics changed (a read, a video, an action, a visit…). Skips the metrics recompute's own writes (R2). */
+exports.awardPassportOnMetrics = functions
+  .region(REGION)
+  .firestore.document('user_metrics/{uid}')
+  .onWrite(withTriggerErrorLogging('awardPassportOnMetrics', async (change, context) => {
+    const before = change.before.exists ? change.before.data() : null;
+    const after = change.after.exists ? change.after.data() : null;
+    if (!shouldEvaluateMetricsWrite(before, after)) return null;
+    return awardPassport('awardPassportOnMetrics', context.params.uid);
+  }));
+
+/** The profile's streak or chosen elements changed (Seven Sunrises, Thirty Dawns, Earthrise). */
+exports.awardPassportOnProfile = functions
+  .region(REGION)
+  .firestore.document('users/{uid}')
+  .onWrite(withTriggerErrorLogging('awardPassportOnProfile', async (change, context) => {
+    const before = change.before.exists ? change.before.data() : null;
+    const after = change.after.exists ? change.after.data() : null;
+    if (!shouldEvaluateProfileWrite(before, after)) return null;
+    return awardPassport('awardPassportOnProfile', context.params.uid);
   }));
 
 /**

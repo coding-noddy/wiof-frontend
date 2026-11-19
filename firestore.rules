@@ -316,8 +316,43 @@ service cloud.firestore {
           && request.resource.data.keys().hasOnly(['minMembers'])
           && request.resource.data.minMembers is int
           && request.resource.data.minMembers >= 1
-          && request.resource.data.minMembers <= 1000));
+          && request.resource.data.minMembers <= 1000)
+        // Planet Passport v1: the server awards stamps only while this is true.
+        || (settingId == 'passport'
+          && request.resource.data.keys().hasOnly(['awardsEnabled'])
+          && request.resource.data.awardsEnabled is bool));
       allow delete: if isAdmin();
+    }
+
+    // ─── Planet Passport (docs/PLANET_PASSPORT_V1_PROPOSAL.md) ──────────────
+    // Stamps are decided and written only by the server (the awardPassport*
+    // triggers and scripts/backfill-passport.js, Admin SDK): no client can
+    // create, change or delete an earned stamp or a holder record, its own
+    // included. "Also clear my Passport" deletes them through the
+    // resetEngagementData function.
+
+    // One per earned stamp, {uid}_{stampId}, written once with earnedAt.
+    // `resource == null`: reading a stamp not yet earned returns "missing"
+    // instead of permission-denied (same guard as user_actions).
+    match /passport_stamps/{docId} {
+      allow read: if isAdmin()
+        || (isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid));
+      allow write: if false;
+    }
+
+    // One per member whose Passport is issued (with Earthrise), doc ID == uid.
+    match /passport_holders/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow write: if false;
+    }
+
+    // The stamp catalogue's display data, synced from
+    // functions/passport-catalogue.js by scripts/sync-passport-catalogue.js.
+    // Public: guests see the stamps they could earn. No client writes in v1
+    // (the Admin → Passport page comes later).
+    match /passport_stamp_defs/{stampId} {
+      allow read: if true;
+      allow write: if false;
     }
 
     // ClimatEnlighten workshops (Admin → Workshops). The public reads only
