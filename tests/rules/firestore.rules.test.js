@@ -405,7 +405,7 @@ describe('activity_log/{docId}', () => {
   });
 
   it('denies a create with a non-server timestamp (backdating)', async () => {
-    await assertFails(log(alice()).doc('alice_blog_read_blog-1').set(activityEvent('blog_read', { contentId: 'blog-1', timestamp: new Date() })));
+    await assertFails(log(alice()).doc('alice_blog_read_blog-1').set(activityEvent('blog_read', { contentId: 'blog-1', timestamp: new Date(Date.now() - 60000) })));
   });
 
   it('denies a malformed calendarDay or an unknown schemaVersion', async () => {
@@ -1280,8 +1280,8 @@ describe('user_actions/{userActionId} (product source of truth for completion)',
   it('denies a create with a non-server timestamp (anti-backdating)', async () => {
     await seed((db) => seedAction(db, 'action-1'));
     const db = testEnv.authenticatedContext('alice').firestore();
-    await assertFails(ref(db).set(validComplete({ completedAt: new Date() })));
-    await assertFails(ref(db).set(validStart({ createdAt: new Date(), updatedAt: new Date() })));
+    await assertFails(ref(db).set(validComplete({ completedAt: new Date(Date.now() - 60000) })));
+    await assertFails(ref(db).set(validStart({ createdAt: new Date(Date.now() - 60000), updatedAt: new Date(Date.now() - 60000) })));
   });
 
   it('denies a create with an extra, unlisted field', async () => {
@@ -1417,8 +1417,11 @@ describe('user_actions/{userActionId} (product source of truth for completion)',
       await ref(db).set(storedDoc());
     });
     const db = testEnv.authenticatedContext('alice').firestore();
-    await assertFails(ref(db).set(completionUpdate({ completedAt: new Date() }), { merge: true }));
-    await assertFails(ref(db).set(completionUpdate({ updatedAt: new Date() }), { merge: true }));
+    // A minute in the past: `new Date()` could land on the very millisecond of request.time
+    // (the emulator runs on this machine) and pass the rule, which made this test flaky.
+    const backdated = new Date(Date.now() - 60 * 1000);
+    await assertFails(ref(db).set(completionUpdate({ completedAt: backdated }), { merge: true }));
+    await assertFails(ref(db).set(completionUpdate({ updatedAt: backdated }), { merge: true }));
   });
 
   it("denies another user updating alice's action record", async () => {
@@ -1531,7 +1534,7 @@ describe('user_action_completions/{docId} (per-day dedup guard for DAILY actions
 
   it('denies a non-server createdAt', async () => {
     const db = testEnv.authenticatedContext('alice').firestore();
-    await assertFails(db.collection('user_action_completions').doc(guardId).set(validGuard({ createdAt: new Date() })));
+    await assertFails(db.collection('user_action_completions').doc(guardId).set(validGuard({ createdAt: new Date(Date.now() - 60000) })));
   });
 
   it("denies pre-claiming a future day's slot", async () => {
