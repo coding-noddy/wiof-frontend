@@ -1,6 +1,18 @@
 # Admin → Passport: badges and challenges managed by admins — proposal
 
-**Status:** proposal, awaiting approval (2026-11-21). Nothing here is built.
+**Status:** approved and built (2026-11-21), on staging; not on prod.
+
+**Decisions:**
+- the definitions live in Firestore;
+- all admins can publish;
+- challenges ship in this release;
+- upcoming challenges show 7 days ahead, in the booklet's Challenges page and a Take Action banner. There's no separate page.
+
+Tests: staging `e2e:passport-admin` 19/19.
+
+**Not built yet:**
+- the link from "Today on WIOF" to a challenge on its calendar day;
+- a confirm step for very large "would earn" counts. Publishing always shows the count.
 **Builds on:** design §5 and §5a (docs/PLANET_PASSPORT_DESIGN.md), Passport v1 (docs/PLANET_PASSPORT_V1_PROPOSAL.md, built and on staging).
 **Governs:** docs/roadmap/WIOF_Planet_Passport_Production_Implementation_Contract_v1.md §6.1, §6.6, §9.
 

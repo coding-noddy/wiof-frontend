@@ -36,7 +36,25 @@ On prod the user runs steps 2–5 (Claude can't write to prod).
 - A second run of the backfill dry run lists **0** stamps to add.
 - `/passport` for a member without Earthrise shows the waiting cover and steps; for a member with it, the booklet, real dates and "Before launch" where the date isn't known.
 
-## Adding or changing a stamp (until Admin → Passport exists)
+## Adding or changing a badge: Admin → Passport
+
+**Dashboard → Planet Passport.** The badge map shows every badge, what earns it, its status, its version and how many members have it. To change a badge:
+1. Open it (or **New badge** / **New challenge**), and pick the rule and target.
+2. Check the preview and **Who would earn it now?**
+3. **Save draft**, then **Publish**.
+
+What the server enforces (`savePassportStamp`):
+- the admin check;
+- validation (for milestones, the shape follows the target);
+- **a new version when a published badge's rule, target or window changes**, while members keep what they earned;
+- **retire, never delete** once published;
+- an audit record for every change (Recent changes).
+
+The award triggers pick up a change within about a minute. The code catalogue (`functions/passport-catalogue.js`) is now only the seed and the fallback, used if the collection is empty or unreadable.
+
+**Challenges:** a date window (India-time days) and one of three rules: different actions in the window (optionally one element), stories read in the window, or a specific action. Members see a challenge from 7 days before it opens: on the booklet's Challenges page and as a banner on Take Action. Progress is in `passport_challenge_progress`.
+
+## Adding or changing a stamp in code (seed and fallback only)
 
 1. Edit `functions/passport-catalogue.js`:
    - **New stamp:** add it with `version: 1` and a rule type the evaluator knows. A milestone's shape must match its target (3 ▲, 4 ■, 5 ⬟, 6 ⬢).
