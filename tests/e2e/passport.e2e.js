@@ -211,10 +211,22 @@ async function cleanup(uid) {
         return click.call(this);
       };
     });
-    const shareBtn = await page.$('.face:not([inert]) .stamp-share');
+    // Tap an earned stamp: its details say why it was earned, and offer Share.
+    const stampBtn = await page.$('.face:not([inert]) .stamp.earned .stamp-hit');
+    if (stampBtn) await stampBtn.click();
+    const sheet = await page.waitForSelector('#stamp-detail', { timeout: 10000 }).then(() => true, () => false);
+    const why = sheet ? await page.$eval('#stamp-detail .detail-why', (el) => el.textContent.trim()) : '';
+    check('tapping an earned stamp shows why it was earned', sheet && /^Why: You /.test(why), why);
+    await sleep(1500); // the stamp lands (its thunk) before the screenshot
+    const stampSize = await page.$eval('#stamp-detail app-passport-stamp svg', (el) => { const r = el.getBoundingClientRect(); return Math.round(r.width); }).catch(() => 0);
+    check('the stamp shows in the details, full size', stampSize >= 140, `${stampSize}px wide`);
+    await page.screenshot({ path: path.join(OUT, 'passport-stamp-detail.png') });
+    const shareBtn = await page.$('#stamp-detail .detail-primary');
     if (shareBtn) await shareBtn.click();
     const saved = await page.waitForFunction(() => window.__saved, { timeout: 30000 }).then((h) => h.jsonValue()).catch(() => null);
     if (saved) fs.writeFileSync(path.join(OUT, saved.name), Buffer.from(saved.url.split(',')[1], 'base64'));
+    await page.keyboard.press('Escape');
+    check('Escape closes the details', !(await page.waitForSelector('#stamp-detail', { hidden: true, timeout: 5000 }).then(() => false, () => true)));
     check('"Share" under an earned stamp makes and saves the badge card', !!shareBtn && !!saved && saved.name === 'wiof-earthrise.png' && saved.url.startsWith('data:image/png'), saved ? `${saved.name}, ${Math.round(saved.url.length * 0.75 / 1024)} KB` : (shareBtn ? 'no file' : 'no Share button'));
     await page.reload({ waitUntil: 'load' });
     await page.waitForSelector('.stage', { timeout: 30000 });

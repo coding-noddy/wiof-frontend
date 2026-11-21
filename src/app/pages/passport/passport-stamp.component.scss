@@ -127,20 +127,22 @@ figcaption {
   }
 }
 
-// "Share" under an earned stamp in the booklet (Passport §6).
-.stamp-share {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  min-height: 32px;
-  padding: 0.15rem 0.7rem;
-  border-radius: 999px;
-  border: 1.5px solid var(--wiof-brown-tint-40);
-  background: var(--wiof-warm-white);
-  color: var(--wiof-teal-text);
-  font-size: 0.72rem;
-  font-weight: 700;
+// The booklet: the whole stamp opens its details.
+.stamp {
+  position: relative;
+}
+
+.stamp-hit {
+  position: absolute;
+  inset: 0;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
   cursor: pointer;
+
+  &:hover {
+    background: color-mix(in srgb, var(--wiof-teal) 6%, transparent);
+  }
 
   &:focus-visible {
     outline: 2px solid var(--wiof-teal-fill);

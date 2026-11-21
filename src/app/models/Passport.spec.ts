@@ -1,6 +1,6 @@
 import { EngagementMetrics } from '../services/activity.service';
 import {
-  buildStamps, challengeView, earnedWhen, elementStamps, firstStepsDone, istToday, previewStamp, journeyStamps, machineLines, memberNumber, milestoneStamps, momentStamps, momentWaitsOn,
+  buildStamps, challengeView, earlierVersionNote, earnedBecause, earnedWhen, elementStamps, firstStepsDone, istToday, previewStamp, journeyStamps, machineLines, memberNumber, milestoneStamps, momentStamps, momentWaitsOn,
   newBadges, nextStamps, progressFor, StampDef, stampDateText
 } from './Passport';
 
@@ -193,6 +193,43 @@ describe('Planet Passport challenges as members see them', () => {
 
   it('istToday is the India-time date', () => {
     expect(istToday(new Date('2027-03-21T19:00:00Z'))).toBe('2027-03-22');
+  });
+});
+
+describe('Planet Passport: why a stamp was earned', () => {
+  const s = (rule: StampDef['rule'], evidence?: any, extra: any = {}) => ({ rule, evidence, name: 'X', family: 'milestone' as const, ...extra });
+
+  it('says why, in the past tense, from what the server recorded', () => {
+    expect(earnedBecause(s({ type: 'different_actions', target: 3 }, { rule: 'different_actions', target: 3, value: 3 }))).toBe('You did 3 different actions, on 3 different days.');
+    expect(earnedBecause(s({ type: 'element_action_days', target: 5, element: 'water' }, { rule: 'element_action_days', target: 5, value: 5 }))).toBe('You took Water actions on 5 different days.');
+    expect(earnedBecause(s({ type: 'action_weeks', target: 6 }, { rule: 'action_weeks', target: 6, value: 6 }))).toBe('You kept one action going in 6 different weeks.');
+    expect(earnedBecause(s({ type: 'stories_read', target: 5, element: 'earth' }, { rule: 'stories_read', target: 5, value: 5 }))).toBe('You read 5 Earth stories to the end.');
+    expect(earnedBecause(s({ type: 'specific_action', target: 3, actionId: 'fix-a-water-leak' }, { rule: 'specific_action', target: 3, value: 3 }))).toBe('You did "Fix a water leak" 3 times.');
+    expect(earnedBecause(s({ type: 'first_steps', target: 5 }, { rule: 'first_steps', target: 5, value: 5 }))).toBe('You completed all 5 first steps on WIOF.');
+    expect(earnedBecause(s({ type: 'element_visit', target: 1, element: 'water' }))).toBe('You visited the Water page.');
+  });
+
+  it('tells the true count when it was more than the target (a 9-day streak for Seven Sunrises)', () => {
+    expect(earnedBecause(s({ type: 'visit_streak', target: 7 }, { rule: 'visit_streak', target: 7, value: 9 }))).toBe('You visited 9 days in a row.');
+  });
+
+  it('names the challenge and its days', () => {
+    const c = s({ type: 'window_actions', target: 2, element: 'water' }, { rule: 'window_actions', target: 2, value: 2, window: { start: '2027-03-22', end: '2027-03-22' } }, { name: 'World Water Day', family: 'challenge' });
+    expect(earnedBecause(c)).toBe('You did 2 different Water actions on 22 March 2027, during the World Water Day challenge.');
+  });
+
+  it('notes, quietly, a badge earned under an earlier version', () => {
+    expect(earlierVersionNote({ earnedVersion: 1, version: 2, evidence: { rule: 'stories_read', target: 5, value: 5 }, unit: 'stories' }))
+      .toBe('You earned this under an earlier version of the badge: then it took 5 stories. It\'s still yours.');
+    expect(earlierVersionNote({ earnedVersion: 2, version: 2, evidence: undefined, unit: 'stories' })).toBe('');
+  });
+
+  it('builds earned stamps with their evidence and versions', () => {
+    const [st] = buildStamps([def('good-watch', 'travel', 'oval', { type: 'videos_finished', target: 3 })],
+      [{ stampId: 'good-watch', earnedAt: new Date(), dateKnown: true, evidence: { rule: 'videos_finished', target: 3, value: 3 }, defVersion: 1 }], none);
+    expect(st.evidence?.value).toBe(3);
+    expect(st.earnedVersion).toBe(1);
+    expect(st.version).toBe(1);
   });
 });
 

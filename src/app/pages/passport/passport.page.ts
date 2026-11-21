@@ -5,7 +5,7 @@ import { distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
 import { ImpactTile, impactTiles } from 'src/app/models/Impact';
 import { ElementSlug, FirstStep, firstSteps, JOURNEY_ELEMENTS } from 'src/app/models/Journey';
 import {
-  buildStamps, challengeView, ChallengeView, elementStamps, istToday, journeyStamps, machineLines, memberNumber, milestoneStamps,
+  buildStamps, challengeView, ChallengeView, earlierVersionNote, earnedBecause, elementStamps, istToday, journeyStamps, machineLines, memberNumber, milestoneStamps,
   nextStamps, PASSPORT_INK, Stamp, StampDef, stampDate, StampRecord
 } from 'src/app/models/Passport';
 import { ActivityService, EngagementMetrics } from 'src/app/services/activity.service';
@@ -92,6 +92,9 @@ export class PassportPage implements OnInit, OnDestroy {
   loading = true;
   /** The "Welcome to your Planet Passport" moment, once per device. */
   welcome = false;
+  /** The stamp whose details are open (tap a stamp). */
+  detail: Stamp | null = null;
+  private detailReturnFocus: HTMLElement | null = null;
 
   readonly deskStamps = DESK_STAMPS;
   /** Hero illustrations already shown, so each loads only when first needed. */
@@ -229,6 +232,34 @@ export class PassportPage implements OnInit, OnDestroy {
       // Storage blocked: show the welcome this time.
     }
     if (!seen && !this.openOnStamp) this.welcome = true;
+  }
+
+  // ---- A stamp's details: why it was earned, or how to earn it ----
+
+  openDetail(stamp: Stamp): void {
+    this.detailReturnFocus = document.activeElement as HTMLElement | null;
+    this.detail = stamp;
+    setTimeout(() => document.getElementById('stamp-detail')?.focus(), 30);
+  }
+
+  closeDetail(): void {
+    this.detail = null;
+    this.detailReturnFocus?.focus?.();
+  }
+
+  get detailWhy(): string {
+    return this.detail ? earnedBecause(this.detail) : '';
+  }
+
+  get detailVersionNote(): string {
+    return this.detail ? earlierVersionNote(this.detail) : '';
+  }
+
+  get detailDate(): string {
+    const s = this.detail;
+    if (!s?.earned) return '';
+    if (!s.dateKnown || !s.earnedAt) return 'Earned before the Passport launched';
+    return `Earned ${s.earnedAt.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}`;
   }
 
   /** "Open my Passport" on the welcome: turn to the first milestone page, where Earthrise lands. */
@@ -421,6 +452,10 @@ export class PassportPage implements OnInit, OnDestroy {
 
   @HostListener('document:keydown', ['$event'])
   onKey(e: KeyboardEvent): void {
+    if (this.detail) {
+      if (e.key === 'Escape') this.closeDetail();
+      return; // the sheet is open: the arrow keys don't turn pages behind it
+    }
     if (!this.issued || (e.target as HTMLElement)?.closest?.('input, textarea')) return;
     if (e.key === 'ArrowRight') this.forward();
     if (e.key === 'ArrowLeft') this.backward();

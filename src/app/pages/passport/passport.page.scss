@@ -898,3 +898,141 @@
     transition-duration: 0.01s;
   }
 }
+
+// ---- A stamp's details (tap a stamp) ----
+
+.detail-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(43, 36, 32, 0.45);
+}
+
+.stamp-detail {
+  position: fixed;
+  z-index: 2001;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(380px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 1.5rem 1.25rem 1.25rem;
+  text-align: center;
+  border-radius: 18px;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  background: var(--wiof-warm-white);
+  box-shadow: 0 24px 60px rgba(43, 36, 32, 0.3);
+  outline: none;
+
+  // The booklet's .page styles shouldn't apply to the stamp's wrapper here.
+  .detail-stamp {
+    display: block;
+    width: 170px;
+    min-height: 170px;
+    height: auto;
+    margin: 0 auto 0.5rem;
+    padding: 0;
+    background: none;
+    font-size: inherit;
+  }
+
+  h2 {
+    margin: 0.1rem 0 0.4rem;
+    font-family: 'Aleo', serif !important;
+    font-size: 1.3rem;
+    color: var(--wiof-ink);
+  }
+
+  p {
+    margin: 0 0 0.5rem;
+  }
+}
+
+.detail-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--wiof-ink-muted);
+  font-size: 1.3rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detail-family {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--wiof-teal-text);
+}
+
+.detail-meaning {
+  color: var(--wiof-ink);
+}
+
+.detail-date {
+  font-size: 0.9rem;
+  color: var(--wiof-ink-muted);
+}
+
+.detail-why {
+  padding: 0.6rem 0.75rem;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--ink, var(--wiof-teal)) 8%, var(--wiof-warm-white));
+  color: var(--wiof-ink);
+  text-align: left;
+}
+
+.detail-note {
+  font-size: 0.82rem;
+  font-style: italic;
+  color: var(--wiof-ink-muted);
+}
+
+.detail-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0.25rem 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--wiof-ink-muted);
+}
+
+.detail-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: 44px;
+    border-radius: 999px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+}
+
+.detail-primary {
+  border: none;
+  background: var(--wiof-teal-fill);
+  color: #fff;
+}
+
+.detail-secondary {
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  background: transparent;
+  color: var(--wiof-ink);
+}

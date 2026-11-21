@@ -61,9 +61,9 @@
   </svg>
   @if (!stamp.earned) {
     <figcaption>{{ stamp.hint }}</figcaption>
-  } @else if (shareable) {
-    <button type="button" class="stamp-share" (click)="share.emit(stamp)" [attr.aria-label]="'Share the ' + stamp.name + ' badge'">
-      <ion-icon name="share-social-outline" aria-hidden="true"></ion-icon> Share
-    </button>
+  }
+  @if (interactive) {
+    <!-- The whole stamp is a button: details, not a page turn. -->
+    <button type="button" class="stamp-hit" (click)="open.emit(stamp)" [attr.aria-label]="label + '. Show details.'"></button>
   }
 </figure>

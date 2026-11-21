@@ -24,9 +24,9 @@ export class PassportStampComponent {
   @Input() date: string | null = null;
   /** Order on the page, so stamps land one after another. */
   @Input() index = 0;
-  /** Show "Share" under an earned stamp (the booklet; not the desk decorations or the preview). */
-  @Input() shareable = false;
-  @Output() share = new EventEmitter<Stamp>();
+  /** The booklet: tapping the stamp opens its details (why it was earned, or how to earn it). */
+  @Input() interactive = false;
+  @Output() open = new EventEmitter<Stamp>();
 
   readonly uid = `stamp-${nextId++}`;
 

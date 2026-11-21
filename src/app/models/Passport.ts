@@ -49,6 +49,17 @@ export interface StampRecord {
   dateKnown: boolean;
   /** "trigger" (earned just now), or "backfill:{runId}" (recorded at launch from history). */
   source?: string;
+  /** Why: the rule, its target and the count that earned it, as the server recorded them. */
+  evidence?: StampEvidence;
+  /** The badge's version when it was earned. */
+  defVersion?: number;
+}
+
+export interface StampEvidence {
+  rule: string;
+  target: number;
+  value: number;
+  window?: { start: string; end: string };
 }
 
 /**
@@ -105,6 +116,11 @@ export interface Stamp {
   unit: string;
   /** Challenges: the India-time days it's open. */
   window?: { start: string; end: string };
+  /** The badge's rule, current version, and (earned) what the server recorded. */
+  rule?: StampDef['rule'];
+  version?: number;
+  evidence?: StampEvidence;
+  earnedVersion?: number;
 }
 
 export interface PassportInput {
@@ -199,7 +215,11 @@ export function buildStamps(defs: StampDef[], records: StampRecord[], input: Pas
         target,
         hint: d.hint,
         unit: d.unit,
-        ...(d.window ? { window: d.window } : {})
+        ...(d.window ? { window: d.window } : {}),
+        rule: d.rule,
+        version: d.version,
+        ...(record?.evidence ? { evidence: record.evidence } : {}),
+        ...(record?.defVersion ? { earnedVersion: record.defVersion } : {})
       };
     });
 }
@@ -337,6 +357,56 @@ export function earnedWhen(def: Pick<StampDef, 'rule'> & { window?: { start: str
     case 'window_specific_action': return `${n === 1 ? `Do ${action}` : `Do ${action} ${n} times`}${inWindow}`;
     default: return 'Unknown rule';
   }
+}
+
+/** "fix-a-water-leak" → "Fix a water leak" (an action's ID, readable, when its title isn't loaded). */
+export function actionName(id: string): string {
+  const t = String(id || '').replace(/[-_]+/g, ' ').trim();
+  return t ? t[0].toUpperCase() + t.slice(1) : 'an action';
+}
+
+/**
+ * Why a member earned a stamp, in the past tense, from what the server recorded
+ * (passport_stamps evidence: the rule, its target, and the count that crossed it).
+ * Falls back to the badge's current rule for records without evidence.
+ */
+export function earnedBecause(stamp: Pick<Stamp, 'rule' | 'evidence' | 'window' | 'name' | 'family'>): string {
+  const e = stamp.evidence;
+  const rule = stamp.rule || ({} as StampDef['rule']);
+  const type = e?.rule || rule.type;
+  const n = Math.max(Number(e?.value) || 0, Number(e?.target) || Number(rule.target) || 0);
+  const el = rule.element ? ELEMENT_NAMES[rule.element] || rule.element : '';
+  const action = rule.actionId ? `"${actionName(rule.actionId)}"` : 'that action';
+  const win = e?.window || stamp.window;
+  const during = win ? ` ${win.start === win.end ? `on ${longDate(win.start)}` : `between ${longDate(win.start)} and ${longDate(win.end)}`}, during the ${stamp.name} challenge` : '';
+  switch (type) {
+    case 'first_steps': return 'You completed all 5 first steps on WIOF.';
+    case 'different_actions': return `You did ${plural(n, 'different action')}, on ${plural(n, 'different day')}.`;
+    case 'elements_acted': return n >= 5 ? 'You took actions in all 5 elements, on different days.' : `You took actions in ${plural(n, 'element')}, on different days.`;
+    case 'element_action_days': return `You took ${el ? el + ' ' : ''}actions on ${plural(n, 'different day')}.`;
+    case 'action_weeks': return `You kept one action going in ${plural(n, 'different week')}.`;
+    case 'specific_action': return n === 1 ? `You did ${action}.` : `You did ${action} ${n} times.`;
+    case 'element_visit': return `You visited the ${el} page.`;
+    case 'stories_read': return `You read ${plural(n, `${el ? el + ' ' : ''}story`, `${el ? el + ' ' : ''}stories`)} to the end.`;
+    case 'videos_finished': return `You watched ${plural(n, 'video')} to the end.`;
+    case 'polls_voted': return n === 1 ? 'You had your say in a poll.' : `You voted in ${plural(n, 'poll')}.`;
+    case 'eq_taken': return 'You took the EQ reflection.';
+    case 'visit_streak': return `You visited ${n} days in a row.`;
+    case 'window_actions': return `You did ${plural(n, `different ${el ? el + ' ' : ''}action`)}${during}.`;
+    case 'window_stories': return `You read ${plural(n, `${el ? el + ' ' : ''}story`, `${el ? el + ' ' : ''}stories`)} to the end${during}.`;
+    case 'window_specific_action': return `${n === 1 ? `You did ${action}` : `You did ${action} ${n} times`}${during}.`;
+    default: return 'You earned it on WIOF.';
+  }
+}
+
+/**
+ * When the badge's rule has changed since the member earned it (a new version), a quiet line saying so,
+ * with what it took then; '' otherwise. Their badge and date stay as they were.
+ */
+export function earlierVersionNote(stamp: Pick<Stamp, 'earnedVersion' | 'version' | 'evidence' | 'unit'>): string {
+  if (!stamp.earnedVersion || !stamp.version || stamp.earnedVersion >= stamp.version) return '';
+  const then = stamp.evidence ? `: then it took ${stamp.evidence.target}${stamp.unit ? ' ' + stamp.unit : ''}` : '';
+  return `You earned this under an earlier version of the badge${then}. It's still yours.`;
 }
 
 /** A stamp to show for a definition as it's being edited (the badge map and the form's live preview). */

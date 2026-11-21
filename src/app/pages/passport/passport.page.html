@@ -105,6 +105,47 @@
     }
   </div>
   </div>
+
+  @if (detail; as s) {
+    <div class="detail-backdrop" (click)="closeDetail()"></div>
+    <div id="stamp-detail" class="stamp-detail" role="dialog" aria-modal="true" aria-labelledby="stamp-detail-name" tabindex="-1" [style.--ink]="s.ink">
+      <button type="button" class="detail-close" (click)="closeDetail()" aria-label="Close">
+        <ion-icon name="close" aria-hidden="true"></ion-icon>
+      </button>
+      <div class="detail-stamp page" [class.is-open]="s.earned"><app-passport-stamp [stamp]="s"></app-passport-stamp></div>
+      <p class="detail-family">{{ s.family === 'challenge' ? 'Challenge' : s.family === 'milestone' ? 'Milestone' : s.family === 'streak' ? 'Thank you' : 'Travel stamp' }}</p>
+      <h2 id="stamp-detail-name">{{ s.name }}</h2>
+      <p class="detail-meaning">{{ s.meaning }}</p>
+      @if (s.earned) {
+        <p class="detail-date">{{ detailDate }}</p>
+        <p class="detail-why"><strong>Why:</strong> {{ detailWhy }}</p>
+        @if (detailVersionNote) {
+          <p class="detail-note">{{ detailVersionNote }}</p>
+        }
+        <div class="detail-actions">
+          @if (!demo) {
+            <button type="button" class="detail-primary" (click)="badgeShare.share(s)" [disabled]="badgeShare.busy">
+              <ion-icon name="share-social-outline" aria-hidden="true"></ion-icon> {{ badgeShare.busy ? 'Making the image…' : 'Share this badge' }}
+            </button>
+          }
+          <button type="button" class="detail-secondary" (click)="closeDetail()">Close</button>
+        </div>
+      } @else {
+        <p class="detail-why"><strong>How to earn it:</strong> {{ s.hint }}</p>
+        @if (s.target > 1) {
+          <div class="detail-progress">
+            <span class="bar" role="progressbar" [attr.aria-valuenow]="s.progress" aria-valuemin="0" [attr.aria-valuemax]="s.target" [attr.aria-label]="s.name + ' progress'">
+              <span [style.width.%]="(s.progress / s.target) * 100"></span>
+            </span>
+            <span>{{ s.progress }} of {{ s.target }} {{ s.unit }}</span>
+          </div>
+        }
+        <div class="detail-actions">
+          <button type="button" class="detail-secondary" (click)="closeDetail()">Close</button>
+        </div>
+      }
+    </div>
+  }
 </ion-content>
 
 <ng-template #pageTpl let-page let-index="index">
@@ -182,7 +223,7 @@
         <div class="page-head"><span>Milestones</span><span aria-hidden="true">{{ page.sub }}</span></div>
         <div class="stamp-grid" [class.six]="milestones(page.levels).length > 4">
           @for (s of milestones(page.levels); track s.id; let k = $index) {
-            <app-passport-stamp [stamp]="s" [index]="k" [shareable]="!demo" (share)="badgeShare.share($event)"></app-passport-stamp>
+            <app-passport-stamp [stamp]="s" [index]="k" [interactive]="true" (open)="openDetail($event)"></app-passport-stamp>
           }
         </div>
         @if (page.levels?.includes(6)) {
@@ -196,7 +237,7 @@
         <div class="page-head"><span>Visas</span><span>Journey</span></div>
         <div class="stamp-grid six">
           @for (s of journey; track s.id; let k = $index) {
-            <app-passport-stamp [stamp]="s" [index]="k" [shareable]="!demo" (share)="badgeShare.share($event)"></app-passport-stamp>
+            <app-passport-stamp [stamp]="s" [index]="k" [interactive]="true" (open)="openDetail($event)"></app-passport-stamp>
           }
         </div>
         <span class="page-num">{{ page.number }}</span>
@@ -208,13 +249,13 @@
         @if (challenges.open.length || challenges.upcoming.length || challenges.past.length) {
           <div class="stamp-grid" [class.six]="challenges.open.length + challenges.upcoming.length + challenges.past.length > 4">
             @for (s of challenges.open; track s.id; let k = $index) {
-              <app-passport-stamp [stamp]="s" [index]="k" [shareable]="!demo" (share)="badgeShare.share($event)"></app-passport-stamp>
+              <app-passport-stamp [stamp]="s" [index]="k" [interactive]="true" (open)="openDetail($event)"></app-passport-stamp>
             }
             @for (s of challenges.upcoming; track s.id) {
-              <app-passport-stamp class="upcoming" [stamp]="s"></app-passport-stamp>
+              <app-passport-stamp class="upcoming" [stamp]="s" [interactive]="true" (open)="openDetail($event)"></app-passport-stamp>
             }
             @for (s of challenges.past; track s.id; let k = $index) {
-              <app-passport-stamp [stamp]="s" [index]="k" [shareable]="!demo" (share)="badgeShare.share($event)"></app-passport-stamp>
+              <app-passport-stamp [stamp]="s" [index]="k" [interactive]="true" (open)="openDetail($event)"></app-passport-stamp>
             }
           </div>
         } @else {
@@ -232,7 +273,7 @@
         </div>
         <div class="stamp-grid three">
           @for (s of elementStamps(page.element.slug); track s.id; let k = $index) {
-            <app-passport-stamp [stamp]="s" [index]="k" [shareable]="!demo" (share)="badgeShare.share($event)"></app-passport-stamp>
+            <app-passport-stamp [stamp]="s" [index]="k" [interactive]="true" (open)="openDetail($event)"></app-passport-stamp>
           }
         </div>
         <a class="go" [href]="'/element/' + page.element.slug">Explore {{ page.element.name }} →</a>
