@@ -348,12 +348,27 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // The stamp catalogue's display data, synced from
-    // functions/passport-catalogue.js by scripts/sync-passport-catalogue.js.
-    // Public: guests see the stamps they could earn. No client writes in v1
-    // (the Admin → Passport page comes later).
+    // The stamp definitions: the source of truth since Admin → Passport.
+    // Changed only through the savePassportStamp function (admin-checked,
+    // validated, versioned, audited), never by a client write, admins'
+    // included. Public read of published ones (members see what they could
+    // earn); drafts are for admins only, so a member query must filter on
+    // status in ['active', 'retired'].
     match /passport_stamp_defs/{stampId} {
-      allow read: if true;
+      allow read: if isAdmin() || resource.data.status != 'draft';
+      allow write: if false;
+    }
+
+    // Who changed which badge, when, before and after (savePassportStamp).
+    match /passport_stamp_audit/{entryId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // Challenge progress, per member and challenge (server-written).
+    match /passport_challenge_progress/{docId} {
+      allow read: if isAdmin()
+        || (isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid));
       allow write: if false;
     }
 

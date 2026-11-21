@@ -49,14 +49,15 @@ async function loadState(db, uid) {
  * Awards whatever the member has newly earned.
  * @returns {Promise<{awarded: string[], issued: boolean}>} the stamps this run created, and whether it issued the Passport
  */
-async function awardStamps(db, uid, { FieldValue, source = 'trigger' }) {
+async function awardStamps(db, uid, { FieldValue, source = 'trigger', catalogue }) {
   if (!uid) return { awarded: [], issued: false };
   const [state, existingSnap] = await Promise.all([
     loadState(db, uid),
     db.collection('passport_stamps').where('userId', '==', uid).get()
   ]);
   const existing = existingSnap.docs.map((doc) => doc.get('stampId'));
-  const awards = newAwards(state, existing);
+  // The live definitions (passport-definitions.js loadDefinitions), else the code catalogue.
+  const awards = catalogue ? newAwards(state, existing, catalogue) : newAwards(state, existing);
 
   const created = await Promise.all(awards.map((award) => createOnce(
     db.collection('passport_stamps').doc(stampDocId(uid, award.stampId)),

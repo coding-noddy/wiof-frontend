@@ -28,7 +28,8 @@ export class PassportService {
   stampDefs(): Observable<StampDef[]> {
     if (!this.defs$) {
       this.defs$ = this.firestore
-        .collection<StampDef>(FIREBASE_COLLECTION.PASSPORT_STAMP_DEFS)
+        // Published only (drafts are admins'; firestore.rules require this filter).
+        .collection<StampDef>(FIREBASE_COLLECTION.PASSPORT_STAMP_DEFS, (ref) => ref.where('status', 'in', ['active', 'retired']))
         .get()
         .pipe(
           map((snap) => snap.docs.map((d) => ({ ...(d.data() as StampDef), id: d.id }))),

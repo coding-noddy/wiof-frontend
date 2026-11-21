@@ -109,13 +109,17 @@ function progressFor(rule, state) {
     case 'element_action_days': return num((ladder.elementDays || {})[rule.element]);
     case 'action_weeks': return Object.values(ladder.actionWeeks || {}).reduce((max, n) => Math.max(max, num(n)), 0);
     case 'visit_streak': return num(profile.longestStreak);
+    case 'specific_action': return num((m.actionCompletions || {})[rule.actionId]);
     default: return 0;
   }
 }
 
-/** Every active stamp with its progress (capped at the target) and whether it's earned. */
+/**
+ * Every active stamp with its progress (capped at the target) and whether it's earned.
+ * Challenges aren't here: they count only activity inside their window (passport-challenges.js).
+ */
 function evaluate(state, catalogue = CATALOGUE) {
-  return catalogue.filter((s) => s.status === 'active').map((s) => {
+  return catalogue.filter((s) => s.status === 'active' && s.family !== 'challenge').map((s) => {
     const value = progressFor(s.rule, state);
     return { id: s.id, progress: Math.min(s.rule.target, value), target: s.rule.target, earned: value >= s.rule.target, value };
   });

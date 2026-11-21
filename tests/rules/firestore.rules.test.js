@@ -593,12 +593,45 @@ describe('Planet Passport (passport_stamps, passport_holders, passport_stamp_def
     await assertFails(as('mallory').collection('passport_stamps').doc('alice_snowflake').set(stamp('alice', 'snowflake')));
   });
 
-  it('the catalogue is public to read and closed to every client write in v1', async () => {
+  it('published definitions are public; drafts are for admins only', async () => {
+    await seedPassport();
+    await seed(async (db) => {
+      await db.collection('admins').doc('root').set({ role: 'admin' });
+      await db.collection('passport_stamp_defs').doc('secret-draft').set({ title: ['Draft'], status: 'draft' });
+    });
+    const guest = testEnv.unauthenticatedContext().firestore().collection('passport_stamp_defs');
+    await assertSucceeds(guest.where('status', 'in', ['active', 'retired']).get());
+    await assertSucceeds(guest.doc('good-watch').get());
+    await assertFails(guest.doc('secret-draft').get());
+    await assertFails(guest.get()); // an unfiltered query could include drafts
+    await assertFails(as('alice').collection('passport_stamp_defs').doc('secret-draft').get());
+    await assertSucceeds(as('root').collection('passport_stamp_defs').get());
+  });
+
+  it('no client writes a definition, admins included (only the savePassportStamp function does)', async () => {
     await seedPassport();
     await seed((db) => db.collection('admins').doc('root').set({ role: 'admin' }));
-    await assertSucceeds(testEnv.unauthenticatedContext().firestore().collection('passport_stamp_defs').get());
-    await assertFails(as('root').collection('passport_stamp_defs').doc('good-watch').set({ title: ['Forged'] }));
-    await assertFails(as('alice').collection('passport_stamp_defs').doc('new').set({ title: ['Mine'] }));
+    await assertFails(as('root').collection('passport_stamp_defs').doc('good-watch').set({ title: ['Forged'], status: 'active' }));
+    await assertFails(as('root').collection('passport_stamp_defs').doc('good-watch').delete());
+    await assertFails(as('alice').collection('passport_stamp_defs').doc('new').set({ title: ['Mine'], status: 'active' }));
+  });
+
+  it('the audit trail is admin-only and written by no client', async () => {
+    await seed(async (db) => {
+      await db.collection('admins').doc('root').set({ role: 'admin' });
+      await db.collection('passport_stamp_audit').doc('e1').set({ stampId: 'good-watch', action: 'save', by: 'root' });
+    });
+    await assertSucceeds(as('root').collection('passport_stamp_audit').get());
+    await assertFails(as('alice').collection('passport_stamp_audit').get());
+    await assertFails(as('root').collection('passport_stamp_audit').doc('e2').set({ stampId: 'x' }));
+  });
+
+  it('challenge progress is readable by its member only, and written by no client', async () => {
+    await seed((db) => db.collection('passport_challenge_progress').doc('alice_water-day').set({ userId: 'alice', challengeId: 'water-day', keys: ['a'], count: 1 }));
+    await assertSucceeds(as('alice').collection('passport_challenge_progress').doc('alice_water-day').get());
+    await assertSucceeds(as('alice').collection('passport_challenge_progress').where('userId', '==', 'alice').get());
+    await assertFails(as('mallory').collection('passport_challenge_progress').doc('alice_water-day').get());
+    await assertFails(as('alice').collection('passport_challenge_progress').doc('alice_water-day').set({ userId: 'alice', keys: ['a', 'b', 'c'], count: 3 }));
   });
 
   it('only an admin can switch awards on or off, with exactly { awardsEnabled: bool }', async () => {

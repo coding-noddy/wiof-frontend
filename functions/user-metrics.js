@@ -25,7 +25,7 @@ const METRIC_FIELDS = [
  * Maps replaced whole by the recompute, compared key by key in the report
  * (numbers only: the ladder's day and week keys aren't compared, its counts are).
  */
-const MAP_FIELDS = ['qualityReadsByElement', 'impactTotals', 'impactByMonth', 'elementVisits', 'ladder'];
+const MAP_FIELDS = ['qualityReadsByElement', 'impactTotals', 'impactByMonth', 'elementVisits', 'ladder', 'actionCompletions'];
 
 const ELEMENTS = new Set(['air', 'water', 'earth', 'energy', 'spirit']);
 
@@ -90,6 +90,7 @@ function emptyUser() {
     totalActionsCompleted: 0,
     uniqueActionsCompleted: 0,
     actionsByElement: {},
+    actionCompletions: {},
     lastActionAt: null,
     // Personal impact (8.14.0): accepted completions, and reported amounts by completion.
     completions: [],
@@ -185,6 +186,7 @@ async function computeUserMetrics(activityDocs, actionDocs, lookups) {
     const u = getUser(data.userId);
     u.totalActionsCompleted += completionCount;
     u.uniqueActionsCompleted += 1;
+    if (data.actionId) u.actionCompletions[data.actionId] = (u.actionCompletions[data.actionId] || 0) + completionCount;
     if (isNewer(data.lastCompletedAt, u.lastActionAt)) u.lastActionAt = data.lastCompletedAt;
     const elements = Array.isArray(data.elementIdsSnapshot) ? data.elementIdsSnapshot : [];
     new Set(elements).forEach((element) => {
@@ -226,6 +228,7 @@ async function computeUserMetrics(activityDocs, actionDocs, lookups) {
       totalActionsCompleted: u.totalActionsCompleted,
       uniqueActionsCompleted: u.uniqueActionsCompleted,
       actionsByElement: u.actionsByElement,
+      actionCompletions: u.actionCompletions,
       lastActionAt: u.lastActionAt
     });
   });

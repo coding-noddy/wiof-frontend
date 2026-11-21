@@ -35,11 +35,25 @@ const INK = {
 /** The rule types the evaluator knows (passport.js progressFor). */
 const RULE_TYPES = new Set([
   'first_steps', 'element_visit', 'stories_read', 'videos_finished', 'polls_voted', 'eq_taken',
-  'different_actions', 'elements_acted', 'element_action_days', 'action_weeks', 'visit_streak'
+  'different_actions', 'elements_acted', 'element_action_days', 'action_weeks', 'visit_streak',
+  // Admin → Passport: one particular action, done N times (user_metrics.actionCompletions).
+  'specific_action'
 ]);
 
-/** Rules whose element is required. stories_read takes an optional one. */
+/**
+ * Challenges (Admin → Passport §3.4): only activity inside the challenge's
+ * date window counts (passport_challenge_progress). Different actions, not
+ * repeats; each story once.
+ */
+const CHALLENGE_RULE_TYPES = new Set(['window_actions', 'window_stories', 'window_specific_action']);
+
+/** Rules whose element is required. stories_read and the window rules take an optional one. */
 const ELEMENT_RULES = new Set(['element_visit', 'element_action_days']);
+
+/** Rules that name one action (rule.actionId). */
+const ACTION_RULES = new Set(['specific_action', 'window_specific_action']);
+
+const DAY = /^\d{4}-\d{2}-\d{2}$/;
 
 /** Milestones: the number of corners is the number the milestone counts. */
 const MILESTONE_SHAPE = { 3: 'triangle', 4: 'square', 5: 'pentagon', 6: 'hexagon' };
@@ -47,7 +61,8 @@ const MILESTONE_SHAPE = { 3: 'triangle', 4: 'square', 5: 'pentagon', 6: 'hexagon
 const FAMILY_SHAPES = {
   milestone: new Set(['circle', 'triangle', 'square', 'pentagon', 'hexagon']),
   travel: new Set(['oval', 'rect']),
-  streak: new Set(['rosette'])
+  streak: new Set(['rosette']),
+  challenge: new Set(['circle', 'oval', 'rect'])
 };
 
 /** Highest target a rule can reach (undefined: no limit). */
@@ -176,7 +191,19 @@ function validateCatalogue(stamps) {
     if (!['draft', 'active', 'retired'].includes(s.status)) problems.push(`${where}: bad status`);
     if (s.element !== null && !elementSlugs.has(s.element)) problems.push(`${where}: unknown element`);
     const rule = s.rule || {};
-    if (!RULE_TYPES.has(rule.type)) { problems.push(`${where}: unknown rule ${rule.type}`); continue; }
+    const challenge = s.family === 'challenge';
+    if (challenge ? !CHALLENGE_RULE_TYPES.has(rule.type) : !RULE_TYPES.has(rule.type)) {
+      problems.push(`${where}: ${challenge ? 'a challenge needs a date-window rule' : 'unknown rule'} ${rule.type}`);
+      continue;
+    }
+    if (challenge) {
+      const w = s.window || {};
+      if (!DAY.test(w.start || '') || !DAY.test(w.end || '') || w.start > w.end) problems.push(`${where}: a challenge needs a window from start to end (YYYY-MM-DD)`);
+    } else if (s.window) {
+      problems.push(`${where}: only challenges have a date window`);
+    }
+    if (ACTION_RULES.has(rule.type) && !(typeof rule.actionId === 'string' && /^[A-Za-z0-9_-]{1,120}$/.test(rule.actionId))) problems.push(`${where}: rule needs an action`);
+    if (!ACTION_RULES.has(rule.type) && rule.actionId !== undefined) problems.push(`${where}: only an action rule names an action`);
     if (!Number.isInteger(rule.target) || rule.target < 1) problems.push(`${where}: bad target`);
     if (MAX_TARGET[rule.type] !== undefined && rule.target > MAX_TARGET[rule.type]) problems.push(`${where}: target ${rule.target} can't be reached`);
     if (ELEMENT_RULES.has(rule.type) && !elementSlugs.has(rule.element)) problems.push(`${where}: rule needs an element`);
@@ -192,5 +219,6 @@ function validateCatalogue(stamps) {
 const CATALOGUE = Object.freeze(buildCatalogue().map((s) => Object.freeze(s)));
 
 module.exports = {
-  CATALOGUE, CATALOGUE_VERSION, ELEMENTS, INK, MILESTONE_SHAPE, RULES_VERSION, RULE_TYPES, validateCatalogue
+  ACTION_RULES, CATALOGUE, CATALOGUE_VERSION, CHALLENGE_RULE_TYPES, ELEMENTS, FAMILY_SHAPES, INK, MAX_TARGET, MILESTONE_SHAPE,
+  RULES_VERSION, RULE_TYPES, validateCatalogue
 };

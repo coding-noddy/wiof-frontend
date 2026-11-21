@@ -18,9 +18,11 @@ const { EQ_DAILY_LIMIT, VALIDATOR_VERSION, eqCalendarDay, eqSlotIds, scoreEqResp
 const { elementOfBlog, makeContentLookups, recomputeUserMetrics } = require('./user-metrics');
 const { completionEventId, impactIncrement, impactSnapshot, monthKey, reportedValue } = require('./impact');
 const { rebuildRelatedContent } = require('./related-content');
-const { ladderAfter } = require('./passport');
+const { ladderAfter, progressFor } = require('./passport');
 const { awardStamps, shouldEvaluateMetricsWrite, shouldEvaluateProfileWrite } = require('./passport-awards');
 const { visitTimezones } = require('./visit-timezone');
+const { auditSnapshot, cleanInput, loadDefinitions, planChange, resetDefinitionsCache } = require('./passport-definitions');
+const { recordChallengeEvent } = require('./passport-challenges');
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -515,8 +517,9 @@ exports.resetEngagementData = functions
         totalActionsCompleted: 0,
         uniqueActionsCompleted: 0,
         actionsByElement: admin.firestore.FieldValue.delete(),
-        // The Passport ladder is derived from the completion events cleared here.
+        // The Passport ladder and per-action counts are derived from the completions cleared here.
         ladder: admin.firestore.FieldValue.delete(),
+        actionCompletions: admin.firestore.FieldValue.delete(),
         lastActionAt: null,
         impactTotals: admin.firestore.FieldValue.delete(),
         impactByMonth: admin.firestore.FieldValue.delete()
@@ -689,6 +692,14 @@ exports.onActivityLogCreated = functions
         tx.set(db.collection('user_metrics').doc(entry.userId), update, { merge: true });
       }
     });
+    // Passport challenges: a story read to the end inside an open challenge's window.
+    if (verdict.status === 'accepted' && entry.userId && entry.activityType === 'blog_read_complete' && (await passportAwardsEnabled())) {
+      const blog = await activityLookups.getBlog(entry.contentId);
+      await recordChallengeEvent(db, entry.userId, {
+        kind: 'story', id: blog && blog.id ? blog.id : entry.contentId, element: elementOfBlog(blog),
+        timestamp: entry.timestamp || admin.firestore.Timestamp.now()
+      }, { defs: await loadDefinitions(db), FieldValue: admin.firestore.FieldValue });
+    }
     return null;
   }));
 
@@ -745,7 +756,9 @@ exports.onUserActionWritten = functions
 
     const update = {
       totalActionsCompleted: admin.firestore.FieldValue.increment(delta),
-      lastActionAt: admin.firestore.FieldValue.serverTimestamp()
+      lastActionAt: admin.firestore.FieldValue.serverTimestamp(),
+      // Completions per action, for Passport "a specific action done N times" badges.
+      actionCompletions: { [after.actionId]: admin.firestore.FieldValue.increment(delta) }
     };
 
     // Unique count only grows on an action's very first completion, not on
@@ -806,9 +819,9 @@ exports.onUserActionWritten = functions
 
     const eventRef = db.collection('activity_log').doc(`${uid}_action_completed_${after.actionId}_${afterCount}`);
     const metricsRef = db.collection('user_metrics').doc(uid);
-    await db.runTransaction(async (tx) => {
+    const recorded = await db.runTransaction(async (tx) => {
       if ((await tx.get(eventRef)).exists) {
-        return; // trigger redelivered: this completion is already recorded and counted
+        return false; // trigger redelivered: this completion is already recorded and counted
       }
       // Planet Passport ladder (functions/passport.js): days with an action,
       // days per element and weeks per action, from this completion's server
@@ -821,7 +834,15 @@ exports.onUserActionWritten = functions
       });
       tx.create(eventRef, event);
       tx.set(metricsRef, update, { merge: true });
+      return true;
     });
+    // Passport challenges: a completion inside an open challenge's window counts there too.
+    if (recorded && (await passportAwardsEnabled())) {
+      await recordChallengeEvent(db, uid, {
+        kind: 'action', id: after.actionId, elements: event.elementIds, completionNumber: afterCount,
+        timestamp: after.lastCompletedAt || admin.firestore.Timestamp.now()
+      }, { defs: await loadDefinitions(db), FieldValue: admin.firestore.FieldValue });
+    }
     return null;
   }));
 
@@ -842,12 +863,95 @@ async function passportAwardsEnabled() {
 
 async function awardPassport(fn, uid) {
   if (!(await passportAwardsEnabled())) return null;
-  const result = await awardStamps(db, uid, { FieldValue: admin.firestore.FieldValue });
+  const catalogue = await loadDefinitions(db);
+  const result = await awardStamps(db, uid, { FieldValue: admin.firestore.FieldValue, catalogue });
   if (result.awarded.length || result.issued) {
     console.log(JSON.stringify({ fn, uid, awarded: result.awarded, issued: result.issued }));
   }
   return null;
 }
+
+/** Throws unless the caller is signed in and in the admins collection. */
+async function requireAdmin(context) {
+  if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
+  const adminDoc = await db.collection('admins').doc(context.auth.uid).get();
+  if (!adminDoc.exists) throw new functions.https.HttpsError('permission-denied', 'Admin privileges required.');
+}
+
+/**
+ * Admin → Passport (docs/PLANET_PASSPORT_ADMIN_PROPOSAL.md): the only way a
+ * stamp definition changes. Admin-checked, validated and versioned
+ * (passport-definitions.js planChange), written with its audit record in
+ * one transaction. data: { action: save|publish|retire|reactivate|delete, id, def? }.
+ */
+exports.savePassportStamp = functions
+  .region(REGION)
+  .runWith(APP_CHECK)
+  .https.onCall(withErrorLogging('savePassportStamp', async (data, context) => {
+    await requireAdmin(context);
+    const action = String((data && data.action) || '');
+    const id = String((data && data.id) || (data && data.def && data.def.id) || '').trim().toLowerCase();
+    if (!/^[a-z0-9-]{2,40}$/.test(id)) throw new functions.https.HttpsError('invalid-argument', 'A badge ID is 2–40 lowercase letters, numbers or dashes.');
+    const ref = db.collection('passport_stamp_defs').doc(id);
+    // A new badge goes after the others in the badge map.
+    const last = await db.collection('passport_stamp_defs').orderBy('order', 'desc').limit(1).get();
+    const nextOrder = last.empty ? 1 : (Number(last.docs[0].get('order')) || 0) + 1;
+
+    const result = await db.runTransaction(async (tx) => {
+      const snap = await tx.get(ref);
+      const existing = snap.exists ? { ...snap.data(), id } : null;
+      if (action === 'save' && !existing && data.def && data.def.id && data.def.id !== id) {
+        throw new functions.https.HttpsError('invalid-argument', 'The badge ID does not match.');
+      }
+      const input = action === 'save' ? { ...(data.def || {}), id, order: existing ? existing.order : nextOrder } : null;
+      const plan = planChange(existing, input, action);
+      if (!plan.ok) throw new functions.https.HttpsError('failed-precondition', plan.error);
+      const stamp = admin.firestore.FieldValue.serverTimestamp();
+      if (plan.deleted) {
+        tx.delete(ref);
+      } else {
+        tx.set(ref, { ...plan.def, updatedAt: stamp, updatedBy: context.auth.uid });
+      }
+      tx.set(db.collection('passport_stamp_audit').doc(), {
+        stampId: id, action, versionBumped: plan.versionBumped, by: context.auth.uid,
+        byEmail: (context.auth.token && context.auth.token.email) || null, at: stamp,
+        before: auditSnapshot(existing), after: auditSnapshot(plan.def)
+      });
+      return { ok: true, id, status: plan.def ? plan.def.status : 'deleted', version: plan.def ? plan.def.version : null, versionBumped: plan.versionBumped };
+    });
+    resetDefinitionsCache(); // this instance sees the change at once; others within a minute
+    return result;
+  }));
+
+/**
+ * Admin → Passport: how many members have earned each badge, and, for a
+ * badge being edited, how many already meet its rule ("would earn it now").
+ * Counts only, never names. data: { def? }.
+ */
+exports.passportStampStats = functions
+  .region(REGION)
+  .runWith({ timeoutSeconds: 120, ...APP_CHECK })
+  .https.onCall(withErrorLogging('passportStampStats', async (data, context) => {
+    await requireAdmin(context);
+    const defsSnap = await db.collection('passport_stamp_defs').get();
+    const earned = {};
+    await Promise.all(defsSnap.docs.map(async (d) => {
+      const agg = await db.collection('passport_stamps').where('stampId', '==', d.id).count().get();
+      earned[d.id] = agg.data().count;
+    }));
+    let wouldEarn = null;
+    const def = data && data.def;
+    if (def && def.rule && def.family !== 'challenge') {
+      const clean = cleanInput(def);
+      const [metricsSnap, usersSnap] = await Promise.all([db.collection('user_metrics').limit(20000).get(), db.collection('users').limit(20000).get()]);
+      const profiles = new Map(usersSnap.docs.map((u) => [u.id, u.data()]));
+      wouldEarn = metricsSnap.docs.filter((m) => {
+        const p = profiles.get(m.id) || {};
+        return progressFor(clean.rule, { metrics: m.data(), profile: { longestStreak: p.longestStreak || 0, preferredElements: p.preferredElements || [] } }) >= clean.rule.target;
+      }).length;
+    }
+    return { earned, wouldEarn };
+  }));
 
 /** user_metrics changed (a read, a video, an action, a visit…). Skips the metrics recompute's own writes (R2). */
 exports.awardPassportOnMetrics = functions
