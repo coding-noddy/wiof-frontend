@@ -24,6 +24,8 @@ export interface StampDef {
   family: StampFamily;
   order: number;
   title: string[];
+  /** The name in sentences ("Honeycomb"); older synced docs may not have it (then the title lines joined). */
+  name?: string;
   caption: string;
   meaning: string;
   hint: string;
@@ -78,6 +80,8 @@ export interface Stamp {
   family: StampFamily;
   /** One or two short lines, e.g. ["River", "Guardian"]. */
   title: string[];
+  /** The name in sentences: "Honeycomb", "River Guardian". */
+  name: string;
   /** Small caps line, e.g. "WATER" or "MILESTONE". */
   caption: string;
   meaning: string;
@@ -174,6 +178,7 @@ export function buildStamps(defs: StampDef[], records: StampRecord[], input: Pas
         id: d.id,
         family: d.family,
         title: d.title,
+        name: d.name || d.title.join(' '),
         caption: d.caption,
         meaning: d.meaning,
         element: d.element,

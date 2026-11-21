@@ -5,6 +5,7 @@ import { filter, switchMap, takeUntil } from 'rxjs/operators';
 import { momentStamps, momentWaitsOn, Stamp } from 'src/app/models/Passport';
 import { AnalyticsService } from 'src/app/services/analytics.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { BadgeShareService } from 'src/app/services/badge-share.service';
 import { PassportService } from 'src/app/services/passport.service';
 import { SingleVideoPlaybackService } from 'src/app/services/single-video-playback.service';
 import { UserProfileService } from 'src/app/services/user-profile.service';
@@ -55,6 +56,7 @@ export class BadgeMomentComponent implements OnInit, OnDestroy {
     private profiles: UserProfileService,
     private videos: SingleVideoPlaybackService,
     private analytics: AnalyticsService,
+    public badgeShare: BadgeShareService,
     private router: Router,
     private zone: NgZone
   ) {}
@@ -139,7 +141,7 @@ export class BadgeMomentComponent implements OnInit, OnDestroy {
 
   get heading(): string {
     if (this.issuing) return 'Your Planet Passport is issued';
-    return this.badges.length > 1 ? `You earned ${this.badges.length} badges` : `You earned ${this.current?.title.join(' ') || 'a badge'}`;
+    return this.badges.length > 1 ? `You earned ${this.badges.length} badges` : `You earned ${this.current?.name || 'a badge'}`;
   }
 
   /** One line more for the bigger milestones (not bigger confetti: design §6a). */

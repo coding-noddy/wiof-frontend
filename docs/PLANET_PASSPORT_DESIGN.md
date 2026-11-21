@@ -269,7 +269,7 @@ Goal: admins can always see **which badge is given for which milestone**, and th
 
 The roadmap's rule is **private by default; public only by the member's choice**. Both features come after server-written stamps (§4.1), because a share needs a real `earnedAt` date.
 
-**Step 1: share one badge as an image.** One badge on its own card is the default way to share. A whole page is offered later, if at all.
+**Step 1: share one badge as an image.** *(Built 2026-11-21: `util/badge-share-image.ts`, from "Share" under an earned stamp in the booklet and "Share this badge" in the new-badge moment. No name on it for now: the first-name option can follow if wanted.)* One badge on its own card is the default way to share. A whole page is offered later, if at all.
 - The card is 1080×1350 (portrait, good for stories and WhatsApp), and reuses `util/impact-share-image.ts`.
 - It shows: the badge large and inked on the passport paper; the badge name and what it means; the date earned; "Planet Passport · World Is One Family"; and an optional first name.
 - It doesn't show the member number, the EQ score, or anything unearned.

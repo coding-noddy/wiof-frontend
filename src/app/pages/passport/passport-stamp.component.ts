@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Stamp, stampDateText } from 'src/app/models/Passport';
 
 let nextId = 0;
@@ -24,6 +24,9 @@ export class PassportStampComponent {
   @Input() date: string | null = null;
   /** Order on the page, so stamps land one after another. */
   @Input() index = 0;
+  /** Show "Share" under an earned stamp (the booklet; not the desk decorations or the preview). */
+  @Input() shareable = false;
+  @Output() share = new EventEmitter<Stamp>();
 
   readonly uid = `stamp-${nextId++}`;
 
@@ -69,7 +72,7 @@ export class PassportStampComponent {
 
   get label(): string {
     const s = this.stamp;
-    const name = s.title.join(' ');
+    const name = s.name;
     if (s.earned) {
       const when = s.dateKnown && s.earnedAt ? `, ${s.earnedAt.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}` : s.dateKnown ? '' : ', before launch';
       return `${name} stamp, earned${when}. ${s.meaning}`;

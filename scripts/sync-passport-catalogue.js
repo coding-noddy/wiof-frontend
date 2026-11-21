@@ -54,7 +54,7 @@ if (key.project_id !== PROJECTS[target].id) {
 function displayDoc(s) {
   return {
     id: s.id, version: s.version, status: s.status, family: s.family, order: s.order,
-    title: s.title, caption: s.caption, meaning: s.meaning, hint: s.hint, unit: s.unit,
+    title: s.title, name: s.name, caption: s.caption, meaning: s.meaning, hint: s.hint, unit: s.unit,
     element: s.element, shape: s.shape, ink: s.ink,
     rule: { type: s.rule.type, target: s.rule.target, ...(s.rule.element ? { element: s.rule.element } : {}) },
     catalogueVersion: CATALOGUE_VERSION

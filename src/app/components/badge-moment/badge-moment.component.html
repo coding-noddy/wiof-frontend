@@ -57,7 +57,10 @@
 
     <div class="moment-actions">
       <button type="button" class="moment-primary" (click)="openPassport()">See it in my Passport</button>
-      <button type="button" class="moment-secondary" (click)="close()">Close</button>
+      <button type="button" class="moment-secondary" (click)="badgeShare.share(current)" [disabled]="badgeShare.busy">
+        <ion-icon name="share-social-outline" aria-hidden="true"></ion-icon> {{ badgeShare.busy ? 'Making the image…' : 'Share this badge' }}
+      </button>
+      <button type="button" class="moment-secondary moment-done" (click)="close()">Close</button>
     </div>
   </div>
 }

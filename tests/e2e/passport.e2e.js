@@ -171,7 +171,7 @@ async function cleanup(uid) {
     check('several badges come in one moment', /of [2-9]/.test(momentCount), momentCount);
     await sleep(1800);
     await page.screenshot({ path: path.join(OUT, 'passport-moment-desktop.png') });
-    if (moment) await page.click('.moment-secondary');
+    if (moment) await page.click('.moment-done');
     const seen = await waitFor(async () => (await db.collection('users').doc(uid).get()).get('passportSeenAt'));
     check('showing it marks the badges seen (server clock)', !!seen);
     await page.reload({ waitUntil: 'load' });
@@ -190,6 +190,32 @@ async function cleanup(uid) {
     const inertFaces = await page.$$eval('.face[inert]', (els) => els.length);
     check('turned and hidden pages are inert for screen readers', inertFaces > 0, `${inertFaces} inert faces`);
     await page.screenshot({ path: path.join(OUT, 'passport-earthrise-desktop.png') });
+
+    // 4a. "Share" under an earned stamp: on a computer the card is saved (and the caption copied).
+    // Catch the image where the page makes it (URL.createObjectURL) and the file name at the save link,
+    // reading the blob directly (the site's CSP rightly forbids fetching blob: URLs).
+    await page.evaluate(() => {
+      window.__saved = null;
+      let lastBlob = null;
+      const create = URL.createObjectURL;
+      URL.createObjectURL = function (blob) { lastBlob = blob; return create.call(URL, blob); };
+      const click = HTMLAnchorElement.prototype.click;
+      HTMLAnchorElement.prototype.click = function () {
+        if (this.download && lastBlob) {
+          const name = this.download;
+          const fr = new FileReader();
+          fr.onload = () => { window.__saved = { name, url: fr.result }; };
+          fr.readAsDataURL(lastBlob);
+          return; // don't trigger a real download in the test browser
+        }
+        return click.call(this);
+      };
+    });
+    const shareBtn = await page.$('.face:not([inert]) .stamp-share');
+    if (shareBtn) await shareBtn.click();
+    const saved = await page.waitForFunction(() => window.__saved, { timeout: 30000 }).then((h) => h.jsonValue()).catch(() => null);
+    if (saved) fs.writeFileSync(path.join(OUT, saved.name), Buffer.from(saved.url.split(',')[1], 'base64'));
+    check('"Share" under an earned stamp makes and saves the badge card', !!shareBtn && !!saved && saved.name === 'wiof-earthrise.png' && saved.url.startsWith('data:image/png'), saved ? `${saved.name}, ${Math.round(saved.url.length * 0.75 / 1024)} KB` : (shareBtn ? 'no file' : 'no Share button'));
     await page.reload({ waitUntil: 'load' });
     await page.waitForSelector('.stage', { timeout: 30000 });
     check('the welcome does not show a second time', !(await page.$('.welcome')));

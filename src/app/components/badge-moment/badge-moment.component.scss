@@ -161,6 +161,10 @@ h2 {
 }
 
 .moment-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
   min-height: 44px;
   border-radius: 999px;
   border: 1.5px solid var(--wiof-brown-tint-40);

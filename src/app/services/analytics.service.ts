@@ -124,6 +124,11 @@ export class AnalyticsService {
     this.log(`badge_moment_${action}`, { badge_count: count, issuing });
   }
 
+  /** "Share this badge" (Passport §6): which stamp, and whether the share sheet or a download was used. */
+  logBadgeShared(stampId: string, method: 'share' | 'download'): void {
+    this.log('badge_shared', { stamp_id: stampId, method });
+  }
+
   /** "Share my impact" (8.17.0): which period, and whether the share sheet or a download was used. */
   logImpactShared(period: 'month' | 'total', method: 'share' | 'download'): void {
     this.log('impact_shared', { period, method });

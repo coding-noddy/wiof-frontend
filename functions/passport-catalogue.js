@@ -13,7 +13,7 @@
 /** Bumped when the meaning of a rule type changes (passport.js). */
 const RULES_VERSION = 1;
 /** Bumped whenever this file changes. */
-const CATALOGUE_VERSION = 2; // 2: "an Air/Energy/Earth action" in the Guardian hints
+const CATALOGUE_VERSION = 3; // 2: "an Air/Energy/Earth action"; 3: display names ("Honeycomb", not "Honey comb")
 
 const ELEMENTS = [
   { slug: 'air', name: 'Air' },
@@ -69,8 +69,16 @@ const ARRIVAL = {
   spirit: ['First', 'Light']
 };
 
+/** Names that are one word, split over two lines on the stamp. */
+const ONE_WORD_NAMES = { earthrise: 'Earthrise', evergreen: 'Evergreen', snowflake: 'Snowflake', honeycomb: 'Honeycomb' };
+
 function def(fields) {
-  return { version: 1, status: 'active', element: null, ...fields, ink: fields.ink || INK[fields.element || 'journey'] };
+  return {
+    version: 1, status: 'active', element: null, ...fields,
+    // The badge's name in sentences ("You earned Honeycomb"); the title is how it's laid out on the stamp.
+    name: fields.name || ONE_WORD_NAMES[fields.id] || fields.title.join(' '),
+    ink: fields.ink || INK[fields.element || 'journey']
+  };
 }
 
 const LADDER = [
@@ -162,6 +170,7 @@ function validateCatalogue(stamps) {
     if (!FAMILY_SHAPES[s.family]) { problems.push(`${where}: unknown family ${s.family}`); continue; }
     if (!FAMILY_SHAPES[s.family].has(s.shape)) problems.push(`${where}: shape ${s.shape} not allowed for ${s.family}`);
     if (!Array.isArray(s.title) || s.title.length < 1 || s.title.length > 2) problems.push(`${where}: title must be 1-2 lines`);
+    if (typeof s.name !== 'string' || !s.name.trim() || s.name.length > 40) problems.push(`${where}: name is required (up to 40 characters)`);
     if (!s.meaning || !s.hint) problems.push(`${where}: meaning and hint are required`);
     if (!Number.isInteger(s.version) || s.version < 1) problems.push(`${where}: bad version`);
     if (!['draft', 'active', 'retired'].includes(s.status)) problems.push(`${where}: bad status`);

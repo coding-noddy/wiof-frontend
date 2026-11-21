@@ -10,6 +10,7 @@ import {
 } from 'src/app/models/Passport';
 import { ActivityService, EngagementMetrics } from 'src/app/services/activity.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { BadgeShareService } from 'src/app/services/badge-share.service';
 import { PassportHolder, PassportService } from 'src/app/services/passport.service';
 import { UserProfile, UserProfileService } from 'src/app/services/user-profile.service';
 
@@ -53,6 +54,7 @@ const DESK_STAMPS: Stamp[] = [
   { title: ['Small', 'actions'], caption: 'EVERY DAY', shape: 'rect', rotation: 12 },
   { title: ['Five', 'elements'], caption: 'JOURNEY', shape: 'pentagon', rotation: -8 }
 ].map((d, i) => ({
+  name: d.title.join(' '),
   id: `desk-${i}`, family: 'travel', meaning: '', element: null, ink: '#A6875D', earned: true, earnedAt: null, dateKnown: true,
   progress: 1, target: 1, hint: '', unit: '', ...d
 } as Stamp));
@@ -119,6 +121,7 @@ export class PassportPage implements OnInit, OnDestroy {
     private activityService: ActivityService,
     private userProfileService: UserProfileService,
     private passportService: PassportService,
+    public badgeShare: BadgeShareService,
     private route: ActivatedRoute
   ) {}
 

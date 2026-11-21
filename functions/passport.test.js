@@ -34,6 +34,10 @@ describe('passport catalogue', () => {
     assert.deepEqual(byId('energy-guardian').title, ['Sun', 'Keeper']);
     assert.deepEqual(byId('water-arrival').title, ['First', 'Drop']);
     assert.equal(byId('earth-guardian').hint, 'Take an Earth action on 5 different days');
+    assert.equal(byId('honeycomb').name, 'Honeycomb');
+    assert.equal(byId('earthrise').name, 'Earthrise');
+    assert.equal(byId('three-seeds').name, 'Three Seeds');
+    assert.equal(byId('energy-guardian').name, 'Sun Keeper');
     assert.equal(byId('water-guardian').hint, 'Take a Water action on 5 different days');
   });
 
