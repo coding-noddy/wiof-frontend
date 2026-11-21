@@ -232,8 +232,13 @@ describe('Planet Passport: why a stamp was earned', () => {
     expect(earnedBecause(s({ type: 'element_visit', target: 1, element: 'water' }))).toBe('You visited the Water page.');
   });
 
-  it('tells the true count when it was more than the target (a 9-day streak for Seven Sunrises)', () => {
-    expect(earnedBecause(s({ type: 'visit_streak', target: 7 }, { rule: 'visit_streak', target: 7, value: 9 }))).toBe('You visited 9 days in a row.');
+  it("says the badge's threshold even when the count was past it (6 actions recorded for Five Petals)", () => {
+    expect(earnedBecause(s({ type: 'different_actions', target: 5 }, { rule: 'different_actions', target: 5, value: 6 }))).toBe('You did 5 different actions, on 5 different days.');
+    expect(earnedBecause(s({ type: 'visit_streak', target: 7 }, { rule: 'visit_streak', target: 7, value: 9 }))).toBe('You visited 7 days in a row.');
+  });
+
+  it('uses the target the badge had when it was earned, not a later version', () => {
+    expect(earnedBecause(s({ type: 'stories_read', target: 10 }, { rule: 'stories_read', target: 5, value: 5 }))).toBe('You read 5 stories to the end.');
   });
 
   it('names the challenge and its days', () => {

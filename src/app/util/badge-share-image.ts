@@ -1,4 +1,4 @@
-import { Stamp, stampDateText } from '../models/Passport';
+import { sharedBecause, Stamp, stampDateText } from '../models/Passport';
 
 /**
  * "Share this badge" (Passport design §6, step 1): one earned stamp on a
@@ -178,15 +178,25 @@ function wrap(ctx: CanvasRenderingContext2D, text: string, width: number): strin
   return lines;
 }
 
+/** At most `max` lines; a cut ends in "…" (never mid-word). */
+function clip(ctx: CanvasRenderingContext2D, lines: string[], max: number, width: number): string[] {
+  if (lines.length <= max) return lines;
+  const kept = lines.slice(0, max);
+  let last = kept[max - 1];
+  while (last.includes(' ') && ctx.measureText(`${last}…`).width > width) last = last.slice(0, last.lastIndexOf(' '));
+  kept[max - 1] = `${last.replace(/[\s,;:.]+$/, '')}…`;
+  return kept;
+}
+
 /** "Earned 19 November 2026", or "Earned before the Passport launched". */
 export function earnedLine(stamp: Pick<Stamp, 'earnedAt' | 'dateKnown'>): string {
   if (!stamp.dateKnown || !stamp.earnedAt) return 'Earned before the Passport launched';
   return `Earned ${stamp.earnedAt.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}`;
 }
 
-/** The text that goes with the image. */
-export function badgeShareCaption(stamp: Pick<Stamp, 'name' | 'meaning'>, url: string): string {
-  return `I earned the ${stamp.name} badge in my WIOF Planet Passport. ${stamp.meaning} ${url}`.replace(/\s+/g, ' ').trim();
+/** The text that goes with the image: the badge, why it was earned, what it means. */
+export function badgeShareCaption(stamp: Pick<Stamp, 'name' | 'meaning' | 'rule' | 'evidence' | 'window' | 'family'>, url: string): string {
+  return `I earned the ${stamp.name} badge in my WIOF Planet Passport. ${sharedBecause(stamp)} ${stamp.meaning} ${url}`.replace(/\s+/g, ' ').trim();
 }
 
 export async function renderBadgeCard(stamp: Stamp): Promise<Blob> {
@@ -227,28 +237,33 @@ export async function renderBadgeCard(stamp: Stamp): Promise<Blob> {
   ctx.fillText('PLANET PASSPORT', BADGE_CARD_W - pad, pad + 50);
 
   // The stamp, large, on a faint wash of its ink.
-  const cy = 560;
+  const cy = 520;
   ctx.beginPath();
-  ctx.arc(BADGE_CARD_W / 2, cy, 330, 0, Math.PI * 2);
+  ctx.arc(BADGE_CARD_W / 2, cy, 300, 0, Math.PI * 2);
   ctx.fillStyle = `${stamp.ink}10`;
   ctx.fill();
-  drawStamp(ctx, stamp, BADGE_CARD_W / 2, cy, 520);
+  drawStamp(ctx, stamp, BADGE_CARD_W / 2, cy, 480);
 
-  // Name, meaning, date.
+  // Name; why it was earned (what this member did); what it means; the date.
   ctx.textAlign = 'center';
   ctx.fillStyle = INK;
   ctx.font = '700 68px Aleo, serif';
-  ctx.fillText(stamp.name, BADGE_CARD_W / 2, 1000);
-  ctx.font = '400 34px "Noto Sans", sans-serif';
-  ctx.fillStyle = INK;
-  wrap(ctx, stamp.meaning, BADGE_CARD_W - pad * 2).slice(0, 2).forEach((l, i) => ctx.fillText(l, BADGE_CARD_W / 2, 1060 + i * 46));
+  ctx.fillText(stamp.name, BADGE_CARD_W / 2, 930);
+  ctx.font = '600 36px "Noto Sans", sans-serif';
+  ctx.fillStyle = stamp.ink;
+  const why = wrap(ctx, sharedBecause(stamp), BADGE_CARD_W - pad * 2).slice(0, 2);
+  why.forEach((l, i) => ctx.fillText(l, BADGE_CARD_W / 2, 992 + i * 46));
+  const meaningTop = 992 + why.length * 46 + 14;
+  ctx.font = '400 29px "Noto Sans", sans-serif';
   ctx.fillStyle = MUTED;
-  ctx.font = '400 30px "Noto Sans", sans-serif';
-  ctx.fillText(earnedLine(stamp), BADGE_CARD_W / 2, 1160);
+  const meaning = clip(ctx, wrap(ctx, stamp.meaning, BADGE_CARD_W - pad * 2), why.length > 1 ? 2 : 3, BADGE_CARD_W - pad * 2);
+  meaning.forEach((l, i) => ctx.fillText(l, BADGE_CARD_W / 2, meaningTop + i * 40));
+  ctx.font = '400 28px "Noto Sans", sans-serif';
+  ctx.fillText(earnedLine(stamp), BADGE_CARD_W / 2, meaningTop + meaning.length * 40 + 22);
 
   ctx.fillStyle = TEAL_TEXT;
   ctx.font = '700 34px "Noto Sans", sans-serif';
-  ctx.fillText('Join me at worldisonefamily.com', BADGE_CARD_W / 2, BADGE_CARD_H - 100);
+  ctx.fillText('Join me at worldisonefamily.com', BADGE_CARD_W / 2, BADGE_CARD_H - 90);
 
   return new Promise((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Could not draw the image'))), 'image/png'));
 }

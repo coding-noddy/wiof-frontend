@@ -182,6 +182,12 @@
   }
 }
 
+// Only the top leaf of each stack casts a shadow; the ones under it would add up
+// into a dark halo around the left page (about nine leaves by the last spread).
+.leaf.buried .face {
+  box-shadow: none;
+}
+
 // ---- Pages ----
 
 .page {

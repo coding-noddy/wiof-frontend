@@ -14,7 +14,7 @@ import { BadgeShareService } from 'src/app/services/badge-share.service';
 import { PassportHolder, PassportService } from 'src/app/services/passport.service';
 import { UserProfile, UserProfileService } from 'src/app/services/user-profile.service';
 
-type PageKind = 'cover' | 'inside' | 'identity' | 'milestones' | 'visas' | 'challenges' | 'element' | 'impact' | 'next' | 'notes' | 'back';
+type PageKind = 'cover' | 'inside' | 'identity' | 'milestones' | 'visas' | 'challenges' | 'element' | 'impact' | 'next' | 'notes' | 'insideBack' | 'back';
 
 interface BookPage {
   kind: PageKind;
@@ -364,11 +364,15 @@ export class PassportPage implements OnInit, OnDestroy {
       ...elements.map((element) => ({ kind: 'element' as const, element, label: element.name })),
       { kind: 'impact', label: 'Declaration' },
       { kind: 'next', label: 'Next stamps' },
-      { kind: 'notes', label: 'Travel notes' },
-      { kind: 'back', label: 'Back cover' }
+      { kind: 'notes', label: 'Travel notes' }
     ];
+    // On a spread the back cover must be the back of the last leaf (an odd index), or the
+    // closed book shows its outside as a right-hand page and then a blank one. An inside
+    // back cover, as a real passport has, evens the count whenever a page is added.
+    if (pages.length % 2 === 0) pages.push({ kind: 'insideBack', label: 'Inside back cover' });
+    pages.push({ kind: 'back', label: 'Back cover' });
     let num = 1;
-    for (const p of pages) if (p.kind !== 'cover' && p.kind !== 'back' && p.kind !== 'inside') p.number = num++;
+    for (const p of pages) if (p.kind !== 'cover' && p.kind !== 'back' && p.kind !== 'inside' && p.kind !== 'insideBack') p.number = num++;
     return pages;
   }
 

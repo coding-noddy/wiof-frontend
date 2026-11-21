@@ -74,7 +74,7 @@
     <div class="stage" [style.--pw]="pageWidth + 'px'" [class.is-spread]="spread" [class.is-single]="!spread">
       <div class="book" [style.--shift]="shift" (pointerdown)="pointerDown($event)" (pointerup)="pointerUp($event)">
         @for (leaf of leaves; track leaf.front; let i = $index) {
-          <div class="leaf" [class.turned]="i < turned" [style.z-index]="zIndex(i)" (click)="tapLeaf(i, $event)">
+          <div class="leaf" [class.turned]="i < turned" [class.buried]="i < turned - 1 || i > turned" [style.z-index]="zIndex(i)" (click)="tapLeaf(i, $event)">
             <div class="face front" [attr.inert]="isOpen(leaf.front) ? null : ''" [attr.aria-hidden]="isOpen(leaf.front) ? null : 'true'">
               <ng-container *ngTemplateOutlet="pageTpl; context: { $implicit: pages[leaf.front], index: leaf.front }"></ng-container>
             </div>
@@ -328,6 +328,15 @@
         <blockquote>“Drop by drop, the ocean fills.”</blockquote>
         <div class="lines" aria-hidden="true"></div>
         <span class="page-num">{{ page.number }}</span>
+      </div>
+    }
+    @case ('insideBack') {
+      <div class="page paper inside inside-back" [class.is-open]="isOpen(index)">
+        <p class="small">
+          A passport is never finished. New stamps and challenges arrive as WIOF grows, and every one is earned by
+          something you really did.
+        </p>
+        <p class="tree-mark" aria-hidden="true"><img src="assets/brand/logos/WIOF-full-logo.png" alt="" /></p>
       </div>
     }
     @case ('back') {

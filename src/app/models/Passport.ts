@@ -419,7 +419,10 @@ export function earnedBecause(stamp: Pick<Stamp, 'rule' | 'evidence' | 'window' 
   const e = stamp.evidence;
   const rule = stamp.rule || ({} as StampDef['rule']);
   const type = e?.rule || rule.type;
-  const n = Math.max(Number(e?.value) || 0, Number(e?.target) || Number(rule.target) || 0);
+  // The badge's threshold (as it was when earned), not the member's count then: a stamp
+  // added from history may have been recorded past its target, and "6" on Five Petals
+  // contradicts the badge. Reaching more includes reaching the target, so this stays true.
+  const n = Number(e?.target) || Number(rule.target) || Number(e?.value) || 0;
   const el = rule.element ? ELEMENT_NAMES[rule.element] || rule.element : '';
   const action = rule.actionId ? `"${actionName(rule.actionId)}"` : 'that action';
   const win = e?.window || stamp.window;
@@ -442,6 +445,14 @@ export function earnedBecause(stamp: Pick<Stamp, 'rule' | 'evidence' | 'window' 
     case 'window_specific_action': return `${n === 1 ? `You did ${action}` : `You did ${action} ${n} times`}${during}.`;
     default: return 'You earned it on WIOF.';
   }
+}
+
+/**
+ * earnedBecause in the first person, for a badge the member shares
+ * ("I kept one action going in 6 different weeks.").
+ */
+export function sharedBecause(stamp: Pick<Stamp, 'rule' | 'evidence' | 'window' | 'name' | 'family'>): string {
+  return earnedBecause(stamp).replace(/^You /, 'I ').replace(/\byour\b/g, 'my');
 }
 
 /**

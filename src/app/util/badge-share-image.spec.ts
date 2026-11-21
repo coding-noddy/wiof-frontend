@@ -1,10 +1,11 @@
-import { Stamp } from '../models/Passport';
+import { sharedBecause, Stamp } from '../models/Passport';
 import { BADGE_CARD_H, BADGE_CARD_W, badgeShareCaption, drawStamp, earnedLine, renderBadgeCard } from './badge-share-image';
 
 const stamp = (over: Partial<Stamp> = {}): Stamp => ({
   id: 'honeycomb', family: 'milestone', title: ['Honey', 'comb'], name: 'Honeycomb', caption: 'MILESTONE',
   meaning: 'One action on six different weeks, built cell by cell.', element: null, shape: 'hexagon', ink: '#145C5F',
-  rotation: 4, earned: true, earnedAt: new Date(2026, 10, 19), dateKnown: true, progress: 6, target: 6, hint: '', unit: 'weeks', ...over
+  rotation: 4, earned: true, earnedAt: new Date(2026, 10, 19), dateKnown: true, progress: 6, target: 6, hint: '', unit: 'weeks',
+  rule: { type: 'action_weeks', target: 6 }, evidence: { rule: 'action_weeks', target: 6, value: 6 }, ...over
 });
 
 describe('Badge share image', () => {
@@ -13,9 +14,14 @@ describe('Badge share image', () => {
     expect(earnedLine(stamp({ dateKnown: false }))).toBe('Earned before the Passport launched');
   });
 
-  it('writes a caption with the badge, its meaning and the link, and nothing about the member', () => {
+  it('writes a caption with the badge, why it was earned, its meaning and the link, and nothing else about the member', () => {
     const caption = badgeShareCaption(stamp(), 'https://worldisonefamily.com/home');
-    expect(caption).toBe('I earned the Honeycomb badge in my WIOF Planet Passport. One action on six different weeks, built cell by cell. https://worldisonefamily.com/home');
+    expect(caption).toBe('I earned the Honeycomb badge in my WIOF Planet Passport. I kept one action going in 6 different weeks. One action on six different weeks, built cell by cell. https://worldisonefamily.com/home');
+  });
+
+  it('says why in the first person', () => {
+    expect(sharedBecause(stamp({ rule: { type: 'polls_voted', target: 1 }, evidence: { rule: 'polls_voted', target: 1, value: 1 } }))).toBe('I had my say in a poll.');
+    expect(sharedBecause(stamp({ rule: { type: 'first_steps', target: 5 }, evidence: undefined }))).toBe('I completed all 5 first steps on WIOF.');
   });
 
   it('draws a portrait PNG card', async () => {
