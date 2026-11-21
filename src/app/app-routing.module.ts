@@ -196,7 +196,7 @@ const routes: Routes = [
       ),
     canActivate: [PublicUserGuard]
   },
-  // Planet Passport: design experiment, not linked from the menus yet.
+  // Planet Passport: \
   {
     path: 'passport',
     loadChildren: () =>

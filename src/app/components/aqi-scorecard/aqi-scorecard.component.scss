@@ -137,11 +137,29 @@ $a-dark: color.adjust($air-color, $lightness: -24%);
   background: rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.95);
   border-radius: 10px;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  // Hover only tints the card: moving it (it used to lift 2px) pulled it from under the pointer
+  // near its edge, so hover flickered on and off ("vibrated").
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 
   &:hover {
-    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.98);
+    border-color: var(--wiof-brown-tint-40);
   }
+
+  &.weather .pollutant-value {
+    font-weight: 700;
+  }
+}
+
+.pollutant-scale {
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.aqi-updated {
+  display: block;
+  margin-bottom: 0.15rem;
 }
 
 .pollutant-name {
