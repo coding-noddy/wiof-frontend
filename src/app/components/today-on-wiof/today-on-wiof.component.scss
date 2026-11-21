@@ -178,6 +178,45 @@
   }
 }
 
+// A challenge linked to today's occasion (Admin → Passport): a slim strip
+// under the row, in the challenge's ink.
+.today-challenge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem var(--today-pad-x);
+  border-top: 1px solid var(--wiof-brown-tint-40);
+  font-size: 0.88rem;
+  color: var(--ink, var(--wiof-teal-text));
+  text-decoration: none;
+
+  span {
+    flex: 1;
+    min-width: 0;
+    color: var(--wiof-ink);
+  }
+
+  strong {
+    color: var(--ink, var(--wiof-teal-text));
+  }
+
+  ion-icon {
+    flex-shrink: 0;
+    font-size: 1.05rem;
+  }
+
+  &:hover span,
+  &:focus-visible span {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--wiof-teal-text);
+    outline-offset: -3px;
+  }
+}
+
 @media (max-width: 600px) {
   .today {
     --today-pad-x: 0.95rem;

@@ -196,6 +196,24 @@ const ist = (d = new Date()) => new Date(d.getTime() + 5.5 * 3600 * 1000).toISOS
     const formOk = await page.$eval('#badge-form', (el) => el.textContent.includes('Earned when'));
     check('opening a badge shows the form with its preview and rule', formOk);
     await page.screenshot({ path: path.join(OUT, 'passport-admin-form.png') });
+
+    // A new challenge on World Environment Day offers that day's calendar occasions.
+    await page.goto(`${BASE}/admin-dashboard/passport`, { waitUntil: 'load', timeout: 90000 });
+    await page.waitForSelector('.map-tile', { timeout: 30000 });
+    await page.evaluate(() => [...document.querySelectorAll('button')].find((b) => b.textContent.includes('New challenge'))?.click());
+    await page.waitForSelector('#badge-form input[type=date]', { timeout: 10000 });
+    await page.evaluate(() => {
+      const [start, end] = document.querySelectorAll('#badge-form input[type=date]');
+      for (const input of [start, end]) {
+        input.value = '2027-06-05';
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    });
+    const options = await waitFor(async () => {
+      const list = await page.$$eval('#badge-form select[aria-describedby=calendar-hint] option', (o) => o.map((x) => x.textContent.trim()));
+      return list.length > 1 ? list : null;
+    }, 15000) || [];
+    check('a challenge offers the calendar occasions inside its window', options.length > 1 && options.slice(1).every((o) => o.startsWith('5 Jun')), options.join(' | '));
   } catch (error) {
     check('ran to the end', false, error.message);
   } finally {

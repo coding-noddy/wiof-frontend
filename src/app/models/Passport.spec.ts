@@ -1,7 +1,7 @@
 import { EngagementMetrics } from '../services/activity.service';
 import {
-  buildStamps, challengeView, earlierVersionNote, earnedBecause, earnedWhen, elementStamps, firstStepsDone, istToday, previewStamp, journeyStamps, machineLines, memberNumber, milestoneStamps, momentStamps, momentWaitsOn,
-  newBadges, nextStamps, progressFor, StampDef, stampDateText
+  buildStamps, challengeForOccasion, challengeView, occasionsInWindow, earlierVersionNote, earnedBecause, earnedWhen, elementStamps, firstStepsDone, istToday, previewStamp, journeyStamps, machineLines, memberNumber, milestoneStamps, momentStamps, momentWaitsOn,
+  isLargeAward, LARGE_AWARD, newBadges, nextStamps, progressFor, StampDef, stampDateText
 } from './Passport';
 
 const metrics = (over: Partial<EngagementMetrics> = {}): EngagementMetrics => ({
@@ -160,6 +160,29 @@ describe('Admin → Passport: "Earned when" in plain words', () => {
     expect(previewStamp(def, false).progress).toBe(0);
     expect(previewStamp(def, true).ink).toBe('#1A7A7F');
     expect(previewStamp({ rule: { type: 'polls_voted', target: 1 } }, false).name).toBe('New badge');
+  });
+
+  it('offers the calendar occasions inside a challenge window, also over New Year', () => {
+    const o = (id: string, month: number, day: string) => ({ id, month, day, occasion: id });
+    const all = [o('water', 2, '22'), o('forest', 2, '21'), o('earth', 3, '22'), o('ny', 0, '1'), o('xmas', 11, '25')];
+    expect(occasionsInWindow(all, '2027-03-21', '2027-03-22').map((x) => x.id)).toEqual(['forest', 'water']);
+    expect(occasionsInWindow(all, '2027-03-22', '2027-03-22').map((x) => x.id)).toEqual(['water']);
+    expect(occasionsInWindow(all, '2027-12-20', '2028-01-05').map((x) => x.id)).toEqual(['ny', 'xmas']);
+    expect(occasionsInWindow(all, '2027-03-23', '2027-03-22')).toEqual([]);
+  });
+
+  it('finds the live challenge linked to an occasion, only while it is open', () => {
+    const c = { id: 'wwd', family: 'challenge', status: 'active', calendarId: 'water', window: { start: '2027-03-22', end: '2027-03-22' } } as StampDef;
+    expect(challengeForOccasion([c], 'water', '2027-03-22')?.id).toBe('wwd');
+    expect(challengeForOccasion([c], 'water', '2027-03-21')).toBeNull();
+    expect(challengeForOccasion([{ ...c, status: 'retired' }], 'water', '2027-03-22')).toBeNull();
+    expect(challengeForOccasion([c], undefined, '2027-03-22')).toBeNull();
+  });
+
+  it('asks for a typed confirmation only for large awards', () => {
+    expect(isLargeAward(null)).toBeFalse();
+    expect(isLargeAward(LARGE_AWARD - 1)).toBeFalse();
+    expect(isLargeAward(LARGE_AWARD)).toBeTrue();
   });
 });
 

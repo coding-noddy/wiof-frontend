@@ -266,6 +266,51 @@ export function istToday(now = new Date()): string {
   return new Date(now.getTime() + 5.5 * 60 * 60 * 1000).toISOString().slice(0, 10);
 }
 
+/** A calendar occasion as a challenge links to it (envcal: month is 0-based, day a string; annual). */
+export interface OccasionRef {
+  id: string;
+  month: number;
+  day: string | number;
+  occasion: string;
+}
+
+const occasionDay = (o: Pick<OccasionRef, 'month' | 'day'>) => `${String(o.month + 1).padStart(2, '0')}-${String(o.day).padStart(2, '0')}`;
+
+/**
+ * The calendar occasions a challenge can link to: those falling inside its
+ * window (India-time 'YYYY-MM-DD' days; occasions repeat every year, so only
+ * month and day are compared; a window over New Year wraps).
+ */
+export function occasionsInWindow<T extends OccasionRef>(occasions: T[], start: string, end: string): T[] {
+  if (!start || !end || end < start) return [];
+  const from = start.slice(5);
+  const to = end.slice(5);
+  const sameYear = start.slice(0, 4) === end.slice(0, 4);
+  return occasions
+    .filter((o) => {
+      const d = occasionDay(o);
+      return sameYear ? d >= from && d <= to : d >= from || d <= to;
+    })
+    .sort((a, b) => occasionDay(a).localeCompare(occasionDay(b)) || a.occasion.localeCompare(b.occasion));
+}
+
+/** The published challenge open today and linked to this calendar occasion, if any (Today on WIOF). */
+export function challengeForOccasion(defs: StampDef[], occasionId: string | null | undefined, today: string): StampDef | null {
+  if (!occasionId) return null;
+  return defs.find((d) => d.family === 'challenge' && d.status === 'active' && d.calendarId === occasionId
+    && !!d.window && d.window.start <= today && today <= d.window.end) || null;
+}
+
+/**
+ * At or above this many members awarded at once, Admin asks for the number to
+ * be typed back before publishing (a slip would ping that many members).
+ */
+export const LARGE_AWARD = 50;
+
+export function isLargeAward(count: number | null): boolean {
+  return count !== null && count >= LARGE_AWARD;
+}
+
 const SHAPE_LEVEL: Partial<Record<StampShape, number>> = { circle: 0, triangle: 3, square: 4, pentagon: 5, hexagon: 6 };
 
 /** Milestones of the given levels (0 = Earthrise, 3 = triangles … 6 = hexagons), not the element Guardians. */

@@ -52,7 +52,9 @@ describe('Today on WIOF', () => {
     let envcal: any;
     let related: any;
     let dismissRole: string | undefined;
+    let passport: any;
     beforeEach(() => {
+      passport = { stampDefs: () => of([]) };
       try { localStorage.removeItem(TODAY_HIDDEN_KEY); } catch {}
       envcal = { getUpcomingOccasions: jasmine.createSpy('getUpcomingOccasions').and.returnValue(of({ today: [occasion()], upcoming: [] })) };
       dismissRole = undefined;
@@ -72,7 +74,7 @@ describe('Today on WIOF', () => {
     };
 
     it("shows today's occasion, and opens its story in the calendar's modal with a pointer to the calendar", async () => {
-      const c = new TodayOnWiofComponent(envcal, related);
+      const c = new TodayOnWiofComponent(envcal, related, passport);
       c.ngOnInit();
       const [day] = views(c);
       expect(day.id).toBe('veg');
@@ -84,15 +86,25 @@ describe('Today on WIOF', () => {
 
     it('"Find them all in the Environment Calendar" in the modal scrolls to the calendar', async () => {
       dismissRole = 'calendar';
-      const c = new TodayOnWiofComponent(envcal, related);
+      const c = new TodayOnWiofComponent(envcal, related, passport);
       const scroll = spyOn(c, 'seeCalendar');
       await c.openStory(occasion());
       expect(scroll).toHaveBeenCalled();
     });
 
+    it("links a Planet Passport challenge open today for today's occasion", () => {
+      const today = new Date(Date.now() + 5.5 * 3600 * 1000).toISOString().slice(0, 10);
+      const challenge = { id: 'veg-day', family: 'challenge', status: 'active', calendarId: 'veg', window: { start: today, end: today }, title: ['Veg', 'Day'], rule: { type: 'window_actions', target: 1 } };
+      passport.stampDefs = () => of([challenge, { ...challenge, id: 'other', calendarId: 'x' }]);
+      const c = new TodayOnWiofComponent(envcal, related, passport);
+      c.ngOnInit();
+      expect(c.challengeFor(occasion())?.id).toBe('veg-day');
+      expect(c.challengeFor(occasion({ id: 'nope' }))).toBeNull();
+    });
+
     it('shows nothing on a day without an occasion', () => {
       envcal.getUpcomingOccasions.and.returnValue(of({ today: [], upcoming: [] }));
-      const c = new TodayOnWiofComponent(envcal, related);
+      const c = new TodayOnWiofComponent(envcal, related, passport);
       c.ngOnInit();
       expect(views(c)).toEqual([null]);
     });
@@ -107,7 +119,7 @@ describe('Today on WIOF', () => {
       try {
         spyOn(heading, 'scrollIntoView');
         const event = new Event('click', { cancelable: true });
-        new TodayOnWiofComponent(envcal, related).seeCalendar(event);
+        new TodayOnWiofComponent(envcal, related, passport).seeCalendar(event);
         expect(event.defaultPrevented).toBeTrue();
         expect(heading.scrollIntoView).toHaveBeenCalled();
         expect(document.activeElement).toBe(heading);
@@ -120,21 +132,21 @@ describe('Today on WIOF', () => {
 
     it('"See the full calendar" leaves the link alone when the calendar is not on the page', () => {
       const event = new Event('click', { cancelable: true });
-      new TodayOnWiofComponent(envcal, related).seeCalendar(event);
+      new TodayOnWiofComponent(envcal, related, passport).seeCalendar(event);
       expect(event.defaultPrevented).toBeFalse();
     });
 
     it('"Hide for today" hides it until tomorrow', () => {
-      const c = new TodayOnWiofComponent(envcal, related);
+      const c = new TodayOnWiofComponent(envcal, related, passport);
       c.ngOnInit();
       c.hideForToday();
       expect(c.hidden).toBeTrue();
       expect(localStorage.getItem(TODAY_HIDDEN_KEY)).toBe(toCalendarDay(new Date()));
-      const again = new TodayOnWiofComponent(envcal, related);
+      const again = new TodayOnWiofComponent(envcal, related, passport);
       again.ngOnInit();
       expect(again.hidden).toBeTrue();
       localStorage.setItem(TODAY_HIDDEN_KEY, '2000-01-01');
-      const tomorrow = new TodayOnWiofComponent(envcal, related);
+      const tomorrow = new TodayOnWiofComponent(envcal, related, passport);
       tomorrow.ngOnInit();
       expect(tomorrow.hidden).toBeFalse();
     });

@@ -3,6 +3,8 @@ import { ModalController } from '@ionic/angular';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { EnvDay } from 'src/app/models/env-cal-data';
+import { challengeForOccasion, istToday, StampDef } from 'src/app/models/Passport';
+import { PassportService } from 'src/app/services/passport.service';
 import { dialogOccasion, hiddenToday, TODAY_HIDDEN_KEY, todaysOccasion } from 'src/app/models/TodayOnWiof';
 import { toCalendarDay } from 'src/app/services/activity.service';
 import { EnvcalService } from 'src/app/services/envcal-service';
@@ -34,14 +36,19 @@ export class TodayOnWiofComponent implements OnInit {
   readonly todayLabel = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
   private readonly today = toCalendarDay(new Date());
 
+  /** Published Passport definitions, for a challenge linked to today's occasion. */
+  private defs: StampDef[] = [];
+
   constructor(
     private envcal: EnvcalService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private passport: PassportService
   ) {}
 
   ngOnInit(): void {
     this.hidden = hiddenToday(this.read(), this.today);
     if (this.hidden) return;
+    this.passport.stampDefs().subscribe((defs) => (this.defs = defs));
     this.occasion$ = this.envcal.getUpcomingOccasions(new Date(), 1).pipe(
       map(({ today }) => todaysOccasion(today)),
       catchError((err) => {
@@ -89,6 +96,11 @@ export class TodayOnWiofComponent implements OnInit {
     await modal.present();
     const { role } = await modal.onDidDismiss();
     if (role === 'calendar') this.seeCalendar(new Event('click'));
+  }
+
+  /** The Planet Passport challenge open today for this occasion (linked in Admin → Passport), if any. */
+  challengeFor(occasion: EnvDay): StampDef | null {
+    return challengeForOccasion(this.defs, occasion?.id, istToday());
   }
 
   hideForToday(): void {

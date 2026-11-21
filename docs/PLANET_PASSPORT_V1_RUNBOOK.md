@@ -52,7 +52,13 @@ What the server enforces (`savePassportStamp`):
 
 The award triggers pick up a change within about a minute. The code catalogue (`functions/passport-catalogue.js`) is now only the seed and the fallback, used if the collection is empty or unreadable.
 
-**Challenges:** a date window (India-time days) and one of three rules: different actions in the window (optionally one element), stories read in the window, or a specific action. Members see a challenge from 7 days before it opens: on the booklet's Challenges page and as a banner on Take Action. Progress is in `passport_challenge_progress`.
+**Large awards:** publishing, reactivating, or changing the rule of a live badge shows how many members would get it. From 50 (`LARGE_AWARD` in src/app/models/Passport.ts), the admin types that number back to confirm.
+
+**Challenges:**
+- A date window (India-time days) and one of three rules: different actions in the window (optionally one element), stories read in the window, or a specific action.
+- Members see a challenge from 7 days before it opens, on the booklet's Challenges page and as a banner on Take Action.
+- **Calendar day (optional):** link one of the Environment Calendar occasions that fall inside the window. On that day, "Today on WIOF" on the home page shows the challenge.
+- Progress is in `passport_challenge_progress`.
 
 ## Adding or changing a stamp in code (seed and fallback only)
 

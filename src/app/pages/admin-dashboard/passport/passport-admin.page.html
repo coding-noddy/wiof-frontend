@@ -158,11 +158,23 @@
                   <input class="field-input" type="date" [(ngModel)]="form.windowEnd" (ngModelChange)="syncShape()" [class.invalid]="form.windowEnd < form.windowStart" />
                 </label>
                 <label class="field">
-                  <span class="field-label">Calendar occasion ID (optional)</span>
-                  <input class="field-input" [(ngModel)]="form.calendarId" maxlength="120" placeholder="links it to that day" />
+                  <span class="field-label">Calendar day (optional)</span>
+                  <select class="field-input" [(ngModel)]="form.calendarId" aria-describedby="calendar-hint">
+                    <option value="">Not linked</option>
+                    @for (o of occasions; track o.id) {
+                      <option [value]="o.id">{{ occasionLabel(o) }}</option>
+                    }
+                  </select>
                 </label>
               </div>
               <span class="field-hint">Only activity on these days counts. Members see it from 7 days before it opens; once earned, it stays earned.</span>
+              <span class="field-hint" id="calendar-hint">
+                @if (occasions.length) {
+                  Linked to a calendar day, it also shows on "Today on WIOF" on that day.
+                } @else {
+                  No Environment Calendar occasions fall on these days.
+                }
+              </span>
             }
 
             <div class="field-row">

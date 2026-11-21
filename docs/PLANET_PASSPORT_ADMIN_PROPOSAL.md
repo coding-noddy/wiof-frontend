@@ -10,9 +10,9 @@
 
 Tests: staging `e2e:passport-admin` 19/19.
 
-**Not built yet:**
-- the link from "Today on WIOF" to a challenge on its calendar day;
-- a confirm step for very large "would earn" counts. Publishing always shows the count.
+**Added later (2026-11-21):**
+- A challenge can be linked to a calendar day, picked from the occasions inside its window. On that day, "Today on WIOF" shows "Planet Passport challenge today", linked to the booklet.
+- Publishing, reactivating, or changing the rule of a live badge always shows the "would earn" count. From 50 members (`LARGE_AWARD`), the admin also types the number back to confirm.
 **Builds on:** design §5 and §5a (docs/PLANET_PASSPORT_DESIGN.md), Passport v1 (docs/PLANET_PASSPORT_V1_PROPOSAL.md, built and on staging).
 **Governs:** docs/roadmap/WIOF_Planet_Passport_Production_Implementation_Contract_v1.md §6.1, §6.6, §9.
 

@@ -25,6 +25,13 @@
         <ion-icon aria-hidden="true" name="arrow-down"></ion-icon>
       </a>
       </div>
+      @if (challengeFor(occasion); as challenge) {
+        <a class="today-challenge" routerLink="/passport" [queryParams]="{ stamp: challenge.id }" [style.--ink]="challenge.ink">
+          <ion-icon aria-hidden="true" name="flag-outline"></ion-icon>
+          <span>Planet Passport challenge today: <strong>{{ challenge.name || challenge.title.join(' ') }}</strong></span>
+          <ion-icon aria-hidden="true" name="arrow-forward"></ion-icon>
+        </a>
+      }
       <button type="button" class="today-hide" (click)="hideForToday()" aria-label="Hide for today" title="Hide for today">
         <ion-icon aria-hidden="true" name="close"></ion-icon>
       </button>

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertController } from '@ionic/angular';
-import { earnedWhen, previewStamp, RULE_OPTIONS, RuleOption, Stamp, StampDef, StampFamily, StampShape } from 'src/app/models/Passport';
+import { firstValueFrom } from 'rxjs';
+import { earnedWhen, isLargeAward, OccasionRef, occasionsInWindow, previewStamp, RULE_OPTIONS, RuleOption, Stamp, StampDef, StampFamily, StampShape } from 'src/app/models/Passport';
+import { EnvcalService } from 'src/app/services/envcal-service';
 import { ActionChoice, PassportAdminService, StampAction, StampAuditEntry } from 'src/app/services/passport-admin.service';
 import { UiUtilService } from 'src/app/util/UiUtilService';
 
@@ -88,7 +90,11 @@ export class PassportAdminPage implements OnInit {
   wouldEarn: number | null = null;
   checking = false;
 
-  constructor(private admin: PassportAdminService, private uiUtil: UiUtilService, private alerts: AlertController) {}
+  /** Challenges: the calendar occasions inside the window, to link one ("Today on WIOF" then points to it). */
+  occasions: OccasionRef[] = [];
+  private occasionsByMonth = new Map<number, OccasionRef[]>();
+
+  constructor(private admin: PassportAdminService, private uiUtil: UiUtilService, private alerts: AlertController, private envcal: EnvcalService) {}
 
   ngOnInit(): void {
     void this.load();
@@ -182,6 +188,7 @@ export class PassportAdminPage implements OnInit {
       shape: def.shape, ruleType: def.rule.type, target: def.rule.target, ruleElement: def.rule.element || '',
       actionId: def.rule.actionId || '', windowStart: def.window?.start || '', windowEnd: def.window?.end || '', calendarId: def.calendarId || ''
     };
+    void this.loadOccasions();
     this.scrollToForm();
   }
 
@@ -225,6 +232,39 @@ export class PassportAdminPage implements OnInit {
     if (r && r.element === 'required' && f.ruleElement) f.element = f.ruleElement;
     if (!this.existing) f.ink = INK[f.element || 'journey'];
     this.wouldEarn = null;
+    void this.loadOccasions();
+  }
+
+  /** The occasions on the challenge's days (each month's read once per visit). */
+  async loadOccasions(): Promise<void> {
+    const f = this.form;
+    if (!f || f.family !== 'challenge' || !f.windowStart || !f.windowEnd || f.windowEnd < f.windowStart) {
+      this.occasions = [];
+      return;
+    }
+    const first = Number(f.windowStart.slice(5, 7)) - 1;
+    const span = Math.min(11, (Number(f.windowEnd.slice(0, 4)) - Number(f.windowStart.slice(0, 4))) * 12 + Number(f.windowEnd.slice(5, 7)) - 1 - first);
+    const months = Array.from({ length: span + 1 }, (_, i) => (first + i) % 12);
+    try {
+      await Promise.all(months.filter((m) => !this.occasionsByMonth.has(m)).map(async (m) => {
+        const days = await firstValueFrom(this.envcal.getEnvCal(m));
+        this.occasionsByMonth.set(m, days.map((d) => ({ id: d.id, month: d.month, day: d.day, occasion: d.occasion })));
+      }));
+    } catch {
+      // The pick-list stays as it was; a linked occasion is kept below.
+    }
+    if (this.form !== f) return;
+    this.occasions = occasionsInWindow(months.flatMap((m) => this.occasionsByMonth.get(m) || []), f.windowStart, f.windowEnd);
+    if (f.calendarId && !this.occasions.some((o) => o.id === f.calendarId)) {
+      // Linked to a day outside the window now: keep it visible so the admin can see and change it.
+      this.occasions = [{ id: f.calendarId, month: 0, day: '', occasion: `${f.calendarId} (not on these days)` }, ...this.occasions];
+    }
+  }
+
+  occasionLabel(o: OccasionRef): string {
+    if (!o.day) return o.occasion;
+    const date = new Date(Date.UTC(2000, o.month, Number(o.day)));
+    return `${date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' })} · ${o.occasion}`;
   }
 
   /** Why a milestone's target can't be saved, or ''. */
@@ -298,6 +338,14 @@ export class PassportAdminPage implements OnInit {
 
   async save(): Promise<void> {
     if (!this.canSave) return;
+    // A rule change to a live badge awards it to everyone who now qualifies.
+    if (this.existing?.status === 'active' && this.form!.family !== 'challenge' && this.willBumpVersion) {
+      const count = await this.countWouldEarn();
+      const message = count === null ? 'Members who meet the new rule will be awarded it on their next activity. Members who have it keep it.'
+        : `${count} member${count === 1 ? '' : 's'} meet the new rule. Those who don't have it yet will be awarded it on their next activity. Members who have it keep it.`;
+      if (!(await this.confirm('Change the rule of a live badge?', message))) return;
+      if (!(await this.confirmLarge(count))) return;
+    }
     await this.run('save', this.form!.id, this.toDef(), this.existing ? 'Saved.' : 'Saved as a draft. Publish it when ready.');
   }
 
@@ -305,15 +353,13 @@ export class PassportAdminPage implements OnInit {
     const f = this.form;
     if (!f || !this.existing) return;
     if (action === 'publish' || action === 'reactivate') {
-      let count = this.wouldEarn;
-      if (f.family !== 'challenge' && count === null) {
-        try { count = (await this.admin.stats(this.toDef())).wouldEarn; } catch { count = null; }
-      }
+      const count = f.family === 'challenge' ? null : await this.countWouldEarn();
       const message = f.family === 'challenge'
         ? `Members will see it from 7 days before ${f.windowStart}, and can earn it from ${f.windowStart} to ${f.windowEnd}.`
         : count === null ? 'Members who meet the rule will be awarded it on their next activity.'
           : `${count} member${count === 1 ? '' : 's'} already meet the rule and will be awarded it on their next activity.`;
       if (!(await this.confirm(action === 'publish' ? 'Publish this badge?' : 'Reactivate this badge?', message))) return;
+      if (!(await this.confirmLarge(count))) return;
     }
     if (action === 'retire' && !(await this.confirm('Retire this badge?', 'Nobody new can earn it. Members who have it keep it.'))) return;
     if (action === 'delete' && !(await this.confirm('Delete this draft?', 'It has never been published, so nobody has it.'))) return;
@@ -334,6 +380,34 @@ export class PassportAdminPage implements OnInit {
     } finally {
       this.busy = false;
     }
+  }
+
+  /** "Would earn it now" for the form, reusing the last count; null if it can't be counted. */
+  private async countWouldEarn(): Promise<number | null> {
+    if (this.wouldEarn !== null) return this.wouldEarn;
+    try {
+      this.wouldEarn = (await this.admin.stats(this.toDef())).wouldEarn;
+    } catch {
+      this.wouldEarn = null;
+    }
+    return this.wouldEarn;
+  }
+
+  /** A second step for large awards: the admin types the number back. */
+  private async confirmLarge(count: number | null): Promise<boolean> {
+    if (!isLargeAward(count)) return true;
+    const alert = await this.alerts.create({
+      header: `Award ${count} members at once?`,
+      message: `Each of them will see a new-badge celebration. Type ${count} to confirm.`,
+      inputs: [{ name: 'typed', type: 'number', placeholder: String(count), attributes: { 'aria-label': `Type ${count} to confirm` } }],
+      buttons: [{ text: 'Cancel', role: 'cancel' }, { text: 'Award them', role: 'confirm' }]
+    });
+    await alert.present();
+    const { role, data } = await alert.onDidDismiss();
+    if (role !== 'confirm') return false;
+    if (String(data?.values?.typed ?? '').trim() === String(count)) return true;
+    await this.uiUtil.presentToast("The number didn't match, so nothing changed.", 'error');
+    return false;
   }
 
   private async confirm(header: string, message: string): Promise<boolean> {
