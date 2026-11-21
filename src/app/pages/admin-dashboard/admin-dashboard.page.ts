@@ -88,6 +88,13 @@ export class AdminDashboardPage implements OnInit, OnDestroy {
       description: 'Featured courses and programs'
     },
     {
+      name: 'Planet Passport',
+      route: 'passport',
+      icon: 'book-outline',
+      color: AdminDashboardPage.GRADIENT_TEAL,
+      description: 'Badges and challenges: who earns what, versions, history'
+    },
+    {
       name: 'Workshops',
       route: 'workshops',
       icon: 'easel-outline',

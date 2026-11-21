@@ -37,6 +37,7 @@ import { ElementTakeActionTeaserComponent } from './components/element-take-acti
 import { TakeActionCardComponent } from './components/take-action-card/take-action-card.component';
 import { ImpactCalculatorComponent } from './components/impact-calculator/impact-calculator.component';
 import { CommunityImpactComponent } from './components/community-impact/community-impact.component';
+import { ChallengeBannerComponent } from './components/challenge-banner/challenge-banner.component';
 import { ImpactSummaryComponent } from './components/impact-summary/impact-summary.component';
 import { TakeActionDetailComponent } from './components/take-action-detail/take-action-detail.component';
 import { ExploreNextComponent } from './components/explore-next/explore-next.component';
@@ -87,6 +88,7 @@ const COMPONENTS = [
   TakeActionCardComponent,
   ImpactCalculatorComponent,
   CommunityImpactComponent,
+  ChallengeBannerComponent,
   ImpactSummaryComponent,
   TakeActionDetailComponent,
   ExploreNextComponent,

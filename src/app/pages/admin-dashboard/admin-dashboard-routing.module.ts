@@ -198,6 +198,13 @@ const routes: Routes = [
     ]
   },
   {
+    path: 'passport',
+    loadChildren: () =>
+      import('./passport/passport-admin.module').then(
+        (m) => m.PassportAdminPageModule
+      )
+  },
+  {
     path: 'workshops',
     loadChildren: () =>
       import('./workshops/workshops.module').then(

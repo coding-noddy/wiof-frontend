@@ -1,0 +1,11 @@
+@for (c of items; track c.stamp.id) {
+  <aside class="challenge-banner" [class.upcoming]="!c.open" [style.--ink]="c.stamp.ink" [attr.aria-label]="'Planet Passport challenge: ' + c.stamp.name">
+    <ion-icon class="icon" [name]="c.open ? 'flag-outline' : 'calendar-outline'" aria-hidden="true"></ion-icon>
+    <div class="text">
+      <p class="eyebrow">{{ c.open ? 'Challenge' : 'Coming up' }} · {{ c.when }}</p>
+      <p class="title">{{ c.stamp.name }}</p>
+      <p class="rule">{{ c.rule }}. {{ c.stamp.meaning }}</p>
+    </div>
+    <a routerLink="/passport" [queryParams]="{ stamp: c.stamp.id }" class="link">In my Passport →</a>
+  </aside>
+}

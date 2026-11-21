@@ -1,6 +1,6 @@
 import { EngagementMetrics } from '../services/activity.service';
 import {
-  buildStamps, elementStamps, firstStepsDone, journeyStamps, machineLines, memberNumber, milestoneStamps, momentStamps, momentWaitsOn,
+  buildStamps, challengeView, earnedWhen, elementStamps, firstStepsDone, istToday, previewStamp, journeyStamps, machineLines, memberNumber, milestoneStamps, momentStamps, momentWaitsOn,
   newBadges, nextStamps, progressFor, StampDef, stampDateText
 } from './Passport';
 
@@ -127,6 +127,72 @@ describe('Planet Passport new-badge moment', () => {
     expect(momentWaitsOn('/element/spirit#eq-assessment')).toBeTrue();
     expect(momentWaitsOn('/element/water')).toBeFalse();
     expect(momentWaitsOn('/take-action?action=fix-a-leak')).toBeFalse();
+  });
+});
+
+describe('Admin → Passport: "Earned when" in plain words', () => {
+  const r = (type: string, target: number, extra: Partial<StampDef['rule']> = {}) => ({ rule: { type, target, ...extra } });
+
+  it('reads naturally for every rule the pick-list offers', () => {
+    expect(earnedWhen(r('first_steps', 5))).toBe('Complete all 5 first steps');
+    expect(earnedWhen(r('different_actions', 3))).toBe('Do 3 different actions, on 3 different days');
+    expect(earnedWhen(r('elements_acted', 5))).toBe('Take actions in all 5 elements, on different days');
+    expect(earnedWhen(r('element_action_days', 5, { element: 'earth' }))).toBe('Take an Earth action on 5 different days');
+    expect(earnedWhen(r('action_weeks', 6))).toBe('Keep one action going in 6 different weeks');
+    expect(earnedWhen(r('specific_action', 3, { actionId: 'fix-a-water-leak' }), 'Fix a water leak')).toBe('Do "Fix a water leak" 3 times');
+    expect(earnedWhen(r('element_visit', 1, { element: 'water' }))).toBe('Visit the Water page');
+    expect(earnedWhen(r('stories_read', 1, { element: 'air' }))).toBe('Read 1 Air story to the end');
+    expect(earnedWhen(r('stories_read', 10))).toBe('Read 10 stories to the end');
+    expect(earnedWhen(r('polls_voted', 1))).toBe('Vote in a poll');
+    expect(earnedWhen(r('visit_streak', 7))).toBe('Visit 7 days in a row');
+  });
+
+  it('says when a challenge counts', () => {
+    expect(earnedWhen({ ...r('window_actions', 2, { element: 'water' }), window: { start: '2027-03-22', end: '2027-03-22' } }))
+      .toBe('Do 2 different Water actions on 22 March 2027');
+    expect(earnedWhen({ ...r('window_stories', 3), window: { start: '2027-06-01', end: '2027-06-07' } }))
+      .toBe('Read 3 stories to the end between 1 June 2027 and 7 June 2027');
+  });
+
+  it('previews a definition being edited, earned and not yet', () => {
+    const def = { id: 'rain-keeper', name: 'Rain Keeper', title: ['Rain', 'Keeper'], family: 'travel' as const, shape: 'oval' as const, element: 'water' as const, rule: { type: 'stories_read', target: 5 } };
+    expect(previewStamp(def, true).earned).toBeTrue();
+    expect(previewStamp(def, false).progress).toBe(0);
+    expect(previewStamp(def, true).ink).toBe('#1A7A7F');
+    expect(previewStamp({ rule: { type: 'polls_voted', target: 1 } }, false).name).toBe('New badge');
+  });
+});
+
+describe('Planet Passport challenges as members see them', () => {
+  const ch = (id: string, start: string, end: string): StampDef => ({
+    ...def(id, 'challenge', 'oval', { type: 'window_actions', target: 2 }), window: { start, end }, hint: 'Do 2 different actions'
+  });
+  const defs = [ch('next-week', '2027-03-29', '2027-03-29'), ch('in-3-days', '2027-03-25', '2027-03-25'), ch('open', '2027-03-20', '2027-03-24'),
+    ch('closed-earned', '2027-03-01', '2027-03-02'), ch('closed-missed', '2027-03-05', '2027-03-06'), ch('tomorrow', '2027-03-23', '2027-03-23')];
+  const records = [{ stampId: 'closed-earned', earnedAt: new Date(2027, 2, 1), dateKnown: true }];
+
+  it('shows open ones with progress, upcoming ones from 7 days before, and past ones only if earned', () => {
+    const view = challengeView(buildStamps(defs, records, none), { open: 1 }, '2027-03-22');
+    expect(view.open.map((s) => s.id)).toEqual(['open']);
+    expect(view.open[0].progress).toBe(1);
+    expect(view.open[0].hint).toBe('Do 2 different actions · until 24 Mar');
+    expect(view.upcoming.map((s) => `${s.id}: ${s.hint}`)).toEqual(['next-week: Opens 29 Mar', 'in-3-days: Opens 25 Mar', 'tomorrow: Opens tomorrow']);
+    expect(view.past.map((s) => s.id)).toEqual(['closed-earned']);
+  });
+
+  it('a challenge 8 days away is not shown yet', () => {
+    const view = challengeView(buildStamps(defs, [], none), {}, '2027-03-21');
+    expect(view.upcoming.map((s) => s.id)).not.toContain('next-week');
+  });
+
+  it('challenges never appear on element pages or among next stamps', () => {
+    const stamps = buildStamps([...DEFS, { ...ch('w', '2027-03-20', '2027-03-24'), element: 'water' }], [], none);
+    expect(elementStamps(stamps, 'water').map((s) => s.id)).not.toContain('w');
+    expect(nextStamps(stamps, 99).map((s) => s.id)).not.toContain('w');
+  });
+
+  it('istToday is the India-time date', () => {
+    expect(istToday(new Date('2027-03-21T19:00:00Z'))).toBe('2027-03-22');
   });
 });
 

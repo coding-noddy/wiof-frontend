@@ -51,6 +51,17 @@ export class PassportService {
       );
   }
 
+  /** The member's progress on challenges, live: challengeId → count (server-written). */
+  challengeProgress(uid: string): Observable<Record<string, number>> {
+    return this.firestore
+      .collection('passport_challenge_progress', (ref) => ref.where('userId', '==', uid))
+      .valueChanges()
+      .pipe(
+        map((docs: any[]) => Object.fromEntries(docs.map((d) => [String(d.challengeId), Number(d.count) || 0]))),
+        catchError(() => of({} as Record<string, number>))
+      );
+  }
+
   /** The member's holder record, live; null until the Passport is issued. */
   holder(uid: string): Observable<PassportHolder | null> {
     return this.firestore

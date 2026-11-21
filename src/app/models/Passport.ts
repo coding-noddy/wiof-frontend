@@ -13,7 +13,7 @@ import type { EngagementMetrics } from '../services/activity.service';
 import type { UserProfile } from '../services/user-profile.service';
 import { ElementSlug, JOURNEY_ELEMENTS, preferredElements } from './Journey';
 
-export type StampFamily = 'milestone' | 'travel' | 'streak';
+export type StampFamily = 'milestone' | 'travel' | 'streak' | 'challenge';
 export type StampShape = 'circle' | 'triangle' | 'square' | 'pentagon' | 'hexagon' | 'oval' | 'rect' | 'rosette';
 
 /** passport_stamp_defs/{id}: display data and the rule's type/target for the hint. */
@@ -33,7 +33,12 @@ export interface StampDef {
   element: ElementSlug | null;
   shape: StampShape;
   ink: string;
-  rule: { type: string; target: number; element?: string };
+  rule: { type: string; target: number; element?: string; actionId?: string };
+  /** Challenges: India-time days, inclusive. */
+  window?: { start: string; end: string };
+  /** Challenges: the Environment Calendar occasion it belongs to, if any. */
+  calendarId?: string;
+  everPublished?: boolean;
 }
 
 /** passport_stamps/{uid}_{stampId}, as the app reads it. */
@@ -98,6 +103,8 @@ export interface Stamp {
   /** What to do to earn it: "Read 5 Water stories". */
   hint: string;
   unit: string;
+  /** Challenges: the India-time days it's open. */
+  window?: { start: string; end: string };
 }
 
 export interface PassportInput {
@@ -191,9 +198,52 @@ export function buildStamps(defs: StampDef[], records: StampRecord[], input: Pas
         progress,
         target,
         hint: d.hint,
-        unit: d.unit
+        unit: d.unit,
+        ...(d.window ? { window: d.window } : {})
       };
     });
+}
+
+export interface ChallengeView {
+  /** Open now (earned or not), with progress. */
+  open: Stamp[];
+  /** Opening within 7 days: an outline with "Opens 22 Mar". */
+  upcoming: Stamp[];
+  /** Closed ones the member earned (closed and not earned: not shown). */
+  past: Stamp[];
+}
+
+const SHORT_DAY = (day: string) => {
+  const d = new Date(`${day}T00:00:00Z`);
+  return isNaN(d.getTime()) ? day : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+};
+const daysBetween = (a: string, b: string) => Math.round((Date.parse(`${b}T00:00:00Z`) - Date.parse(`${a}T00:00:00Z`)) / 86400000);
+
+/**
+ * Challenges as members see them (decided 2026-11-21): open ones with their
+ * progress, upcoming ones from 7 days before they open, past ones only if
+ * earned. `progress` = challengeId → count (passport_challenge_progress).
+ * `today` is the India-time day, like the server's windows.
+ */
+export function challengeView(stamps: Stamp[], progress: Record<string, number>, today: string): ChallengeView {
+  const view: ChallengeView = { open: [], upcoming: [], past: [] };
+  for (const s of stamps.filter((x) => x.family === 'challenge' && x.window)) {
+    const { start, end } = s.window!;
+    if (today < start) {
+      const days = daysBetween(today, start);
+      if (days <= 7) view.upcoming.push({ ...s, progress: 0, hint: days === 1 ? 'Opens tomorrow' : `Opens ${SHORT_DAY(start)}` });
+    } else if (today <= end) {
+      view.open.push(s.earned ? s : { ...s, progress: Math.min(s.target, progress[s.id] || 0), hint: `${s.hint} · until ${SHORT_DAY(end)}` });
+    } else if (s.earned) {
+      view.past.push(s);
+    }
+  }
+  return view;
+}
+
+/** Today in India time ('YYYY-MM-DD'), the day challenge windows use. */
+export function istToday(now = new Date()): string {
+  return new Date(now.getTime() + 5.5 * 60 * 60 * 1000).toISOString().slice(0, 10);
 }
 
 const SHAPE_LEVEL: Partial<Record<StampShape, number>> = { circle: 0, triangle: 3, square: 4, pentagon: 5, hexagon: 6 };
@@ -211,15 +261,106 @@ export function journeyStamps(stamps: Stamp[]): Stamp[] {
 /** An element's stamps: Arrival, Explorer, then its Guardian. */
 export function elementStamps(stamps: Stamp[], slug: ElementSlug): Stamp[] {
   const rank = (s: Stamp) => (s.family === 'travel' ? (s.shape === 'oval' ? 0 : 1) : 2);
-  return stamps.filter((s) => s.element === slug).sort((a, b) => rank(a) - rank(b));
+  return stamps.filter((s) => s.element === slug && s.family !== 'challenge').sort((a, b) => rank(a) - rank(b));
 }
 
 /** The unearned stamps closest to being earned (by share done, then fewest steps left). */
 export function nextStamps(stamps: Stamp[], count = 3): Stamp[] {
   return stamps
-    .filter((s) => !s.earned)
+    .filter((s) => !s.earned && s.family !== 'challenge')
     .sort((a, b) => b.progress / b.target - a.progress / a.target || (a.target - a.progress) - (b.target - b.progress))
     .slice(0, count);
+}
+
+/** A rule in the Admin → Passport pick-list (functions/passport-catalogue.js RULE_TYPES). */
+export interface RuleOption {
+  type: string;
+  label: string;
+  /** Which families may use it. */
+  families: StampFamily[];
+  element: 'required' | 'optional' | 'none';
+  action: boolean;
+  maxTarget?: number;
+  unit: string;
+}
+
+export const RULE_OPTIONS: RuleOption[] = [
+  { type: 'first_steps', label: 'First steps done (of 5)', families: ['milestone'], element: 'none', action: false, maxTarget: 5, unit: 'steps' },
+  { type: 'different_actions', label: 'Different actions done (braked: one new day each)', families: ['milestone'], element: 'none', action: false, unit: 'actions' },
+  { type: 'elements_acted', label: 'Elements acted in (braked)', families: ['milestone'], element: 'none', action: false, maxTarget: 5, unit: 'elements' },
+  { type: 'element_action_days', label: 'Days with an action in one element', families: ['milestone'], element: 'required', action: false, unit: 'days' },
+  { type: 'action_weeks', label: 'One action kept up on N different weeks', families: ['milestone'], element: 'none', action: false, unit: 'weeks' },
+  { type: 'specific_action', label: 'A specific action done N times', families: ['milestone', 'travel'], element: 'none', action: true, unit: 'times' },
+  { type: 'element_visit', label: 'Visited an element\'s page', families: ['travel'], element: 'required', action: false, maxTarget: 1, unit: 'visit' },
+  { type: 'stories_read', label: 'Stories read to the end', families: ['travel', 'milestone'], element: 'optional', action: false, unit: 'stories' },
+  { type: 'videos_finished', label: 'Videos watched to the end', families: ['travel', 'milestone'], element: 'none', action: false, unit: 'videos' },
+  { type: 'polls_voted', label: 'Polls voted in', families: ['travel', 'milestone'], element: 'none', action: false, unit: 'polls' },
+  { type: 'eq_taken', label: 'EQ reflection taken', families: ['travel'], element: 'none', action: false, maxTarget: 1, unit: 'reflection' },
+  { type: 'visit_streak', label: 'Visit streak (days in a row)', families: ['streak'], element: 'none', action: false, unit: 'days' },
+  { type: 'window_actions', label: 'Different actions done in the window', families: ['challenge'], element: 'optional', action: false, unit: 'actions' },
+  { type: 'window_stories', label: 'Stories read in the window', families: ['challenge'], element: 'optional', action: false, unit: 'stories' },
+  { type: 'window_specific_action', label: 'A specific action done in the window', families: ['challenge'], element: 'none', action: true, unit: 'times' }
+];
+
+const ELEMENT_NAMES: Record<string, string> = { air: 'Air', energy: 'Energy', water: 'Water', earth: 'Earth', spirit: 'Spirit' };
+const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+const longDate = (day: string) => {
+  const d = new Date(`${day}T00:00:00Z`);
+  return isNaN(d.getTime()) ? day : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+};
+
+/**
+ * "Earned when" in plain words, from a definition's rule: what the badge map shows admins.
+ * actionTitle: the action's title for action rules, if known.
+ */
+export function earnedWhen(def: Pick<StampDef, 'rule'> & { window?: { start: string; end: string } }, actionTitle?: string): string {
+  const r = def.rule || ({} as StampDef['rule']);
+  const n = Number(r.target) || 0;
+  const el = r.element ? ELEMENT_NAMES[r.element] || r.element : '';
+  const action = actionTitle ? `"${actionTitle}"` : r.actionId ? `the action ${r.actionId}` : 'one particular action';
+  const inWindow = def.window ? (def.window.start === def.window.end ? ` on ${longDate(def.window.start)}` : ` between ${longDate(def.window.start)} and ${longDate(def.window.end)}`) : '';
+  switch (r.type) {
+    case 'first_steps': return n >= 5 ? 'Complete all 5 first steps' : `Complete ${n} of the 5 first steps`;
+    case 'different_actions': return `Do ${plural(n, 'different action')}, on ${plural(n, 'different day')}`;
+    case 'elements_acted': return n >= 5 ? 'Take actions in all 5 elements, on different days' : `Take actions in ${plural(n, 'element')}, on different days`;
+    case 'element_action_days': return `Take ${/^[AEIOU]/.test(el) ? 'an' : 'a'} ${el} action on ${plural(n, 'different day')}`;
+    case 'action_weeks': return `Keep one action going in ${plural(n, 'different week')}`;
+    case 'specific_action': return n === 1 ? `Do ${action}` : `Do ${action} ${n} times`;
+    case 'element_visit': return `Visit the ${el} page`;
+    case 'stories_read': return `Read ${plural(n, `${el ? el + ' ' : ''}story`, `${el ? el + ' ' : ''}stories`)} to the end`;
+    case 'videos_finished': return `Watch ${plural(n, 'video')} to the end`;
+    case 'polls_voted': return n === 1 ? 'Vote in a poll' : `Vote in ${plural(n, 'poll')}`;
+    case 'eq_taken': return 'Take the EQ reflection';
+    case 'visit_streak': return `Visit ${n} days in a row`;
+    case 'window_actions': return `Do ${plural(n, `different ${el ? el + ' ' : ''}action`)}${inWindow}`;
+    case 'window_stories': return `Read ${plural(n, `${el ? el + ' ' : ''}story`, `${el ? el + ' ' : ''}stories`)} to the end${inWindow}`;
+    case 'window_specific_action': return `${n === 1 ? `Do ${action}` : `Do ${action} ${n} times`}${inWindow}`;
+    default: return 'Unknown rule';
+  }
+}
+
+/** A stamp to show for a definition as it's being edited (the badge map and the form's live preview). */
+export function previewStamp(def: Partial<StampDef> & { rule: StampDef['rule'] }, earned: boolean): Stamp {
+  const title = (def.title && def.title.length ? def.title : [def.name || 'New badge']).slice(0, 2);
+  return {
+    id: def.id || 'preview',
+    family: (def.family as StampFamily) || 'travel',
+    title,
+    name: def.name || title.join(' '),
+    caption: def.caption || '',
+    meaning: def.meaning || '',
+    element: (def.element as ElementSlug) || null,
+    shape: (def.shape as StampShape) || 'circle',
+    ink: def.ink || PASSPORT_INK[(def.element as ElementSlug) || 'journey'],
+    rotation: (hash(def.id || 'preview') % 21) - 10,
+    earned,
+    earnedAt: earned ? new Date() : null,
+    dateKnown: true,
+    progress: earned ? def.rule.target : 0,
+    target: def.rule.target || 1,
+    hint: def.hint || '',
+    unit: def.unit || ''
+  };
 }
 
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];

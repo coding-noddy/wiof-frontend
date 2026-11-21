@@ -1,0 +1,80 @@
+:host {
+  display: block;
+}
+
+.challenge-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 12px auto 0;
+  max-width: 760px;
+  padding: 12px 16px;
+  text-align: left;
+  border-radius: 18px;
+  border: 1.5px solid var(--wiof-brown-tint-40);
+  border-left: 5px solid var(--ink, var(--wiof-teal));
+  background: var(--wiof-warm-white);
+
+  &.upcoming {
+    border-left-style: dashed;
+  }
+}
+
+.icon {
+  flex: none;
+  font-size: 1.5rem;
+  color: var(--ink, var(--wiof-teal-text));
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+
+  p {
+    margin: 0;
+  }
+}
+
+.eyebrow {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wiof-teal-text);
+}
+
+.title {
+  font-family: 'Aleo', serif !important;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--wiof-ink);
+}
+
+.rule {
+  font-size: 0.85rem;
+  color: var(--wiof-ink-muted);
+}
+
+.link {
+  flex: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--wiof-teal-text);
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+  }
+}
+
+@media (max-width: 560px) {
+  .challenge-banner {
+    flex-wrap: wrap;
+  }
+
+  .link {
+    width: 100%;
+    text-align: right;
+  }
+}

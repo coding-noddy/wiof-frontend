@@ -1,0 +1,293 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Planet Passport</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- The ink texture the stamps use. -->
+  <svg class="defs" aria-hidden="true" focusable="false">
+    <filter id="wiof-ink" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" result="noise" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.6" result="rough" />
+      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.9 1.78" result="speckle" />
+      <feComposite in="rough" in2="speckle" operator="in" />
+    </filter>
+  </svg>
+
+  <div class="admin-page">
+    <nav class="breadcrumb">
+      <a routerLink="/admin-dashboard">Dashboard</a>
+      <span class="separator">/</span>
+      <span class="current">Planet Passport</span>
+    </nav>
+
+    <div class="admin-page-header">
+      <div>
+        <h1>Badges and challenges</h1>
+        <p class="header-meta">Which badge members earn for what. Changes apply without a release; the server decides who earns them.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-secondary" (click)="load()" [disabled]="loading">
+          <ion-icon aria-hidden="true" name="refresh-outline"></ion-icon> Refresh
+        </button>
+        <button class="btn-secondary" (click)="startNew('challenge')" [disabled]="!!form">
+          <ion-icon aria-hidden="true" name="calendar-outline"></ion-icon> New challenge
+        </button>
+        <button class="btn-primary" (click)="startNew('milestone')" [disabled]="!!form">
+          <ion-icon aria-hidden="true" name="add-outline"></ion-icon> New badge
+        </button>
+      </div>
+    </div>
+
+    <!-- The badge form -->
+    @if (form) {
+      <section class="badge-form" id="badge-form" aria-labelledby="badge-form-title">
+        <h2 id="badge-form-title">
+          {{ existing ? 'Edit ' + (existing.name || existing.id) : form.family === 'challenge' ? 'New challenge' : 'New badge' }}
+          @if (existing) {
+            <span class="pill" [class]="'pill ' + status(existing)">{{ status(existing) }}</span>
+            <span class="version">v{{ existing.version }}</span>
+          }
+        </h2>
+
+        <div class="badge-form-grid">
+          <div class="preview">
+            <p class="field-label">Preview</p>
+            <div class="preview-stamps">
+              <div class="page is-open"><app-passport-stamp [stamp]="previewEarned"></app-passport-stamp></div>
+              <div class="page"><app-passport-stamp [stamp]="previewWaiting"></app-passport-stamp></div>
+            </div>
+            <p class="earned-when"><strong>Earned when:</strong> {{ earnedWhenNow }}</p>
+            @if (form.family !== 'challenge') {
+              <button class="btn-secondary small" type="button" (click)="checkWouldEarn()" [disabled]="checking || !!targetProblem">
+                <ion-icon aria-hidden="true" name="people-outline"></ion-icon> {{ checking ? 'Counting…' : 'Who would earn it now?' }}
+              </button>
+              @if (wouldEarn !== null) {
+                <p class="would-earn" role="status">{{ wouldEarn }} member{{ wouldEarn === 1 ? '' : 's' }} already meet this rule.</p>
+              }
+            }
+          </div>
+
+          <div class="fields">
+            @if (!existing) {
+              <div class="field-row">
+                <label class="field">
+                  <span class="field-label">Kind</span>
+                  <select class="field-input" [(ngModel)]="form.family" (ngModelChange)="form.ruleType = ruleOptions[0].type; form.shape = shapes[0]; syncShape()">
+                    @for (f of families; track f.key) { <option [value]="f.key">{{ f.label }}</option> }
+                  </select>
+                </label>
+                <label class="field">
+                  <span class="field-label">ID (permanent)</span>
+                  <input class="field-input" [(ngModel)]="form.id" (ngModelChange)="idTouched = true" maxlength="40" pattern="[a-z0-9-]+" placeholder="e.g. water-week" />
+                </label>
+              </div>
+            }
+
+            <label class="field">
+              <span class="field-label">Name *</span>
+              <input class="field-input" [(ngModel)]="form.name" (ngModelChange)="syncShape()" maxlength="40" placeholder="e.g. Rain Keeper" />
+            </label>
+            <div class="field-row">
+              <label class="field">
+                <span class="field-label">On the stamp, line 1 *</span>
+                <input class="field-input" [(ngModel)]="form.title1" maxlength="18" placeholder="Rain" />
+              </label>
+              <label class="field">
+                <span class="field-label">Line 2</span>
+                <input class="field-input" [(ngModel)]="form.title2" maxlength="18" placeholder="Keeper" />
+              </label>
+              <label class="field">
+                <span class="field-label">Small caps</span>
+                <input class="field-input" [(ngModel)]="form.caption" maxlength="22" />
+              </label>
+            </div>
+            <label class="field">
+              <span class="field-label">What it means *</span>
+              <input class="field-input" [(ngModel)]="form.meaning" maxlength="160" placeholder="One line, warm and honest: no pressure, no score" />
+            </label>
+
+            <div class="field-row">
+              <label class="field wide">
+                <span class="field-label">Earned when *</span>
+                <select class="field-input" [(ngModel)]="form.ruleType" (ngModelChange)="syncShape()" [disabled]="published">
+                  @for (r of ruleOptions; track r.type) { <option [value]="r.type">{{ r.label }}</option> }
+                </select>
+                @if (published) { <span class="field-hint">A published badge keeps its kind of rule; make a new badge for another.</span> }
+              </label>
+              <label class="field">
+                <span class="field-label">Target *</span>
+                <input class="field-input" type="number" min="1" [max]="rule?.maxTarget || 999" [(ngModel)]="form.target" (ngModelChange)="syncShape()" [class.invalid]="!!targetProblem" />
+              </label>
+            </div>
+            @if (targetProblem) { <span class="field-hint error">{{ targetProblem }}</span> }
+
+            <div class="field-row">
+              @if (rule && rule.element !== 'none') {
+                <label class="field">
+                  <span class="field-label">Element {{ rule.element === 'required' ? '*' : '(optional)' }}</span>
+                  <select class="field-input" [(ngModel)]="form.ruleElement" (ngModelChange)="form.element = form.ruleElement; syncShape()">
+                    @if (rule.element === 'optional') { <option value="">Any element</option> }
+                    @for (e of elements; track e.slug) { <option [value]="e.slug">{{ e.name }}</option> }
+                  </select>
+                </label>
+              }
+              @if (rule?.action) {
+                <label class="field wide">
+                  <span class="field-label">Action *</span>
+                  <select class="field-input" [(ngModel)]="form.actionId" (ngModelChange)="syncShape()">
+                    <option value="">Choose an action…</option>
+                    @for (a of actions; track a.id) { <option [value]="a.id">{{ a.title }}</option> }
+                  </select>
+                </label>
+              }
+            </div>
+
+            @if (form.family === 'challenge') {
+              <div class="field-row">
+                <label class="field">
+                  <span class="field-label">Opens (India time) *</span>
+                  <input class="field-input" type="date" [(ngModel)]="form.windowStart" (ngModelChange)="syncShape()" />
+                </label>
+                <label class="field">
+                  <span class="field-label">Closes (India time) *</span>
+                  <input class="field-input" type="date" [(ngModel)]="form.windowEnd" (ngModelChange)="syncShape()" [class.invalid]="form.windowEnd < form.windowStart" />
+                </label>
+                <label class="field">
+                  <span class="field-label">Calendar occasion ID (optional)</span>
+                  <input class="field-input" [(ngModel)]="form.calendarId" maxlength="120" placeholder="links it to that day" />
+                </label>
+              </div>
+              <span class="field-hint">Only activity on these days counts. Members see it from 7 days before it opens; once earned, it stays earned.</span>
+            }
+
+            <div class="field-row">
+              @if (form.family !== 'milestone') {
+                <label class="field">
+                  <span class="field-label">Shape</span>
+                  <select class="field-input" [(ngModel)]="form.shape">
+                    @for (s of shapes; track s) { <option [value]="s">{{ s }}</option> }
+                  </select>
+                </label>
+              } @else {
+                <div class="field"><span class="field-label">Shape</span><span class="field-static">{{ form.shape }} (follows the target)</span></div>
+              }
+              <label class="field">
+                <span class="field-label">Ink</span>
+                <input class="field-input ink" type="color" [(ngModel)]="form.ink" />
+              </label>
+              <label class="field wide">
+                <span class="field-label">Hint on the outline *</span>
+                <input class="field-input" [(ngModel)]="form.hint" (ngModelChange)="hintTouched = true" maxlength="90" />
+              </label>
+            </div>
+
+            @if (willBumpVersion) {
+              <p class="version-note" role="status">
+                <ion-icon aria-hidden="true" name="information-circle-outline"></ion-icon>
+                Saving changes what it takes to earn this badge, so it becomes version {{ (existing?.version || 1) + 1 }}. Members who already earned it keep it.
+              </p>
+            }
+
+            <div class="form-actions">
+              <button class="btn-secondary" (click)="cancel()" [disabled]="busy">Close</button>
+              @if (existing?.status === 'draft' && !existing?.everPublished) {
+                <button class="btn-secondary danger" (click)="act('delete')" [disabled]="busy">Delete draft</button>
+              }
+              @if (existing?.status === 'active') {
+                <button class="btn-secondary" (click)="act('retire')" [disabled]="busy">Retire</button>
+              }
+              @if (existing?.status === 'retired') {
+                <button class="btn-secondary" (click)="act('reactivate')" [disabled]="busy">Reactivate</button>
+              }
+              <button class="btn-secondary" (click)="save()" [disabled]="!canSave">
+                <ion-icon aria-hidden="true" name="save-outline"></ion-icon> {{ busy ? 'Saving…' : existing ? 'Save' : 'Save draft' }}
+              </button>
+              @if (existing?.status === 'draft') {
+                <button class="btn-primary" (click)="act('publish')" [disabled]="busy">
+                  <ion-icon aria-hidden="true" name="rocket-outline"></ion-icon> Publish
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+    }
+
+    <!-- Filters -->
+    <div class="filters" role="group" aria-label="Filter badges">
+      <label>Kind
+        <select [(ngModel)]="filterFamily">
+          <option value="all">All</option>
+          @for (f of families; track f.key) { <option [value]="f.key">{{ f.label }}</option> }
+        </select>
+      </label>
+      <label>Status
+        <select [(ngModel)]="filterStatus">
+          <option value="all">All</option><option value="draft">Draft</option><option value="active">Active</option>
+          <option value="scheduled">Scheduled</option><option value="retired">Retired</option>
+        </select>
+      </label>
+      <label>Element
+        <select [(ngModel)]="filterElement">
+          <option value="all">All</option><option value="none">None</option>
+          @for (e of elements; track e.slug) { <option [value]="e.slug">{{ e.name }}</option> }
+        </select>
+      </label>
+    </div>
+
+    <!-- The badge map -->
+    @if (loading) {
+      <p class="empty-state">Loading badges…</p>
+    } @else if (loadError) {
+      <div class="empty-state">
+        <ion-icon aria-hidden="true" name="alert-circle-outline"></ion-icon>
+        <p>Couldn't load the badges. Check your connection and refresh.</p>
+      </div>
+    } @else {
+      @for (g of groups; track g.key) {
+        <section class="map-group" [attr.aria-label]="g.label">
+          <h2>{{ g.label }} <span>{{ g.defs.length }}</span></h2>
+          <div class="map-grid">
+            @for (d of g.defs; track d.id) {
+              <button type="button" class="map-tile" [class.retired]="d.status === 'retired'" [class.draft]="d.status === 'draft'" (click)="edit(d)" [disabled]="busy">
+                <div class="page" [class.is-open]="false"><app-passport-stamp [stamp]="tile(d)"></app-passport-stamp></div>
+                <span class="tile-name">{{ d.name || d.title.join(' ') }}</span>
+                <span class="tile-rule">{{ earnedWhen(d) }}</span>
+                <span class="tile-meta">
+                  <span [class]="'pill ' + status(d)">{{ status(d) }}</span>
+                  <span>v{{ d.version }}</span>
+                  <span title="Members who have it">{{ earned[d.id] ?? '…' }} earned</span>
+                </span>
+              </button>
+            }
+          </div>
+        </section>
+      } @empty {
+        <p class="empty-state">No badges match these filters.</p>
+      }
+
+      <!-- Change history -->
+      <section class="history" aria-labelledby="history-title">
+        <h2 id="history-title">Recent changes</h2>
+        @if (audit.length) {
+          <ul>
+            @for (a of audit; track a.id) {
+              <li>
+                <span class="when">{{ a.at | date: 'd MMM y, HH:mm' }}</span>
+                <span class="who">{{ a.byEmail || 'an admin' }}</span>
+                <span class="what">{{ a.action }} <strong>{{ a.stampId }}</strong>{{ a.versionBumped ? ' (new version)' : '' }}</span>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="empty-state">No changes yet. The 33 starting badges came from the catalogue.</p>
+        }
+      </section>
+    }
+  </div>
+</ion-content>

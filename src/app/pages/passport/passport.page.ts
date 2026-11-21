@@ -5,8 +5,8 @@ import { distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
 import { ImpactTile, impactTiles } from 'src/app/models/Impact';
 import { ElementSlug, FirstStep, firstSteps, JOURNEY_ELEMENTS } from 'src/app/models/Journey';
 import {
-  buildStamps, elementStamps, journeyStamps, machineLines, memberNumber, milestoneStamps, nextStamps, PASSPORT_INK,
-  Stamp, StampDef, stampDate, StampRecord
+  buildStamps, challengeView, ChallengeView, elementStamps, istToday, journeyStamps, machineLines, memberNumber, milestoneStamps,
+  nextStamps, PASSPORT_INK, Stamp, StampDef, stampDate, StampRecord
 } from 'src/app/models/Passport';
 import { ActivityService, EngagementMetrics } from 'src/app/services/activity.service';
 import { AuthService } from 'src/app/services/auth.service';
@@ -14,7 +14,7 @@ import { BadgeShareService } from 'src/app/services/badge-share.service';
 import { PassportHolder, PassportService } from 'src/app/services/passport.service';
 import { UserProfile, UserProfileService } from 'src/app/services/user-profile.service';
 
-type PageKind = 'cover' | 'inside' | 'identity' | 'milestones' | 'visas' | 'element' | 'impact' | 'next' | 'notes' | 'back';
+type PageKind = 'cover' | 'inside' | 'identity' | 'milestones' | 'visas' | 'challenges' | 'element' | 'impact' | 'next' | 'notes' | 'back';
 
 interface BookPage {
   kind: PageKind;
@@ -83,6 +83,8 @@ export class PassportPage implements OnInit, OnDestroy {
   profile: UserProfile | null = null;
   defs: StampDef[] = [];
   records: StampRecord[] = [];
+  /** challengeId → count, from passport_challenge_progress. */
+  challengeProgress: Record<string, number> = {};
   holder: PassportHolder | null = null;
   uid = '';
   /** ?demo=1, for admins only: sample stamps for design review. */
@@ -152,9 +154,11 @@ export class PassportPage implements OnInit, OnDestroy {
           this.passportService.stamps(this.uid),
           this.passportService.holder(this.uid),
           this.activityService.getActivityCounts(this.uid),
-          this.userProfileService.getProfile(this.uid).pipe(first())
+          this.userProfileService.getProfile(this.uid).pipe(first()),
+          this.passportService.challengeProgress(this.uid)
         ]).pipe(until, takeUntil(this.destroy$)).subscribe({
-          next: ([defs, records, holder, metrics, profile]) => {
+          next: ([defs, records, holder, metrics, profile, challengeProgress]) => {
+            this.challengeProgress = challengeProgress;
             const newlyIssued = !this.holder && !!holder;
             this.defs = defs;
             this.records = records;
@@ -203,6 +207,7 @@ export class PassportPage implements OnInit, OnDestroy {
     if (!s) return -1;
     if (s.element) return this.pages.findIndex((p) => p.kind === 'element' && p.element?.slug === s.element);
     if (s.family === 'milestone') return this.pages.findIndex((p) => p.kind === 'milestones' && this.milestones(p.levels).some((m) => m.id === id));
+    if (s.family === 'challenge') return this.pages.findIndex((p) => p.kind === 'challenges');
     return this.pages.findIndex((p) => p.kind === 'visas');
   }
 
@@ -288,6 +293,11 @@ export class PassportPage implements OnInit, OnDestroy {
     return journeyStamps(this.stamps);
   }
 
+  /** Open, upcoming (from 7 days before) and past earned challenges. */
+  get challenges(): ChallengeView {
+    return challengeView(this.stamps, this.challengeProgress, istToday());
+  }
+
   elementStamps(slug: ElementSlug): Stamp[] {
     return elementStamps(this.stamps, slug);
   }
@@ -319,6 +329,7 @@ export class PassportPage implements OnInit, OnDestroy {
       { kind: 'milestones', levels: [4, 5], sub: '■ ⬟', label: 'Milestones' },
       { kind: 'milestones', levels: [6], sub: '⬢', label: 'Milestones' },
       { kind: 'visas', label: 'Journey visas' },
+      { kind: 'challenges', label: 'Challenges' },
       ...elements.map((element) => ({ kind: 'element' as const, element, label: element.name })),
       { kind: 'impact', label: 'Declaration' },
       { kind: 'next', label: 'Next stamps' },
