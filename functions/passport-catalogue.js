@@ -13,7 +13,7 @@
 /** Bumped when the meaning of a rule type changes (passport.js). */
 const RULES_VERSION = 1;
 /** Bumped whenever this file changes. */
-const CATALOGUE_VERSION = 4; // 2: "an Air/Energy/Earth action"; 3: display names ("Honeycomb", not "Honey comb"); 4: Triveni (was Delta), Samvaad
+const CATALOGUE_VERSION = 5; // 2: "an Air/Energy/Earth action"; 3: display names ("Honeycomb", not "Honey comb"); 4: Triveni (was Delta), Samvaad; 5: First Reflection (was First Light)
 
 const ELEMENTS = [
   { slug: 'air', name: 'Air' },
@@ -81,7 +81,7 @@ const ARRIVAL = {
   energy: ['First', 'Spark'],
   water: ['First', 'Drop'],
   earth: ['First', 'Footprint'],
-  spirit: ['First', 'Light']
+  spirit: ['First', 'Reflection'] // was First Light (catalogue 5): light reads as Energy
 };
 
 /** Names that are one word, split over two lines on the stamp. */

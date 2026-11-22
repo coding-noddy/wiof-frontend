@@ -41,6 +41,8 @@ On an environment where badges **have** been edited in Admin → Passport (stagi
 2. **New badge**: ID `samvaad`, family Travel, shape Rectangle, title `Samvaad`, caption `COFFEE CHATS`, rule *Coffee Conversations watched to the end*, target 3. Save draft, then Publish.
 3. Run steps 3 and 4 above (recompute, then backfill), dry run first.
 
+**Catalogue v5 (2026-11-22):** the Spirit arrival stamp (`spirit-arrival`) is now **First Reflection**, was First Light. Only its title and name changed. Where badges were edited in Admin → Passport, change its title to `First` / `Reflection` there and save.
+
 Staging got exactly these changes on 2026-11-22, by a one-off script that used the same checks and audit records as Admin → Passport.
 
 ## Checks after release

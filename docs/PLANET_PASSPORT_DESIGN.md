@@ -134,7 +134,7 @@ Nature and sustainability words that are general, not tied to one element. Where
 | Energy | **First Spark** |
 | Water | **First Drop** |
 | Earth | **First Footprint** (a gentle one) |
-| Spirit | **First Light** |
+| Spirit | **First Reflection** (was First Light until 2026-11-22: light reads as Energy; id stays `spirit-arrival`) |
 
 The Explorer stamps keep "{Element} Explorer". The journey travel stamps (Knowledge Explorer, Good Watch, Your Voice, Inner Weather) keep their names.
 
