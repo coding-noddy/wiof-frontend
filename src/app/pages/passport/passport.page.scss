@@ -274,6 +274,11 @@
 
 // ---- Covers: teal leather, gold foil ----
 
+// Light gold foil, run diagonally with a soft shine across it (no dark band).
+.cover {
+  --foil: linear-gradient(125deg, #FFF3D6 0%, #F3D193 30%, #FFF0CC 48%, #EBC583 66%, #F7DDA6 100%);
+}
+
 .cover {
   align-items: center;
   justify-content: space-between;
@@ -296,7 +301,7 @@
 .cover-logo {
   width: 50%;
   aspect-ratio: 2000 / 800;
-  background: linear-gradient(180deg, #FFE7BA, #C99A52 70%, #E9C27D);
+  background: var(--foil);
   -webkit-mask: url('/assets/brand/logos/WIOF-full-logo-white.png') center / contain no-repeat;
   mask: url('/assets/brand/logos/WIOF-full-logo-white.png') center / contain no-repeat;
   filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.35));
@@ -317,7 +322,7 @@
   line-height: 1.05;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  background: linear-gradient(180deg, #FFE7BA, #C99A52 70%, #E9C27D);
+  background: var(--foil);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
