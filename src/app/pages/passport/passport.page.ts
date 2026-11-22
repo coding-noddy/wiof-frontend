@@ -140,6 +140,8 @@ export class PassportPage implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.measure();
+    // Again once this page's header has rendered, for its real height.
+    setTimeout(() => this.measure());
     const wantsDemo = this.route.snapshot.queryParamMap.get('demo') === '1';
     // From the new-badge moment: open on that stamp's page (and skip the welcome, the moment just showed it).
     this.openOnStamp = this.route.snapshot.queryParamMap.get('stamp');
@@ -604,7 +606,9 @@ export class PassportPage implements OnInit, OnDestroy {
     // The whole book and its controls should fit the window's height too (short laptop
     // and tablet screens): leave room for the site header and the page-turn controls.
     const h = typeof window !== 'undefined' ? window.innerHeight : 900;
-    const byHeight = Math.max(220, (h - 190) / 1.42);
+    // The site header stays on screen above the scrolling page.
+    const header = typeof document !== 'undefined' ? document.querySelector('app-header')?.getBoundingClientRect().height || 64 : 64;
+    const byHeight = Math.max(220, (h - header - 190) / 1.42);
     const byWidth = this.spread ? Math.min(430, (w - 96) / 2) : Math.min(400, w - 32);
     this.pageWidth = Math.floor(Math.min(byWidth, byHeight));
     if (wasSpread !== this.spread) {
