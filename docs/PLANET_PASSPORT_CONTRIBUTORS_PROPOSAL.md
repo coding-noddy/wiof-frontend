@@ -1,6 +1,6 @@
 # Contributor badges and claim links: proposal
 
-**Status:** proposal (2026-11-21), waiting for approval. Nothing is built.
+**Status:** proposal (2026-11-21). Deferred to the next release (decided 2026-11-22); the 5 decisions in §10 are still open. Nothing is built.
 
 **Builds on:**
 - design §3a "Contributor badges" (docs/PLANET_PASSPORT_DESIGN.md: the 8 badges, the wax seal, "Endorsements", granting, claim links, agreed 2026-11-19);
