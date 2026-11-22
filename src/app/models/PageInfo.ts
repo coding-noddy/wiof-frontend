@@ -11,7 +11,7 @@ const ELEMENT_NAMES: Record<string, string> = { air: 'Air', water: 'Water', eart
 export type PageGroup =
   | 'home' | 'element' | 'stories' | 'story' | 'videos' | 'video' | 'conversation' | 'take_action'
   | 'my_journey' | 'my_library' | 'my_feedback' | 'settings' | 'about' | 'legal'
-  | 'login' | 'admin' | 'not_found';
+  | 'login' | 'admin' | 'passport' | 'not_found';
 
 export interface PageInfo {
   group: PageGroup;
@@ -40,7 +40,8 @@ const SIMPLE: Record<string, [PageGroup, string]> = {
   'privacy-policy': ['legal', 'Privacy Policy'],
   'copyright': ['legal', 'Copyright'],
   'sitemap': ['legal', 'Sitemap'],
-  'login': ['login', 'Sign in']
+  'login': ['login', 'Sign in'],
+  'passport': ['passport', 'Planet Passport']
 };
 
 /** "Admin · Manage blogs" from "/admin-dashboard/manage-blogs". */

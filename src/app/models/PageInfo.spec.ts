@@ -19,6 +19,7 @@ describe('Page info (titles and GA page groups)', () => {
       ['/element/spirit', 'element', 'spirit', 'Spirit'],
       ['/take-action', 'take_action', null, 'Take Action'],
       ['/my-journey', 'my_journey', null, 'My Journey'],
+      ['/passport?demo=1', 'passport', null, 'Planet Passport'],
       ['/my-feedback/123', 'my_feedback', null, 'My Feedback'],
       ['/privacy-policy', 'legal', null, 'Privacy Policy'],
       ['/our-team', 'about', null, 'Our Team'],
