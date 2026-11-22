@@ -42,6 +42,13 @@ describe('Planet Passport stamps (v1)', () => {
     expect(stampDateText(withRecord)).toBe('06 NOV 2026');
   });
 
+  it('counts Coffee Conversations watched for a conversation stamp, and says so', () => {
+    const samvaad = def('samvaad', 'travel', 'rect', { type: 'conversations_watched', target: 3 });
+    const [st] = buildStamps([samvaad], [], { metrics: metrics({ videosCompleted: 9, conversationsWatched: 2 }), profile: null });
+    expect(st.progress).toBe(2);
+    expect(earnedBecause({ ...st, evidence: { rule: 'conversations_watched', target: 3, value: 3 } })).toBe('You watched 3 Coffee Conversations to the end.');
+  });
+
   it('shows "BEFORE LAUNCH" when history could not prove the date', () => {
     const [s] = buildStamps(DEFS, [{ stampId: 'seven-sunrises', earnedAt: new Date(), dateKnown: false }], none).filter((x) => x.id === 'seven-sunrises');
     expect(stampDateText(s)).toBe('BEFORE LAUNCH');

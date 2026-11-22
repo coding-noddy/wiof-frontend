@@ -92,6 +92,8 @@ export interface EngagementMetrics {
   qualityReadsByElement: { [element: string]: number };
   videosWatched: number;
   videosCompleted: number;
+  /** Coffee Conversation videos finished (Passport conversation stamps). */
+  conversationsWatched?: number;
   pollsVoted: number;
   lastEqScore: number | null;
   lastEqDate: Date | null;
@@ -528,6 +530,7 @@ export class ActivityService {
           qualityReadsByElement: doc?.qualityReadsByElement || {},
           videosWatched: doc?.videosWatched || 0,
           videosCompleted: doc?.videosCompleted || 0,
+          conversationsWatched: doc?.conversationsWatched || 0,
           pollsVoted: doc?.pollsVoted || 0,
           lastEqScore: doc?.lastEqScore ?? null,
           lastEqDate: doc?.lastEqDate?.toDate ? doc.lastEqDate.toDate() : null,

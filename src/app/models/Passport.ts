@@ -163,6 +163,7 @@ export function progressFor(rule: StampDef['rule'], input: PassportInput): numbe
     case 'element_visit': return n((m.elementVisits || {})[rule.element || '']) > 0 ? 1 : 0;
     case 'stories_read': return rule.element ? n((m.qualityReadsByElement || {})[rule.element]) : n(m.qualityReads);
     case 'videos_finished': return n(m.videosCompleted);
+    case 'conversations_watched': return n(m.conversationsWatched);
     case 'polls_voted': return n(m.pollsVoted);
     case 'eq_taken': return m.lastEqScore != null ? 1 : 0;
     case 'different_actions': return Math.min(n(m.uniqueActionsCompleted), n(ladder.actionDays));
@@ -359,6 +360,7 @@ export const RULE_OPTIONS: RuleOption[] = [
   { type: 'element_visit', label: 'Visited an element\'s page', families: ['travel'], element: 'required', action: false, maxTarget: 1, unit: 'visit' },
   { type: 'stories_read', label: 'Stories read to the end', families: ['travel', 'milestone'], element: 'optional', action: false, unit: 'stories' },
   { type: 'videos_finished', label: 'Videos watched to the end', families: ['travel', 'milestone'], element: 'none', action: false, unit: 'videos' },
+  { type: 'conversations_watched', label: 'Coffee Conversations watched to the end', families: ['travel', 'milestone'], element: 'none', action: false, unit: 'conversations' },
   { type: 'polls_voted', label: 'Polls voted in', families: ['travel', 'milestone'], element: 'none', action: false, unit: 'polls' },
   { type: 'eq_taken', label: 'EQ reflection taken', families: ['travel'], element: 'none', action: false, maxTarget: 1, unit: 'reflection' },
   { type: 'visit_streak', label: 'Visit streak (days in a row)', families: ['streak'], element: 'none', action: false, unit: 'days' },
@@ -394,6 +396,7 @@ export function earnedWhen(def: Pick<StampDef, 'rule'> & { window?: { start: str
     case 'element_visit': return `Visit the ${el} page`;
     case 'stories_read': return `Read ${plural(n, `${el ? el + ' ' : ''}story`, `${el ? el + ' ' : ''}stories`)} to the end`;
     case 'videos_finished': return `Watch ${plural(n, 'video')} to the end`;
+    case 'conversations_watched': return `Watch ${plural(n, 'Coffee Conversation')} to the end`;
     case 'polls_voted': return n === 1 ? 'Vote in a poll' : `Vote in ${plural(n, 'poll')}`;
     case 'eq_taken': return 'Take the EQ reflection';
     case 'visit_streak': return `Visit ${n} days in a row`;
@@ -437,6 +440,7 @@ export function earnedBecause(stamp: Pick<Stamp, 'rule' | 'evidence' | 'window' 
     case 'element_visit': return `You visited the ${el} page.`;
     case 'stories_read': return `You read ${plural(n, `${el ? el + ' ' : ''}story`, `${el ? el + ' ' : ''}stories`)} to the end.`;
     case 'videos_finished': return `You watched ${plural(n, 'video')} to the end.`;
+    case 'conversations_watched': return `You watched ${plural(n, 'Coffee Conversation')} to the end.`;
     case 'polls_voted': return n === 1 ? 'You had your say in a poll.' : `You voted in ${plural(n, 'poll')}.`;
     case 'eq_taken': return 'You took the EQ reflection.';
     case 'visit_streak': return `You visited ${n} days in a row.`;

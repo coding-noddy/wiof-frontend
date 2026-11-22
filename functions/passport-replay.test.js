@@ -25,6 +25,21 @@ describe('replayEarnedDates', () => {
     });
   });
 
+  it('dates Samvaad at the third Coffee Conversation video; other videos do not count towards it', async () => {
+    const events = [
+      ev('video_watch_complete', '2026-10-01T10:00:00Z', { contentId: 'cc1' }),
+      ev('video_watch_complete', '2026-10-02T10:00:00Z', { contentId: 'v1' }),
+      ev('video_watch_complete', '2026-10-03T10:00:00Z', { contentId: 'cc2' }),
+      ev('video_watch_complete', '2026-10-04T10:00:00Z', { contentId: 'cc2' }),
+      ev('video_watch_complete', '2026-10-05T10:00:00Z', { contentId: 'cc3' })
+    ];
+    const isConversationVideo = async (id) => id.startsWith('cc');
+    const result = await replayEarnedDates(events, {}, { videosCompleted: 4, conversationsWatched: 3 }, getBlog, undefined, isConversationVideo);
+    assert.deepEqual(result.get('samvaad'), {
+      earnedAtMs: ms('2026-10-05T10:00:00Z'), dateKnown: true, evidence: { rule: 'conversations_watched', target: 3, value: 3 }
+    });
+  });
+
   it('counts a repeated video once, and ignores rejected and unjudged events', async () => {
     const events = [
       ev('video_watch_complete', '2026-10-01T10:00:00Z', { contentId: 'v1' }),

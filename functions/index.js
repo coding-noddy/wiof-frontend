@@ -504,6 +504,7 @@ exports.resetEngagementData = functions
       qualityReads: 0,
       videosWatched: 0,
       videosCompleted: 0,
+      conversationsWatched: 0,
       pollsVoted: 0,
       lastEqScore: null,
       lastEqDate: null,
@@ -608,6 +609,10 @@ async function metricsUpdateFor(entry) {
       break;
     case 'video_watch_complete':
       update.videosCompleted = admin.firestore.FieldValue.increment(1);
+      // A Coffee Conversation's video, wherever it was watched (Passport conversation stamps).
+      if (await activityLookups.isConversationVideo(entry.contentId)) {
+        update.conversationsWatched = admin.firestore.FieldValue.increment(1);
+      }
       break;
     case 'poll_vote':
       update.pollsVoted = admin.firestore.FieldValue.increment(1);

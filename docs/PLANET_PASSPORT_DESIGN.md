@@ -51,6 +51,7 @@ Every rule reads **only server-trusted counts** (`user_metrics`, docs/METRICS.md
 | Inner Weather | took the EQ reflection | `lastEqScore` (server-scored, 8.2.0) |
 | Your Voice | voted in a poll | `pollsVoted` |
 | Good Watch | 3 videos watched to the end | `videosCompleted` |
+| Samvaad (2026-11-22) | 3 Coffee Conversations watched to the end | `conversationsWatched` |
 | 30-Day Streak | visited 30 days in a row | `longestStreak` |
 
 **Per element (3 × 5)**
@@ -103,7 +104,7 @@ Nature and sustainability words that are general, not tied to one element. Where
 |---|---|---|---|
 | ● | **Earthrise** | all 5 first steps | the first photo of the whole Earth: the start of seeing it as one home |
 | ▲ | **Three Seeds** | 3 different actions | small things planted that will grow |
-| ▲ | **Delta** | actions in 3 elements | a river delta is a triangle (Δ) where streams spread out |
+| ▲ | **Triveni** (was Delta; id stays `delta`) | actions in 3 elements | Sanskrit: where three rivers meet (Sangam), your care flowing through three elements |
 | ▲ | **Taking Root** | one action kept up 3 weeks | a habit starting to hold |
 | ■ | **Four Winds** | 4 different actions | trying things from every direction |
 | ■ | **Compass** | actions in 4 elements | four points: finding your way around the planet |
@@ -302,7 +303,7 @@ When a member earns a badge (say they mark their 3rd different action done), the
    - a **gentle burst** of a few seeds and leaves in the badge's ink colour, about one second long. It's not full-screen confetti: the burst should be calm, in line with the rest of WIOF;
    - **"You earned Three Seeds"** and its meaning line ("Three different actions: small things planted that will grow");
    - buttons: **See it in my Passport** (opens the booklet on that page, where the stamp lands again), **Share** (the badge card, §6), and **Close**.
-3. **Several badges at once** (the 3rd action can earn both Three Seeds and Delta) appear in **one** modal: "You earned 2 badges", swipe between them. Never two modals in a row.
+3. **Several badges at once** (the 3rd action can earn both Three Seeds and Triveni) appear in **one** modal: "You earned 2 badges", swipe between them. Never two modals in a row.
 4. **Earned while away:** a badge granted by an admin, a challenge closing or a slow server shows the same moment **once**, on the next visit.
 
 **Where it appears:** on **whatever page the member is on** when the badge arrives: Take Action, Explore next, the home page's "Did you try it?", the end of a story, My Journey. One listener in the app shell (signed-in members only) shows the moment, so no page has to know about badges. Exceptions:

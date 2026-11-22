@@ -102,6 +102,7 @@ function progressFor(rule, state) {
     case 'element_visit': return num((m.elementVisits || {})[rule.element]) > 0 ? 1 : 0;
     case 'stories_read': return rule.element ? num((m.qualityReadsByElement || {})[rule.element]) : num(m.qualityReads);
     case 'videos_finished': return num(m.videosCompleted);
+    case 'conversations_watched': return num(m.conversationsWatched);
     case 'polls_voted': return num(m.pollsVoted);
     case 'eq_taken': return m.lastEqScore != null ? 1 : 0;
     case 'different_actions': return Math.min(num(m.uniqueActionsCompleted), num(ladder.actionDays));

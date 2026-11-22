@@ -27,7 +27,7 @@ const STREAK_RULE = 'visit_streak';
 
 function emptyState() {
   return {
-    reads: new Set(), qualityReadsByElement: {}, videos: new Set(), polls: new Set(), lastEqScore: null,
+    reads: new Set(), qualityReadsByElement: {}, videos: new Set(), conversations: new Set(), polls: new Set(), lastEqScore: null,
     totalActionsCompleted: 0, actions: new Set(), actionsByElement: {}, elementVisits: {}, ladder: emptyLadder()
   };
 }
@@ -35,12 +35,13 @@ function emptyState() {
 function metricsOf(s) {
   return {
     qualityReads: s.reads.size, qualityReadsByElement: s.qualityReadsByElement, videosCompleted: s.videos.size,
+    conversationsWatched: s.conversations.size,
     pollsVoted: s.polls.size, lastEqScore: s.lastEqScore, totalActionsCompleted: s.totalActionsCompleted,
     uniqueActionsCompleted: s.actions.size, actionsByElement: s.actionsByElement, elementVisits: s.elementVisits, ladder: s.ladder
   };
 }
 
-async function applyEvent(s, data, getBlog) {
+async function applyEvent(s, data, getBlog, isConversationVideo) {
   switch (data.activityType) {
     case 'blog_read_complete': {
       const blog = await getBlog(data.contentId);
@@ -52,7 +53,10 @@ async function applyEvent(s, data, getBlog) {
       }
       return true;
     }
-    case 'video_watch_complete': s.videos.add(data.contentId); return true;
+    case 'video_watch_complete':
+      s.videos.add(data.contentId);
+      if (isConversationVideo && await isConversationVideo(data.contentId)) s.conversations.add(data.contentId);
+      return true;
     case 'poll_vote': s.polls.add(data.contentId); return true;
     case 'eq_completion': s.lastEqScore = data.score !== undefined ? data.score : null; return true;
     case 'element_visit':
@@ -77,9 +81,11 @@ async function applyEvent(s, data, getBlog) {
  * @param {object} profile the member's users doc (preferredElements, longestStreak, onboarding)
  * @param {object} currentMetrics the member's user_metrics now (after a recompute)
  * @param {(id: string) => Promise<object|null>} getBlog
+ * @param {object[]} [catalogue]
+ * @param {(videoId: string) => Promise<boolean>} [isConversationVideo] Coffee Conversation videos
  * @returns {Promise<Map<string, {earnedAtMs: number|null, dateKnown: boolean, evidence: object}>>}
  */
-async function replayEarnedDates(events, profile, currentMetrics, getBlog, catalogue = CATALOGUE) {
+async function replayEarnedDates(events, profile, currentMetrics, getBlog, catalogue = CATALOGUE, isConversationVideo = null) {
   const p = profile || {};
   const replayProfile = { preferredElements: p.preferredElements || [], longestStreak: 0 };
   const byId = new Map(catalogue.map((s) => [s.id, s]));
@@ -91,7 +97,7 @@ async function replayEarnedDates(events, profile, currentMetrics, getBlog, catal
     .sort((a, b) => toMillis(a.data.timestamp) - toMillis(b.data.timestamp));
 
   for (const { data } of accepted) {
-    if (!(await applyEvent(state, data, getBlog))) continue;
+    if (!(await applyEvent(state, data, getBlog, isConversationVideo))) continue;
     for (const r of evaluate({ metrics: metricsOf(state), profile: replayProfile }, catalogue)) {
       if (r.earned && !earned.has(r.id) && byId.get(r.id).rule.type !== STREAK_RULE) {
         earned.set(r.id, { earnedAtMs: toMillis(data.timestamp), dateKnown: true });

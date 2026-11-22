@@ -18,7 +18,7 @@ const { emptyLadder, ladderAfter } = require('./passport');
 
 /** The user_metrics fields this module owns, in report order. */
 const METRIC_FIELDS = [
-  'blogsRead', 'qualityReads', 'videosWatched', 'videosCompleted', 'pollsVoted', 'lastEqScore',
+  'blogsRead', 'qualityReads', 'videosWatched', 'videosCompleted', 'conversationsWatched', 'pollsVoted', 'lastEqScore',
   'totalActionsCompleted', 'uniqueActionsCompleted'
 ];
 /**
@@ -60,6 +60,9 @@ function makeContentLookups(db, { cache = false } = {}) {
       return byId.exists ? { ...byId.data(), id: byId.id } : null;
     }),
     pollExists: (id) => remember(`poll:${id}`, async () => (await db.collection('Poll').doc(String(id)).get()).exists),
+    // Is this YouTube video a Coffee Conversation's? (CoffeeConversations.videoLink holds the video ID.)
+    isConversationVideo: (videoId) => remember(`conversation:${videoId}`, async () => !!videoId &&
+      !(await db.collection('CoffeeConversations').where('videoLink', '==', String(videoId)).limit(1).get()).empty),
     actionExists: (id) => remember(`action:${id}`, async () => (await db.collection('actions').doc(String(id)).get()).exists),
     getAction: (id) => remember(`actionDoc:${id}`, async () => {
       const snap = await db.collection('actions').doc(String(id)).get();
@@ -83,6 +86,7 @@ function emptyUser() {
     qualityReadsByElement: {},
     videosWatched: new Set(),
     videosCompleted: new Set(),
+    conversationsWatched: new Set(),
     pollsVoted: new Set(),
     lastEqScore: null,
     lastEqDate: null,
@@ -154,6 +158,7 @@ async function computeUserMetrics(activityDocs, actionDocs, lookups) {
         break;
       case 'video_watch_complete':
         u.videosCompleted.add(data.contentId);
+        if (lookups.isConversationVideo && await lookups.isConversationVideo(data.contentId)) u.conversationsWatched.add(data.contentId);
         break;
       case 'poll_vote':
         u.pollsVoted.add(data.contentId);
@@ -221,6 +226,7 @@ async function computeUserMetrics(activityDocs, actionDocs, lookups) {
       qualityReadsByElement: u.qualityReadsByElement,
       videosWatched: u.videosWatched.size,
       videosCompleted: u.videosCompleted.size,
+      conversationsWatched: u.conversationsWatched.size,
       pollsVoted: u.pollsVoted.size,
       lastEqScore: u.lastEqScore,
       lastEqDate: u.lastEqDate,

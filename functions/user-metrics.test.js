@@ -60,6 +60,15 @@ describe('computeUserMetrics', () => {
     ], [], lookups);
     const m = metrics.get('alice');
     assert.deepEqual([m.videosWatched, m.videosCompleted, m.pollsVoted], [1, 1, 1]);
+    assert.equal(m.conversationsWatched, 0);
+  });
+
+  it('counts Coffee Conversation videos finished, once each, alongside all videos', async () => {
+    const withConversations = { ...lookups, isConversationVideo: async (id) => id === 'ccVideo0001' };
+    const done = (id, contentId) => ev(id, 'video_watch_complete', { contentId, scrollDepth: 90 });
+    const { metrics } = await computeUserMetrics([done('a', 'ccVideo0001'), done('b', 'ccVideo0001'), done('c', 'GfO-3Oir-qM')], [], withConversations);
+    const m = metrics.get('alice');
+    assert.deepEqual([m.videosCompleted, m.conversationsWatched], [2, 1]);
   });
 
   it('leaves out rejected events, old and new, and reports why', async () => {
@@ -178,5 +187,13 @@ describe('makeContentLookups', () => {
     assert.equal((await lookups.getBlog('kalpasar')).id, 'realDocId');
     assert.equal((await lookups.getBlog('realDocId')).id, 'realDocId');
     assert.equal(await lookups.getBlog('missing'), null);
+  });
+
+  it('knows a Coffee Conversation video by its YouTube ID', async () => {
+    const db = { collection: (name) => ({ where: (field, op, value) => ({ limit: () => ({ get: async () => ({ empty: !(name === 'CoffeeConversations' && field === 'videoLink' && value === 'ccVideo01') }) }) }) }) };
+    const lookups = makeContentLookups(db);
+    assert.equal(await lookups.isConversationVideo('ccVideo01'), true);
+    assert.equal(await lookups.isConversationVideo('otherVideo1'), false);
+    assert.equal(await lookups.isConversationVideo(''), false);
   });
 });

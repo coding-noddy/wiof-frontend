@@ -106,13 +106,13 @@ async function backfill() {
   const profiles = new Map(usersSnap.docs.map((d) => [d.id, d.data()]));
   const existing = new Set(stampsSnap.docs.map((d) => d.id));
   const holders = new Set(holdersSnap.docs.map((d) => d.id));
-  const { getBlog } = makeContentLookups(db, { cache: true });
+  const { getBlog, isConversationVideo } = makeContentLookups(db, { cache: true });
   const byId = new Map(CATALOGUE.map((s) => [s.id, s]));
 
   const plan = [];
   for (const metricsDoc of metricsSnap.docs) {
     const uid = metricsDoc.id;
-    const earned = await replayEarnedDates(eventsByUser.get(uid) || [], profiles.get(uid) || {}, metricsDoc.data(), getBlog);
+    const earned = await replayEarnedDates(eventsByUser.get(uid) || [], profiles.get(uid) || {}, metricsDoc.data(), getBlog, undefined, isConversationVideo);
     const stamps = [...earned].filter(([stampId]) => !existing.has(stampDocId(uid, stampId)));
     const issue = earned.has(ISSUING_STAMP) && !holders.has(uid);
     if (stamps.length || issue) plan.push({ uid, stamps, issue, earthrise: earned.get(ISSUING_STAMP) });

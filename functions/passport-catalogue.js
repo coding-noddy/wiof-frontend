@@ -13,7 +13,7 @@
 /** Bumped when the meaning of a rule type changes (passport.js). */
 const RULES_VERSION = 1;
 /** Bumped whenever this file changes. */
-const CATALOGUE_VERSION = 3; // 2: "an Air/Energy/Earth action"; 3: display names ("Honeycomb", not "Honey comb")
+const CATALOGUE_VERSION = 4; // 2: "an Air/Energy/Earth action"; 3: display names ("Honeycomb", not "Honey comb"); 4: Triveni (was Delta), Samvaad
 
 const ELEMENTS = [
   { slug: 'air', name: 'Air' },
@@ -34,7 +34,7 @@ const INK = {
 
 /** The rule types the evaluator knows (passport.js progressFor). */
 const RULE_TYPES = new Set([
-  'first_steps', 'element_visit', 'stories_read', 'videos_finished', 'polls_voted', 'eq_taken',
+  'first_steps', 'element_visit', 'stories_read', 'videos_finished', 'conversations_watched', 'polls_voted', 'eq_taken',
   'different_actions', 'elements_acted', 'element_action_days', 'action_weeks', 'visit_streak',
   // Admin → Passport: one particular action, done N times (user_metrics.actionCompletions).
   'specific_action'
@@ -98,7 +98,8 @@ function def(fields) {
 
 const LADDER = [
   { target: 3, actions: ['three-seeds', ['Three', 'Seeds'], 'Small things planted that will grow.'],
-    elements: ['delta', ['Delta'], 'Like a river delta, your care is spreading out.'],
+    // The id stays 'delta' (earned records point to it); the name is Triveni since catalogue 4.
+    elements: ['delta', ['Triveni'], 'Triveni: where three rivers meet. Your care now flows through three elements.'],
     weeks: ['taking-root', ['Taking', 'Root'], 'One action, three weeks: a habit starting to hold.'] },
   { target: 4, actions: ['four-winds', ['Four', 'Winds'], 'Trying things from every direction.'],
     elements: ['compass', ['Compass'], 'Four points: finding your way around the planet.'],
@@ -158,6 +159,9 @@ function buildCatalogue() {
     meaning: 'Ten stories read to the end.', unit: 'stories', hint: 'Read 10 stories to the end', rule: { type: 'stories_read', target: 10 } });
   add({ id: 'good-watch', family: 'travel', shape: 'oval', ink: INK.air, title: ['Good', 'Watch'], caption: 'VIDEOS',
     meaning: 'Three videos watched to the end.', unit: 'videos', hint: 'Watch 3 videos to the end', rule: { type: 'videos_finished', target: 3 } });
+  add({ id: 'samvaad', family: 'travel', shape: 'rect', ink: INK.earth, title: ['Samvaad'], caption: 'COFFEE CHATS',
+    meaning: 'Samvaad: a real conversation. Three Coffee Conversations watched to the end.', unit: 'conversations',
+    hint: 'Watch 3 Coffee Conversations to the end', rule: { type: 'conversations_watched', target: 3 } });
   add({ id: 'your-voice', family: 'travel', shape: 'rect', title: ['Your', 'Voice'], caption: 'POLLS',
     meaning: 'You had your say in a poll.', unit: 'vote', hint: 'Vote in a poll', rule: { type: 'polls_voted', target: 1 } });
   add({ id: 'inner-weather', family: 'travel', shape: 'oval', ink: INK.spirit, title: ['Inner', 'Weather'], caption: 'EQ',
