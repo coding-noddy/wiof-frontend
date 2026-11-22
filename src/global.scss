@@ -212,3 +212,16 @@ ion-content::part(scroll) {
   text-decoration: underline;
   cursor: pointer;
 }
+
+// Pull to refresh (PullToRefreshService): the spinner in the brand teal.
+ion-refresher.wiof-refresher {
+  z-index: 5;
+
+  ion-refresher-content {
+    --color: var(--wiof-teal-text);
+  }
+
+  ion-spinner {
+    color: var(--wiof-teal-text);
+  }
+}

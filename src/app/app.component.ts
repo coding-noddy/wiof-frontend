@@ -10,6 +10,7 @@ import { IdleTimeoutService } from './services/idle-timeout.service';
 import { SingleVideoPlaybackService } from './services/single-video-playback.service';
 import { ChunkLoadRecoveryService } from './services/chunk-load-recovery.service';
 import { PageTrackingService } from './services/page-tracking.service';
+import { PullToRefreshService } from './services/pull-to-refresh.service';
 import { AnalyticsService } from './services/analytics.service';
 import { elementOfUrl } from './models/Journey';
 
@@ -29,6 +30,7 @@ export class AppComponent implements OnInit {
     private singleVideoPlayback: SingleVideoPlaybackService,
     private chunkLoadRecovery: ChunkLoadRecoveryService,
     private pageTracking: PageTrackingService,
+    private pullToRefresh: PullToRefreshService,
     private analyticsService: AnalyticsService,
     private router: Router
   ) {
@@ -47,6 +49,9 @@ export class AppComponent implements OnInit {
 
     // Page titles and one GA page_view per navigation.
     this.pageTracking.start();
+
+    // Pull down from the top of a page to reload it (touch screens).
+    this.pullToRefresh.start();
 
     // GA user type, so reports can leave out the team's own visits.
     this.authService.currentUser$.pipe(
