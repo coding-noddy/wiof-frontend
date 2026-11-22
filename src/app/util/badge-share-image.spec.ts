@@ -1,4 +1,4 @@
-import { sharedBecause, Stamp } from '../models/Passport';
+import { sharedBecause, sharedMeaning, Stamp } from '../models/Passport';
 import { BADGE_CARD_H, BADGE_CARD_W, badgeShareCaption, drawStamp, earnedLine, renderBadgeCard } from './badge-share-image';
 
 const stamp = (over: Partial<Stamp> = {}): Stamp => ({
@@ -22,6 +22,16 @@ describe('Badge share image', () => {
   it('says why in the first person', () => {
     expect(sharedBecause(stamp({ rule: { type: 'polls_voted', target: 1 }, evidence: { rule: 'polls_voted', target: 1, value: 1 } }))).toBe('I had my say in a poll.');
     expect(sharedBecause(stamp({ rule: { type: 'first_steps', target: 5 }, evidence: undefined }))).toBe('I completed all 5 first steps on WIOF.');
+  });
+
+  it('puts the meaning in the first person, keeps "Thank you", and drops it when it repeats the why', () => {
+    expect(sharedMeaning(stamp({ meaning: 'Your first steps on WIOF: the start of seeing the planet as one home.' })))
+      .toBe('My first steps on WIOF: the start of seeing the planet as one home.');
+    expect(sharedMeaning(stamp({ meaning: 'Triveni: where three rivers meet. Your care now flows through three elements.' })))
+      .toBe('Triveni: where three rivers meet. My care now flows through three elements.');
+    expect(sharedMeaning(stamp({ meaning: 'Seven days in a row. Thank you for coming back.' }))).toBe('Seven days in a row. Thank you for coming back.');
+    expect(sharedMeaning(stamp({ meaning: 'You arrived in Water.' }))).toBe('I arrived in Water.');
+    expect(sharedMeaning(stamp({ meaning: 'You took the EQ reflection.', rule: { type: 'eq_taken', target: 1 }, evidence: { rule: 'eq_taken', target: 1, value: 1 } }))).toBe('');
   });
 
   it('draws a portrait PNG card', async () => {

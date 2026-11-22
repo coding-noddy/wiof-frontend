@@ -456,7 +456,26 @@ export function earnedBecause(stamp: Pick<Stamp, 'rule' | 'evidence' | 'window' 
  * ("I kept one action going in 6 different weeks.").
  */
 export function sharedBecause(stamp: Pick<Stamp, 'rule' | 'evidence' | 'window' | 'name' | 'family'>): string {
-  return earnedBecause(stamp).replace(/^You /, 'I ').replace(/\byour\b/g, 'my');
+  return firstPerson(earnedBecause(stamp));
+}
+
+/** "You … your" written to the member, as the member would say it ("I … my"). "Thank you" stays. */
+function firstPerson(text: string): string {
+  return text
+    .replace(/(^|[.!?:]\s+)Your\b/g, '$1My')
+    .replace(/(^|[.!?:]\s+)You\b/g, '$1I')
+    .replace(/\byour\b/g, 'my');
+}
+
+/**
+ * The badge's meaning on a shared card: meanings speak to the member ("Your first steps…"), which a
+ * viewer would read as meant for them, so they're put in the first person. '' when that only repeats
+ * the "why" line above it ("I took the EQ reflection.").
+ */
+export function sharedMeaning(stamp: Pick<Stamp, 'rule' | 'evidence' | 'window' | 'name' | 'family' | 'meaning'>): string {
+  const meaning = firstPerson((stamp.meaning || '').trim());
+  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  return norm(meaning) === norm(sharedBecause(stamp)) ? '' : meaning;
 }
 
 /**

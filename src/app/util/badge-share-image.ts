@@ -1,4 +1,4 @@
-import { sharedBecause, Stamp, stampDateText } from '../models/Passport';
+import { sharedBecause, sharedMeaning, Stamp, stampDateText } from '../models/Passport';
 
 /**
  * "Share this badge" (Passport design §6, step 1): one earned stamp on a
@@ -196,7 +196,7 @@ export function earnedLine(stamp: Pick<Stamp, 'earnedAt' | 'dateKnown'>): string
 
 /** The text that goes with the image: the badge, why it was earned, what it means. */
 export function badgeShareCaption(stamp: Pick<Stamp, 'name' | 'meaning' | 'rule' | 'evidence' | 'window' | 'family'>, url: string): string {
-  return `I earned the ${stamp.name} badge in my WIOF Planet Passport. ${sharedBecause(stamp)} ${stamp.meaning} ${url}`.replace(/\s+/g, ' ').trim();
+  return `I earned the ${stamp.name} badge in my WIOF Planet Passport. ${sharedBecause(stamp)} ${sharedMeaning(stamp)} ${url}`.replace(/\s+/g, ' ').trim();
 }
 
 export async function renderBadgeCard(stamp: Stamp): Promise<Blob> {
@@ -256,7 +256,9 @@ export async function renderBadgeCard(stamp: Stamp): Promise<Blob> {
   const meaningTop = 992 + why.length * 46 + 14;
   ctx.font = '400 29px "Noto Sans", sans-serif';
   ctx.fillStyle = MUTED;
-  const meaning = clip(ctx, wrap(ctx, stamp.meaning, BADGE_CARD_W - pad * 2), why.length > 1 ? 2 : 3, BADGE_CARD_W - pad * 2);
+  // In the first person, as the member would say it; left out when it only repeats the why.
+  const meaningText = sharedMeaning(stamp);
+  const meaning = meaningText ? clip(ctx, wrap(ctx, meaningText, BADGE_CARD_W - pad * 2), why.length > 1 ? 2 : 3, BADGE_CARD_W - pad * 2) : [];
   meaning.forEach((l, i) => ctx.fillText(l, BADGE_CARD_W / 2, meaningTop + i * 40));
   ctx.font = '400 28px "Noto Sans", sans-serif';
   ctx.fillText(earnedLine(stamp), BADGE_CARD_W / 2, meaningTop + meaning.length * 40 + 22);

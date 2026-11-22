@@ -22,12 +22,26 @@ Run each script as a dry run first and read the output before `--apply`. On this
 
 1. Deploy with backend: `npm.cmd run deploy:staging:quick -- -Backend` (prod: `deploy:prod`). Awards stay off, because the switch doesn't exist yet.
 2. `node scripts/sync-passport-catalogue.js --project staging` → `--apply`.
-3. `node scripts/recompute-user-metrics.js --project staging` → `--apply`. This builds `ladder` and `elementVisits` for existing members. It never awards stamps.
+3. `node scripts/recompute-user-metrics.js --project staging` → `--apply`. This builds `ladder`, `elementVisits` and `conversationsWatched` (Coffee Conversation videos finished) for existing members. It never awards stamps.
 4. `node scripts/backfill-passport.js --project staging` → read the list (stamps per member, dates, "before-launch") → `--apply`. Note the run ID it prints.
 5. Switch on: set `site_settings/passport` to `{ awardsEnabled: true }` (an admin, in the Firebase console). The switch takes effect within a minute.
 6. Check (see "Checks" below).
 
 On prod the user runs steps 2–5 (Claude can't write to prod).
+
+## Catalogue v4 (2026-11-22): Triveni and Samvaad
+
+- **Triveni** is the triangle for actions in 3 elements. It was called Delta; its ID stays `delta`, so members keep it under the new name. Only the title, name and meaning changed, not the rule, so there is no new version.
+- **Samvaad** is a new travel stamp: 3 Coffee Conversations watched to the end. It uses a new rule type, `conversations_watched`, which reads `user_metrics.conversationsWatched` (docs/METRICS.md). That count is kept by the `onActivityLogCreated` trigger, so **the functions must be deployed first**.
+
+On an environment whose badges have **never** been edited in Admin → Passport (prod, at its first release of this branch), the release order above covers it: step 2 brings both changes, step 3 counts past Coffee Conversation watches, and step 4 dates Samvaad from history.
+
+On an environment where badges **have** been edited in Admin → Passport (staging), **don't run the sync**: it rewrites every badge from the code, including the edits (adding Samvaad also shifts the order numbers). Make the two changes in Admin → Passport instead:
+1. Open **delta**. Set the title to `Triveni`, the name to `Triveni` and the meaning to *Triveni: where three rivers meet. Your care now flows through three elements.* Save.
+2. **New badge**: ID `samvaad`, family Travel, shape Rectangle, title `Samvaad`, caption `COFFEE CHATS`, rule *Coffee Conversations watched to the end*, target 3. Save draft, then Publish.
+3. Run steps 3 and 4 above (recompute, then backfill), dry run first.
+
+Staging got exactly these changes on 2026-11-22, by a one-off script that used the same checks and audit records as Admin → Passport.
 
 ## Checks after release
 

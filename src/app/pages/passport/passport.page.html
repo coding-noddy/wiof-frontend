@@ -284,17 +284,15 @@
     }
     @case ('challenges') {
       <div class="page paper challenges" [class.is-open]="isOpen(index)">
-        <div class="page-head"><span>Challenges</span><span>Seasonal</span></div>
-        @if (challenges.open.length || challenges.upcoming.length || challenges.past.length) {
-          <div class="stamp-grid" [class.six]="challenges.open.length + challenges.upcoming.length + challenges.past.length > 4">
-            @for (s of challenges.open; track s.id; let k = $index) {
-              <app-passport-stamp [stamp]="s" [index]="k" [interactive]="true" (open)="openDetail($event)"></app-passport-stamp>
-            }
-            @for (s of challenges.upcoming; track s.id) {
-              <app-passport-stamp class="upcoming" [stamp]="s" [interactive]="true" (open)="openDetail($event)"></app-passport-stamp>
-            }
-            @for (s of challenges.past; track s.id; let k = $index) {
-              <app-passport-stamp [stamp]="s" [index]="k" [interactive]="true" (open)="openDetail($event)"></app-passport-stamp>
+        <div class="page-head"><span>Challenges</span><span>Seasonal{{ page.part ? ' · ' + (page.part + 1) : '' }}</span></div>
+        @if (challengeStamps(page.part).length) {
+          <div class="stamp-grid" [class.three]="challengeStamps(page.part).length === 3">
+            @for (c of challengeStamps(page.part); track c.stamp.id) {
+              @if (c.upcoming) {
+                <app-passport-stamp class="upcoming" [stamp]="c.stamp" [interactive]="true" (open)="openDetail($event)"></app-passport-stamp>
+              } @else {
+                <app-passport-stamp [stamp]="c.stamp" [index]="c.index" [interactive]="true" (open)="openDetail($event)"></app-passport-stamp>
+              }
             }
           </div>
         } @else {

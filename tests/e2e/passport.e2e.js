@@ -183,6 +183,9 @@ async function cleanup(uid) {
     const welcome = await page.waitForSelector('.welcome', { timeout: 30000 }).then(() => true, () => false);
     check('the issued Passport shows the welcome once', welcome);
     await page.screenshot({ path: path.join(OUT, 'passport-welcome-desktop.png') });
+    // The closed book has its glance: stamps earned, and the latest or next stamp.
+    const glance = await page.$$eval('aside.glance', (els) => els.filter((e) => e.offsetParent !== null).map((e) => e.innerText.replace(/\s+/g, ' ').trim())[0] || '');
+    check('the closed book shows the glance with the stamps earned', /\d+ of \d+ stamps/.test(glance) && /(Latest|Next) stamp/.test(glance), glance.slice(0, 70));
     if (welcome) await page.click('.welcome-open');
     await sleep(1500);
     const earnedOnPage = await page.$$eval('.face:not([inert]) .stamp.earned', (els) => els.length);
@@ -190,6 +193,29 @@ async function cleanup(uid) {
     const inertFaces = await page.$$eval('.face[inert]', (els) => els.length);
     check('turned and hidden pages are inert for screen readers', inertFaces > 0, `${inertFaces} inert faces`);
     await page.screenshot({ path: path.join(OUT, 'passport-earthrise-desktop.png') });
+
+    // 4b. Holding a page: a short drag falls back, a long one turns the page.
+    const where = () => page.$eval('.where', (e) => e.textContent.trim());
+    const dragRightPage = async (fraction) => {
+      const b = await (await page.$('.stage')).boundingBox();
+      const x = b.x + b.width * 0.85, y = b.y + b.height / 2;
+      await page.mouse.move(x, y);
+      await page.mouse.down();
+      const steps = 20;
+      for (let i = 1; i <= steps; i++) { await page.mouse.move(x - (b.width / 2) * fraction * (i / steps), y); await sleep(30); }
+      await sleep(200); // a hold, not a flick
+      await page.mouse.up();
+      await sleep(1300);
+    };
+    const startAt = await where();
+    await dragRightPage(0.2);
+    check('a page let go early falls back', (await where()) === startAt, startAt);
+    await dragRightPage(0.75);
+    const turnedTo = await where();
+    check('a page dragged past halfway turns', turnedTo !== startAt, turnedTo);
+    check('the release does not open a stamp', !(await page.$('.stamp-detail')));
+    await page.keyboard.press('ArrowLeft');
+    await sleep(1300);
 
     // 4a. "Share" under an earned stamp: on a computer the card is saved (and the caption copied).
     // Catch the image where the page makes it (URL.createObjectURL) and the file name at the save link,

@@ -121,7 +121,7 @@ async function pickActions(elements) {
     let m = await metrics();
     check('three actions in one day: one day on the ladder', m.ladder && m.ladder.actionDays === 1, JSON.stringify({ days: m.ladder?.actionDays, unique: m.uniqueActionsCompleted }));
     let have = await stampIds();
-    check('the brake: no Three Seeds and no Delta after one busy minute', !have.includes('three-seeds') && !have.includes('delta'), have.join(', ') || 'none');
+    check('the brake: no Three Seeds and no Triveni after one busy minute', !have.includes('three-seeds') && !have.includes('delta'), have.join(', ') || 'none');
 
     // The same air action on two later days (and weeks).
     await complete(air, '2026-09-08T04:30:00Z');
@@ -129,7 +129,7 @@ async function pickActions(elements) {
     check('two days: still no Three Seeds', !have.includes('three-seeds'), have.join(', ') || 'none');
     await complete(air, '2026-09-15T04:30:00Z');
     const third = await waitFor(async () => { const s = await stampIds(); return s.includes('three-seeds') && s.includes('delta') && s.includes('taking-root') ? s : null; }, 20000);
-    check('a third day: Three Seeds, Delta and Taking Root (3 weeks) are awarded by the server', !!third, (third || (await stampIds())).join(', '));
+    check('a third day: Three Seeds, Triveni and Taking Root (3 weeks) are awarded by the server', !!third, (third || (await stampIds())).join(', '));
     check('not Four Winds or Compass (only 3 different actions / 3 elements)', !(await stampIds()).some((s) => s === 'four-winds' || s === 'compass'));
 
     // Tapping the same action again the same day adds no day.

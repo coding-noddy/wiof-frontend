@@ -14,8 +14,8 @@ import { BadgeShareService } from 'src/app/services/badge-share.service';
 import { PassportHolder, PassportService } from 'src/app/services/passport.service';
 import { UserProfile, UserProfileService } from 'src/app/services/user-profile.service';
 
-/** The most stamps one visa page holds (two rows of two, so each stays large); more go on to another page. */
-const VISAS_PER_PAGE = 4;
+/** The most stamps one page holds (two rows of two, so each stays large); more go on to another page. */
+const STAMPS_PER_PAGE = 4;
 
 type PageKind = 'cover' | 'inside' | 'identity' | 'milestones' | 'visas' | 'challenges' | 'element' | 'impact' | 'next' | 'notes' | 'insideBack' | 'back';
 
@@ -23,7 +23,7 @@ interface BookPage {
   kind: PageKind;
   /** For element pages. */
   element?: { slug: ElementSlug; name: string; icon: string; ink: string };
-  /** For visa pages: which group of up to four journey stamps (0, 1, …). */
+  /** For visa and challenge pages: which group of up to four stamps (0, 1, …). */
   part?: number;
   /** For milestone pages: which levels (0 = Earthrise, 3 = triangles … 6 = hexagons). */
   levels?: number[];
@@ -82,7 +82,7 @@ const ISSUED_SEEN_KEY = (uid: string) => `wiof_passport_issued_seen_${uid}`;
   standalone: false
 })
 export class PassportPage implements OnInit, OnDestroy {
-  pages: BookPage[] = this.buildPages(1);
+  pages: BookPage[] = this.buildPages(1, 1);
 
   metrics: EngagementMetrics | null = null;
   profile: UserProfile | null = null;
@@ -198,10 +198,13 @@ export class PassportPage implements OnInit, OnDestroy {
     const profile = this.demo && this.profile ? { ...this.profile, longestStreak: Math.max(9, this.profile.longestStreak || 0) } : this.profile;
     const records = this.demo ? this.demoRecords() : this.records;
     this.stamps = buildStamps(this.defs, records, { metrics, profile });
-    // More than four journey stamps continue on another visa page.
-    const visaPages = Math.max(1, Math.ceil(this.journey.length / VISAS_PER_PAGE));
-    if (visaPages !== this.pages.filter((p) => p.kind === 'visas').length) {
-      this.pages = this.buildPages(visaPages);
+    // More than four journey stamps or challenges continue on another page.
+    const pagesFor = (n: number) => Math.max(1, Math.ceil(n / STAMPS_PER_PAGE));
+    const visaPages = pagesFor(this.journey.length);
+    const challengePages = pagesFor(this.challengeItems.length);
+    const count = (kind: PageKind) => this.pages.filter((p) => p.kind === kind).length;
+    if (visaPages !== count('visas') || challengePages !== count('challenges')) {
+      this.pages = this.buildPages(visaPages, challengePages);
       this.turned = Math.min(this.turned, this.maxTurned);
     }
     this.next = nextStamps(this.stamps);
@@ -224,7 +227,7 @@ export class PassportPage implements OnInit, OnDestroy {
     if (!s) return -1;
     if (s.element) return this.pages.findIndex((p) => p.kind === 'element' && p.element?.slug === s.element);
     if (s.family === 'milestone') return this.pages.findIndex((p) => p.kind === 'milestones' && this.milestones(p.levels).some((m) => m.id === id));
-    if (s.family === 'challenge') return this.pages.findIndex((p) => p.kind === 'challenges');
+    if (s.family === 'challenge') return this.pages.findIndex((p) => p.kind === 'challenges' && this.challengeStamps(p.part).some((c) => c.stamp.id === id));
     return this.pages.findIndex((p) => p.kind === 'visas' && this.visaStamps(p.part).some((v) => v.id === id));
   }
 
@@ -359,11 +362,26 @@ export class PassportPage implements OnInit, OnDestroy {
 
   /** One visa page's stamps: up to four. */
   visaStamps(part = 0): Stamp[] {
-    return this.journey.slice(part * VISAS_PER_PAGE, (part + 1) * VISAS_PER_PAGE);
+    return this.journey.slice(part * STAMPS_PER_PAGE, (part + 1) * STAMPS_PER_PAGE);
   }
 
   get journey(): Stamp[] {
     return journeyStamps(this.stamps);
+  }
+
+  /** Every challenge on the Challenges pages, in order: open, upcoming, then past earned ones. */
+  get challengeItems(): { stamp: Stamp; upcoming: boolean; index: number }[] {
+    const c = this.challenges;
+    return [
+      ...c.open.map((stamp, index) => ({ stamp, upcoming: false, index })),
+      ...c.upcoming.map((stamp, index) => ({ stamp, upcoming: true, index })),
+      ...c.past.map((stamp, index) => ({ stamp, upcoming: false, index }))
+    ];
+  }
+
+  /** One Challenges page's challenges: up to four. */
+  challengeStamps(part = 0): { stamp: Stamp; upcoming: boolean; index: number }[] {
+    return this.challengeItems.slice(part * STAMPS_PER_PAGE, (part + 1) * STAMPS_PER_PAGE);
   }
 
   /** Open, upcoming (from 7 days before) and past earned challenges. */
@@ -392,7 +410,7 @@ export class PassportPage implements OnInit, OnDestroy {
 
   // ---- The booklet ----
 
-  private buildPages(visaPages: number): BookPage[] {
+  private buildPages(visaPages: number, challengePages: number): BookPage[] {
     const elements = JOURNEY_ELEMENTS.map((e) => ({ slug: e.slug, name: e.name, icon: e.icon, ink: PASSPORT_INK[e.slug] }));
     const pages: BookPage[] = [
       { kind: 'cover', label: 'Cover' },
@@ -404,7 +422,7 @@ export class PassportPage implements OnInit, OnDestroy {
       { kind: 'milestones', levels: [5], sub: '⬟', label: 'Milestones' },
       { kind: 'milestones', levels: [6], sub: '⬢', label: 'Milestones' },
       ...Array.from({ length: visaPages }, (_, part) => ({ kind: 'visas' as const, part, label: 'Journey visas' })),
-      { kind: 'challenges', label: 'Challenges' },
+      ...Array.from({ length: challengePages }, (_, part) => ({ kind: 'challenges' as const, part, label: 'Challenges' })),
       ...elements.map((element) => ({ kind: 'element' as const, element, label: element.name })),
       { kind: 'impact', label: 'Declaration' },
       { kind: 'next', label: 'Next stamps' },
