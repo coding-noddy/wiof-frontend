@@ -470,7 +470,12 @@ export class PassportPage implements OnInit, OnDestroy {
     const w = typeof window !== 'undefined' ? window.innerWidth : 1200;
     const wasSpread = this.spread;
     this.spread = w >= 900;
-    this.pageWidth = Math.floor(this.spread ? Math.min(430, (w - 96) / 2) : Math.min(400, w - 32));
+    // The whole book and its controls should fit the window's height too (short laptop
+    // and tablet screens): leave room for the site header and the page-turn controls.
+    const h = typeof window !== 'undefined' ? window.innerHeight : 900;
+    const byHeight = Math.max(220, (h - 190) / 1.42);
+    const byWidth = this.spread ? Math.min(430, (w - 96) / 2) : Math.min(400, w - 32);
+    this.pageWidth = Math.floor(Math.min(byWidth, byHeight));
     if (wasSpread !== this.spread) {
       // Keep roughly the same place in the book when the layout changes.
       this.turned = this.spread ? Math.ceil(this.turned / 2) : Math.max(0, this.turned * 2 - 1);

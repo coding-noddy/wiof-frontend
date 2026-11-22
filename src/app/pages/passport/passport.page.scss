@@ -287,12 +287,14 @@
   // A stitched edge.
   outline: 1.5px dashed rgba(233, 194, 125, 0.35);
   outline-offset: calc(var(--pw) * -0.035);
+  // More air at the top and bottom than the inner pages, so the foil reads.
+  padding: calc(var(--pw) * 0.14) calc(var(--pw) * 0.1) calc(var(--pw) * 0.12);
 }
 
 // The WIOF logo in the same gold foil as the title: the white logo is the
 // mask, the foil gradient shows through it.
 .cover-logo {
-  width: 52%;
+  width: 40%;
   aspect-ratio: 2000 / 800;
   background: linear-gradient(180deg, #FFE7BA, #C99A52 70%, #E9C27D);
   -webkit-mask: url('/assets/brand/logos/WIOF-full-logo-white.png') center / contain no-repeat;
@@ -311,7 +313,7 @@
 .cover-title {
   margin: 0;
   font-family: 'Aleo', serif !important;
-  font-size: 2.6em;
+  font-size: 2.2em;
   line-height: 1.05;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -323,8 +325,10 @@
 
 .emblem {
   position: relative;
-  width: calc(var(--pw) * 0.4);
+  width: calc(var(--pw) * 0.3);
   aspect-ratio: 1;
+  // The orbiting icons sit outside the globe; keep them clear of the logo and title.
+  margin: calc(var(--pw) * 0.07) 0;
 
   svg {
     width: 100%;
@@ -339,15 +343,15 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    font-size: calc(var(--pw) * 0.055);
-    margin: calc(var(--pw) * -0.0275);
+    font-size: calc(var(--pw) * 0.042);
+    margin: calc(var(--pw) * -0.021);
     color: #E9C27D;
-    transform: rotate(calc(var(--k) * 72deg - 90deg)) translate(calc(var(--pw) * 0.26)) rotate(calc(var(--k) * -72deg + 90deg));
+    transform: rotate(calc(var(--k) * 72deg - 90deg)) translate(calc(var(--pw) * 0.2)) rotate(calc(var(--k) * -72deg + 90deg));
   }
 }
 
 .chip {
-  width: calc(var(--pw) * 0.12);
+  width: calc(var(--pw) * 0.09);
   fill: none;
   stroke: #E9C27D;
   stroke-width: 1.5;
@@ -366,7 +370,7 @@
   gap: 1.2em;
 
   .small-emblem {
-    width: calc(var(--pw) * 0.22);
+    width: calc(var(--pw) * 0.18);
   }
 }
 
@@ -392,8 +396,8 @@
   }
 
   .tree-mark img {
-    width: 42%;
-    margin-top: 1.2em;
+    width: 34%;
+    margin-top: 1.6em;
     opacity: 0.85;
   }
 }
@@ -521,7 +525,7 @@
   gap: 0.6em 0.4em;
 
   app-passport-stamp {
-    width: calc(var(--pw) * 0.37);
+    width: calc(var(--pw) * 0.31);
   }
 
   &.three app-passport-stamp:nth-child(3) {
@@ -534,7 +538,7 @@
     gap: 0.4em 0.2em;
 
     app-passport-stamp {
-      width: calc(var(--pw) * 0.26);
+      width: calc(var(--pw) * 0.22);
     }
   }
 }
@@ -765,7 +769,7 @@
 
   li {
     display: grid;
-    grid-template-columns: calc(var(--pw) * 0.22) 1fr;
+    grid-template-columns: calc(var(--pw) * 0.18) 1fr;
     column-gap: 1em;
     row-gap: 0.25em;
     align-items: center;
