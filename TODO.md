@@ -51,6 +51,9 @@
 - **[HIGH]** Cache the YouTube playlists server-side — *found 2026-10-31: the YouTube Data API daily quota ran out (`quotaExceeded`), so Videos sections were empty on prod and staging until the reset at midnight Pacific*
   - Today every visitor's browser calls the YouTube Data API directly (`youtube-video.service.ts`: element pages, the Videos pages via `getAllPlaylistVideos()`), all on one key with the default 10,000 units/day. Traffic growth (or heavy testing) exhausts it.
   - Fix: a scheduled Cloud Function fetches each playlist every few hours into Firestore (or a public JSON in Storage/Hosting); the app reads that cache and never calls YouTube itself. Also removes the API key from the client bundle.
+  - **Built 2026-11-22 on feat/planet-passport-design (staging):** `youtubePlaylist` (functions/youtube-cache.js) serves `/api/youtube-playlist?id=…` through Hosting. It asks YouTube at most once an hour per playlist, keeps the copy in `youtube_cache/{playlistId}`, serves the last copy if YouTube fails, and serves only the 5 element playlists. The app asks it first and falls back to YouTube directly.
+  - **To switch it on (per project):** add `YOUTUBE_API_KEY=…` to `functions/.env.wiof-staging` / `.env.wiof-production`, then deploy functions. Better: a new server key restricted to the YouTube Data API (no referrer restriction). With the current browser key, the function sends the site address as Referer (`YOUTUBE_REFERER` overrides it). Until then it answers 503 and the app behaves as before.
+  - Still open: the key stays in the client bundle for the fallback and for single-video lookups (`getYoutubeVideo`). Remove it once the cache has run on prod for a while.
   - Until then: request a quota increase in Google Cloud Console if it recurs.
 
 ---

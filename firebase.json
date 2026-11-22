@@ -73,6 +73,13 @@
         }
       },
       {
+        "source": "/api/youtube-playlist",
+        "function": {
+          "functionId": "youtubePlaylist",
+          "region": "us-central1"
+        }
+      },
+      {
         "source": "/conversation/**",
         "function": {
           "functionId": "socialMetaTags",

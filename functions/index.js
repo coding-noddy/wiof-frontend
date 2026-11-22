@@ -103,6 +103,7 @@ async function getBlog(blogParam) {
   return null;
 }
 
+const { ALLOWED_PLAYLISTS, cachedPlaylist } = require('./youtube-cache');
 const { metaHtml, conversationMeta } = require('./social-meta');
 
 /** A story's preview (escaped: see social-meta.js). */
@@ -1284,6 +1285,40 @@ exports.subscribe = functions
 
     return { ok: true };
   }));
+
+/**
+ * The element video playlists, cached (youtube-cache.js): served at
+ * /api/youtube-playlist?id=… through Firebase Hosting, so the CDN keeps each
+ * response for an hour and YouTube is asked at most once an hour per
+ * playlist, not once per visitor. Same region on both projects, like
+ * socialMetaTags, so firebase.json's rewrite works for both.
+ *
+ * Needs YOUTUBE_API_KEY (and optionally YOUTUBE_REFERER, the site address the
+ * key is restricted to) in functions/.env.<project>. Without it, or when
+ * YouTube fails with nothing cached, it answers 503 and the app asks YouTube
+ * directly, as before.
+ */
+exports.youtubePlaylist = functions
+  .region(SOCIAL_META_TAGS_REGION)
+  .runWith({ memory: '256MB', timeoutSeconds: 30 })
+  .https.onRequest(async (req, res) => {
+    const id = String(req.query.id || '');
+    if (req.method !== 'GET' || !ALLOWED_PLAYLISTS.has(id)) {
+      res.status(404).json({ error: 'Unknown playlist' });
+      return;
+    }
+    try {
+      const referer = process.env.YOUTUBE_REFERER || (process.env.GCLOUD_PROJECT === 'wiof-staging' ? 'https://wiof-staging.web.app/' : 'https://worldisonefamily.com/');
+      const result = await cachedPlaylist(db, id, { key: process.env.YOUTUBE_API_KEY, referer });
+      // Browsers keep it 10 minutes, the CDN an hour (a stale copy only 5 minutes, so a fresh one follows soon).
+      res.set('Cache-Control', result.source === 'stale' ? 'public, max-age=60, s-maxage=300' : 'public, max-age=600, s-maxage=3600');
+      res.json({ videos: result.videos, fetchedAt: result.fetchedAt });
+    } catch (error) {
+      console.error('youtubePlaylist', id, error.message);
+      res.set('Cache-Control', 'no-store');
+      res.status(503).json({ error: 'Playlist unavailable' });
+    }
+  });
 
 exports.socialMetaTags = functions
   .region(SOCIAL_META_TAGS_REGION)
