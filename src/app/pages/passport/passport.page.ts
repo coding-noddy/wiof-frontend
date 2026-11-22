@@ -14,12 +14,17 @@ import { BadgeShareService } from 'src/app/services/badge-share.service';
 import { PassportHolder, PassportService } from 'src/app/services/passport.service';
 import { UserProfile, UserProfileService } from 'src/app/services/user-profile.service';
 
+/** The most stamps one visa page holds (two rows of two, so each stays large); more go on to another page. */
+const VISAS_PER_PAGE = 4;
+
 type PageKind = 'cover' | 'inside' | 'identity' | 'milestones' | 'visas' | 'challenges' | 'element' | 'impact' | 'next' | 'notes' | 'insideBack' | 'back';
 
 interface BookPage {
   kind: PageKind;
   /** For element pages. */
   element?: { slug: ElementSlug; name: string; icon: string; ink: string };
+  /** For visa pages: which group of up to four journey stamps (0, 1, …). */
+  part?: number;
   /** For milestone pages: which levels (0 = Earthrise, 3 = triangles … 6 = hexagons). */
   levels?: number[];
   /** Page heading on the right, e.g. "● ▲". */
@@ -38,7 +43,7 @@ interface Leaf {
 /** A believable member for the design preview (?demo=1, admins only): most stamps earned, a few still to go. */
 const DEMO_METRICS: EngagementMetrics = {
   blogsRead: 18, qualityReads: 9, qualityReadsByElement: { water: 6, air: 5, earth: 2, energy: 1 },
-  videosWatched: 6, videosCompleted: 4, pollsVoted: 2, lastEqScore: 72, lastEqDate: new Date(), lastBlogReadDate: new Date(),
+  videosWatched: 6, videosCompleted: 4, conversationsWatched: 2, pollsVoted: 2, lastEqScore: 72, lastEqDate: new Date(), lastBlogReadDate: new Date(),
   totalActionsCompleted: 11, uniqueActionsCompleted: 5, actionsByElement: { water: 5, energy: 3, earth: 2, spirit: 1 }, lastActionAt: new Date(),
   impactTotals: { water: 420, energy: 4.4, co2: 6.2, plastic: 18, food: 1.5 }, impactByMonth: {},
   elementVisits: { water: 1, air: 1, energy: 1, earth: 1, spirit: 1 },
@@ -77,7 +82,7 @@ const ISSUED_SEEN_KEY = (uid: string) => `wiof_passport_issued_seen_${uid}`;
   standalone: false
 })
 export class PassportPage implements OnInit, OnDestroy {
-  readonly pages: BookPage[] = this.buildPages();
+  pages: BookPage[] = this.buildPages(1);
 
   metrics: EngagementMetrics | null = null;
   profile: UserProfile | null = null;
@@ -116,6 +121,9 @@ export class PassportPage implements OnInit, OnDestroy {
   turning: number | null = null;
   private turnTimer: any;
   private pointerX: number | null = null;
+  private pointerT = 0;
+  /** A page held and dragged: which leaf, which way, and its angle now (0 flat on the right, -180 on the left). */
+  drag: { leaf: number; dir: 1 | -1; angle: number; lastX: number; lastT: number; speed: number } | null = null;
   private destroy$ = new Subject<void>();
   private userChange$ = new Subject<void>();
   /** ?stamp=: the page to open on, once the stamps are in. */
@@ -190,6 +198,12 @@ export class PassportPage implements OnInit, OnDestroy {
     const profile = this.demo && this.profile ? { ...this.profile, longestStreak: Math.max(9, this.profile.longestStreak || 0) } : this.profile;
     const records = this.demo ? this.demoRecords() : this.records;
     this.stamps = buildStamps(this.defs, records, { metrics, profile });
+    // More than four journey stamps continue on another visa page.
+    const visaPages = Math.max(1, Math.ceil(this.journey.length / VISAS_PER_PAGE));
+    if (visaPages !== this.pages.filter((p) => p.kind === 'visas').length) {
+      this.pages = this.buildPages(visaPages);
+      this.turned = Math.min(this.turned, this.maxTurned);
+    }
     this.next = nextStamps(this.stamps);
     this.steps = firstSteps(this.profile, this.metrics);
     this.impact = impactTiles(metrics?.impactTotals);
@@ -211,7 +225,7 @@ export class PassportPage implements OnInit, OnDestroy {
     if (s.element) return this.pages.findIndex((p) => p.kind === 'element' && p.element?.slug === s.element);
     if (s.family === 'milestone') return this.pages.findIndex((p) => p.kind === 'milestones' && this.milestones(p.levels).some((m) => m.id === id));
     if (s.family === 'challenge') return this.pages.findIndex((p) => p.kind === 'challenges');
-    return this.pages.findIndex((p) => p.kind === 'visas');
+    return this.pages.findIndex((p) => p.kind === 'visas' && this.visaStamps(p.part).some((v) => v.id === id));
   }
 
   /** Sample records for the admin preview: dated over the last few weeks. */
@@ -316,8 +330,36 @@ export class PassportPage implements OnInit, OnDestroy {
     return this.stamps.filter((s) => s.earned).length;
   }
 
+  // ---- At a glance, beside the closed book ----
+
+  /** The most recently earned stamp with a known date, else any earned one. */
+  get latestStamp(): Stamp | null {
+    const earned = this.stamps.filter((s) => s.earned);
+    const dated = earned.filter((s) => s.dateKnown && s.earnedAt).sort((a, b) => b.earnedAt!.getTime() - a.earnedAt!.getTime());
+    return dated[0] || earned[0] || null;
+  }
+
+  /** A challenge open now, if there is one. */
+  get openChallenge(): Stamp | null {
+    return this.challenges.open[0] || null;
+  }
+
+  latestDate(s: Stamp): string {
+    return s.dateKnown && s.earnedAt ? s.earnedAt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : 'before launch';
+  }
+
+  /** "Open my Passport": past the cover, to the first pages. */
+  openBook(): void {
+    this.turnTo(1);
+  }
+
   milestones(levels: number[] | undefined): Stamp[] {
     return milestoneStamps(this.stamps, levels || []);
+  }
+
+  /** One visa page's stamps: up to four. */
+  visaStamps(part = 0): Stamp[] {
+    return this.journey.slice(part * VISAS_PER_PAGE, (part + 1) * VISAS_PER_PAGE);
   }
 
   get journey(): Stamp[] {
@@ -350,16 +392,18 @@ export class PassportPage implements OnInit, OnDestroy {
 
   // ---- The booklet ----
 
-  private buildPages(): BookPage[] {
+  private buildPages(visaPages: number): BookPage[] {
     const elements = JOURNEY_ELEMENTS.map((e) => ({ slug: e.slug, name: e.name, icon: e.icon, ink: PASSPORT_INK[e.slug] }));
     const pages: BookPage[] = [
       { kind: 'cover', label: 'Cover' },
       { kind: 'inside', label: 'Inside cover' },
       { kind: 'identity', label: 'Holder' },
       { kind: 'milestones', levels: [0, 3], sub: '● ▲', label: 'Milestones' },
-      { kind: 'milestones', levels: [4, 5], sub: '■ ⬟', label: 'Milestones' },
+      // One shape per page from here: at most four stamps a page, so each stays large.
+      { kind: 'milestones', levels: [4], sub: '■', label: 'Milestones' },
+      { kind: 'milestones', levels: [5], sub: '⬟', label: 'Milestones' },
       { kind: 'milestones', levels: [6], sub: '⬢', label: 'Milestones' },
-      { kind: 'visas', label: 'Journey visas' },
+      ...Array.from({ length: visaPages }, (_, part) => ({ kind: 'visas' as const, part, label: 'Journey visas' })),
       { kind: 'challenges', label: 'Challenges' },
       ...elements.map((element) => ({ kind: 'element' as const, element, label: element.name })),
       { kind: 'impact', label: 'Declaration' },
@@ -443,15 +487,84 @@ export class PassportPage implements OnInit, OnDestroy {
     else this.forward();
   }
 
+  // ---- Holding a page: it follows the finger (or the pressed touchpad) like paper ----
+
   pointerDown(e: PointerEvent): void {
+    if (e.button !== 0) return;
     this.pointerX = e.clientX;
+    this.pointerT = e.timeStamp;
+  }
+
+  pointerMove(e: PointerEvent): void {
+    if (this.pointerX === null) return;
+    const dx = e.clientX - this.pointerX;
+    if (!this.drag) {
+      if (Math.abs(dx) < 8) return; // still a tap
+      const dir: 1 | -1 = dx < 0 ? 1 : -1;
+      const leaf = dir === 1 ? this.turned : this.turned - 1;
+      if (leaf < 0 || (dir === 1 && this.turned >= this.maxTurned)) return;
+      this.drag = { leaf, dir, angle: dir === 1 ? 0 : -180, lastX: e.clientX, lastT: e.timeStamp, speed: 0 };
+      this.turning = leaf; // on top of the others while it moves
+      clearTimeout(this.turnTimer);
+      (e.currentTarget as HTMLElement)?.setPointerCapture?.(e.pointerId);
+    }
+    const d = this.drag;
+    // Half a spread's width (one page) of travel takes the page all the way over.
+    const p = Math.max(0, Math.min(1, (d.dir === 1 ? -dx : dx) / Math.max(120, this.pageWidth)));
+    d.angle = d.dir === 1 ? -180 * p : -180 + 180 * p;
+    const dt = Math.max(1, e.timeStamp - d.lastT);
+    d.speed = (e.clientX - d.lastX) / dt; // px per ms, signed
+    d.lastX = e.clientX;
+    d.lastT = e.timeStamp;
   }
 
   pointerUp(e: PointerEvent): void {
     if (this.pointerX === null) return;
     const dx = e.clientX - this.pointerX;
+    const quick = e.timeStamp - this.pointerT < 300;
     this.pointerX = null;
-    if (Math.abs(dx) > 45) dx < 0 ? this.forward() : this.backward();
+    const d = this.drag;
+    if (!d) {
+      // A quick flick without a hold still turns, as before.
+      if (quick && Math.abs(dx) > 45) dx < 0 ? this.forward() : this.backward();
+      return;
+    }
+    this.drag = null;
+    this.swallowNextClick();
+    const progress = d.dir === 1 ? -d.angle / 180 : (180 + d.angle) / 180;
+    const flick = d.dir === 1 ? d.speed < -0.5 : d.speed > 0.5;
+    const flung = d.dir === 1 ? d.speed > 0.5 : d.speed < -0.5;
+    if (!flung && (progress > 0.4 || flick)) {
+      d.dir === 1 ? this.forward() : this.backward();
+    } else {
+      // Let go early: the page falls back where it was.
+      this.turnTimer = setTimeout(() => (this.turning = null), 600);
+    }
+  }
+
+  pointerCancel(): void {
+    this.pointerX = null;
+    if (this.drag) {
+      this.drag = null;
+      this.turnTimer = setTimeout(() => (this.turning = null), 600);
+    }
+  }
+
+  /** The held leaf's angle, for its inline transform; null when it isn't held. */
+  dragAngle(i: number): string | null {
+    return this.drag && this.drag.leaf === i ? `rotateY(${this.drag.angle}deg)` : null;
+  }
+
+  /** How far up the held page is lifted (0 flat, 1 standing up), for its shading. */
+  dragLift(i: number): number {
+    return this.drag && this.drag.leaf === i ? Math.sin((-this.drag.angle * Math.PI) / 180) : 0;
+  }
+
+  /** After a drag, the click that follows the release mustn't open a stamp or turn again. */
+  private swallowNextClick(): void {
+    const stop = (ev: Event) => { ev.stopPropagation(); ev.preventDefault(); };
+    window.addEventListener('click', stop, { capture: true, once: true });
+    setTimeout(() => window.removeEventListener('click', stop, { capture: true }), 50);
   }
 
   @HostListener('document:keydown', ['$event'])

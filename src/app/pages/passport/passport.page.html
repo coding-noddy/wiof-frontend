@@ -71,10 +71,10 @@
     }
 
     @if (issued) {
-    <div class="stage" [style.--pw]="pageWidth + 'px'" [class.is-spread]="spread" [class.is-single]="!spread">
-      <div class="book" [style.--shift]="shift" (pointerdown)="pointerDown($event)" (pointerup)="pointerUp($event)">
+    <div class="stage" [style.--pw]="pageWidth + 'px'" [class.is-spread]="spread" [class.is-single]="!spread" [class.closed]="turned === 0">
+      <div class="book" [style.--shift]="shift" (pointerdown)="pointerDown($event)" (pointermove)="pointerMove($event)" (pointerup)="pointerUp($event)" (pointercancel)="pointerCancel()" [class.holding]="!!drag">
         @for (leaf of leaves; track leaf.front; let i = $index) {
-          <div class="leaf" [class.turned]="i < turned" [class.buried]="i < turned - 1 || i > turned" [style.z-index]="zIndex(i)" (click)="tapLeaf(i, $event)">
+          <div class="leaf" [class.turned]="i < turned" [class.buried]="i < turned - 1 || i > turned" [class.held]="drag?.leaf === i" [style.transform]="dragAngle(i)" [style.--lift]="dragLift(i)" [style.z-index]="zIndex(i)" (click)="tapLeaf(i, $event)">
             <div class="face front" [attr.inert]="isOpen(leaf.front) ? null : ''" [attr.aria-hidden]="isOpen(leaf.front) ? null : 'true'">
               <ng-container *ngTemplateOutlet="pageTpl; context: { $implicit: pages[leaf.front], index: leaf.front }"></ng-container>
             </div>
@@ -88,6 +88,9 @@
           </div>
         }
       </div>
+      @if (turned === 0) {
+        <aside class="glance beside" aria-label="Your Passport at a glance"><ng-container *ngTemplateOutlet="glanceTpl"></ng-container></aside>
+      }
     </div>
 
     <nav class="controls" aria-label="Turn the pages">
@@ -102,6 +105,9 @@
     <p class="hint">Tap a page, swipe, or use the ← → keys.
       @if (demo) { <a href="/passport">See my own stamps</a> }
     </p>
+    @if (turned === 0) {
+      <aside class="glance below" aria-label="Your Passport at a glance"><ng-container *ngTemplateOutlet="glanceTpl"></ng-container></aside>
+    }
     }
   </div>
   </div>
@@ -147,6 +153,39 @@
     </div>
   }
 </ion-content>
+
+<!-- Beside the closed book (below it on narrow screens): the member's Passport at a glance. -->
+<ng-template #glanceTpl>
+  <p class="glance-count"><strong>{{ earnedCount }}</strong> of {{ stamps.length }} stamps</p>
+  <span class="bar glance-bar" aria-hidden="true"><span [style.width.%]="stamps.length ? (earnedCount / stamps.length) * 100 : 0"></span></span>
+  <ul class="glance-list">
+    @if (latestStamp; as s) {
+      <li>
+        <button type="button" (click)="openDetail(s)" [style.--ink]="s.ink">
+          <app-passport-stamp class="glance-stamp" [stamp]="s"></app-passport-stamp>
+          <span><small>Latest stamp</small><b>{{ s.name }}</b><small>{{ latestDate(s) }}</small></span>
+        </button>
+      </li>
+    }
+    @if (next[0]; as s) {
+      <li>
+        <button type="button" (click)="openDetail(s)" [style.--ink]="s.ink">
+          <app-passport-stamp class="glance-stamp" [stamp]="s"></app-passport-stamp>
+          <span><small>Next stamp</small><b>{{ s.name }}</b><small>{{ s.progress }} of {{ s.target }} {{ s.unit }}</small></span>
+        </button>
+      </li>
+    }
+    @if (openChallenge; as s) {
+      <li>
+        <button type="button" (click)="openDetail(s)" [style.--ink]="s.ink">
+          <app-passport-stamp class="glance-stamp" [stamp]="s"></app-passport-stamp>
+          <span><small>Challenge open now</small><b>{{ s.name }}</b><small>{{ s.hint }}</small></span>
+        </button>
+      </li>
+    }
+  </ul>
+  <button type="button" class="glance-open" (click)="openBook()">Open my Passport</button>
+</ng-template>
 
 <ng-template #pageTpl let-page let-index="index">
   @switch (page.kind) {
@@ -221,7 +260,7 @@
     @case ('milestones') {
       <div class="page paper milestones" [class.is-open]="isOpen(index)">
         <div class="page-head"><span>Milestones</span><span aria-hidden="true">{{ page.sub }}</span></div>
-        <div class="stamp-grid" [class.six]="milestones(page.levels).length > 4">
+        <div class="stamp-grid" [class.six]="milestones(page.levels).length > 4" [class.three]="milestones(page.levels).length === 3">
           @for (s of milestones(page.levels); track s.id; let k = $index) {
             <app-passport-stamp [stamp]="s" [index]="k" [interactive]="true" (open)="openDetail($event)"></app-passport-stamp>
           }
@@ -234,9 +273,9 @@
     }
     @case ('visas') {
       <div class="page paper visas" [class.is-open]="isOpen(index)">
-        <div class="page-head"><span>Visas</span><span>Journey</span></div>
-        <div class="stamp-grid six">
-          @for (s of journey; track s.id; let k = $index) {
+        <div class="page-head"><span>Visas</span><span>Journey{{ page.part ? ' · ' + (page.part + 1) : '' }}</span></div>
+        <div class="stamp-grid" [class.three]="visaStamps(page.part).length === 3">
+          @for (s of visaStamps(page.part); track s.id; let k = $index) {
             <app-passport-stamp [stamp]="s" [index]="k" [interactive]="true" (open)="openDetail($event)"></app-passport-stamp>
           }
         </div>
